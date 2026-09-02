@@ -4,12 +4,14 @@ import type { RuntimeEnvironment } from './environment';
  * Simple feature flags (TA§72, INF-010). Flags keep half-finished interfaces out of the
  * product; a flagged-off route is unreachable in the UI and by URL.
  *
- * `system_diagnostics` is a developer surface (versions, environment, API health) and is
- * never enabled in production. The remaining flags are the ones named by the spec and stay
- * off until their phases land.
+ * `system_diagnostics` (versions, environment, API health) and `design_gallery` (every
+ * primitive and semantic component in every state, for visual review) are developer
+ * surfaces and are never enabled in production. The remaining flags are the ones named by
+ * the spec and stay off until their phases land.
  */
 export const FEATURE_FLAGS = [
   'system_diagnostics',
+  'design_gallery',
   'voice_calls',
   'workflow_lab_v2',
   'ai_negotiation',
@@ -23,6 +25,7 @@ export type FeatureFlagSet = Readonly<Record<FeatureFlag, boolean>>;
 
 const ALL_OFF: FeatureFlagSet = {
   system_diagnostics: false,
+  design_gallery: false,
   voice_calls: false,
   workflow_lab_v2: false,
   ai_negotiation: false,
@@ -31,8 +34,8 @@ const ALL_OFF: FeatureFlagSet = {
 };
 
 const FLAGS_BY_ENVIRONMENT: Readonly<Record<RuntimeEnvironment, FeatureFlagSet>> = {
-  local: { ...ALL_OFF, system_diagnostics: true },
-  preview: { ...ALL_OFF, system_diagnostics: true },
+  local: { ...ALL_OFF, system_diagnostics: true, design_gallery: true },
+  preview: { ...ALL_OFF, system_diagnostics: true, design_gallery: true },
   production: ALL_OFF,
 };
 

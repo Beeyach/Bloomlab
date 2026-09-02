@@ -1,0 +1,84 @@
+/* Motion categories (spec §69, MOT-001): state · spatial · execution · reward. */
+
+/* state — hover/press/selection feedback, 120–200 ms */
+.state {
+  transition:
+    background-color var(--bl-motion-fast) var(--bl-motion-ease-standard),
+    border-color var(--bl-motion-fast) var(--bl-motion-ease-standard),
+    color var(--bl-motion-fast) var(--bl-motion-ease-standard),
+    opacity var(--bl-motion-fast) var(--bl-motion-ease-standard),
+    transform var(--bl-motion-base) var(--bl-motion-ease-standard);
+}
+
+/* spatial — things arriving or leaving, ≤ 300 ms */
+.spatialEnter {
+  animation: spatialEnter var(--bl-motion-slow) var(--bl-motion-ease-settle) both;
+}
+
+@keyframes spatialEnter {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
+
+/* execution — a contact travelling through a system (Workflow Lab, timelines) */
+.executionTrack {
+  position: relative;
+  height: 4px;
+  border-radius: var(--bl-radius-full);
+  background: var(--bl-color-border);
+  overflow: visible;
+}
+
+.executionDot {
+  position: absolute;
+  top: 50%;
+  /* left is a percentage of the track, unlike translate percentages which use the dot itself. */
+  left: calc(var(--execution-progress, 0) * 100%);
+  width: 12px;
+  height: 12px;
+  border-radius: var(--bl-radius-full);
+  background: var(--bl-color-execution);
+  box-shadow: 0 0 0 4px rgb(117 230 222 / 0.25);
+  transform: translate(-50%, -50%);
+  transition: left var(--bl-motion-slow) var(--bl-motion-ease-standard);
+}
+
+/* reward — major accomplishments, 1.5–3 s, always skippable */
+.reward {
+  position: relative;
+}
+
+.rewardStage {
+  animation: rewardIn var(--reward-duration, 2000ms) var(--bl-motion-ease-settle) both;
+}
+
+@keyframes rewardIn {
+  0% {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+  35% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.rewardSkip {
+  position: absolute;
+  top: var(--bl-space-2);
+  right: var(--bl-space-2);
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spatialEnter,
+  .rewardStage {
+    animation: none;
+  }
+}

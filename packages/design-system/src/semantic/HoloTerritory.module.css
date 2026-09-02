@@ -1,0 +1,70 @@
+.territory {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--bl-radius-xl);
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.material {
+  width: 100%;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--bl-space-6);
+  min-height: 160px;
+  padding: var(--bl-space-5);
+}
+
+.name {
+  display: block;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-2xl);
+  font-weight: var(--bl-font-weight-bold);
+  letter-spacing: var(--bl-font-tracking-display);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.scope {
+  display: block;
+  margin-top: var(--bl-space-2);
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bl-space-2);
+}
+
+.count {
+  display: block;
+  font-family: var(--bl-font-mono);
+  font-size: var(--bl-font-size-sm);
+}
+
+.track {
+  display: block;
+  height: 6px;
+  border-radius: var(--bl-radius-full);
+  background: rgb(24 21 43 / 0.12);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--bl-color-ink);
+  transition: width var(--bl-motion-slow) var(--bl-motion-ease-standard);
+}

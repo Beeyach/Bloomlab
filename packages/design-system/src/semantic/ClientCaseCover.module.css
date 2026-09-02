@@ -1,0 +1,63 @@
+.cover {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--bl-radius-xl);
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.material {
+  width: 100%;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bl-space-4);
+  min-height: 200px;
+  padding: var(--bl-space-5);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bl-space-3);
+}
+
+.industry {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: var(--bl-font-tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+.name {
+  display: block;
+  margin-top: auto;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-xl);
+  font-weight: var(--bl-font-weight-bold);
+  letter-spacing: var(--bl-font-tracking-display);
+  line-height: var(--bl-font-leading-tight);
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bl-space-3);
+}
+
+.kind {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-xs);
+}

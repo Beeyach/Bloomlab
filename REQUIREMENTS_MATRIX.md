@@ -31,7 +31,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | PRD-010 | Curriculum develops four identities at once: Funnel Strategist, GHL Systems Builder, Conversion & Sales Operator, Technical GHL Specialist (last comes later). Learner can start earning before completing. | P1 | 24 | NOT_STARTED | §5 |
 | PRD-011 | Long-term time ratio ≈ 20% instruction / 60% practical work / 20% retrieval, explanation, selling, review; advanced levels more practical. | P1 | 24 | NOT_STARTED | §6 |
 | PRD-012 | App copy is short, smart, direct, professional, occasionally playful ("Run it.", "Something broke. Find out why.", "Deal lost. Good decision."). No childish gamification, no "Amazing job, superstar!". | P1 | 7 | NOT_STARTED | §158 |
-| PRD-013 | Progress language uses capabilities demonstrated and the states Passed / Needs another run / Demonstrated / Independent / Mastered / Field Ready. No XP, no star ratings. | P1 | 7 | NOT_STARTED | §159 |
+| PRD-013 | Progress language uses capabilities demonstrated and the states Passed / Needs another run / Demonstrated / Independent / Mastered / Field Ready. No XP, no star ratings. | P1 | 7 | IN_PROGRESS | §159 |
 | PRD-014 | Rewards are new capabilities, simulator tools, clients, scenarios, Playground features, portfolio projects, skill mastery and territory access — never meaningless points. | P1 | 7 | NOT_STARTED | §160 |
 | PRD-015 | Signature moments heavily polished: Holo Skill Interaction, First Workflow Execution, Client Case Reveal, Failed Test reveal, Independent Pass recognition, Field Ready (restrained cinematic). | P2 | 26 | NOT_STARTED | §161 |
 | PRD-016 | Sound is optional and subtle (snap, connect, execution, selection, completion), always mutable, never constant. | P3 | 26 | NOT_STARTED | §162 |
@@ -285,53 +285,53 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| DES-001 | Visual language adapted from https://doodlemonjigsaw.netlify.app/ (palette, holographic appearance, iridescence, interaction, animation, tactile, playful material). Never copy Pokémon/Doodlemon art, logo, characters, branded illustrations or exact page composition. | P0 | 2 | NOT_STARTED | §62 |
-| DES-002 | North star: collectible + tactile + intelligent + playful + polished + immersive; "Doodlemon energy × premium creative software × professional simulation game". | P1 | 2 | NOT_STARTED | §63 |
-| DES-003 | Core rule: the interface is quiet, the objects are magical. Strong holo reserved for territory cards, mastery cards, client case covers, selected challenges, portfolio projects, meaningful unlocks, advanced/mastered states, Field Ready achievement. | P0 | 2 | NOT_STARTED | §64 |
-| DES-004 | Initial colour tokens exactly as §65 (Cloud #F8FAFF, Snow #FFFFFF, Mist #F0F3FC, Soft Lilac #EEEAFB, Ink #18152B, Deep Ink #100D22, Ink Soft #5D5873, Ink Faint #8F8AA5, Electric Sky #6EC8FF, Bubblegum #FF82C8, Lavender #A99BFF, Aqua #75E6DE, Lemon Cream #FFE98A, Peach #FFB49C, Ice #CFF8FF; Success #56BFA1, Warning #E5A94C, Error #D85C72, Info #5D90D9), tuned only for contrast within the same family. | P0 | 2 | NOT_STARTED | §65 |
-| DES-005 | Typography: Bricolage Grotesque (display), Inter (UI/body), IBM Plex Mono (technical); substitutes must be expressive display grotesk / readable UI sans / restrained mono. No generic system fonts everywhere. | P1 | 2 | NOT_STARTED | §66 |
-| DES-006 | No AI-slop patterns: giant gradient hero, purple SaaS gradient, gradient text, glassmorphism everywhere, random blobs, icon beside every heading, endless three-column cards, every section in a card, giant useless stats, fake analytics, emoji navigation, trophy spam, rocket graphics, stock SaaS art, generic AI avatar, huge shadows, random confetti, excessive pills, identical layouts everywhere, generic "Welcome back" dashboard. | P0 | all | NOT_STARTED | §70 |
-| DES-007 | Semantic components (SkillCard, ClientCaseCover, WorkflowNode, ExercisePrompt, MasteryBadge, ContactRow, PipelineCard, HoloTerritory, CallParticipant, PricingScopeItem, ExecutionEvent) sharing tokens; no single universal Card component. | P0 | 2 | NOT_STARTED | §71, TA§3 |
-| DES-008 | Information density varies by environment: Academy low-medium, Workflow Lab medium-high, CRM high, Call Room very low, Pricing Arena medium, Skill Map high visual / low text. | P1 | 7 | NOT_STARTED | §72 |
+| DES-001 | Visual language adapted from https://doodlemonjigsaw.netlify.app/ (palette, holographic appearance, iridescence, interaction, animation, tactile, playful material). Never copy Pokémon/Doodlemon art, logo, characters, branded illustrations or exact page composition. | P0 | 2 | PASSED | §62 |
+| DES-002 | North star: collectible + tactile + intelligent + playful + polished + immersive; "Doodlemon energy × premium creative software × professional simulation game". | P1 | 2 | PASSED | §63 |
+| DES-003 | Core rule: the interface is quiet, the objects are magical. Strong holo reserved for territory cards, mastery cards, client case covers, selected challenges, portfolio projects, meaningful unlocks, advanced/mastered states, Field Ready achievement. | P0 | 2 | PASSED | §64 |
+| DES-004 | Initial colour tokens exactly as §65 (Cloud #F8FAFF, Snow #FFFFFF, Mist #F0F3FC, Soft Lilac #EEEAFB, Ink #18152B, Deep Ink #100D22, Ink Soft #5D5873, Ink Faint #8F8AA5, Electric Sky #6EC8FF, Bubblegum #FF82C8, Lavender #A99BFF, Aqua #75E6DE, Lemon Cream #FFE98A, Peach #FFB49C, Ice #CFF8FF; Success #56BFA1, Warning #E5A94C, Error #D85C72, Info #5D90D9), tuned only for contrast within the same family. | P0 | 2 | PASSED | §65 |
+| DES-005 | Typography: Bricolage Grotesque (display), Inter (UI/body), IBM Plex Mono (technical); substitutes must be expressive display grotesk / readable UI sans / restrained mono. No generic system fonts everywhere. | P1 | 2 | PASSED | §66 |
+| DES-006 | No AI-slop patterns: giant gradient hero, purple SaaS gradient, gradient text, glassmorphism everywhere, random blobs, icon beside every heading, endless three-column cards, every section in a card, giant useless stats, fake analytics, emoji navigation, trophy spam, rocket graphics, stock SaaS art, generic AI avatar, huge shadows, random confetti, excessive pills, identical layouts everywhere, generic "Welcome back" dashboard. | P0 | all | IN_PROGRESS | §70 |
+| DES-007 | Semantic components (SkillCard, ClientCaseCover, WorkflowNode, ExercisePrompt, MasteryBadge, ContactRow, PipelineCard, HoloTerritory, CallParticipant, PricingScopeItem, ExecutionEvent) sharing tokens; no single universal Card component. | P0 | 2 | PASSED | §71, TA§3 |
+| DES-008 | Information density varies by environment: Academy low-medium, Workflow Lab medium-high, CRM high, Call Room very low, Pricing Arena medium, Skill Map high visual / low text. | P1 | 7 | IN_PROGRESS | §72 |
 | DES-009 | App shell: compact left rail ~68–80 px with Home, Campaign, Skill Map, Simulator, Clients, Portfolio, Playground; minimal top context; no giant sidebar. | P1 | 7 | NOT_STARTED | §73 |
 | DES-010 | Command Center answers "What should I do next?"; main object is Continue (campaign, gate, current topic, progress); supporting: active client, due retrieval, recent mastery, Build My Session. No meaningless metrics. | P1 | 7 | NOT_STARTED | §74 |
 | DES-011 | Skill Map signature screen: nine territories plus Judgment as holographic regions / collectible objects, not tiny LMS nodes; skill states unseen → needs refresh change the visual material. | P1 | 7 | NOT_STARTED | §75 |
-| DES-012 | Client case covers feel collectible and premium using abstract identity/material treatment; no mandatory stock photos. | P2 | 24 | NOT_STARTED | §78 |
+| DES-012 | Client case covers feel collectible and premium using abstract identity/material treatment; no mandatory stock photos. | P2 | 24 | IN_PROGRESS | §78 |
 | DES-013 | Broken Build Mode uses an understated INCIDENT state with symptom, logs, client complaint, system state. No cartoon alarms. | P1 | 15 | NOT_STARTED | §81 |
 | DES-014 | Explicit design tokens: color, spacing, radius, shadow, motion, typography, holographic material, density, z-index, breakpoints. | P0 | 1 | PASSED | TA§3 |
-| DES-015 | Visual primitives: HoloMaterial, Surface, InkSurface, ToolPanel, Sheet, Inspector, Popover, Field, Button, IconButton. | P0 | 2 | NOT_STARTED | TA§3 |
-| DES-016 | Styling via CSS variables + CSS Modules / component CSS; Tailwind only selectively for layout utilities; product must not look like a standard Tailwind component library. | P1 | 2 | NOT_STARTED | TA§3 |
-| DES-017 | Visual review of major screens at 1440 / 1024 / 768 / 390 / 320 checking hierarchy, density, material, interaction, holo restraint, slop patterns, responsive composition, long-session comfort. | P1 | all | NOT_STARTED | §135 |
+| DES-015 | Visual primitives: HoloMaterial, Surface, InkSurface, ToolPanel, Sheet, Inspector, Popover, Field, Button, IconButton. | P0 | 2 | PASSED | TA§3 |
+| DES-016 | Styling via CSS variables + CSS Modules / component CSS; Tailwind only selectively for layout utilities; product must not look like a standard Tailwind component library. | P1 | 2 | PASSED | TA§3 |
+| DES-017 | Visual review of major screens at 1440 / 1024 / 768 / 390 / 320 checking hierarchy, density, material, interaction, holo restraint, slop patterns, responsive composition, long-session comfort. | P1 | all | IN_PROGRESS | §135 |
 | DES-018 | Screen coverage matrix maintained: Screen × Desktop / Tablet / Mobile / Empty / Loading / Error / Keyboard / Touch. No major screen complete with desktop only. | P1 | all | NOT_STARTED | §136 |
-| DES-019 | Visual language exists early; product is never built with generic temporary UI to be "styled later". | P0 | 2 | NOT_STARTED | PHASE 2 |
+| DES-019 | Visual language exists early; product is never built with generic temporary UI to be "styled later". | P0 | 2 | PASSED | PHASE 2 |
 | DES-020 | Academy visual design is editorial (strong typography, diagrams, inline simulation embeds). | P1 | 8 | NOT_STARTED | §76 |
 
 ## HOL — Holographic Material
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| HOL-001 | One reusable `HoloMaterial` (not dozens of gradients) with base pearlescent layer, spectral layer, moving radial reflection, fine foil texture, edge sheen, pointer tilt, touch response, reduced-motion behavior. | P0 | 2 | NOT_STARTED | §67 |
-| HOL-002 | Variants: soft, collectible, mastery, legendary (legendary stays tasteful). | P1 | 2 | NOT_STARTED | §67 |
-| HOL-003 | Desktop physics: pointer position drives rotateX, rotateY, reflection position, spectral angle, shadow direction, edge sheen; max tilt ≈ 5–7°; settle to neutral in ≈ 350–500 ms on pointer exit. | P1 | 2 | NOT_STARTED | §68 |
-| HOL-004 | Touch: press changes reflection, drag moves reflection, release settles. Device orientation permission never requested. | P1 | 2 | NOT_STARTED | §68 |
+| HOL-001 | One reusable `HoloMaterial` (not dozens of gradients) with base pearlescent layer, spectral layer, moving radial reflection, fine foil texture, edge sheen, pointer tilt, touch response, reduced-motion behavior. | P0 | 2 | PASSED | §67 |
+| HOL-002 | Variants: soft, collectible, mastery, legendary (legendary stays tasteful). | P1 | 2 | PASSED | §67 |
+| HOL-003 | Desktop physics: pointer position drives rotateX, rotateY, reflection position, spectral angle, shadow direction, edge sheen; max tilt ≈ 5–7°; settle to neutral in ≈ 350–500 ms on pointer exit. | P1 | 2 | PASSED | §68 |
+| HOL-004 | Touch: press changes reflection, drag moves reflection, release settles. Device orientation permission never requested. | P1 | 2 | PASSED | §68 |
 | HOL-005 | Holo Skill Interaction signature moment (pointer/touch physical response) polished. | P2 | 26 | NOT_STARTED | §161 |
 
 ## MOT — Motion
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| MOT-001 | Motion categories: state, spatial, execution, reward. | P1 | 2 | NOT_STARTED | §69 |
-| MOT-002 | Normal interaction timing ≈ 120–300 ms; major accomplishments ≈ 1.5–3 s and skippable. | P1 | 2 | NOT_STARTED | §69 |
-| MOT-003 | Reduced motion respected across all motion and holo effects. | P0 | 2 | NOT_STARTED | §69, §84 |
-| MOT-004 | No constant expensive holographic animation; animations stop off-screen. | P1 | 2 | NOT_STARTED | §148, TA§78 |
+| MOT-001 | Motion categories: state, spatial, execution, reward. | P1 | 2 | PASSED | §69 |
+| MOT-002 | Normal interaction timing ≈ 120–300 ms; major accomplishments ≈ 1.5–3 s and skippable. | P1 | 2 | PASSED | §69 |
+| MOT-003 | Reduced motion respected across all motion and holo effects. | P0 | 2 | PASSED | §69, §84 |
+| MOT-004 | No constant expensive holographic animation; animations stop off-screen. | P1 | 2 | PASSED | §148, TA§78 |
 
 ## RSP — Responsive
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| RSP-001 | Required review widths: 1440, 1024, 768, 390, 320. | P0 | all | NOT_STARTED | §82 |
-| RSP-002 | Tablet is first class; mobile is recomposed, not shrunk. | P0 | all | NOT_STARTED | §82 |
-| RSP-003 | No critical desktop feature disappears on mobile because responsive work is difficult; recompose instead. | P0 | all | NOT_STARTED | §82, §131 |
+| RSP-001 | Required review widths: 1440, 1024, 768, 390, 320. | P0 | all | IN_PROGRESS | §82 |
+| RSP-002 | Tablet is first class; mobile is recomposed, not shrunk. | P0 | all | IN_PROGRESS | §82 |
+| RSP-003 | No critical desktop feature disappears on mobile because responsive work is difficult; recompose instead. | P0 | all | IN_PROGRESS | §82, §131 |
 | RSP-004 | Mobile recompositions: Workflow → vertical step editor; CRM → stage view / local horizontal scroller; Academy → editorial reading; Call Room → mobile-first voice; Inbox → natural conversation flow; Skill Map → territory-first. | P1 | 12 | NOT_STARTED | §83 |
 | RSP-005 | Preview deployments for substantial branches/PRs inspectable on a phone before merge. | P2 | 1 | BLOCKED | TA§76 |
 
@@ -339,15 +339,15 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| A11Y-001 | Full keyboard operability of core flows. | P0 | 2 | NOT_STARTED | §84 |
-| A11Y-002 | Visible focus states. | P0 | 2 | NOT_STARTED | §84 |
-| A11Y-003 | Accessible labels on controls and inputs. | P0 | 2 | NOT_STARTED | §84 |
-| A11Y-004 | Sufficient contrast, including text over holographic surfaces. | P0 | 2 | NOT_STARTED | §84 |
-| A11Y-005 | Status never conveyed by colour alone. | P0 | 2 | NOT_STARTED | §84 |
+| A11Y-001 | Full keyboard operability of core flows. | P0 | 2 | PASSED | §84 |
+| A11Y-002 | Visible focus states. | P0 | 2 | PASSED | §84 |
+| A11Y-003 | Accessible labels on controls and inputs. | P0 | 2 | PASSED | §84 |
+| A11Y-004 | Sufficient contrast, including text over holographic surfaces. | P0 | 2 | PASSED | §84 |
+| A11Y-005 | Status never conveyed by colour alone. | P0 | 2 | PASSED | §84 |
 | A11Y-006 | Drag interactions have non-drag alternatives. | P0 | 12 | NOT_STARTED | §84 |
-| A11Y-007 | Touch targets ≈ 44 px. | P0 | 2 | NOT_STARTED | §84 |
-| A11Y-008 | Mobile input font size ≥ 16 px. | P0 | 2 | NOT_STARTED | §84 |
-| A11Y-009 | No critical information is hover-only. | P0 | 2 | NOT_STARTED | §84 |
+| A11Y-007 | Touch targets ≈ 44 px. | P0 | 2 | PASSED | §84 |
+| A11Y-008 | Mobile input font size ≥ 16 px. | P0 | 2 | PASSED | §84 |
+| A11Y-009 | No critical information is hover-only. | P0 | 2 | PASSED | §84 |
 | A11Y-010 | Automated accessibility checks in CI plus manual review of keyboard, focus flow, touch, reduced motion, holographic contrast, drag alternatives. | P1 | 26 | NOT_STARTED | TA§77 |
 
 ## SYNC — Cross-device Sync
@@ -442,7 +442,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 |---|---|---|---|---|---|
 | PERF-001 | Fast app shell; route-level code splitting; heavy simulators lazy-loaded; only likely next content preloaded; Workflow Lab does not load while reading Academy. | P0 | 7 | NOT_STARTED | §148, TA§78 |
 | PERF-002 | Simulator interaction ≈ 60 fps where feasible using CSS transforms and composited layers. | P1 | 12 | NOT_STARTED | §148 |
-| PERF-003 | Off-screen animations pause; holographic richness never harms usability. | P1 | 2 | NOT_STARTED | §148 |
+| PERF-003 | Off-screen animations pause; holographic richness never harms usability. | P1 | 2 | PASSED | §148 |
 
 ## SEC — Security
 

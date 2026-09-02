@@ -1,0 +1,65 @@
+.item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--bl-space-3);
+  padding: var(--bl-space-3) 0;
+  border-top: 1px solid var(--bl-color-border);
+}
+
+.item:first-child {
+  border-top: 0;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--bl-color-ink);
+  cursor: pointer;
+}
+
+.checkbox:disabled {
+  cursor: not-allowed;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.name {
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.excluded .name {
+  text-decoration: line-through;
+  color: var(--bl-color-text-soft);
+}
+
+.description {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+.dependency {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-xs);
+}
+
+.price {
+  font-family: var(--bl-font-mono);
+  font-size: var(--bl-font-size-sm);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.state {
+  display: block;
+  color: var(--bl-color-text-soft);
+  font-family: var(--bl-font-ui);
+  font-size: var(--bl-font-size-xs);
+}

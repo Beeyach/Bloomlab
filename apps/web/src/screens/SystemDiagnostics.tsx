@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 
+import { Button, IconRefresh, Stack, Surface } from '@bloomlab/design-system';
 import { APP_VERSION, CONTENT_VERSION, FEATURE_FLAGS } from '@bloomlab/shared';
 import { SIMULATOR_VERSION } from '@bloomlab/simulator-core';
 
@@ -52,7 +53,7 @@ export default function SystemDiagnostics() {
   const environment = getRuntimeEnvironment();
 
   return (
-    <section className={styles.screen} aria-labelledby="system-title">
+    <Stack as="section" gap={3} className={styles.screen} aria-labelledby="system-title">
       <p className={styles.back}>
         <Link to="/">← Bloomlab</Link>
       </p>
@@ -61,7 +62,7 @@ export default function SystemDiagnostics() {
       </h1>
 
       <h2 className={styles.heading}>Client</h2>
-      <dl className={styles.list}>
+      <Surface as="dl" padding="sm" className={styles.list}>
         <dt>App version</dt>
         <dd>{APP_VERSION}</dd>
         <dt>Content version</dt>
@@ -72,7 +73,7 @@ export default function SystemDiagnostics() {
         <dd>{environment}</dd>
         <dt>Vite mode</dt>
         <dd>{import.meta.env.MODE}</dd>
-      </dl>
+      </Surface>
 
       <h2 className={styles.heading}>API</h2>
       {health.status === 'loading' && (
@@ -81,15 +82,20 @@ export default function SystemDiagnostics() {
         </p>
       )}
       {health.status === 'error' && (
-        <div className={styles.problem} role="alert">
+        <Surface padding="sm" className={styles.problem} role="alert">
           <p>API unreachable: {health.message}</p>
-          <button type="button" className={styles.button} onClick={() => setAttempt((n) => n + 1)}>
+          <Button
+            variant="primary"
+            size="sm"
+            icon={<IconRefresh size={16} />}
+            onClick={() => setAttempt((n) => n + 1)}
+          >
             Retry
-          </button>
-        </div>
+          </Button>
+        </Surface>
       )}
       {health.status === 'ok' && (
-        <dl className={styles.list}>
+        <Surface as="dl" padding="sm" className={styles.list}>
           <dt>Status</dt>
           <dd>{health.payload.ok ? 'API reachable' : 'API reported a problem'}</dd>
           <dt>Worker environment</dt>
@@ -105,18 +111,18 @@ export default function SystemDiagnostics() {
           <dd>{health.payload.versions.content ?? 'none'}</dd>
           <dt>Worker simulator version</dt>
           <dd>{health.payload.versions.simulator}</dd>
-        </dl>
+        </Surface>
       )}
 
       <h2 className={styles.heading}>Feature flags</h2>
-      <dl className={styles.list}>
+      <Surface as="dl" padding="sm" className={styles.list}>
         {FEATURE_FLAGS.map((flag) => (
           <div key={flag} className={styles.row}>
             <dt>{flag}</dt>
             <dd>{flags[flag] ? 'on' : 'off'}</dd>
           </div>
         ))}
-      </dl>
-    </section>
+      </Surface>
+    </Stack>
   );
 }

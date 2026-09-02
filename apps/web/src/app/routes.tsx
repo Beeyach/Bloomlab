@@ -23,6 +23,12 @@ export const APP_ROUTES: readonly AppRoute[] = [
     flag: 'system_diagnostics',
     Component: lazy(() => import('../screens/SystemDiagnostics')),
   },
+  {
+    id: 'design',
+    path: '/design',
+    flag: 'design_gallery',
+    Component: lazy(() => import('../screens/DesignGallery')),
+  },
 ];
 
 export function enabledRoutes(flags: FeatureFlagSet): AppRoute[] {

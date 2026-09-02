@@ -1,0 +1,52 @@
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--bl-radius-md);
+  background: transparent;
+  color: var(--bl-color-text);
+  cursor: pointer;
+  transition:
+    background-color var(--bl-motion-fast) var(--bl-motion-ease-standard),
+    border-color var(--bl-motion-fast) var(--bl-motion-ease-standard);
+}
+
+.iconButton:hover:not(:disabled) {
+  background: var(--bl-color-surface-2);
+}
+
+.iconButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.outlined {
+  border-color: var(--bl-color-border-strong);
+  background: var(--bl-color-surface);
+}
+
+.iconButton[aria-pressed='true'] {
+  background: var(--bl-color-ink);
+  color: var(--bl-color-text-inverse);
+  border-color: var(--bl-color-ink);
+}
+
+:global([data-tone='ink']) .iconButton:hover:not(:disabled) {
+  background: rgb(255 255 255 / 0.1);
+}
+
+:global([data-tone='ink']) .outlined {
+  border-color: rgb(255 255 255 / 0.28);
+  background: rgb(255 255 255 / 0.06);
+}
+
+:global([data-tone='ink']) .iconButton[aria-pressed='true'] {
+  background: var(--bl-color-snow);
+  color: var(--bl-color-ink);
+  border-color: var(--bl-color-snow);
+}

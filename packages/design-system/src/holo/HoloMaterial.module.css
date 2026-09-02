@@ -1,0 +1,165 @@
+/*
+ * HoloMaterial (spec §67–§68, HOL-001…004). One material, four variants.
+ * Pointer position arrives as --holo-nx / --holo-ny in [-1, 1]; everything else is CSS so the
+ * reduced-motion token overrides (--bl-holo-tilt-max: 0deg, --bl-holo-track: 0) switch the
+ * physics off without JavaScript.
+ */
+.holo {
+  --holo-nx: 0;
+  --holo-ny: 0;
+  --holo-spectral-opacity: var(--bl-holo-spectral-opacity);
+  --holo-foil-opacity: var(--bl-holo-foil-opacity);
+  --holo-ring: rgb(255 255 255 / 0.85);
+  --holo-glow: rgb(24 21 43 / 0.14);
+
+  position: relative;
+  display: block;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--bl-radius-xl);
+  background: var(--bl-color-snow);
+  color: var(--bl-color-text);
+  transform: perspective(900px) rotateX(calc(var(--holo-ny) * -1 * var(--bl-holo-tilt-max)))
+    rotateY(calc(var(--holo-nx) * var(--bl-holo-tilt-max)));
+  transform-style: preserve-3d;
+  box-shadow:
+    inset 0 0 0 2px var(--holo-ring),
+    calc(var(--holo-nx) * -8px) calc(var(--holo-ny) * -8px + 10px) 28px var(--holo-glow);
+  transition:
+    transform var(--bl-holo-settle) var(--bl-motion-ease-settle),
+    box-shadow var(--bl-holo-settle) var(--bl-motion-ease-settle);
+  touch-action: pan-y;
+  will-change: transform;
+}
+
+/* While the pointer is inside, follow it immediately; the transition only runs on settle. */
+.holo[data-tracking='true'],
+.holo[data-tracking='true'] .reflection,
+.holo[data-tracking='true'] .spectral,
+.holo[data-tracking='true'] .sheen {
+  transition: none;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pearl {
+  background: var(--bl-holo-pearl);
+}
+
+.spectral {
+  inset: -30%;
+  background: var(--bl-holo-spectral);
+  opacity: var(--holo-spectral-opacity);
+  mix-blend-mode: soft-light;
+  filter: saturate(1.5);
+  transform: rotate(calc(var(--holo-nx) * var(--bl-holo-track) * 40deg)) scale(1.05);
+  transition: transform var(--bl-holo-settle) var(--bl-motion-ease-settle);
+}
+
+.reflection {
+  inset: -50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--bl-holo-sheen) 0%,
+    rgb(255 255 255 / 0.25) 18%,
+    rgb(255 255 255 / 0) 42%
+  );
+  transform: translate(
+    calc(var(--holo-nx) * var(--bl-holo-track) * 22%),
+    calc(var(--holo-ny) * var(--bl-holo-track) * 22%)
+  );
+  transition: transform var(--bl-holo-settle) var(--bl-motion-ease-settle);
+}
+
+.foil {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: var(--holo-foil-opacity);
+  mix-blend-mode: overlay;
+}
+
+.sheen {
+  background: linear-gradient(
+    115deg,
+    rgb(255 255 255 / 0) 35%,
+    rgb(255 255 255 / 0.45) 50%,
+    rgb(255 255 255 / 0) 65%
+  );
+  transform: translateX(calc(var(--holo-nx) * var(--bl-holo-track) * 60%));
+  transition: transform var(--bl-holo-settle) var(--bl-motion-ease-settle);
+  opacity: 0.7;
+}
+
+.content {
+  position: relative;
+  display: block;
+  z-index: 1;
+}
+
+/* ---- variants ---- */
+.soft {
+  --holo-spectral-opacity: 0.16;
+  --holo-foil-opacity: 0;
+  --holo-ring: rgb(255 255 255 / 0.6);
+  --holo-glow: rgb(24 21 43 / 0.08);
+}
+
+.soft .sheen {
+  opacity: 0.35;
+}
+
+.collectible {
+  --holo-spectral-opacity: 0.38;
+  --holo-foil-opacity: 0.16;
+}
+
+.mastery {
+  --holo-spectral-opacity: 0.55;
+  --holo-foil-opacity: 0.2;
+  --holo-ring: rgb(255 255 255 / 0.95);
+  --holo-glow: rgb(169 155 255 / 0.35);
+}
+
+.mastery .spectral {
+  filter: saturate(1.8);
+}
+
+.legendary {
+  --holo-spectral-opacity: 0.65;
+  --holo-foil-opacity: 0.24;
+  --holo-ring: rgb(255 255 255 / 1);
+  --holo-glow: rgb(255 180 156 / 0.4);
+}
+
+.legendary .spectral {
+  filter: saturate(2) hue-rotate(-18deg);
+}
+
+.legendary .pearl {
+  background: linear-gradient(
+    135deg,
+    var(--bl-color-snow) 0%,
+    var(--bl-color-lemon) 30%,
+    var(--bl-color-ice) 65%,
+    var(--bl-color-lilac-soft) 100%
+  );
+}
+
+.radiusMd {
+  border-radius: var(--bl-radius-md);
+}
+
+.radiusLg {
+  border-radius: var(--bl-radius-lg);
+}
+
+/* Reduced motion (MOT-003): tokens already zero the physics; also drop the blur cost. */
+@media (prefers-reduced-motion: reduce) {
+  .spectral {
+    filter: saturate(1.3);
+  }
+}

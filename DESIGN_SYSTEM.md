@@ -31,7 +31,7 @@ Initial tokens. Tune slightly only for contrast and polish, staying within the D
 | Ink | `#18152B` | `--bl-color-ink` | Primary text, dark workspaces |
 | Deep Ink | `#100D22` | `--bl-color-ink-deep` | Deepest workspace / Call Room |
 | Ink Soft | `#5D5873` | `--bl-color-ink-soft` | Secondary text |
-| Ink Faint | `#8F8AA5` | `--bl-color-ink-faint` | Tertiary text, hints |
+| Ink Faint | `#86819C` (spec `#8F8AA5`) | `--bl-color-ink-faint` | Decorative and large text only — 3.6:1 on Cloud, below AA for small text (D-017) |
 | Electric Sky | `#6EC8FF` | `--bl-color-sky` | Accent, execution |
 | Bubblegum | `#FF82C8` | `--bl-color-bubblegum` | Accent |
 | Lavender | `#A99BFF` | `--bl-color-lavender` | Accent |
@@ -43,8 +43,9 @@ Initial tokens. Tune slightly only for contrast and polish, staying within the D
 | Warning | `#E5A94C` | `--bl-color-warning` | Semantic |
 | Error | `#D85C72` | `--bl-color-error` | Semantic |
 | Info | `#5D90D9` | `--bl-color-info` | Semantic |
+| Link / Focus | `#3B69BD` | `--bl-color-link`, `--bl-color-focus` | Info darkened to 5.1:1 on Cloud for link text and focus rings (D-017); Aqua inside ink surfaces |
 
-Status is never conveyed by colour alone (A11Y-005).
+Status is never conveyed by colour alone (A11Y-005). Semantic colours are never used as small text; they outline controls (error) or sit as glyphs beside a text label. `packages/design-system/src/color/contrast.test.ts` enforces every pairing above.
 
 ## 4. Typography (DES-005)
 
@@ -170,6 +171,8 @@ Short, smart, direct, professional, occasionally playful. "Run it." "Something b
 ## 16. Review protocol (DES-017, DES-018)
 
 Review every major screen at 1440 / 1024 / 768 / 390 / 320 for: hierarchy · density · material · interaction · holo restraint · slop patterns · responsive composition · long-session comfort.
+
+The review fixture is the `/design` gallery (flag `design_gallery`, local and preview only): every primitive and semantic component in every state, `?section=<id>` to isolate one section. Contrast ratios shown there are computed live by `contrastRatio` and enforced by `packages/design-system/src/color/contrast.test.ts`.
 
 Screen coverage matrix (maintained from Phase 7 onward; no major screen is complete with only Desktop checked):
 

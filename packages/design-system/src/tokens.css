@@ -12,7 +12,7 @@
   --bl-color-ink: #18152b;
   --bl-color-ink-deep: #100d22;
   --bl-color-ink-soft: #5d5873;
-  --bl-color-ink-faint: #8f8aa5;
+  --bl-color-ink-faint: #86819c; /* spec #8f8aa5, tuned for large-text contrast (D-017) */
   --bl-color-sky: #6ec8ff;
   --bl-color-bubblegum: #ff82c8;
   --bl-color-lavender: #a99bff;
@@ -38,8 +38,12 @@
   --bl-color-workspace: var(--bl-color-ink);
   --bl-color-workspace-deep: var(--bl-color-ink-deep);
   --bl-color-execution: var(--bl-color-aqua);
-  --bl-color-focus: var(--bl-color-sky);
+  /* Info darkened until links/focus clear WCAG AA on the light surfaces (D-017). */
+  --bl-color-link: #3b69bd;
+  --bl-color-focus: #3b69bd;
+  --bl-color-text-inverse: var(--bl-color-snow);
   --bl-color-border: rgb(24 21 43 / 0.1);
+  --bl-color-border-strong: rgb(24 21 43 / 0.22);
 
   /* ---- spacing (4px scale) ---- */
   --bl-space-1: 4px;
@@ -100,6 +104,8 @@
 
   /* ---- holographic material (spec §67–§68) ---- */
   --bl-holo-tilt-max: 6deg;
+  /* 1 = reflection and sheen follow the pointer; 0 = static (reduced motion). */
+  --bl-holo-track: 1;
   --bl-holo-settle: var(--bl-motion-settle);
   --bl-holo-pearl: linear-gradient(
     135deg,
@@ -109,12 +115,13 @@
   );
   --bl-holo-spectral: conic-gradient(
     from 0deg,
-    var(--bl-color-sky),
-    var(--bl-color-bubblegum),
-    var(--bl-color-lemon),
-    var(--bl-color-aqua),
-    var(--bl-color-lavender),
-    var(--bl-color-sky)
+    var(--bl-color-sky) 0deg,
+    var(--bl-color-lavender) 60deg,
+    var(--bl-color-bubblegum) 120deg,
+    var(--bl-color-peach) 170deg,
+    var(--bl-color-lemon) 220deg,
+    var(--bl-color-aqua) 290deg,
+    var(--bl-color-sky) 360deg
   );
   --bl-holo-spectral-opacity: 0.35;
   --bl-holo-foil-opacity: 0.18;
@@ -162,6 +169,7 @@
     --bl-motion-reward-min: 0ms;
     --bl-motion-reward-max: 0ms;
     --bl-holo-tilt-max: 0deg;
+    --bl-holo-track: 0;
     --bl-holo-spectral-opacity: 0.2;
   }
 }

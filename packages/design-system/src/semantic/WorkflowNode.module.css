@@ -1,0 +1,111 @@
+/* Light node for the dark ink canvas (spec §53, §77). */
+.node {
+  --node-accent: var(--bl-color-ink-soft);
+
+  display: grid;
+  grid-template-columns: 4px minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+  max-width: 22rem;
+  padding: 0;
+  border: 1px solid rgb(24 21 43 / 0.16);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-snow);
+  color: var(--bl-color-ink);
+  font: inherit;
+  text-align: left;
+  box-shadow: 0 6px 16px rgb(16 13 34 / 0.35);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    box-shadow var(--bl-motion-fast) var(--bl-motion-ease-standard),
+    transform var(--bl-motion-fast) var(--bl-motion-ease-standard);
+}
+
+.node:hover {
+  transform: translateY(-1px);
+}
+
+.node[aria-pressed='true'] {
+  box-shadow:
+    0 0 0 2px var(--bl-color-aqua),
+    0 6px 16px rgb(16 13 34 / 0.35);
+}
+
+.accent {
+  background: var(--node-accent);
+}
+
+.trigger {
+  --node-accent: var(--bl-color-lavender);
+}
+
+.action {
+  --node-accent: var(--bl-color-sky);
+}
+
+.wait {
+  --node-accent: var(--bl-color-lemon);
+}
+
+.if_else {
+  --node-accent: var(--bl-color-peach);
+}
+
+.end {
+  --node-accent: var(--bl-color-ink-faint);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bl-space-1);
+  min-width: 0;
+  padding: var(--bl-space-3) var(--bl-space-3) var(--bl-space-3) var(--bl-space-4);
+}
+
+.kind {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bl-space-2);
+  margin: 0;
+  color: var(--bl-color-ink-soft);
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: var(--bl-font-tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+.name {
+  margin: 0;
+  font-size: var(--bl-font-size-md);
+  font-weight: var(--bl-font-weight-semibold);
+  line-height: var(--bl-font-leading-tight);
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.config {
+  margin: 0;
+  color: var(--bl-color-ink-soft);
+  font-family: var(--bl-font-mono);
+  font-size: var(--bl-font-size-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2);
+  margin-top: var(--bl-space-1);
+}
+
+.approx {
+  color: var(--bl-color-ink-soft);
+  font-size: var(--bl-font-size-xs);
+  font-style: italic;
+}

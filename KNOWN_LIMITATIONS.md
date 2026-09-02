@@ -2,20 +2,30 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-02 (end of Phase 1)
+Last updated: 2026-09-02 (end of Phase 2)
 
 ## Current state
 
-- The product has no learning content, simulator, mastery engine or sync. Phase 1 delivered the repository foundation only: build tooling, routing, tokens, a Worker health endpoint, tests and CI.
+- The product has no learning content, simulator, mastery engine or sync. Phases 1–2 delivered the repository foundation and the design system (tokens, primitives, HoloMaterial, motion, eleven semantic components) plus a developer gallery to review them.
 - The home route is a Phase 1 foundation screen showing the version triplet and environment. It is not the Command Center (DES-010, Phase 7) and makes no claim to be.
-- `/system` (diagnostics) exists only in local and preview environments; it is off in production by flag.
+- `/system` (diagnostics) and `/design` (gallery) exist only in local and preview environments; both are off in production by flag.
+- The semantic components are presentational: they take typed props and will be wired to real engines from Phase 6 onward. Their prop shapes may change when the data models land; they share tokens, so the visual language will not.
 - Nothing has been deployed. The Cloudflare Worker, D1 databases and R2 buckets do not exist yet, and GitHub has no Cloudflare secrets, so the CI deploy jobs are inert until the user provides them.
-- The GitHub Actions workflow mirrors `npm run ci` and passed on GitHub for the Phase 1 push (run 33653862745, 39 s). It does not yet include simulator regression or content validation steps because those packages do not exist (Phase 10, Phase 5).
 - The dev machine runs Node 22.18 while `engines.node` is `>=22.22.0` (react-router 8's floor). Everything works locally with npm engine warnings; CI uses the latest 22.x.
-- No GHL feature names have been verified against official documentation yet. Names used in the spec and curriculum documents are working labels until the registry (GHL-001, GHL-006) is populated with `last_verified` and `source_url`.
-- The Design Bible references https://doodlemonjigsaw.netlify.app/ for visual feeling; no visual verification against it has been done yet (Phase 2). The Phase 1 screens use the real tokens and fonts but no holographic material.
+- No GHL feature names have been verified against official documentation yet. Names used in the gallery samples ("Send SMS", "If / Else", "Wait", "Appointment Status") are illustrative until the registry (GHL-001, GHL-006) is populated with `last_verified` and `source_url`.
 - The ~128k ElevenLabs credits have an expiry window; voice asset generation (VOI-005) is scheduled for Phase 20. Risk: credits expire before Phase 20. By design this is not a functional dependency.
 - Prettier does not format Markdown (`*.md` is ignored) so the control documents keep their hand-laid tables.
+
+## Phase 2 — design system
+
+- **Holo physics were not observed moving on this machine.** The review browser inherits the OS "reduce motion" preference, which correctly disables tilt and reflection tracking (the intended MOT-003 behaviour). Pointer/touch maths, clamping, settle and reduced-motion gating are covered by unit tests; the live tilt should be eyeballed once on a device without the preference.
+- The Doodlemon reference match is a judgment call. Palette, ring, radii and pastel iridescence were adapted from the site's computed styles; the learner's own reaction to the gallery is the real acceptance for DES-002 and should be recorded here.
+- Ink Faint is tuned from the spec value (`#8F8AA5` → `#86819C`) so it clears 3:1 on every light surface; it is still reserved for large or decorative text (D-017).
+- `Popover` positions itself with `getBoundingClientRect` on open (flips above when there is no room below) rather than CSS anchor positioning; it does not reposition on scroll while open.
+- `Sheet` relies on the native `<dialog>` for focus trapping and Escape; browsers without `showModal` get an open attribute without trapping.
+- Icons are a hand-drawn set of 22 stroke glyphs; more will be added as screens need them, kept in one file to avoid a dependency.
+- Semantic colours never appear as small text; success and warning glyphs sit below 3:1 on white by design because a text label always accompanies them.
+- No dark theme exists and none is specified: ink workspaces (`InkSurface`) are per-environment surfaces, not a global mode.
 
 ## By design (spec-mandated constraints, not defects)
 

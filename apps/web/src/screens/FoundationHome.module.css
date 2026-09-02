@@ -1,13 +1,10 @@
 .screen {
-  display: flex;
-  flex-direction: column;
-  gap: var(--bl-space-4);
-  max-width: 36rem;
+  max-width: 40rem;
 }
 
 .eyebrow {
   margin: 0;
-  color: var(--bl-color-text-faint);
+  color: var(--bl-color-text-soft);
   font-size: var(--bl-font-size-xs);
   font-weight: var(--bl-font-weight-semibold);
   letter-spacing: var(--bl-font-tracking-eyebrow);
@@ -31,21 +28,11 @@
 }
 
 .facts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--bl-space-3);
-  margin: var(--bl-space-4) 0 0;
-}
-
-.fact {
-  padding: var(--bl-space-3) var(--bl-space-4);
-  border: 1px solid var(--bl-color-border);
-  border-radius: var(--bl-radius-md);
-  background: var(--bl-color-surface);
+  margin: var(--bl-space-2) 0 0;
 }
 
 .fact dt {
-  color: var(--bl-color-text-faint);
+  color: var(--bl-color-text-soft);
   font-size: var(--bl-font-size-xs);
   font-weight: var(--bl-font-weight-medium);
   letter-spacing: var(--bl-font-tracking-eyebrow);
@@ -59,12 +46,6 @@
 }
 
 .footer {
-  margin: var(--bl-space-4) 0 0;
+  margin-top: var(--bl-space-2);
   font-size: var(--bl-font-size-sm);
-}
-
-@media (min-width: 768px) {
-  .facts {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
 }

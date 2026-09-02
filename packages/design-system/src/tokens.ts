@@ -13,7 +13,8 @@ export const colors = {
   ink: '#18152B',
   'ink-deep': '#100D22',
   'ink-soft': '#5D5873',
-  'ink-faint': '#8F8AA5',
+  /** Spec #8F8AA5, darkened one step so it clears 3:1 (large text) on every light surface (D-017). */
+  'ink-faint': '#86819C',
   sky: '#6EC8FF',
   bubblegum: '#FF82C8',
   lavender: '#A99BFF',
@@ -33,6 +34,22 @@ export const semanticColors = {
 } as const;
 
 export type SemanticColorToken = keyof typeof semanticColors;
+
+/**
+ * Role colours tuned for contrast (spec §65 allows tuning within the family; D-017).
+ * `link`/`focus` are Info darkened until they clear WCAG AA on the light surfaces.
+ */
+export const roles = {
+  link: '#3B69BD',
+  focus: '#3B69BD',
+} as const;
+
+/** Role overrides inside InkSurface (dark workspaces). */
+export const inkContext = {
+  textSoft: '#C6C2D9',
+  link: colors.aqua,
+  focus: colors.aqua,
+} as const;
 
 /** Required review widths (spec §82, RSP-001). */
 export const breakpoints = {

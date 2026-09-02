@@ -20,10 +20,12 @@ describe('feature flags', () => {
     }
   });
 
-  it('enables system diagnostics only outside production', () => {
-    expect(isFeatureEnabled(getFeatureFlags('local'), 'system_diagnostics')).toBe(true);
-    expect(isFeatureEnabled(getFeatureFlags('preview'), 'system_diagnostics')).toBe(true);
-    expect(isFeatureEnabled(getFeatureFlags('production'), 'system_diagnostics')).toBe(false);
+  it('enables the developer surfaces only outside production', () => {
+    for (const flag of ['system_diagnostics', 'design_gallery'] as const) {
+      expect(isFeatureEnabled(getFeatureFlags('local'), flag)).toBe(true);
+      expect(isFeatureEnabled(getFeatureFlags('preview'), flag)).toBe(true);
+      expect(isFeatureEnabled(getFeatureFlags('production'), flag)).toBe(false);
+    }
   });
 });
 

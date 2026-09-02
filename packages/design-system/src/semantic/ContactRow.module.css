@@ -1,0 +1,111 @@
+/* High-density CRM row (spec §55, §72). */
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 2fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--bl-space-3);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--bl-density-row) var(--bl-space-3);
+  border: 0;
+  border-top: 1px solid var(--bl-color-border);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--bl-font-size-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.row:first-child {
+  border-top: 0;
+}
+
+.row:hover {
+  background: var(--bl-color-surface-2);
+}
+
+.row[aria-pressed='true'] {
+  background: var(--bl-color-lilac-soft);
+}
+
+.name {
+  font-weight: var(--bl-font-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.channels {
+  display: flex;
+  gap: var(--bl-space-2);
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-xs);
+  white-space: nowrap;
+}
+
+.missing {
+  font-style: italic;
+}
+
+.tags {
+  display: flex;
+  gap: var(--bl-space-1);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tag {
+  padding: 1px var(--bl-space-2);
+  border-radius: var(--bl-radius-sm);
+  background: var(--bl-color-surface-2);
+  font-size: var(--bl-font-size-xs);
+  white-space: nowrap;
+}
+
+.owner {
+  color: var(--bl-color-text-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activity {
+  color: var(--bl-color-text-soft);
+  font-family: var(--bl-font-mono);
+  font-size: var(--bl-font-size-xs);
+  white-space: nowrap;
+}
+
+/* Mobile recomposition: two-line row instead of five columns (spec §83). */
+@media (max-width: 767px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'name activity'
+      'channels channels'
+      'tags owner';
+    row-gap: var(--bl-space-1);
+  }
+
+  .name {
+    grid-area: name;
+  }
+
+  .channels {
+    grid-area: channels;
+  }
+
+  .tags {
+    grid-area: tags;
+  }
+
+  .owner {
+    grid-area: owner;
+    text-align: right;
+  }
+
+  .activity {
+    grid-area: activity;
+  }
+}

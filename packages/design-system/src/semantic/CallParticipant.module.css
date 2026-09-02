@@ -1,0 +1,74 @@
+/* Very low density, dark (spec §72, §79). Meant to sit inside an InkSurface. */
+.participant {
+  display: flex;
+  align-items: center;
+  gap: var(--bl-space-4);
+  padding: var(--bl-space-4);
+  border-radius: var(--bl-radius-lg);
+}
+
+.markWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ring {
+  position: absolute;
+  inset: -6px;
+  border: 2px solid var(--bl-color-aqua);
+  border-radius: var(--bl-radius-lg);
+  opacity: 0;
+  transition: opacity var(--bl-motion-fast) var(--bl-motion-ease-standard);
+}
+
+.speaking .ring {
+  opacity: 1;
+  animation: breathe 1.6s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  50% {
+    transform: scale(1.06);
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .speaking .ring {
+    animation: none;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-lg);
+  font-weight: var(--bl-font-weight-semibold);
+  line-height: var(--bl-font-leading-tight);
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.company {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: var(--bl-space-3);
+  margin-top: var(--bl-space-1);
+}
+
+.elapsed {
+  color: var(--bl-color-text-soft);
+  font-family: var(--bl-font-mono);
+  font-size: var(--bl-font-size-xs);
+}

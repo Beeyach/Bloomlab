@@ -1,0 +1,64 @@
+.badge {
+  --badge-bg: var(--bl-color-surface);
+  --badge-fg: var(--bl-color-text);
+  --badge-border: var(--bl-color-border);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bl-space-1);
+  min-height: 26px;
+  padding: 0 var(--bl-space-2) 0 var(--bl-space-2);
+  border: 1px solid var(--badge-border);
+  border-radius: var(--bl-radius-full);
+  background: var(--badge-bg);
+  color: var(--badge-fg);
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.glyph {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.UNSEEN {
+  --badge-bg: var(--bl-color-mist);
+  --badge-fg: var(--bl-color-text-soft);
+  --badge-border: transparent;
+}
+
+.LEARNING,
+.GUIDED,
+.PRACTICED {
+  --badge-border: var(--bl-color-border-strong);
+}
+
+.INDEPENDENT,
+.PRESSURE_TESTED {
+  --badge-bg: var(--bl-color-lilac-soft);
+  --badge-border: rgb(169 155 255 / 0.5);
+}
+
+.MASTERED {
+  --badge-bg: linear-gradient(120deg, var(--bl-color-lavender), var(--bl-color-aqua));
+  --badge-border: transparent;
+}
+
+.NEEDS_REFRESH {
+  --badge-bg: rgb(229 169 76 / 0.18);
+  --badge-border: rgb(229 169 76 / 0.5);
+}
+
+.lg {
+  min-height: 32px;
+  padding: 0 var(--bl-space-3);
+  font-size: var(--bl-font-size-sm);
+}
+
+.lg .glyph {
+  width: 14px;
+  height: 14px;
+}

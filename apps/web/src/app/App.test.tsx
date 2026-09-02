@@ -74,6 +74,35 @@ describe('App routing', () => {
     expect(screen.getByText('system_diagnostics')).toBeInTheDocument();
   });
 
+  it('keeps /design unreachable in production and renders the gallery locally', async () => {
+    renderAt('/design', productionFlags);
+    expect(
+      await screen.findByRole('heading', { level: 1, name: /nothing at this address/i }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /design gallery/i })).not.toBeInTheDocument();
+  });
+
+  it('renders every gallery section when design_gallery is on', async () => {
+    renderAt('/design', localFlags);
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Design gallery' }),
+    ).toBeInTheDocument();
+    for (const name of [
+      'Palette',
+      'Typography',
+      'Surfaces',
+      'Buttons',
+      'Forms',
+      'Holo material',
+      'Motion',
+      'Panels',
+      'Semantic components',
+    ]) {
+      expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
+    }
+    expect(screen.getByRole('button', { name: /Lumen Coaching/ })).toBeInTheDocument();
+  });
+
   it('shows an error state with retry when the API is unreachable', async () => {
     stubHealth({ error: 'boom' }, 503);
     renderAt('/system', localFlags);
