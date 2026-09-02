@@ -28,8 +28,9 @@ export interface HoloMaterialProps extends HTMLAttributes<HTMLElement> {
 const clamp = (value: number) => Math.max(-1, Math.min(1, value));
 
 /**
- * The one holographic material (spec §67). Pearlescent base, spectral layer, moving
- * reflection, fine foil, edge sheen, pointer tilt and touch response. Pointer maths run in
+ * The one holographic material (spec §67), modelled on foil trading cards: pearlescent base,
+ * sweeping spectral bands, metallic grain, pointer-following glare, rim light, restrained tilt
+ * and touch response. Pointer maths run in
  * JavaScript; every visual response is CSS driven by `--holo-nx` / `--holo-ny`, so reduced
  * motion (token override) and off-screen elements (no listeners) cost nothing.
  */
@@ -89,8 +90,17 @@ export function HoloMaterial({
     const element = ref.current;
     const next = pending.current;
     if (!element || !next) return;
-    element.style.setProperty('--holo-nx', next.nx.toFixed(3));
-    element.style.setProperty('--holo-ny', next.ny.toFixed(3));
+    const { nx, ny } = next;
+    element.style.setProperty('--holo-nx', nx.toFixed(3));
+    element.style.setProperty('--holo-ny', ny.toFixed(3));
+    element.style.setProperty('--holo-px', (50 + nx * 50).toFixed(1));
+    element.style.setProperty('--holo-py', (50 + ny * 50).toFixed(1));
+    element.style.setProperty('--holo-hyp', Math.min(1, Math.hypot(nx, ny)).toFixed(3));
+    // Conic "from" angles run clockwise from the top, so measure the pointer the same way.
+    element.style.setProperty(
+      '--holo-angle',
+      `${((Math.atan2(nx, -ny) * 180) / Math.PI).toFixed(1)}deg`,
+    );
   }, []);
 
   const track = useCallback(
@@ -156,10 +166,10 @@ export function HoloMaterial({
       {...rest}
     >
       <span className={cx(styles.layer, styles.pearl)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.spectral)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.reflection)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.foil)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.sheen)} aria-hidden="true" />
+      <span className={cx(styles.layer, styles.bands)} aria-hidden="true" />
+      <span className={cx(styles.layer, styles.grain)} aria-hidden="true" />
+      <span className={cx(styles.layer, styles.glare)} aria-hidden="true" />
+      <span className={cx(styles.layer, styles.rim)} aria-hidden="true" />
       <span className={styles.content}>{children}</span>
     </Tag>
   );
@@ -170,4 +180,8 @@ function settle(element: HTMLElement) {
   delete element.dataset.tracking;
   element.style.setProperty('--holo-nx', '0');
   element.style.setProperty('--holo-ny', '0');
+  element.style.setProperty('--holo-px', '50');
+  element.style.setProperty('--holo-py', '50');
+  element.style.setProperty('--holo-hyp', '0');
+  element.style.setProperty('--holo-angle', '135deg');
 }

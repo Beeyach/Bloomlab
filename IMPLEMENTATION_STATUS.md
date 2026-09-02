@@ -37,10 +37,10 @@ Phase 2:
 - DES-015 — evidence: HoloMaterial, Surface, InkSurface, ToolPanel, Sheet, Inspector, Popover, Field, Button, IconButton exist with focus styles and reduced-motion handling; 27 primitive tests.
 - DES-016 — evidence: CSS Modules + custom properties everywhere; Tailwind absent from the lockfile.
 - DES-019 — evidence: the Phase 1 screens now use Stack, Grid, Surface, Button; no placeholder grey UI remains.
-- HOL-001 — evidence: five layers (pearl, spectral, reflection, foil, sheen) plus pointer tilt and touch response; reduced motion zeroes `--bl-holo-tilt-max` and `--bl-holo-track` (observed `0deg` in the browser with the OS preference on).
-- HOL-002 — evidence: soft, collectible, mastery, legendary render distinctly in the gallery; legendary keeps the palette family, no strobing, no idle animation.
-- HOL-003 — evidence: unit tests prove pointer → `--holo-nx/--holo-ny` in [-1, 1] and reset on leave; tilt is `nx × --bl-holo-tilt-max` (6°); settle transition uses `--bl-holo-settle` = 420 ms.
-- HOL-004 — evidence: touch follows only while pressed and settles on release (unit test); no DeviceOrientation usage anywhere.
+- HOL-001 — evidence: five layers (pearl base, spectral bands, metallic grain, pointer-following glare, rim light) plus tilt, lift, direction-aware shadow and touch response, modelled on the reference's foil card (D-021); reduced motion freezes the physics via `--bl-holo-tilt-max: 0deg` / `--bl-holo-track: 0` while the material stays (verified by forcing the tokens live).
+- HOL-002 — evidence: soft, collectible, mastery, legendary render distinctly in the gallery with stepped band/grain/glare intensities; legendary keeps the palette family (−20° hue, peach glow), no strobing, no idle animation.
+- HOL-003 — evidence: live pointer at a card corner gave `nx 0.903 / ny −0.859`, rotateX −5.2° / rotateY −5.5° (≤ 6°), band position 95%/7%, glare translated toward the pointer with opacity 0.75, rim at the pointer angle (46°), shadow offset away from the pointer; leaving resets every property and the 420 ms eased settle runs; unit tests cover the maths, clamping and reset.
+- HOL-004 — evidence: synthetic touch press → drag → release moves and settles the material (live and unit test); page scrolling preserved by `touch-action: pan-y`; no DeviceOrientation usage anywhere.
 - MOT-001 — evidence: `motion.module.css` defines state, spatial, execution and reward classes; `RewardReveal` and `ExecutionTrack` components.
 - MOT-002 — evidence: tokens 120 / 200 / 300 ms; reward duration clamped to 1500–3000 ms with a Skip control (unit tests).
 - MOT-003 — evidence: reduced motion verified in the running app (tilt 0°, reward end state shown immediately, spinner static); unit tests cover the hook path.

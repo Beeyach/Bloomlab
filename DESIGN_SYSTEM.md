@@ -65,19 +65,29 @@ Breakpoints follow the review widths: 320 · 390 · 768 · 1024 · 1440.
 
 ## 6. HoloMaterial (HOL-001 … HOL-004)
 
-One reusable `HoloMaterial`, not dozens of unrelated gradients.
+One reusable `HoloMaterial`, not dozens of unrelated gradients. It is modelled on the foil trading card the Doodlemon reference shows in its puzzle view (D-021): a photographed holo card whose frame carries diagonal rainbow bands with metallic grain and a bright glare.
 
-Layers: base pearlescent layer · spectral layer · moving radial reflection · fine foil texture · edge sheen · pointer tilt · touch response · reduced-motion mode.
+Layers, bottom to top:
 
-Variants: **soft** · **collectible** · **mastery** · **legendary** (legendary must remain tasteful).
+1. **Pearl** — light pearlescent base (`--bl-holo-pearl`) with a top highlight, so the blends have a field to work on.
+2. **Bands** — the spectral foil: `--bl-holo-spectral`, a 110° repeating band gradient of the palette on a 260% tile, `mix-blend-mode: multiply`. Its `background-position` follows the pointer (0–100%) and a `hue-rotate` of ±35° tracks pointer x, so the colour shift moves with the interaction instead of sitting still.
+3. **Grain** — fine turbulence texture, `overlay`, with a small counter-parallax so it shimmers.
+4. **Glare** — the moving light: a radial highlight translated with the pointer, `overlay`; its opacity rises from `glare-min` toward the card edge (`--holo-hyp`).
+5. **Rim** — edge sheen: a conic rim light masked to a 1.5 px border whose bright point sits at the pointer angle.
+
+Variants: **soft** (bands 0.26, no grain) · **collectible** (0.5 / 0.18) · **mastery** (0.62 / 0.22, lavender glow) · **legendary** (0.72 / 0.28, −20° hue, peach glow; must remain tasteful).
 
 ### Physics
 
-Desktop — pointer position influences rotateX, rotateY, reflection position, spectral angle, shadow direction, edge sheen. Maximum tilt ≈ 5–7°. On pointer exit, settle toward neutral in ≈ 350–500 ms.
+JavaScript writes only pointer state (`--holo-nx/ny` −1…1, `--holo-px/py` 0–100, `--holo-hyp` 0–1, `--holo-angle`); every visual response is CSS.
 
-Touch — press changes reflection; drag moves reflection; release settles. Device orientation permissions are never requested.
+Desktop — rotateX/rotateY = pointer × `--bl-holo-tilt-max` (6°, spec 5–7°) plus a 3 px lift and 1.2% scale while tracking; the shadow offsets away from the pointer; bands, grain, glare and rim respond as above. While the pointer is inside, a 110 ms linear follow transition smooths every property; on pointer exit everything eases back over `--bl-holo-settle` (420 ms, spec 350–500 ms) with `--bl-motion-ease-settle`.
 
-Reduced motion — tilt and moving reflection disabled; static pearlescent layer remains (MOT-003).
+Touch — press starts tracking (glare and bands jump to the finger), drag moves them, release settles. `touch-action: pan-y` keeps page scrolling. Device orientation permissions are never requested.
+
+Reduced motion — `--bl-holo-tilt-max: 0deg` and `--bl-holo-track: 0` freeze tilt, lift, band sweep, glare travel and rim tracking; the material itself (pearl, bands, grain, rim, static glare) stays (MOT-003). Off-screen cards detach their pointer work (MOT-004).
+
+Legibility — content sits above all layers and is never blended; the base stays light and the bands are pastel and multiplied, so ink text keeps ≥ 4.5:1 across the card.
 
 ## 7. Motion (MOT-001 … MOT-004)
 
