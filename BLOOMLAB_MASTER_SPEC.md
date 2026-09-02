@@ -5180,4 +5180,4 @@ Do not let the visual experience become generic.
 
 The learner is training to become a capable professional who can earn money from these skills.
 
-Every major product decision should support that.oh
+Every major product decision should support that.
