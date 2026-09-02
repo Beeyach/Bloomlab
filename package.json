@@ -23,7 +23,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "validate:docs": "node scripts/validate-requirements.mjs",
-    "ci": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run validate:docs && npm run build"
+    "ci": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run validate:docs && npm run build",
+    "review:capture": "node scripts/review/capture.mjs",
+    "review:holo": "node scripts/review/holo-probe.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

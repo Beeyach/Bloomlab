@@ -6,7 +6,7 @@ Last updated: 2026-09-02
 
 ## CURRENT PHASE
 
-Phase 2 — Design System: **complete locally** — typecheck, lint, format, unit tests, docs validation and build pass; the `/design` gallery was reviewed in a browser at 320, 390, 768, 1024 and 1440 (no horizontal overflow at any width), with sheet, popover, keyboard focus, touch-target and input-size checks done against the running app. Phase 3 — Local-First Data has not started and is waiting for the go-ahead.
+Phase 2 — Design System: **complete** — typecheck, lint, format, unit tests, docs validation and build pass; the acceptance review at 320 / 390 / 768 / 1024 / 1440 is recorded in `docs/reviews/phase-2-visual-review.md` (sixty page audits with the DevTools driver, one layout defect found and fixed), and the HoloMaterial was verified against the live reference with real mouse and touch input on the production bundle. The learner's own hover on the preview remains the taste sign-off for DES-002. Phase 3 — Local-First Data has not started and is waiting for the go-ahead.
 
 ## VERSIONS
 
@@ -28,7 +28,7 @@ Phase 0–1:
 
 Phase 2:
 
-- DES-001 — evidence: reference site inspected (near-white ground, 2 px white ring + soft 8 px/24 px shadow, 18–24 px radii, pastel iridescence, deep ink); adapted into tokens and `HoloMaterial`; no art, logo, character, illustration or composition copied (design-system source contains only geometric SVG).
+- DES-001 — evidence: reference site studied live with a real pointer (tiles lift 8 px with a gradient ring and deeper shadow; the foil card is a photograph with a 4.5 s float; the only pointer-driven motion is a background parallax) and adapted into tokens and `HoloMaterial` (D-021, D-023); no art, logo, character, illustration, composition or gradient values copied (design-system source contains only geometric SVG). Side-by-side notes in `docs/reviews/phase-2-visual-review.md`.
 - DES-002 — evidence: gallery review of Skill Map territories, client covers and mastery states at all widths; sign-off recorded in KNOWN_LIMITATIONS as a judgment call pending the learner's own review.
 - DES-003 — evidence: `HoloMaterial` is used only by SkillCard (independent and above), HoloTerritory, ClientCaseCover, the reward demo and the gallery; everything else uses `Surface` / `InkSurface`.
 - DES-004 — evidence: `tokens.css` carries the nineteen §65 values with one documented contrast tuning (Ink Faint → `#86819C`, D-017); `tokens.test.ts` and `contrast.test.ts` enforce them.
@@ -37,13 +37,13 @@ Phase 2:
 - DES-015 — evidence: HoloMaterial, Surface, InkSurface, ToolPanel, Sheet, Inspector, Popover, Field, Button, IconButton exist with focus styles and reduced-motion handling; 27 primitive tests.
 - DES-016 — evidence: CSS Modules + custom properties everywhere; Tailwind absent from the lockfile.
 - DES-019 — evidence: the Phase 1 screens now use Stack, Grid, Surface, Button; no placeholder grey UI remains.
-- HOL-001 — evidence: five layers (pearl, spectral, reflection, foil, sheen) plus pointer tilt and touch response; reduced motion zeroes `--bl-holo-tilt-max` and `--bl-holo-track` (observed `0deg` in the browser with the OS preference on).
-- HOL-002 — evidence: soft, collectible, mastery, legendary render distinctly in the gallery; legendary keeps the palette family, no strobing, no idle animation.
-- HOL-003 — evidence: unit tests prove pointer → `--holo-nx/--holo-ny` in [-1, 1] and reset on leave; tilt is `nx × --bl-holo-tilt-max` (6°); settle transition uses `--bl-holo-settle` = 420 ms.
-- HOL-004 — evidence: touch follows only while pressed and settles on release (unit test); no DeviceOrientation usage anywhere.
+- HOL-001 — evidence: five layers (pearl base, spectral bands, metallic grain, pointer-following glare, iridescent rim light) plus tilt, 5 px lift, direction-aware shadow that deepens with the lift, and touch response, modelled on the reference's foil card (D-021, D-023); under emulated `prefers-reduced-motion` the tokens read `0deg / 0 / 0s`, a hovered card sets nothing and stays at rest while the bands remain at opacity 0.5 (`npm run review:holo`).
+- HOL-002 — evidence: soft, collectible, mastery, legendary render distinctly in the gallery with stepped band/grain/glare intensities; legendary keeps the palette family (−20° hue, peach glow), no strobing, no idle animation.
+- HOL-003 — evidence (production bundle, DevTools mouse input, `npm run review:holo`): pointer at 92 % / 9 % of a card → rotateX −4.98° / rotateY −5.08° (≤ 6°), lift −4.98 px, bands 92 % 9 % with hue +29.4°, glare translated +102 / −74 px at opacity 0.75, rim at full opacity from the pointer angle, grain parallax, shadow offset −8.4 / 26.2 px and deepened to 42 px blur; at 15 % / 80 % every layer flips (rotate +3.6° / +4.2°, hue −24.5°, glare −85 / +54 px, shadow +7 / 12 px). Follow reaches 63 % in 41 ms and 95 % in 120 ms; on leave the pose is 95 % home at 440–460 ms (spec 350–500 ms) and the loop stops at ≈ 0.9 s (D-022). Unit tests cover the maths, clamping, follow, settle and reset.
+- HOL-004 — evidence (390 px mobile emulation, `pointer: coarse`, DevTools touch input): press at 20 % / 30 % → `nx −0.60, ny −0.40`, lift 1, glare −105 / −36 px; drag to 85 % / 80 % → `nx 0.68, ny 0.64`, glare +119 / +58 px; release → every property back to rest and the loop stops ≈ 0.9 s later; the browser reports `pointerdown / pointermove / pointerup : touch`; a touch move without a press moves nothing; page scrolling preserved by `touch-action: pan-y`; no DeviceOrientation usage anywhere. Unit tests cover the same sequence.
 - MOT-001 — evidence: `motion.module.css` defines state, spatial, execution and reward classes; `RewardReveal` and `ExecutionTrack` components.
 - MOT-002 — evidence: tokens 120 / 200 / 300 ms; reward duration clamped to 1500–3000 ms with a Skip control (unit tests).
-- MOT-003 — evidence: reduced motion verified in the running app (tilt 0°, reward end state shown immediately, spinner static); unit tests cover the hook path.
+- MOT-003 — evidence: with `prefers-reduced-motion: reduce` emulated on the production bundle the motion tokens read 0 ms, the holo tokens read `0deg / 0`, a hovered card stays at rest with its material intact, the reward end state shows immediately and the spinner is static; unit tests cover the hook path.
 - MOT-004 — evidence: no idle animations; live pulse and speaking ring are gated by `useOnScreen` (IntersectionObserver) with unit tests; HoloMaterial detaches pointer work off-screen.
 - PERF-003 — evidence: runtime `blur()` removed from the material after it stalled software rendering; static variant available for dense lists; same off-screen gating as above.
 - A11Y-001 — evidence: every interactive element is a native button, link, input, select, textarea or dialog; keyboard tests for Button, SkillCard, Popover (Escape), Sheet (cancel); Tab reaches controls in the running app.
@@ -51,7 +51,7 @@ Phase 2:
 - A11Y-003 — evidence: Field wires label, hint and error ids (tests); IconButton requires a label; gallery audit finds every control labelled.
 - A11Y-004 — evidence: `contrast.test.ts` proves every text/surface, link, focus and ink-context pairing meets AA; palette swatches show live ratios.
 - A11Y-005 — evidence: MasteryBadge has a distinct glyph and word per state; StatusPill always carries text; tests.
-- A11Y-007 — evidence: 44 px minimum on Button, IconButton, controls and rows; small buttons grow to 44 px on coarse pointers; gallery audit lists only the two small variants under 44 px on a fine pointer.
+- A11Y-007 — evidence: 44 px minimum on Button, IconButton, controls and rows; small buttons grow to 44 px on coarse pointers; the 320 / 390 audits (coarse pointer) list no control under 44 px except the three native 20 px pricing checkboxes, whose `label[for]` row is the ≥ 44 px target; on fine pointers only the small button variants (36 px) are under 44 px.
 - A11Y-008 — evidence: controls use `max(1rem, …)`; gallery audit reports 16 px for every control.
 - A11Y-009 — evidence: hover only changes styling; IconButton duplicates its label as `title`; no tooltip-only content.
 
@@ -65,9 +65,10 @@ Deployment:
 - DES-006 — cross-cutting: Phase 2 gallery reviewed against the §70 list (no gradient heroes, gradient text, glassmorphism, blobs, icon-per-heading, card-everything, fake stats, emoji nav, trophies, huge shadows, confetti); re-checked every phase.
 - DES-008 — density mechanism (`data-density`, `--bl-density-row`) implemented in ToolPanel and rows; per-environment assignment happens with the screens (Phase 7+).
 - DES-012 — ClientCaseCover with the abstract IdentityMark exists; persistent clients arrive in Phase 24.
-- DES-017 — cross-cutting: Phase 2 review at 1440 / 1024 / 768 / 390 / 320 done for the gallery and Phase 1 screens; repeated per phase.
-- RSP-001 — cross-cutting: all five widths checked this phase.
-- RSP-002 — cross-cutting: ContactRow, ExecutionEvent and Sheet recompose on mobile; more recompositions come with the labs.
+- DES-017 — cross-cutting: Phase 2 review at 1440 / 1024 / 768 / 390 / 320 done for every gallery section and the Phase 1 screens with `npm run review:capture` (sixty page audits; one SkillCard badge overflow found and fixed); log in `docs/reviews/phase-2-visual-review.md`; repeated per phase.
+- DES-018 — cross-cutting: the §136 matrix for the four Phase 1–2 screens (desktop, tablet, mobile, empty, loading, error, keyboard, touch) is recorded in `docs/reviews/phase-2-visual-review.md`; extended as screens arrive.
+- RSP-001 — cross-cutting: all five widths captured and audited this phase (no horizontal overflow, clipping or off-viewport element on any of the sixty pages).
+- RSP-002 — cross-cutting: tablet compositions are deliberate (three-column skill cards, two-column panels and forms at 768); ContactRow, ExecutionEvent, SkillCard headers, CallParticipant and Sheet recompose on mobile; more recompositions come with the labs.
 - RSP-003 — cross-cutting: nothing removed on mobile so far.
 - PRD-013 — mastery language (Unseen … Mastered, Needs refresh, "n demonstrations") is in the components; the screens that show progress are Phase 7.
 

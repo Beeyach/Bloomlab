@@ -43,9 +43,16 @@
 
 .top {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--bl-space-3);
+  gap: var(--bl-space-2) var(--bl-space-3);
+}
+
+/* In a narrow card the badge drops under the title (right-aligned) instead of squeezing the
+   title into hyphenated fragments or poking out of the card. */
+.top > :last-child {
+  margin-left: auto;
 }
 
 .territory {

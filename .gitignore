@@ -37,3 +37,6 @@ worker-configuration.d.ts
 
 # Local tool config
 .claude/
+
+# Visual-review captures (scripts/review)
+.review/

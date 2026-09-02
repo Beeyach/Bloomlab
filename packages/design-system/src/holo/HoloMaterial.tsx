@@ -9,6 +9,7 @@ import {
 } from 'react';
 
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+import { motion } from '../tokens';
 import { cx } from '../utils/cx';
 import styles from './HoloMaterial.module.css';
 
@@ -25,13 +26,27 @@ export interface HoloMaterialProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
 }
 
+interface Pose {
+  nx: number;
+  ny: number;
+  lift: number;
+}
+
+/** Time constant while following the pointer: ≈ 120 ms to settle on a new position. */
+const FOLLOW_TAU_MS = 40;
+/** Time constant on release: ≈ 95 % of the way back at `motion.settle` (420 ms, HOL-003). */
+const SETTLE_TAU_MS = motion.settle / 3;
+const EPSILON = 0.002;
+const NEUTRAL: Pose = { nx: 0, ny: 0, lift: 0 };
+
 const clamp = (value: number) => Math.max(-1, Math.min(1, value));
 
 /**
- * The one holographic material (spec §67). Pearlescent base, spectral layer, moving
- * reflection, fine foil, edge sheen, pointer tilt and touch response. Pointer maths run in
- * JavaScript; every visual response is CSS driven by `--holo-nx` / `--holo-ny`, so reduced
- * motion (token override) and off-screen elements (no listeners) cost nothing.
+ * The one holographic material (spec §67), modelled on foil trading cards: pearlescent base,
+ * sweeping spectral bands, metallic grain, pointer-following glare, rim light, restrained tilt
+ * and touch response. Pointer maths and smoothing run in a frame loop (D-022); every visual
+ * response is CSS driven by the `--holo-*` custom properties, so reduced motion (token
+ * override, no loop) and off-screen elements (no listeners) cost nothing.
  */
 export function HoloMaterial({
   as: Tag = 'div',
@@ -51,7 +66,10 @@ export function HoloMaterial({
 }: HoloMaterialProps) {
   const ref = useRef<HTMLElement | null>(null);
   const frame = useRef<number | null>(null);
-  const pending = useRef<{ nx: number; ny: number } | null>(null);
+  const lastTime = useRef<number | null>(null);
+  const target = useRef<Pose>({ ...NEUTRAL });
+  const current = useRef<Pose>({ ...NEUTRAL });
+  const settling = useRef(false);
   const visible = useRef(true);
   const reducedMotion = usePrefersReducedMotion();
   const physics = interactive && !reducedMotion;
@@ -65,33 +83,60 @@ export function HoloMaterial({
     [externalRef],
   );
 
-  // Listeners are only worth having while the element is on screen (MOT-004, PERF-003).
-  useEffect(() => {
-    const element = ref.current;
-    if (!element || typeof IntersectionObserver === 'undefined') return;
-    const observer = new IntersectionObserver(([entry]) => {
-      visible.current = entry?.isIntersecting ?? true;
-      if (!visible.current) settle(element);
-    });
-    observer.observe(element);
-    return () => observer.disconnect();
+  const finish = useCallback(() => {
+    lastTime.current = null;
+    if (settling.current) {
+      settling.current = false;
+      delete ref.current?.dataset.tracking;
+    }
   }, []);
 
-  useEffect(
-    () => () => {
-      if (frame.current !== null) cancelAnimationFrame(frame.current);
+  const step = useCallback(
+    (now: number) => {
+      frame.current = null;
+      const element = ref.current;
+      if (!element) return;
+      const dt = lastTime.current === null ? 16 : Math.min(64, now - lastTime.current);
+      lastTime.current = now;
+      const tau = settling.current ? SETTLE_TAU_MS : FOLLOW_TAU_MS;
+      const k = 1 - Math.exp(-dt / tau);
+      const c = current.current;
+      const t = target.current;
+      c.nx += (t.nx - c.nx) * k;
+      c.ny += (t.ny - c.ny) * k;
+      c.lift += (t.lift - c.lift) * k;
+      const done =
+        Math.abs(t.nx - c.nx) < EPSILON &&
+        Math.abs(t.ny - c.ny) < EPSILON &&
+        Math.abs(t.lift - c.lift) < EPSILON;
+      if (done) Object.assign(c, t);
+      applyPose(element, c);
+      if (done) finish();
+      else frame.current = requestAnimationFrame(step);
     },
-    [],
+    [finish],
   );
 
-  const flush = useCallback(() => {
-    frame.current = null;
+  const schedule = useCallback(() => {
+    if (frame.current !== null) return;
+    if (typeof requestAnimationFrame === 'function') {
+      frame.current = requestAnimationFrame(step);
+      return;
+    }
+    // No frame loop available: snap to the target.
     const element = ref.current;
-    const next = pending.current;
-    if (!element || !next) return;
-    element.style.setProperty('--holo-nx', next.nx.toFixed(3));
-    element.style.setProperty('--holo-ny', next.ny.toFixed(3));
-  }, []);
+    if (!element) return;
+    Object.assign(current.current, target.current);
+    applyPose(element, current.current);
+    finish();
+  }, [finish, step]);
+
+  const release = useCallback(() => {
+    if (!ref.current?.dataset.tracking) return;
+    target.current = { ...NEUTRAL };
+    settling.current = true;
+    schedule();
+  }, [schedule]);
 
   const track = useCallback(
     (event: ReactPointerEvent<HTMLElement>) => {
@@ -99,23 +144,36 @@ export function HoloMaterial({
       if (!element || !physics || !visible.current) return;
       const rect = element.getBoundingClientRect();
       if (rect.width === 0 || rect.height === 0) return;
-      pending.current = {
+      target.current = {
         nx: clamp(((event.clientX - rect.left) / rect.width) * 2 - 1),
         ny: clamp(((event.clientY - rect.top) / rect.height) * 2 - 1),
+        lift: 1,
       };
+      settling.current = false;
       element.dataset.tracking = 'true';
-      if (frame.current === null) {
-        frame.current =
-          typeof requestAnimationFrame === 'function' ? requestAnimationFrame(flush) : (flush(), 0);
-      }
+      schedule();
     },
-    [flush, physics],
+    [physics, schedule],
   );
 
-  const release = useCallback(() => {
+  // Listeners are only worth having while the element is on screen (MOT-004, PERF-003).
+  useEffect(() => {
     const element = ref.current;
-    if (element) settle(element);
-  }, []);
+    if (!element || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(([entry]) => {
+      visible.current = entry?.isIntersecting ?? true;
+      if (!visible.current) release();
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [release]);
+
+  useEffect(
+    () => () => {
+      if (frame.current !== null) cancelAnimationFrame(frame.current);
+    },
+    [],
+  );
 
   return (
     <Tag
@@ -156,18 +214,26 @@ export function HoloMaterial({
       {...rest}
     >
       <span className={cx(styles.layer, styles.pearl)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.spectral)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.reflection)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.foil)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.sheen)} aria-hidden="true" />
+      <span className={cx(styles.layer, styles.bands)} aria-hidden="true" />
+      <span className={cx(styles.layer, styles.grain)} aria-hidden="true" />
+      <span className={cx(styles.layer, styles.glare)} aria-hidden="true" />
+      <span className={cx(styles.layer, styles.rim)} aria-hidden="true" />
       <span className={styles.content}>{children}</span>
     </Tag>
   );
 }
 
-/** Return to neutral; the CSS transition provides the 350–500 ms settle (HOL-003). */
-function settle(element: HTMLElement) {
-  delete element.dataset.tracking;
-  element.style.setProperty('--holo-nx', '0');
-  element.style.setProperty('--holo-ny', '0');
+/** Writes the pose as custom properties; the stylesheet turns them into tilt, light and colour. */
+function applyPose(element: HTMLElement, { nx, ny, lift }: Pose) {
+  const hyp = Math.min(1, Math.hypot(nx, ny));
+  // Conic "from" angles run clockwise from the top, so measure the pointer the same way.
+  const angle = hyp < EPSILON ? 135 : (Math.atan2(nx, -ny) * 180) / Math.PI;
+  const style = element.style;
+  style.setProperty('--holo-nx', nx.toFixed(3));
+  style.setProperty('--holo-ny', ny.toFixed(3));
+  style.setProperty('--holo-px', (50 + nx * 50).toFixed(1));
+  style.setProperty('--holo-py', (50 + ny * 50).toFixed(1));
+  style.setProperty('--holo-hyp', hyp.toFixed(3));
+  style.setProperty('--holo-angle', `${angle.toFixed(1)}deg`);
+  style.setProperty('--holo-lift', lift.toFixed(3));
 }

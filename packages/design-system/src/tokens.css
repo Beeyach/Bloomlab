@@ -113,15 +113,16 @@
     var(--bl-color-ice) 45%,
     var(--bl-color-lilac-soft) 100%
   );
-  --bl-holo-spectral: conic-gradient(
-    from 0deg,
-    var(--bl-color-sky) 0deg,
-    var(--bl-color-lavender) 60deg,
-    var(--bl-color-bubblegum) 120deg,
-    var(--bl-color-peach) 170deg,
-    var(--bl-color-lemon) 220deg,
-    var(--bl-color-aqua) 290deg,
-    var(--bl-color-sky) 360deg
+  /* Foil bands: ~30% period across a 260% tile so three pastel bands cross a card. */
+  --bl-holo-spectral: repeating-linear-gradient(
+    110deg,
+    var(--bl-color-sky) 0%,
+    var(--bl-color-lavender) 5%,
+    var(--bl-color-bubblegum) 10%,
+    var(--bl-color-peach) 15%,
+    var(--bl-color-lemon) 20%,
+    var(--bl-color-aqua) 25%,
+    var(--bl-color-sky) 30%
   );
   --bl-holo-spectral-opacity: 0.35;
   --bl-holo-foil-opacity: 0.18;
