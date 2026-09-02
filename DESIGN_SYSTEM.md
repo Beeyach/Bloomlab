@@ -73,7 +73,7 @@ Layers, bottom to top:
 2. **Bands** — the spectral foil: `--bl-holo-spectral`, a 110° repeating band gradient of the palette on a 260% tile, `mix-blend-mode: multiply`. Its `background-position` follows the pointer (0–100%) and a `hue-rotate` of ±35° tracks pointer x, so the colour shift moves with the interaction instead of sitting still.
 3. **Grain** — fine turbulence texture, `overlay`, with a small counter-parallax so it shimmers.
 4. **Glare** — the moving light: a radial highlight translated with the pointer, `overlay`; its opacity rises from `glare-min` toward the card edge (`--holo-hyp`).
-5. **Rim** — edge sheen: a conic rim light masked to a 1.5 px border whose bright point sits at the pointer angle.
+5. **Rim** — iridescent edge sheen: a conic rim light masked to a 1.5 px border, white at the pointer angle and tinted with the palette (sky, lavender, bubblegum, aqua, lemon) around the rest, like the coloured edge of a foil card; it brightens with pointer distance from the centre.
 
 Variants: **soft** (bands 0.26, no grain) · **collectible** (0.5 / 0.18) · **mastery** (0.62 / 0.22, lavender glow) · **legendary** (0.72 / 0.28, −20° hue, peach glow; must remain tasteful).
 
@@ -81,7 +81,7 @@ Variants: **soft** (bands 0.26, no grain) · **collectible** (0.5 / 0.18) · **m
 
 JavaScript writes only pointer state (`--holo-nx/ny` −1…1, `--holo-px/py` 0–100, `--holo-hyp` 0–1, `--holo-angle`); every visual response is CSS.
 
-Desktop — rotateX/rotateY = pointer × `--bl-holo-tilt-max` (6°, spec 5–7°) plus a 3 px lift and 1.2% scale while tracking; the shadow offsets away from the pointer; bands, grain, glare and rim respond as above. Smoothing runs in the frame loop, not in CSS transitions (D-022): while the pointer is inside, the pose eases toward the target with a 40 ms time constant (≈ 120 ms to sit on a new position, so it feels tactile without lag); on pointer exit it eases back with a 140 ms time constant, ≈ 95 % home at `--bl-holo-settle` (420 ms, spec 350–500 ms). The loop stops as soon as the pose converges; nothing runs at rest.
+Desktop — rotateX/rotateY = pointer × `--bl-holo-tilt-max` (6°, spec 5–7°) plus a 5 px lift and 1.2% scale while tracking; the shadow offsets away from the pointer and deepens with the lift (the reference's "card rises off the table" hover); bands, grain, glare and rim respond as above. Smoothing runs in the frame loop, not in CSS transitions (D-022): while the pointer is inside, the pose eases toward the target with a 40 ms time constant (≈ 120 ms to sit on a new position, so it feels tactile without lag); on pointer exit it eases back with a 140 ms time constant, ≈ 95 % home at `--bl-holo-settle` (420 ms, spec 350–500 ms). The loop stops as soon as the pose converges; nothing runs at rest.
 
 Touch — press starts tracking (glare and bands jump to the finger), drag moves them, release settles. `touch-action: pan-y` keeps page scrolling. Device orientation permissions are never requested.
 

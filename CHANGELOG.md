@@ -6,12 +6,17 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ### Added — Phase 2 · Design System
 
-- `packages/design-system` primitives: `HoloMaterial` modelled on the reference's foil trading card (pearl base, sweeping spectral bands with pointer-driven hue shift, metallic grain with parallax, edge-boosted glare that follows the pointer, rim light at the pointer angle, direction-aware shadow; ≤ 6° tilt with lift, ≈ 120 ms follow easing and 420 ms eased settle in a frame loop (D-022), touch press/drag/release, reduced-motion and off-screen gating; soft / collectible / mastery / legendary), `Surface`, `InkSurface` (inverted roles), `ToolPanel`, `Inspector`, `Sheet` (native dialog), `Popover`, `Field` + `Input` / `Select` / `Textarea`, `Button`, `IconButton`; layout `Stack` / `Cluster` / `Grid` / `VisuallyHidden`; 22 stroke icons.
+- `packages/design-system` primitives: `HoloMaterial` modelled on the reference's foil trading card (pearl base, sweeping spectral bands with pointer-driven hue shift, metallic grain with parallax, edge-boosted glare that follows the pointer, iridescent rim light at the pointer angle, direction-aware shadow that deepens with the lift (D-023); ≤ 6° tilt with a 5 px lift, ≈ 120 ms follow easing and 420 ms eased settle in a frame loop (D-022), touch press/drag/release, reduced-motion and off-screen gating; soft / collectible / mastery / legendary), `Surface`, `InkSurface` (inverted roles), `ToolPanel`, `Inspector`, `Sheet` (native dialog), `Popover`, `Field` + `Input` / `Select` / `Textarea`, `Button`, `IconButton`; layout `Stack` / `Cluster` / `Grid` / `VisuallyHidden`; 22 stroke icons.
 - Motion: state / spatial / execution / reward classes, `ExecutionTrack`, skippable `RewardReveal` clamped to 1.5–3 s, `usePrefersReducedMotion`, `useOnScreen`.
 - Semantic components: `MasteryBadge`, `SkillCard`, `HoloTerritory`, `ClientCaseCover` (+ deterministic `IdentityMark`), `WorkflowNode`, `ExecutionEvent`, `ContactRow`, `PipelineCard`, `ExercisePrompt`, `PricingScopeItem`, `CallParticipant`, `StatusPill`.
 - Contrast tooling: `contrastRatio` / `WCAG_AA` with tests enforcing every token pairing; role tokens `--bl-color-link` / `--bl-color-focus` (`#3B69BD`) and Ink Faint tuned to `#86819C` (D-017).
 - `/design` gallery behind the `design_gallery` flag (local/preview), `?section=` deep links; Phase 1 screens moved onto the primitives.
-- 75 unit tests across the design system, shared, worker and web.
+- 76 unit tests across the design system, shared, worker and web.
+- Visual-review tooling `scripts/review/` (`npm run review:capture`, `npm run review:holo`; a DevTools-Protocol driver for headless Chrome, D-024) and the Phase 2 review log `docs/reviews/phase-2-visual-review.md` (five widths, sixty page audits, HoloMaterial measurements against the live reference, §136 coverage matrix).
+
+### Fixed — Phase 2
+
+- `SkillCard`: the header wraps, so the mastery badge no longer pokes past the card edge or splits the title into hyphenated fragments in three- and four-column grids (found in the 768–1440 review).
 
 ### Deployed
 

@@ -302,7 +302,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DES-015 | Visual primitives: HoloMaterial, Surface, InkSurface, ToolPanel, Sheet, Inspector, Popover, Field, Button, IconButton. | P0 | 2 | PASSED | TA§3 |
 | DES-016 | Styling via CSS variables + CSS Modules / component CSS; Tailwind only selectively for layout utilities; product must not look like a standard Tailwind component library. | P1 | 2 | PASSED | TA§3 |
 | DES-017 | Visual review of major screens at 1440 / 1024 / 768 / 390 / 320 checking hierarchy, density, material, interaction, holo restraint, slop patterns, responsive composition, long-session comfort. | P1 | all | IN_PROGRESS | §135 |
-| DES-018 | Screen coverage matrix maintained: Screen × Desktop / Tablet / Mobile / Empty / Loading / Error / Keyboard / Touch. No major screen complete with desktop only. | P1 | all | NOT_STARTED | §136 |
+| DES-018 | Screen coverage matrix maintained: Screen × Desktop / Tablet / Mobile / Empty / Loading / Error / Keyboard / Touch. No major screen complete with desktop only. | P1 | all | IN_PROGRESS | §136 |
 | DES-019 | Visual language exists early; product is never built with generic temporary UI to be "styled later". | P0 | 2 | PASSED | PHASE 2 |
 | DES-020 | Academy visual design is editorial (strong typography, diagrams, inline simulation embeds). | P1 | 8 | NOT_STARTED | §76 |
 
