@@ -28,40 +28,72 @@ function mockReducedMotion(matches: boolean) {
   );
 }
 
+const prop = (el: HTMLElement, name: string) => el.style.getPropertyValue(name);
+// The pose eases toward its target over several frames; give convergence room.
+const settled = { timeout: 3000 };
+
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
 
 describe('HoloMaterial', () => {
-  it('renders the five material layers under the content', () => {
+  it('renders bands, grain, glare and rim over a pearl base, under the content', () => {
     render(<HoloMaterial data-testid="holo">Skill</HoloMaterial>);
     const holo = screen.getByTestId('holo');
-    expect(holo.querySelectorAll('span[aria-hidden="true"]')).toHaveLength(5);
-    expect(holo).toHaveTextContent('Skill');
+    const layers = [...holo.querySelectorAll(':scope > span[aria-hidden="true"]')].map(
+      (l) => l.className,
+    );
+    expect(layers).toHaveLength(5);
+    for (const name of ['pearl', 'bands', 'grain', 'glare', 'rim']) {
+      expect(layers.join(' ')).toMatch(new RegExp(name));
+    }
+    expect(holo.lastElementChild).toHaveTextContent('Skill');
     expect(holo).toHaveAttribute('data-variant', 'collectible');
   });
 
-  it('follows the pointer within [-1, 1] and settles to neutral on leave (HOL-003)', async () => {
+  it('eases toward the pointer, clamps to [-1, 1], and derives light and lift (HOL-003)', async () => {
     render(<HoloMaterial data-testid="holo">Skill</HoloMaterial>);
     const holo = screen.getByTestId('holo');
     mockRect(holo);
 
+    // Top-right quadrant: 75% across, 25% down.
     fireEvent.pointerEnter(holo, { pointerType: 'mouse', clientX: 150, clientY: 25 });
     fireEvent.pointerMove(holo, { pointerType: 'mouse', clientX: 150, clientY: 25 });
-
-    await waitFor(() => expect(holo.style.getPropertyValue('--holo-nx')).toBe('0.500'));
-    expect(holo.style.getPropertyValue('--holo-ny')).toBe('-0.500');
     expect(holo).toHaveAttribute('data-tracking', 'true');
+    await waitFor(() => expect(prop(holo, '--holo-nx')).toBe('0.500'), settled);
+    expect(prop(holo, '--holo-ny')).toBe('-0.500');
+    expect(prop(holo, '--holo-px')).toBe('75.0');
+    expect(prop(holo, '--holo-py')).toBe('25.0');
+    expect(prop(holo, '--holo-hyp')).toBe('0.707');
+    // Clockwise from the top: up-and-right is 45°.
+    expect(prop(holo, '--holo-angle')).toBe('45.0deg');
+    expect(prop(holo, '--holo-lift')).toBe('1.000');
 
+    // Far outside the card clamps to the corner.
     fireEvent.pointerMove(holo, { pointerType: 'mouse', clientX: 900, clientY: -400 });
-    await waitFor(() => expect(holo.style.getPropertyValue('--holo-nx')).toBe('1.000'));
-    expect(holo.style.getPropertyValue('--holo-ny')).toBe('-1.000');
+    await waitFor(() => expect(prop(holo, '--holo-nx')).toBe('1.000'), settled);
+    expect(prop(holo, '--holo-ny')).toBe('-1.000');
+    expect(prop(holo, '--holo-hyp')).toBe('1.000');
+  });
+
+  it('eases back to neutral on leave and only then stops tracking (HOL-003)', async () => {
+    render(<HoloMaterial data-testid="holo">Skill</HoloMaterial>);
+    const holo = screen.getByTestId('holo');
+    mockRect(holo);
+    fireEvent.pointerEnter(holo, { pointerType: 'mouse', clientX: 150, clientY: 25 });
+    await waitFor(() => expect(prop(holo, '--holo-nx')).toBe('0.500'), settled);
 
     fireEvent.pointerLeave(holo, { pointerType: 'mouse' });
-    expect(holo.style.getPropertyValue('--holo-nx')).toBe('0');
-    expect(holo.style.getPropertyValue('--holo-ny')).toBe('0');
-    expect(holo).not.toHaveAttribute('data-tracking');
+    // Settling is gradual: still tracking and not yet neutral right after leave.
+    expect(holo).toHaveAttribute('data-tracking', 'true');
+    await waitFor(() => expect(holo).not.toHaveAttribute('data-tracking'), settled);
+    expect(prop(holo, '--holo-nx')).toBe('0.000');
+    expect(prop(holo, '--holo-ny')).toBe('0.000');
+    expect(prop(holo, '--holo-px')).toBe('50.0');
+    expect(prop(holo, '--holo-hyp')).toBe('0.000');
+    expect(prop(holo, '--holo-angle')).toBe('135.0deg');
+    expect(prop(holo, '--holo-lift')).toBe('0.000');
   });
 
   it('responds to touch only while pressed and settles on release (HOL-004)', async () => {
@@ -71,14 +103,14 @@ describe('HoloMaterial', () => {
 
     // A hover-less touch move (no button pressed) must not move the reflection.
     fireEvent.pointerMove(holo, { pointerType: 'touch', buttons: 0, clientX: 150, clientY: 25 });
-    expect(holo.style.getPropertyValue('--holo-nx')).toBe('');
+    expect(prop(holo, '--holo-nx')).toBe('');
 
     fireEvent.pointerDown(holo, { pointerType: 'touch', buttons: 1, clientX: 150, clientY: 25 });
-    await waitFor(() => expect(holo.style.getPropertyValue('--holo-nx')).toBe('0.500'));
+    await waitFor(() => expect(prop(holo, '--holo-nx')).toBe('0.500'), settled);
 
     fireEvent.pointerUp(holo, { pointerType: 'touch' });
-    expect(holo.style.getPropertyValue('--holo-nx')).toBe('0');
-    expect(holo).not.toHaveAttribute('data-tracking');
+    await waitFor(() => expect(holo).not.toHaveAttribute('data-tracking'), settled);
+    expect(prop(holo, '--holo-nx')).toBe('0.000');
   });
 
   it('does no pointer work under reduced motion (MOT-003)', () => {
@@ -88,7 +120,7 @@ describe('HoloMaterial', () => {
     mockRect(holo);
     fireEvent.pointerEnter(holo, { pointerType: 'mouse', clientX: 150, clientY: 25 });
     fireEvent.pointerMove(holo, { pointerType: 'mouse', clientX: 150, clientY: 25 });
-    expect(holo.style.getPropertyValue('--holo-nx')).toBe('');
+    expect(prop(holo, '--holo-nx')).toBe('');
     expect(holo).not.toHaveAttribute('data-tracking');
   });
 
@@ -101,7 +133,7 @@ describe('HoloMaterial', () => {
     const holo = screen.getByTestId('holo');
     mockRect(holo);
     fireEvent.pointerMove(holo, { pointerType: 'mouse', clientX: 150, clientY: 25 });
-    expect(holo.style.getPropertyValue('--holo-nx')).toBe('');
+    expect(prop(holo, '--holo-nx')).toBe('');
     expect(holo).toHaveAttribute('data-variant', 'soft');
   });
 });

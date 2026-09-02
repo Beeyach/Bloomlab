@@ -4,13 +4,15 @@
  * with parallax shimmer, a glare that brightens toward the edge, a rim light that follows the
  * pointer angle, and a direction-aware shadow under a restrained tilt.
  *
- * JavaScript writes the pointer state as custom properties; everything visual is CSS, so the
- * reduced-motion token overrides (--bl-holo-tilt-max: 0deg, --bl-holo-track: 0) freeze the
- * physics while keeping the material.
+ * JavaScript eases the pointer state in a frame loop and writes it as custom properties (no CSS
+ * transitions on var-driven properties, D-022); everything visual is CSS, so the reduced-motion
+ * token overrides (--bl-holo-tilt-max: 0deg, --bl-holo-track: 0) freeze the physics while keeping
+ * the material.
  *   --holo-nx / --holo-ny   -1…1 pointer position from the centre
  *   --holo-px / --holo-py   0…100 pointer position in percent
  *   --holo-hyp              0…1 distance from the centre (drives glare intensity)
  *   --holo-angle            pointer angle for the rim light
+ *   --holo-lift             0…1 hover lift
  */
 .holo {
   --holo-nx: 0;
@@ -29,7 +31,6 @@
   --holo-ring: rgb(255 255 255 / 0.85);
   --holo-glow: rgb(24 21 43 / 0.16);
   --holo-glow-ambient: rgb(24 21 43 / 0.08);
-  --holo-follow: 110ms;
 
   position: relative;
   display: block;
@@ -47,29 +48,8 @@
     calc(var(--holo-nx) * var(--holo-track) * -10px)
       calc(var(--holo-ny) * var(--holo-track) * -10px + 12px) 30px var(--holo-glow),
     0 2px 6px var(--holo-glow-ambient);
-  /* Settle: ease back naturally when the pointer leaves (350–500 ms, HOL-003). */
-  transition:
-    transform var(--bl-holo-settle) var(--bl-motion-ease-settle),
-    box-shadow var(--bl-holo-settle) var(--bl-motion-ease-settle);
   touch-action: pan-y;
   will-change: transform;
-}
-
-/* While the pointer is inside: lift slightly and follow with a short smoothing transition. */
-.holo[data-tracking='true'] {
-  --holo-lift: 1;
-
-  transition:
-    transform var(--holo-follow) linear,
-    box-shadow var(--holo-follow) linear;
-}
-
-.holo[data-tracking='true'] .bands,
-.holo[data-tracking='true'] .grain,
-.holo[data-tracking='true'] .glare,
-.holo[data-tracking='true'] .rim {
-  transition-duration: var(--holo-follow);
-  transition-timing-function: linear;
 }
 
 .layer {
@@ -100,9 +80,6 @@
   filter: saturate(1.15)
     hue-rotate(calc(var(--holo-nx) * var(--holo-track) * 35deg + var(--holo-hue)));
   opacity: var(--holo-bands-opacity);
-  transition:
-    background-position var(--bl-holo-settle) var(--bl-motion-ease-settle),
-    filter var(--bl-holo-settle) var(--bl-motion-ease-settle);
 }
 
 /* 3 · metallic grain — fine foil texture with a small parallax so it shimmers */
@@ -116,7 +93,6 @@
     calc(var(--holo-nx) * var(--holo-track) * -3%),
     calc(var(--holo-ny) * var(--holo-track) * -3%)
   );
-  transition: transform var(--bl-holo-settle) var(--bl-motion-ease-settle);
 }
 
 /* 4 · glare — the light reflection that follows the pointer and brightens toward the edge */
@@ -137,9 +113,6 @@
     calc(var(--holo-nx) * var(--holo-track) * 25%),
     calc(var(--holo-ny) * var(--holo-track) * 25%)
   );
-  transition:
-    transform var(--bl-holo-settle) var(--bl-motion-ease-settle),
-    opacity var(--bl-holo-settle) var(--bl-motion-ease-settle);
 }
 
 /* 5 · rim light — an edge sheen whose bright point sits on the pointer's side */
@@ -159,7 +132,6 @@
     linear-gradient(#000 0 0);
   mask-composite: exclude;
   opacity: calc(0.55 + var(--holo-hyp) * var(--holo-track) * 0.45);
-  transition: opacity var(--bl-holo-settle) var(--bl-motion-ease-settle);
 }
 
 .content {
@@ -225,10 +197,7 @@
 /* Reduced motion (MOT-003): the material stays, the physics do not. Tokens zero tilt and
    tracking; the lift and the follow transitions go too. */
 @media (prefers-reduced-motion: reduce) {
-  .holo,
-  .holo[data-tracking='true'] {
+  .holo {
     --holo-lift: 0;
-
-    transition: none;
   }
 }

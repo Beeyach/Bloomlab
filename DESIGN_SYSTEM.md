@@ -81,7 +81,7 @@ Variants: **soft** (bands 0.26, no grain) · **collectible** (0.5 / 0.18) · **m
 
 JavaScript writes only pointer state (`--holo-nx/ny` −1…1, `--holo-px/py` 0–100, `--holo-hyp` 0–1, `--holo-angle`); every visual response is CSS.
 
-Desktop — rotateX/rotateY = pointer × `--bl-holo-tilt-max` (6°, spec 5–7°) plus a 3 px lift and 1.2% scale while tracking; the shadow offsets away from the pointer; bands, grain, glare and rim respond as above. While the pointer is inside, a 110 ms linear follow transition smooths every property; on pointer exit everything eases back over `--bl-holo-settle` (420 ms, spec 350–500 ms) with `--bl-motion-ease-settle`.
+Desktop — rotateX/rotateY = pointer × `--bl-holo-tilt-max` (6°, spec 5–7°) plus a 3 px lift and 1.2% scale while tracking; the shadow offsets away from the pointer; bands, grain, glare and rim respond as above. Smoothing runs in the frame loop, not in CSS transitions (D-022): while the pointer is inside, the pose eases toward the target with a 40 ms time constant (≈ 120 ms to sit on a new position, so it feels tactile without lag); on pointer exit it eases back with a 140 ms time constant, ≈ 95 % home at `--bl-holo-settle` (420 ms, spec 350–500 ms). The loop stops as soon as the pose converges; nothing runs at rest.
 
 Touch — press starts tracking (glare and bands jump to the finger), drag moves them, release settles. `touch-action: pan-y` keeps page scrolling. Device orientation permissions are never requested.
 
