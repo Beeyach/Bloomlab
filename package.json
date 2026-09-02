@@ -25,7 +25,8 @@
     "validate:docs": "node scripts/validate-requirements.mjs",
     "ci": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run validate:docs && npm run build",
     "review:capture": "node scripts/review/capture.mjs",
-    "review:holo": "node scripts/review/holo-probe.mjs"
+    "review:holo": "node scripts/review/holo-probe.mjs",
+    "review:offline": "node scripts/review/offline-probe.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

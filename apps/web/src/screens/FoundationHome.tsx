@@ -6,6 +6,7 @@ import { SIMULATOR_VERSION } from '@bloomlab/simulator-core';
 
 import { useFeatureFlags } from '../app/featureFlagsContext';
 import { getRuntimeEnvironment } from '../app/runtime';
+import { DeviceIdentity } from './DeviceIdentity';
 import styles from './FoundationHome.module.css';
 
 const FACTS = (environment: string) => [
@@ -41,6 +42,8 @@ export default function FoundationHome() {
           </Surface>
         ))}
       </Grid>
+
+      <DeviceIdentity />
 
       {(flags.system_diagnostics || flags.design_gallery) && (
         <Cluster as="nav" gap={4} aria-label="Developer surfaces" className={styles.footer}>

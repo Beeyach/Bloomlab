@@ -4,6 +4,13 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 3 · Local-First Data
+
+- `apps/web/src/data`: Dexie database `bloomlab` (v1: `device`, `notes`, `workspace`, `sync_queue`, `sync_state`), the SYNC-007 envelope and stamping helpers, `createSyncableStore` (record + outbox in one transaction, soft deletes, coalesced queue rows), the sync-queue primitives, device identity with a provisional learner id, workspace checkpoints, `useSyncStatus`, `useDevice`, `useNotes`, `useWorkspace` (D-025 … D-027).
+- Quiet sync indicator in the app frame ("Offline · saved on this device" / "Saved on this device" / "Syncing…" / "Synced"); "This device" tile on the foundation home with an offline-safe rename; "Local data" section in System diagnostics (database, persisted storage, usage, record counts, sync queue, test-note actions).
+- Installable PWA: `vite-plugin-pwa` service worker precaching the shell and stable assets, `/api/*` never cached, manifest and icons (`scripts/make-icons.mjs`), persistent-storage request (D-028).
+- Verification: `npm run review:offline` (service-worker control, installability, offline shell, uncached API, offline write) and 37 web tests (Dexie layer on `fake-indexeddb`, hooks, device rename UI).
+
 ### Added — Phase 2 · Design System
 
 - `packages/design-system` primitives: `HoloMaterial` modelled on the reference's foil trading card (pearl base, sweeping spectral bands with pointer-driven hue shift, metallic grain with parallax, edge-boosted glare that follows the pointer, iridescent rim light at the pointer angle, direction-aware shadow that deepens with the lift (D-023); ≤ 6° tilt with a 5 px lift, ≈ 120 ms follow easing and 420 ms eased settle in a frame loop (D-022), touch press/drag/release, reduced-motion and off-screen gating; soft / collectible / mastery / legendary), `Surface`, `InkSurface` (inverted roles), `ToolPanel`, `Inspector`, `Sheet` (native dialog), `Popover`, `Field` + `Input` / `Select` / `Textarea`, `Button`, `IconButton`; layout `Stack` / `Cluster` / `Grid` / `VisuallyHidden`; 22 stroke icons.

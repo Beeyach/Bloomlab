@@ -7,6 +7,7 @@ import { SIMULATOR_VERSION } from '@bloomlab/simulator-core';
 
 import { useFeatureFlags } from '../app/featureFlagsContext';
 import { getRuntimeEnvironment } from '../app/runtime';
+import { LocalDataDiagnostics } from './LocalDataDiagnostics';
 import styles from './SystemDiagnostics.module.css';
 
 interface HealthPayload {
@@ -123,6 +124,9 @@ export default function SystemDiagnostics() {
           </div>
         ))}
       </Surface>
+
+      <h2 className={styles.heading}>Local data</h2>
+      <LocalDataDiagnostics />
     </Stack>
   );
 }

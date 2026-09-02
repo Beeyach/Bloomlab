@@ -6,7 +6,7 @@ Last updated: 2026-09-02
 
 ## CURRENT PHASE
 
-Phase 2 — Design System: **complete** — typecheck, lint, format, unit tests, docs validation and build pass; the acceptance review at 320 / 390 / 768 / 1024 / 1440 is recorded in `docs/reviews/phase-2-visual-review.md` (sixty page audits with the DevTools driver, one layout defect found and fixed), and the HoloMaterial was verified against the live reference with real mouse and touch input on the production bundle. The learner's own hover on the preview remains the taste sign-off for DES-002. Phase 3 — Local-First Data has not started and is waiting for the go-ahead.
+Phase 3 — Local-First Data: **complete for its scope** — the Dexie database, the syncable-store write path (record + outbox in one transaction), device identity, workspace checkpoints, sync-status indicator and the installable PWA are built, unit-tested and verified on the production bundle with the DevTools driver (`npm run review:offline`): the app shell loads with both the page and the service worker offline, the API is never served from cache, and a device rename survives an offline reload. DATA-001 stays PARTIAL until Phase 4 drains the queue to the Worker. Phase 2 (design system) is complete; its review is in `docs/reviews/phase-2-visual-review.md`. Phase 4 — D1 + Sync is waiting for the go-ahead.
 
 ## VERSIONS
 
@@ -55,12 +55,18 @@ Phase 2:
 - A11Y-008 — evidence: controls use `max(1rem, …)`; gallery audit reports 16 px for every control.
 - A11Y-009 — evidence: hover only changes styling; IconButton duplicates its label as `title`; no tooltip-only content.
 
+Phase 3:
+
+- DATA-002 — evidence: `apps/web/src/data/db.ts` opens IndexedDB `bloomlab` through Dexie 4 with five tables (`device`, `notes`, `workspace`, `sync_queue`, `sync_state`) and no layer on top; every read and write goes through Dexie tables or `liveQuery`; the production-bundle probe shows the database open (`bloomlab@10` in `indexedDB.databases()`) and `localStorage` empty after a full session; unit tests assert the schema and that localStorage stays untouched.
+- DATA-003 — evidence: `vite-plugin-pwa` (Workbox `generateSW`) precaches the shell, scripts, styles, icons and fonts (45 entries, 993 KiB); `/api/*` is `NetworkOnly` and excluded from the navigation fallback; `/content/*` (Phase 5) is stale-while-revalidate; manifest with 192 / 512 / maskable icons. Production-bundle probe: service worker controlling the page, `Page.getAppManifest` without errors, `Page.getInstallabilityErrors` empty (Chrome's install criteria met), and with offline emulated on the page *and* the worker the shell renders from the precache while `fetch('/api/health')` fails instead of being served from cache.
+
 Deployment:
 
 - RSP-005 — evidence: PR #1 triggered CI run 33659265707; the Preview deploy job ran (not skipped), built with `CLOUDFLARE_ENV: preview` and deployed `bloomlab-preview` to https://bloomlab-preview.cool-sunset-2169.workers.dev. `/api/health` returned `{"environment":"preview","versions":{"app":"0.1.0","content":null,"simulator":"0.0.0"}}`; `/`, `/design`, `/system` and an unknown path all served the SPA shell (200 text/html); `/api/nope` returned JSON 404; hashed assets served as text/javascript. Opened in a 390 px viewport: foundation home and the holo gallery section rendered with no horizontal overflow and no console errors.
 
 ## IN PROGRESS
 
+- SYNC-007 — groundwork: every syncable record carries `id, learner_id, created_at, updated_at, revision, device_id, deleted_at` (`SyncEnvelope`), stamped by `createSyncableStore`; the outbox coalesces repeated pending changes to one row per record (so drags and keystrokes never replay) and leaves in-flight rows alone; `takeOperations / completeOperation / failOperation / resetOperations` are the primitives Phase 4's transport will use. Unit tests cover stamping, coalescing, in-flight isolation and soft deletes.
 - INF-013 — versions exported and surfaced by `/api/health` and `/system`; attempt records that persist them arrive with the learning engine (Phase 6) and exercise runner (Phase 9).
 - DES-006 — cross-cutting: Phase 2 gallery reviewed against the §70 list (no gradient heroes, gradient text, glassmorphism, blobs, icon-per-heading, card-everything, fake stats, emoji nav, trophies, huge shadows, confetti); re-checked every phase.
 - DES-008 — density mechanism (`data-density`, `--bl-density-row`) implemented in ToolPanel and rows; per-environment assignment happens with the screens (Phase 7+).
@@ -74,7 +80,8 @@ Deployment:
 
 ## PARTIAL
 
-- INF-001 — React + TypeScript + Vite + Cloudflare Workers/Static Assets are in place and building; Dexie (Phase 3), D1/R2 (Phase 4) and Claude / ElevenLabs / Google Speech-to-Text (Phases 19–21) are not yet wired.
+- DATA-001 — the local chain is in place and verified: a UI action writes local state and IndexedDB immediately and the change's outbox row commits in the same transaction (`createSyncableStore`), nothing waits on the network, and the production-bundle probe renames the device with the page and the service worker offline, reloads offline, and finds the new name in IndexedDB. The last hop, `sync queue → server`, arrives with the Phase 4 transport, and the three acceptance interactions (note, workflow node, deterministic exercise) re-verify the flow when their features exist.
+- INF-001 — React + TypeScript + Vite + Cloudflare Workers/Static Assets + Dexie (IndexedDB) are in place and building; D1/R2 (Phase 4) and Claude / ElevenLabs / Google Speech-to-Text (Phases 19–21) are not yet wired.
 - INF-004 — local / preview / production are defined in `worker/wrangler.jsonc` with distinct Worker names and `BLOOMLAB_ENV` vars, and the client maps Vite modes in `apps/web/src/app/runtime.ts`. Preview and production deploys are now live and verified: `bloomlab-preview` (https://bloomlab-preview.cool-sunset-2169.workers.dev, health reports `preview`) and `bloomlab` (https://bloomlab.cool-sunset-2169.workers.dev, health reports `production`; deployed by run 33658838902). Remaining: D1 bindings per environment (Phase 4) and, where practical, separate R2 buckets.
 - INF-005 — `.github/workflows/ci.yml` runs typecheck, lint, format check, unit tests, docs validation and build on pull requests and `main`; the preview deploy job (PR #1, run 33659265707) and the production deploy job (run 33658838902) both ran only after the checks passed. Remaining: the simulator regression (Phase 10) and content validation (Phase 5) steps do not exist yet.
 
@@ -93,14 +100,14 @@ None
 
 ## NEXT
 
-Phase 3 — Local-First Data targets: DATA-001, DATA-002, DATA-003. Groundwork for SYNC-007 (sync-queue primitives).
+Phase 4 — D1 + Sync targets: SYNC-001 … SYNC-012, DATA-004, DATA-005, DATA-010; completes DATA-001 (queue → server) and SYNC-007.
 
 ## PHASE CHECKLIST (§163)
 
 - [x] Phase 0 — Spec Package
 - [x] Phase 1 — Repository Foundation: React, TypeScript, Vite, Worker, routing, design tokens, lint, tests, CI, environments
 - [x] Phase 2 — Design System: typography, palette, surfaces, buttons, forms, holo system, motion, responsive primitives, focus states, reduced motion (visually verified)
-- [ ] Phase 3 — Local-First Data: IndexedDB, data services, local state persistence, sync queue primitives
+- [x] Phase 3 — Local-First Data: IndexedDB, data services, local state persistence, sync queue primitives (DATA-001 completes with the Phase 4 transport)
 - [ ] Phase 4 — D1 + Sync: learner, sync key, hashing, device sessions, sync, conflicts, offline recovery (verified across two device contexts)
 - [ ] Phase 5 — Content Engine: schemas, YAML/MDX loading, validation, compilation, IDs, prerequisite resolution, feature registry
 - [ ] Phase 6 — Learning Engine: skills, campaigns, mastery, evidence, review queue, session builder

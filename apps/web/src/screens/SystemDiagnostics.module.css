@@ -66,6 +66,22 @@
   margin: 0;
 }
 
+.queue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bl-space-3);
+}
+
+.ops {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--bl-font-mono);
+  font-size: var(--bl-font-size-xs);
+  line-height: var(--bl-font-leading-relaxed);
+  overflow-wrap: anywhere;
+}
+
 .warning {
   color: var(--bl-color-text-soft);
   font-family: var(--bl-font-ui);

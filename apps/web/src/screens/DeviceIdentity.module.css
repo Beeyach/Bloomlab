@@ -1,0 +1,45 @@
+.device {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bl-space-3);
+}
+
+.title {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: var(--bl-font-tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bl-space-2) var(--bl-space-3);
+}
+
+.label {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-lg);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: -0.01em;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bl-space-3);
+}
+
+.muted {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+  line-height: var(--bl-font-leading-normal);
+}

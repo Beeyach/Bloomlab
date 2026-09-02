@@ -74,11 +74,12 @@ export function connect(url) {
     ws.addEventListener('open', resolve);
     ws.addEventListener('error', reject);
   });
-  const send = (method, params = {}) =>
+  // `sessionId` addresses a flattened target session (e.g. a service worker) on the browser socket.
+  const send = (method, params = {}, sessionId) =>
     new Promise((resolve, reject) => {
       const id = ++nextId;
       pending.set(id, { resolve, reject });
-      ws.send(JSON.stringify({ id, method, params }));
+      ws.send(JSON.stringify({ id, method, params, ...(sessionId ? { sessionId } : {}) }));
     });
   const once = (method) =>
     new Promise((resolve) => {
@@ -146,18 +147,42 @@ export async function screenshot(page, file, clip) {
 export async function session() {
   const { proc, browserWs, pageWs } = await launchChrome();
   const page = connect(pageWs);
-  await page.ready;
+  const browser = connect(browserWs);
+  await Promise.all([page.ready, browser.ready]);
   await page.send('Page.enable');
   await page.send('Runtime.enable');
   const close = async () => {
     try {
-      const browser = connect(browserWs);
-      await browser.ready;
       await browser.send('Browser.close');
     } catch {
       /* fall through to kill */
     }
     proc.kill();
   };
-  return { page, close };
+  return { page, browser, close };
+}
+
+/**
+ * Attaches to every service worker of `origin` and returns a sender bound to those sessions.
+ * Page-level network emulation does not reach a worker's own fetches, so offline tests must
+ * apply conditions here as well.
+ */
+export async function serviceWorkerSessions(browser, origin) {
+  const { targetInfos } = await browser.send('Target.getTargets');
+  const workers = targetInfos.filter(
+    (t) => t.type === 'service_worker' && t.url.startsWith(origin),
+  );
+  const sessions = [];
+  for (const worker of workers) {
+    const { sessionId } = await browser.send('Target.attachToTarget', {
+      targetId: worker.targetId,
+      flatten: true,
+    });
+    sessions.push(sessionId);
+  }
+  return {
+    count: sessions.length,
+    send: (method, params = {}) =>
+      Promise.all(sessions.map((sessionId) => browser.send(method, params, sessionId))),
+  };
 }
