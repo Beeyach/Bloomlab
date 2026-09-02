@@ -10,7 +10,7 @@ Last updated: 2026-09-02 (end of Phase 2)
 - The home route is a Phase 1 foundation screen showing the version triplet and environment. It is not the Command Center (DES-010, Phase 7) and makes no claim to be.
 - `/system` (diagnostics) and `/design` (gallery) exist only in local and preview environments; both are off in production by flag.
 - The semantic components are presentational: they take typed props and will be wired to real engines from Phase 6 onward. Their prop shapes may change when the data models land; they share tokens, so the visual language will not.
-- Nothing has been deployed. The Cloudflare Worker, D1 databases and R2 buckets do not exist yet, and GitHub has no Cloudflare secrets, so the CI deploy jobs are inert until the user provides them.
+- Deployment is live: every push to `main` deploys the `bloomlab` Worker (https://bloomlab.cool-sunset-2169.workers.dev) and every pull request redeploys the single shared `bloomlab-preview` Worker (D-020). Both hosts are public `workers.dev` URLs serving the foundation app with no learner data. D1 databases and R2 buckets do not exist yet (Phase 4).
 - The dev machine runs Node 22.18 while `engines.node` is `>=22.22.0` (react-router 8's floor). Everything works locally with npm engine warnings; CI uses the latest 22.x.
 - No GHL feature names have been verified against official documentation yet. Names used in the gallery samples ("Send SMS", "If / Else", "Wait", "Appointment Status") are illustrative until the registry (GHL-001, GHL-006) is populated with `last_verified` and `source_url`.
 - The ~128k ElevenLabs credits have an expiry window; voice asset generation (VOI-005) is scheduled for Phase 20. Risk: credits expire before Phase 20. By design this is not a functional dependency.

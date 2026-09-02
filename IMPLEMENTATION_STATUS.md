@@ -55,6 +55,10 @@ Phase 2:
 - A11Y-008 — evidence: controls use `max(1rem, …)`; gallery audit reports 16 px for every control.
 - A11Y-009 — evidence: hover only changes styling; IconButton duplicates its label as `title`; no tooltip-only content.
 
+Deployment:
+
+- RSP-005 — evidence: PR #1 triggered CI run 33659265707; the Preview deploy job ran (not skipped), built with `CLOUDFLARE_ENV: preview` and deployed `bloomlab-preview` to https://bloomlab-preview.cool-sunset-2169.workers.dev. `/api/health` returned `{"environment":"preview","versions":{"app":"0.1.0","content":null,"simulator":"0.0.0"}}`; `/`, `/design`, `/system` and an unknown path all served the SPA shell (200 text/html); `/api/nope` returned JSON 404; hashed assets served as text/javascript. Opened in a 390 px viewport: foundation home and the holo gallery section rendered with no horizontal overflow and no console errors.
+
 ## IN PROGRESS
 
 - INF-013 — versions exported and surfaced by `/api/health` and `/system`; attempt records that persist them arrive with the learning engine (Phase 6) and exercise runner (Phase 9).
@@ -70,12 +74,12 @@ Phase 2:
 ## PARTIAL
 
 - INF-001 — React + TypeScript + Vite + Cloudflare Workers/Static Assets are in place and building; Dexie (Phase 3), D1/R2 (Phase 4) and Claude / ElevenLabs / Google Speech-to-Text (Phases 19–21) are not yet wired.
-- INF-004 — local / preview / production are defined in `worker/wrangler.jsonc` with distinct Worker names and `BLOOMLAB_ENV` vars, and the client maps Vite modes in `apps/web/src/app/runtime.ts`; D1 bindings are Phase 4; preview and production deploys need Cloudflare secrets (see BLOCKED).
-- INF-005 — `.github/workflows/ci.yml` runs typecheck, lint, format check, unit tests, docs validation and build on pull requests and `main`, with deploy jobs gated behind the checks; observed passing on GitHub; the simulator regression (Phase 10) and content validation (Phase 5) steps do not exist yet.
+- INF-004 — local / preview / production are defined in `worker/wrangler.jsonc` with distinct Worker names and `BLOOMLAB_ENV` vars, and the client maps Vite modes in `apps/web/src/app/runtime.ts`. Preview and production deploys are now live and verified: `bloomlab-preview` (https://bloomlab-preview.cool-sunset-2169.workers.dev, health reports `preview`) and `bloomlab` (https://bloomlab.cool-sunset-2169.workers.dev, health reports `production`; deployed by run 33658838902). Remaining: D1 bindings per environment (Phase 4) and, where practical, separate R2 buckets.
+- INF-005 — `.github/workflows/ci.yml` runs typecheck, lint, format check, unit tests, docs validation and build on pull requests and `main`; the preview deploy job (PR #1, run 33659265707) and the production deploy job (run 33658838902) both ran only after the checks passed. Remaining: the simulator regression (Phase 10) and content validation (Phase 5) steps do not exist yet.
 
 ## BLOCKED
 
-- RSP-005 — preview deploys need the repository variable `CLOUDFLARE_DEPLOY=true` and the secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` on GitHub (Cloudflare account "Bloomwired"). User action; nothing has been deployed.
+None
 
 ## FAILED
 
@@ -122,4 +126,4 @@ Phase 3 — Local-First Data targets: DATA-001, DATA-002, DATA-003. Groundwork f
 
 ## ROLL-UP
 
-311 requirements registered · 33 PASSED · 9 IN_PROGRESS · 3 PARTIAL · 1 BLOCKED · 2 DEFERRED · 263 NOT_STARTED. Run the validator for the live count by status and priority.
+311 requirements registered · 34 PASSED · 9 IN_PROGRESS · 3 PARTIAL · 0 BLOCKED · 2 DEFERRED · 263 NOT_STARTED. Run the validator for the live count by status and priority.
