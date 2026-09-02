@@ -1,3 +1,5 @@
+// In-memory IndexedDB so the Dexie data layer runs under jsdom (DATA-002 tests).
+import 'fake-indexeddb/auto';
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';

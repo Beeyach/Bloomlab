@@ -93,6 +93,8 @@ IndexedDB (Dexie) holds: current simulator session · unfinished exercise · nod
 
 PWA: installable; service worker caches app shell, stable curriculum, stable assets, offline fallback. API responses are not cached blindly. Progress lives in IndexedDB.
 
+Implementation (Phase 3, `apps/web/src/data/`, D-025 … D-028): `BloomlabDatabase` (Dexie, schema v1: `device`, `notes`, `workspace`, `sync_queue`, `sync_state`); `SyncEnvelope` = `id, learner_id, created_at, updated_at, revision, device_id, deleted_at`; `createSyncableStore(entity)` is the only write path for syncable data — `create / patch / remove` stamp the envelope and commit the row and its outbox operation in one transaction; the outbox coalesces pending changes per record and exposes `take / complete / fail / reset` for the Phase 4 transport; `ensureDevice` mints the device id and a provisional `local:` learner id on first run; `saveWorkspace / loadWorkspace` hold local-only checkpoints; `useSyncStatus` drives the indicator (`Offline · saved on this device` → `Saved on this device` → `Syncing…` → `Synced`). Service worker and manifest come from `vite-plugin-pwa` (`/api/*` NetworkOnly, `/content/*` stale-while-revalidate). Verification: `npm run review:offline`.
+
 ## 7. Bloomlab Sync Key and device sessions (SYNC-001 … SYNC-011)
 
 No conventional login in v1.

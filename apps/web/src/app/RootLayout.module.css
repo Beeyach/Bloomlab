@@ -13,6 +13,13 @@
   outline: none;
 }
 
+.status {
+  position: absolute;
+  top: var(--bl-space-3);
+  right: var(--bl-space-3);
+  z-index: 1;
+}
+
 .skipLink {
   position: absolute;
   top: var(--bl-space-2);
