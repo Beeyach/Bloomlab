@@ -298,7 +298,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DES-011 | Skill Map signature screen: nine territories plus Judgment as holographic regions / collectible objects, not tiny LMS nodes; skill states unseen → needs refresh change the visual material. | P1 | 7 | NOT_STARTED | §75 |
 | DES-012 | Client case covers feel collectible and premium using abstract identity/material treatment; no mandatory stock photos. | P2 | 24 | NOT_STARTED | §78 |
 | DES-013 | Broken Build Mode uses an understated INCIDENT state with symptom, logs, client complaint, system state. No cartoon alarms. | P1 | 15 | NOT_STARTED | §81 |
-| DES-014 | Explicit design tokens: color, spacing, radius, shadow, motion, typography, holographic material, density, z-index, breakpoints. | P0 | 1 | NOT_STARTED | TA§3 |
+| DES-014 | Explicit design tokens: color, spacing, radius, shadow, motion, typography, holographic material, density, z-index, breakpoints. | P0 | 1 | PASSED | TA§3 |
 | DES-015 | Visual primitives: HoloMaterial, Surface, InkSurface, ToolPanel, Sheet, Inspector, Popover, Field, Button, IconButton. | P0 | 2 | NOT_STARTED | TA§3 |
 | DES-016 | Styling via CSS variables + CSS Modules / component CSS; Tailwind only selectively for layout utilities; product must not look like a standard Tailwind component library. | P1 | 2 | NOT_STARTED | TA§3 |
 | DES-017 | Visual review of major screens at 1440 / 1024 / 768 / 390 / 320 checking hierarchy, density, material, interaction, holo restraint, slop patterns, responsive composition, long-session comfort. | P1 | all | NOT_STARTED | §135 |
@@ -333,7 +333,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | RSP-002 | Tablet is first class; mobile is recomposed, not shrunk. | P0 | all | NOT_STARTED | §82 |
 | RSP-003 | No critical desktop feature disappears on mobile because responsive work is difficult; recompose instead. | P0 | all | NOT_STARTED | §82, §131 |
 | RSP-004 | Mobile recompositions: Workflow → vertical step editor; CRM → stage view / local horizontal scroller; Academy → editorial reading; Call Room → mobile-first voice; Inbox → natural conversation flow; Skill Map → territory-first. | P1 | 12 | NOT_STARTED | §83 |
-| RSP-005 | Preview deployments for substantial branches/PRs inspectable on a phone before merge. | P2 | 1 | NOT_STARTED | TA§76 |
+| RSP-005 | Preview deployments for substantial branches/PRs inspectable on a phone before merge. | P2 | 1 | BLOCKED | TA§76 |
 
 ## A11Y — Accessibility
 
@@ -417,19 +417,19 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| INF-001 | Locked stack: React + TypeScript + Vite; Cloudflare Workers + Static Assets (not Workers Sites); IndexedDB (Dexie); Cloudflare D1; Cloudflare R2; GitHub; Claude API behind Worker; ElevenLabs; Google Cloud Speech-to-Text V2. | P0 | 1 | NOT_STARTED | §85, TA§89 |
-| INF-002 | Monorepo layout per §102: apps/web, worker, packages/{simulator-core, exercise-engine, mastery-engine, content-schema, design-system, shared}, content, migrations, tests, scripts, docs, public, plus root control docs. | P0 | 1 | NOT_STARTED | §102, TA§57 |
+| INF-001 | Locked stack: React + TypeScript + Vite; Cloudflare Workers + Static Assets (not Workers Sites); IndexedDB (Dexie); Cloudflare D1; Cloudflare R2; GitHub; Claude API behind Worker; ElevenLabs; Google Cloud Speech-to-Text V2. | P0 | 1 | PARTIAL | §85, TA§89 |
+| INF-002 | Monorepo layout per §102: apps/web, worker, packages/{simulator-core, exercise-engine, mastery-engine, content-schema, design-system, shared}, content, migrations, tests, scripts, docs, public, plus root control docs. | P0 | 1 | PASSED | §102, TA§57 |
 | INF-003 | Git workflow: `main` plus short-lived feature branches; focused conventional commits (`feat:`, `fix:`, `content:`, `design:` …); never "updates". | P0 | 0 | PASSED | §103, TA§58, TA§59 |
-| INF-004 | Environments local / preview / production with separate dev and prod D1 and, where practical, R2. | P0 | 1 | NOT_STARTED | §104, TA§61 |
-| INF-005 | GitHub Actions CI runs typecheck, lint, unit tests, simulator tests, content validation, build on PRs and main pushes; deploy only after checks pass. | P0 | 1 | NOT_STARTED | §134, TA§75 |
+| INF-004 | Environments local / preview / production with separate dev and prod D1 and, where practical, R2. | P0 | 1 | PARTIAL | §104, TA§61 |
+| INF-005 | GitHub Actions CI runs typecheck, lint, unit tests, simulator tests, content validation, build on PRs and main pushes; deploy only after checks pass. | P0 | 1 | PARTIAL | §134, TA§75 |
 | INF-006 | No Durable Objects in v1 unless a concrete feature requires coordinated real-time server state. | P0 | all | NOT_STARTED | §95, TA§17 |
 | INF-007 | No Cloudflare Queues in v1. | P0 | all | NOT_STARTED | §96, TA§18 |
 | INF-008 | No Redis, Supabase, Firebase, separate Node server, Kubernetes, microservices, or vector database unless a real feature proves necessity. | P0 | all | NOT_STARTED | TA§85 |
-| INF-009 | TypeScript everywhere; no untyped JavaScript for application logic. | P0 | 1 | NOT_STARTED | TA§2 |
-| INF-010 | Simple feature flags (e.g. voice_calls, workflow_lab_v2, ai_negotiation, custom_objects, ghl_verification) so half-finished interfaces are not exposed. | P1 | 1 | NOT_STARTED | TA§72 |
+| INF-009 | TypeScript everywhere; no untyped JavaScript for application logic. | P0 | 1 | PASSED | TA§2 |
+| INF-010 | Simple feature flags (e.g. voice_calls, workflow_lab_v2, ai_negotiation, custom_objects, ghl_verification) so half-finished interfaces are not exposed. | P1 | 1 | PASSED | TA§72 |
 | INF-011 | Error boundaries per major environment: Claude failure never breaks Workflow Lab, Call Room failure never breaks CRM, sync failure never destroys local state. No external service can destroy study progress. | P0 | 7 | NOT_STARTED | §149, TA§79 |
-| INF-012 | Substantial work maps to a requirement ID or GitHub issue; commits reference the ID. | P2 | 1 | NOT_STARTED | TA§60 |
-| INF-013 | Every release carries `app_version`, `content_version`, `simulator_version`; saved attempts record all three. | P0 | 5 | NOT_STARTED | §101, TA§56 |
+| INF-012 | Substantial work maps to a requirement ID or GitHub issue; commits reference the ID. | P2 | 1 | PASSED | TA§60 |
+| INF-013 | Every release carries `app_version`, `content_version`, `simulator_version`; saved attempts record all three. | P0 | 5 | IN_PROGRESS | §101, TA§56 |
 | INF-014 | Project-control documents maintained: REQUIREMENTS_MATRIX, IMPLEMENTATION_STATUS (§139 format), KNOWN_LIMITATIONS, CHANGELOG, ACCEPTANCE_TESTS, plus the Phase 0 spec package. | P0 | 0 | PASSED | §139, §140, §163 |
 | INF-015 | Independent audit at major milestones (no coding) producing `AUDIT_REPORT.md` covering missing requirements, partial features, stubs, TODOs, fake data, responsive gaps, missing tests, stale GHL mapping, design violations, inaccessible interactions. | P1 | all | NOT_STARTED | §141 |
 | INF-016 | Adversarial audit cases: offline mid-exercise, refresh mid-simulation, duplicate events, missing phone/email, cancelled appointment during wait, timezone change, AI timeout, AI budget exhausted, ElevenLabs failure, transcription failure, sync conflict, second device, extreme values, malformed scenario data. | P1 | 26 | NOT_STARTED | §142 |

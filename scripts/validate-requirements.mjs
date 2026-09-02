@@ -18,11 +18,50 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 
 const PREFIXES = [
-  'PRD', 'CUR', 'MAS', 'EXR', 'SIM', 'WFL', 'CRM', 'FUN', 'CAL', 'CONV', 'PAY', 'REP', 'SAL', 'PRI', 'NEG', 'CALL',
-  'FLD', 'PORT', 'DES', 'HOL', 'MOT', 'RSP', 'A11Y', 'SYNC', 'DATA', 'AI', 'VOI', 'INF', 'PERF', 'SEC', 'CNT', 'GHL',
+  'PRD',
+  'CUR',
+  'MAS',
+  'EXR',
+  'SIM',
+  'WFL',
+  'CRM',
+  'FUN',
+  'CAL',
+  'CONV',
+  'PAY',
+  'REP',
+  'SAL',
+  'PRI',
+  'NEG',
+  'CALL',
+  'FLD',
+  'PORT',
+  'DES',
+  'HOL',
+  'MOT',
+  'RSP',
+  'A11Y',
+  'SYNC',
+  'DATA',
+  'AI',
+  'VOI',
+  'INF',
+  'PERF',
+  'SEC',
+  'CNT',
+  'GHL',
 ];
 const PRIORITIES = ['P0', 'P1', 'P2', 'P3'];
-const STATUSES = ['NOT_STARTED', 'IN_PROGRESS', 'IMPLEMENTED_UNVERIFIED', 'PASSED', 'PARTIAL', 'BLOCKED', 'DEFERRED', 'FAILED'];
+const STATUSES = [
+  'NOT_STARTED',
+  'IN_PROGRESS',
+  'IMPLEMENTED_UNVERIFIED',
+  'PASSED',
+  'PARTIAL',
+  'BLOCKED',
+  'DEFERRED',
+  'FAILED',
+];
 const MAX_PHASE = 26;
 
 const REQUIRED_FILES = [
@@ -44,12 +83,12 @@ const REQUIRED_FILES = [
 ];
 
 const STATUS_SECTIONS = {
-  'PASSED': 'PASSED',
+  PASSED: 'PASSED',
   'IN PROGRESS': 'IN_PROGRESS',
-  'PARTIAL': 'PARTIAL',
-  'BLOCKED': 'BLOCKED',
-  'FAILED': 'FAILED',
-  'DEFERRED': 'DEFERRED',
+  PARTIAL: 'PARTIAL',
+  BLOCKED: 'BLOCKED',
+  FAILED: 'FAILED',
+  DEFERRED: 'DEFERRED',
 };
 
 const ID_RE = new RegExp(`\\b(?:${PREFIXES.join('|')})-\\d{3}\\b`, 'g');
@@ -69,7 +108,11 @@ if (!missing.includes('REQUIREMENTS_MATRIX.md')) {
   read('REQUIREMENTS_MATRIX.md').forEach((line, i) => {
     if (!/^\| [A-Z0-9]+-\d{3} \|/.test(line)) return;
     const where = `REQUIREMENTS_MATRIX.md:${i + 1}`;
-    const cells = line.replace(/^\| /, '').replace(/ \|$/, '').split(' | ').map((c) => c.trim());
+    const cells = line
+      .replace(/^\| /, '')
+      .replace(/ \|$/, '')
+      .split(' | ')
+      .map((c) => c.trim());
     if (cells.length !== 6) {
       errors.push(`${where}: expected 6 cells, got ${cells.length}`);
       return;
@@ -78,13 +121,17 @@ if (!missing.includes('REQUIREMENTS_MATRIX.md')) {
     const prefix = id.slice(0, id.lastIndexOf('-'));
     if (!PREFIXES.includes(prefix)) errors.push(`${where}: unknown prefix "${prefix}" (spec §125)`);
     if (matrix.has(id)) errors.push(`${where}: duplicate ID ${id}`);
-    if (!PRIORITIES.includes(priority)) errors.push(`${where}: invalid priority "${priority}" (spec §127)`);
+    if (!PRIORITIES.includes(priority))
+      errors.push(`${where}: invalid priority "${priority}" (spec §127)`);
     if (!STATUSES.includes(status)) errors.push(`${where}: invalid status "${status}" (spec §126)`);
     const phaseOk =
       phase === 'all' ||
       (phase === '—' && status === 'DEFERRED') ||
       (/^\d+$/.test(phase) && Number(phase) <= MAX_PHASE);
-    if (!phaseOk) errors.push(`${where}: invalid phase "${phase}" (0–${MAX_PHASE}, "all", or "—" for DEFERRED)`);
+    if (!phaseOk)
+      errors.push(
+        `${where}: invalid phase "${phase}" (0–${MAX_PHASE}, "all", or "—" for DEFERRED)`,
+      );
     if (!text) errors.push(`${where}: empty requirement text`);
     if (!spec) errors.push(`${where}: empty spec reference`);
     matrix.set(id, { id, prefix, text, priority, phase, status, spec, line: i + 1 });
@@ -120,13 +167,22 @@ if (!missing.includes('IMPLEMENTATION_STATUS.md') && matrix.size) {
   }
   for (const [section, status] of Object.entries(STATUS_SECTIONS)) {
     const listed = sections.get(section) ?? new Set();
-    const expected = new Set([...matrix.values()].filter((r) => r.status === status).map((r) => r.id));
+    const expected = new Set(
+      [...matrix.values()].filter((r) => r.status === status).map((r) => r.id),
+    );
     for (const id of listed) {
-      if (!matrix.has(id)) errors.push(`IMPLEMENTATION_STATUS.md: "## ${section}" lists unknown ID ${id}`);
-      else if (!expected.has(id)) errors.push(`IMPLEMENTATION_STATUS.md: ${id} listed under "## ${section}" but matrix status is ${matrix.get(id).status}`);
+      if (!matrix.has(id))
+        errors.push(`IMPLEMENTATION_STATUS.md: "## ${section}" lists unknown ID ${id}`);
+      else if (!expected.has(id))
+        errors.push(
+          `IMPLEMENTATION_STATUS.md: ${id} listed under "## ${section}" but matrix status is ${matrix.get(id).status}`,
+        );
     }
     for (const id of expected) {
-      if (!listed.has(id)) errors.push(`IMPLEMENTATION_STATUS.md: ${id} has matrix status ${status} but is not listed under "## ${section}"`);
+      if (!listed.has(id))
+        errors.push(
+          `IMPLEMENTATION_STATUS.md: ${id} has matrix status ${status} but is not listed under "## ${section}"`,
+        );
     }
   }
 }
@@ -135,7 +191,11 @@ if (!missing.includes('IMPLEMENTATION_STATUS.md') && matrix.size) {
 if (!missing.includes('ACCEPTANCE_TESTS.md') && matrix.size) {
   const atIds = new Set(read('ACCEPTANCE_TESTS.md').join('\n').match(ID_RE) ?? []);
   for (const r of matrix.values()) {
-    if ((r.priority === 'P0' || r.priority === 'P1') && r.status !== 'DEFERRED' && !atIds.has(r.id)) {
+    if (
+      (r.priority === 'P0' || r.priority === 'P1') &&
+      r.status !== 'DEFERRED' &&
+      !atIds.has(r.id)
+    ) {
       errors.push(`ACCEPTANCE_TESTS.md: ${r.id} (${r.priority}) has no acceptance criteria`);
     }
   }
@@ -143,9 +203,11 @@ if (!missing.includes('ACCEPTANCE_TESTS.md') && matrix.size) {
 
 // 5. Every referenced ID in every control document exists
 for (const f of REQUIRED_FILES) {
-  if (missing.includes(f) || f === 'BLOOMLAB_MASTER_SPEC.md' || f === 'REQUIREMENTS_MATRIX.md') continue;
+  if (missing.includes(f) || f === 'BLOOMLAB_MASTER_SPEC.md' || f === 'REQUIREMENTS_MATRIX.md')
+    continue;
   const ids = new Set(read(f).join('\n').match(ID_RE) ?? []);
-  for (const id of ids) if (!matrix.has(id)) errors.push(`${f}: references unknown requirement ${id}`);
+  for (const id of ids)
+    if (!matrix.has(id)) errors.push(`${f}: references unknown requirement ${id}`);
 }
 
 // 6. Report

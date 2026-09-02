@@ -1,0 +1,27 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "bloomlab",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-28",
+  "observability": { "enabled": true },
+  // Static assets come from the Vite build (apps/web). Client-side routes fall back to
+  // index.html; only /api/* reaches the Worker (spec §85, TA§5).
+  "assets": {
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
+  },
+  // Environments (spec §104, INF-004). D1/R2 bindings are added in Phase 4 with separate
+  // bloomlab-dev / bloomlab-prod databases. Secrets are never declared here (SEC-001).
+  "vars": { "BLOOMLAB_ENV": "local" },
+  "env": {
+    "preview": {
+      "name": "bloomlab-preview",
+      "vars": { "BLOOMLAB_ENV": "preview" },
+    },
+    "production": {
+      "name": "bloomlab",
+      "vars": { "BLOOMLAB_ENV": "production" },
+    },
+  },
+}

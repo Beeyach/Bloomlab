@@ -1,0 +1,17 @@
+{
+  "name": "@bloomlab/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Worker: API, AI gateway and sync (TECH_ARCHITECTURE.md §3)",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@bloomlab/shared": "*",
+    "@bloomlab/simulator-core": "*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260902.1"
+  }
+}

@@ -1,0 +1,20 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bl-space-3);
+  max-width: 36rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-2xl);
+  font-weight: var(--bl-font-weight-bold);
+  letter-spacing: var(--bl-font-tracking-display);
+  line-height: var(--bl-font-leading-tight);
+}
+
+.body {
+  margin: 0;
+  font-size: var(--bl-font-size-md);
+}

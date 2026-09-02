@@ -1,0 +1,14 @@
+{
+  "name": "@bloomlab/mastery-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Mastery states, evidence, review scheduling and session building (spec §29–§34, TA§68–§70)",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
+}

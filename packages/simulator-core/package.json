@@ -1,0 +1,14 @@
+{
+  "name": "@bloomlab/simulator-core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic GHL simulation engine: State + Event → Transition → New State + Events (spec §42)",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
+}

@@ -23,3 +23,17 @@ __pycache__/
 dist/
 build/
 *.log
+
+# Build output & local tooling state
+.vite/
+.wrangler/
+coverage/
+*.tsbuildinfo
+worker-configuration.d.ts
+
+# Wrangler local secrets (SEC-001) — never commit
+.dev.vars
+.dev.vars.*
+
+# Local tool config
+.claude/

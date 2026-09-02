@@ -1,0 +1,55 @@
+@import '@bloomlab/design-system/fonts.css';
+@import '@bloomlab/design-system/tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bl-color-bg);
+  color: var(--bl-color-text);
+  font-family: var(--bl-font-ui);
+  font-size: var(--bl-font-size-md);
+  line-height: var(--bl-font-leading-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--bl-color-info);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+/* Visible focus everywhere (A11Y-002). */
+:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--bl-radius-sm);
+}
+
+/* Inputs never fall below 16px on mobile (A11Y-008). */
+input,
+select,
+textarea,
+button {
+  font-size: max(1rem, var(--bl-font-size-md));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

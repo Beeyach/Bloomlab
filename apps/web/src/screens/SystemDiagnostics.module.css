@@ -1,0 +1,98 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bl-space-3);
+  max-width: 40rem;
+}
+
+.back {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+}
+
+.title {
+  margin: 0 0 var(--bl-space-2);
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-2xl);
+  font-weight: var(--bl-font-weight-bold);
+  letter-spacing: var(--bl-font-tracking-display);
+  line-height: var(--bl-font-leading-tight);
+}
+
+.heading {
+  margin: var(--bl-space-4) 0 0;
+  color: var(--bl-color-text-faint);
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: var(--bl-font-tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--bl-space-2) var(--bl-space-4);
+  margin: 0;
+  padding: var(--bl-space-3) var(--bl-space-4);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface);
+  font-size: var(--bl-font-size-sm);
+}
+
+.list dt {
+  color: var(--bl-color-text-soft);
+}
+
+.list dd {
+  margin: 0;
+  font-family: var(--bl-font-mono);
+  overflow-wrap: anywhere;
+}
+
+.row {
+  display: contents;
+}
+
+.muted {
+  margin: 0;
+  color: var(--bl-color-text-faint);
+  font-size: var(--bl-font-size-sm);
+}
+
+.problem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-3);
+  padding: var(--bl-space-3) var(--bl-space-4);
+  border: 1px solid var(--bl-color-error);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface);
+  font-size: var(--bl-font-size-sm);
+}
+
+.problem p {
+  margin: 0;
+}
+
+.warning {
+  color: var(--bl-color-warning);
+}
+
+.button {
+  min-height: 44px;
+  padding: 0 var(--bl-space-4);
+  border: 1px solid var(--bl-color-ink);
+  border-radius: var(--bl-radius-sm);
+  background: var(--bl-color-ink);
+  color: var(--bl-color-snow);
+  font: inherit;
+  font-weight: var(--bl-font-weight-medium);
+  cursor: pointer;
+  transition: background var(--bl-motion-fast) var(--bl-motion-ease-standard);
+}
+
+.button:hover {
+  background: var(--bl-color-ink-deep);
+}

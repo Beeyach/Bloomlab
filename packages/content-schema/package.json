@@ -1,0 +1,14 @@
+{
+  "name": "@bloomlab/content-schema",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Content schemas, validation and build-time compiler for content/ (spec §98–§101)",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
+}

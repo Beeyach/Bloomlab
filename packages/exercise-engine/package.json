@@ -1,0 +1,14 @@
+{
+  "name": "@bloomlab/exercise-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Data-driven exercise runner and deterministic grading (spec §27, TA§31–§34)",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  }
+}

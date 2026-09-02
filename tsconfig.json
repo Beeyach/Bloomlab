@@ -1,0 +1,13 @@
+{
+  "files": [],
+  "references": [
+    { "path": "apps/web" },
+    { "path": "worker" },
+    { "path": "packages/shared" },
+    { "path": "packages/design-system" },
+    { "path": "packages/simulator-core" },
+    { "path": "packages/exercise-engine" },
+    { "path": "packages/mastery-engine" },
+    { "path": "packages/content-schema" }
+  ]
+}

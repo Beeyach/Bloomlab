@@ -20,29 +20,29 @@ Do not make everything holographic. Strong holo treatment is reserved for: terri
 
 ## 3. Colour tokens (DES-004)
 
-Initial tokens. Tune slightly only for contrast and polish, staying within the Doodlemon-inspired family. Proposed CSS variable names are shown; final names are fixed in Phase 1/2 (`packages/design-system`).
+Initial tokens. Tune slightly only for contrast and polish, staying within the Doodlemon-inspired family. Variable names are as implemented in `packages/design-system/src/tokens.css` (D-015); role aliases such as `--bl-color-text` and `--bl-color-surface` sit on top of the palette.
 
-| Token | Hex | Proposed variable | Role |
+| Token | Hex | CSS variable | Role |
 |---|---|---|---|
-| Cloud | `#F8FAFF` | `--bl-cloud` | Default light ground |
-| Snow | `#FFFFFF` | `--bl-snow` | Surfaces |
-| Mist | `#F0F3FC` | `--bl-mist` | Secondary surfaces |
-| Soft Lilac | `#EEEAFB` | `--bl-lilac-soft` | Tinted surfaces |
-| Ink | `#18152B` | `--bl-ink` | Primary text, dark workspaces |
-| Deep Ink | `#100D22` | `--bl-ink-deep` | Deepest workspace / Call Room |
-| Ink Soft | `#5D5873` | `--bl-ink-soft` | Secondary text |
-| Ink Faint | `#8F8AA5` | `--bl-ink-faint` | Tertiary text, hints |
-| Electric Sky | `#6EC8FF` | `--bl-sky` | Accent, execution |
-| Bubblegum | `#FF82C8` | `--bl-bubblegum` | Accent |
-| Lavender | `#A99BFF` | `--bl-lavender` | Accent |
-| Aqua | `#75E6DE` | `--bl-aqua` | Active execution |
-| Lemon Cream | `#FFE98A` | `--bl-lemon` | Accent |
-| Peach | `#FFB49C` | `--bl-peach` | Accent |
-| Ice | `#CFF8FF` | `--bl-ice` | Cool highlight |
-| Success | `#56BFA1` | `--bl-success` | Semantic |
-| Warning | `#E5A94C` | `--bl-warning` | Semantic |
-| Error | `#D85C72` | `--bl-error` | Semantic |
-| Info | `#5D90D9` | `--bl-info` | Semantic |
+| Cloud | `#F8FAFF` | `--bl-color-cloud` | Default light ground |
+| Snow | `#FFFFFF` | `--bl-color-snow` | Surfaces |
+| Mist | `#F0F3FC` | `--bl-color-mist` | Secondary surfaces |
+| Soft Lilac | `#EEEAFB` | `--bl-color-lilac-soft` | Tinted surfaces |
+| Ink | `#18152B` | `--bl-color-ink` | Primary text, dark workspaces |
+| Deep Ink | `#100D22` | `--bl-color-ink-deep` | Deepest workspace / Call Room |
+| Ink Soft | `#5D5873` | `--bl-color-ink-soft` | Secondary text |
+| Ink Faint | `#8F8AA5` | `--bl-color-ink-faint` | Tertiary text, hints |
+| Electric Sky | `#6EC8FF` | `--bl-color-sky` | Accent, execution |
+| Bubblegum | `#FF82C8` | `--bl-color-bubblegum` | Accent |
+| Lavender | `#A99BFF` | `--bl-color-lavender` | Accent |
+| Aqua | `#75E6DE` | `--bl-color-aqua` | Active execution |
+| Lemon Cream | `#FFE98A` | `--bl-color-lemon` | Accent |
+| Peach | `#FFB49C` | `--bl-color-peach` | Accent |
+| Ice | `#CFF8FF` | `--bl-color-ice` | Cool highlight |
+| Success | `#56BFA1` | `--bl-color-success` | Semantic |
+| Warning | `#E5A94C` | `--bl-color-warning` | Semantic |
+| Error | `#D85C72` | `--bl-color-error` | Semantic |
+| Info | `#5D90D9` | `--bl-color-info` | Semantic |
 
 Status is never conveyed by colour alone (A11Y-005).
 

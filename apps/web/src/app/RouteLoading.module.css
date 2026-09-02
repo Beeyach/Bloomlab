@@ -1,0 +1,5 @@
+.loading {
+  margin: 0;
+  color: var(--bl-color-text-faint);
+  font-size: var(--bl-font-size-sm);
+}

@@ -1,0 +1,82 @@
+# CI (spec §134, INF-005): typecheck · lint · format · unit tests · control-doc validation · build
+# on every PR and push to main. Simulator regression and content validation steps join this
+# workflow when those packages exist (Phase 10, Phase 5).
+#
+# Deploy jobs run only when the repository variable CLOUDFLARE_DEPLOY is "true" and the
+# secrets CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID are set. Environments are chosen at
+# build time via CLOUDFLARE_ENV (Cloudflare Vite plugin); `wrangler deploy --env` has no effect.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run validate:docs
+      - run: npm run build
+        env:
+          CLOUDFLARE_ENV: production
+
+  preview:
+    name: Preview deploy
+    if: github.event_name == 'pull_request' && vars.CLOUDFLARE_DEPLOY == 'true'
+    needs: checks
+    runs-on: ubuntu-latest
+    environment: preview
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build:preview -w @bloomlab/web
+        env:
+          CLOUDFLARE_ENV: preview
+      - run: npx wrangler deploy
+        working-directory: apps/web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy:
+    name: Production deploy
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.CLOUDFLARE_DEPLOY == 'true'
+    needs: checks
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build -w @bloomlab/web
+        env:
+          CLOUDFLARE_ENV: production
+      - run: npx wrangler deploy
+        working-directory: apps/web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
