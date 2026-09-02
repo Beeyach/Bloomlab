@@ -6,7 +6,7 @@ Last updated: 2026-09-02
 
 ## CURRENT PHASE
 
-Phase 1 — Repository Foundation: **complete locally** — typecheck, lint, format, 21 unit tests, docs validation and build all pass; the running app was checked in a browser at 320, 390, 768, 1024 and 1440 with the Worker answering `/api/health`. The GitHub Actions run is pending the first push. Phase 2 — Design System has not started and is waiting for the go-ahead.
+Phase 1 — Repository Foundation: **complete locally** — typecheck, lint, format, 21 unit tests, docs validation and build all pass; the running app was checked in a browser at 320, 390, 768, 1024 and 1440 with the Worker answering `/api/health`. GitHub Actions run 33653862745 passed all six steps in 39 s with deploy jobs skipped as designed. Phase 2 — Design System has not started and is waiting for the go-ahead.
 
 ## VERSIONS
 
@@ -32,7 +32,7 @@ Phase 1 — Repository Foundation: **complete locally** — typecheck, lint, for
 
 - INF-001 — React + TypeScript + Vite + Cloudflare Workers/Static Assets are in place and building; Dexie (Phase 3), D1/R2 (Phase 4) and Claude / ElevenLabs / Google Speech-to-Text (Phases 19–21) are not yet wired.
 - INF-004 — local / preview / production are defined in `worker/wrangler.jsonc` with distinct Worker names and `BLOOMLAB_ENV` vars, and the client maps Vite modes in `apps/web/src/app/runtime.ts`; D1 bindings are Phase 4; preview and production deploys need Cloudflare secrets (see BLOCKED).
-- INF-005 — `.github/workflows/ci.yml` runs typecheck, lint, format check, unit tests, docs validation and build on pull requests and `main`, with deploy jobs gated behind the checks; the simulator regression (Phase 10) and content validation (Phase 5) steps do not exist yet; the first GitHub run is pending push.
+- INF-005 — `.github/workflows/ci.yml` runs typecheck, lint, format check, unit tests, docs validation and build on pull requests and `main`, with deploy jobs gated behind the checks; observed passing on GitHub (run 33653862745); the simulator regression (Phase 10) and content validation (Phase 5) steps do not exist yet.
 
 ## BLOCKED
 

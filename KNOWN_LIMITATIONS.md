@@ -10,7 +10,7 @@ Last updated: 2026-09-02 (end of Phase 1)
 - The home route is a Phase 1 foundation screen showing the version triplet and environment. It is not the Command Center (DES-010, Phase 7) and makes no claim to be.
 - `/system` (diagnostics) exists only in local and preview environments; it is off in production by flag.
 - Nothing has been deployed. The Cloudflare Worker, D1 databases and R2 buckets do not exist yet, and GitHub has no Cloudflare secrets, so the CI deploy jobs are inert until the user provides them.
-- The GitHub Actions workflow has been written and mirrors `npm run ci`, which passes locally; it has not yet been observed passing on GitHub (first run follows the Phase 1 push).
+- The GitHub Actions workflow mirrors `npm run ci` and passed on GitHub for the Phase 1 push (run 33653862745, 39 s). It does not yet include simulator regression or content validation steps because those packages do not exist (Phase 10, Phase 5).
 - The dev machine runs Node 22.18 while `engines.node` is `>=22.22.0` (react-router 8's floor). Everything works locally with npm engine warnings; CI uses the latest 22.x.
 - No GHL feature names have been verified against official documentation yet. Names used in the spec and curriculum documents are working labels until the registry (GHL-001, GHL-006) is populated with `last_verified` and `source_url`.
 - The Design Bible references https://doodlemonjigsaw.netlify.app/ for visual feeling; no visual verification against it has been done yet (Phase 2). The Phase 1 screens use the real tokens and fonts but no holographic material.
