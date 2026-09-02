@@ -13,6 +13,10 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 - `/design` gallery behind the `design_gallery` flag (local/preview), `?section=` deep links; Phase 1 screens moved onto the primitives.
 - 75 unit tests across the design system, shared, worker and web.
 
+### Deployed
+
+- Production Worker `bloomlab` (https://bloomlab.cool-sunset-2169.workers.dev) deploys on every push to `main`; preview Worker `bloomlab-preview` (https://bloomlab-preview.cool-sunset-2169.workers.dev) redeploys on every pull request (D-020). Verified end to end from PR #1.
+
 ### Added — Phase 1 · Repository Foundation
 
 - npm-workspaces monorepo per spec §102: `apps/web`, `worker`, `packages/{shared, design-system, simulator-core, exercise-engine, mastery-engine, content-schema}`, `content/`, `migrations/`, `tests/`, `public/`.

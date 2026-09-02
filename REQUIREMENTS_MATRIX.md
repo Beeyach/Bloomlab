@@ -333,7 +333,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | RSP-002 | Tablet is first class; mobile is recomposed, not shrunk. | P0 | all | IN_PROGRESS | §82 |
 | RSP-003 | No critical desktop feature disappears on mobile because responsive work is difficult; recompose instead. | P0 | all | IN_PROGRESS | §82, §131 |
 | RSP-004 | Mobile recompositions: Workflow → vertical step editor; CRM → stage view / local horizontal scroller; Academy → editorial reading; Call Room → mobile-first voice; Inbox → natural conversation flow; Skill Map → territory-first. | P1 | 12 | NOT_STARTED | §83 |
-| RSP-005 | Preview deployments for substantial branches/PRs inspectable on a phone before merge. | P2 | 1 | BLOCKED | TA§76 |
+| RSP-005 | Preview deployments for substantial branches/PRs inspectable on a phone before merge. | P2 | 1 | PASSED | TA§76 |
 
 ## A11Y — Accessibility
 
