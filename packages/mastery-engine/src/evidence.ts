@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   ASSISTANCE_LEVELS,
   ASSISTANCE_RULES,
+  DEMONSTRATION_RULES,
   EVIDENCE_KINDS,
   EVIDENCE_RESULTS,
   HINT_LEVELS,
@@ -95,9 +96,20 @@ export function effectiveAssistance(evidence: SkillEvidence): AssistanceLevel {
 export const isAttempt = (evidence: SkillEvidence): boolean =>
   PRACTICE_KINDS.includes(evidence.kind);
 
-/** A pass with a critical failure is not a pass (spec §31, MAS-004). */
+/** Fieldwork and real-GHL kinds need their proof attached before they can be a pass. */
+export const hasRequiredProof = (evidence: SkillEvidence): boolean =>
+  !(DEMONSTRATION_RULES.proof_required_for as readonly string[]).includes(evidence.kind) ||
+  evidence.real_ghl?.provided === true;
+
+/**
+ * A pass: an attempt kind, `passed`, no critical failure (spec §31, MAS-004), and for fieldwork
+ * / real-GHL kinds the proof actually provided.
+ */
 export const isPass = (evidence: SkillEvidence): boolean =>
-  isAttempt(evidence) && evidence.result === 'passed' && evidence.critical_failures.length === 0;
+  isAttempt(evidence) &&
+  evidence.result === 'passed' &&
+  evidence.critical_failures.length === 0 &&
+  hasRequiredProof(evidence);
 
 export const isFailure = (evidence: SkillEvidence): boolean =>
   isAttempt(evidence) && (evidence.result === 'failed' || evidence.critical_failures.length > 0);
@@ -118,11 +130,20 @@ export const isPressurePass = (evidence: SkillEvidence): boolean =>
   isIndependentPass(evidence) &&
   (evidence.kind === 'pressure_test' || evidence.mode === 'pressure');
 
-/** Real-GHL fieldwork that was actually provided (spec §30 "where required"). */
+/** Real-GHL fieldwork that was actually provided (spec §30 "where required"); proof is part of `isPass`. */
 export const isFieldworkPass = (evidence: SkillEvidence): boolean =>
+  isPass(evidence) && (evidence.kind === 'fieldwork' || evidence.kind === 'real_ghl');
+
+/**
+ * A demonstration resets the review clock (DEMONSTRATION_RULES): a pass of a demonstration kind
+ * with at most light assistance. This is the only thing that moves `last_demonstrated`.
+ */
+export const isDemonstration = (evidence: SkillEvidence): boolean =>
   isPass(evidence) &&
-  (evidence.kind === 'fieldwork' || evidence.kind === 'real_ghl') &&
-  evidence.real_ghl?.provided === true;
+  (DEMONSTRATION_RULES.kinds as readonly string[]).includes(evidence.kind) &&
+  (DEMONSTRATION_RULES.results as readonly string[]).includes(evidence.result) &&
+  assistanceRank(effectiveAssistance(evidence)) <=
+    assistanceRank(DEMONSTRATION_RULES.max_assistance);
 
 export const isSalesUsePass = (evidence: SkillEvidence): boolean =>
   isPass(evidence) && evidence.kind === 'sales_use';

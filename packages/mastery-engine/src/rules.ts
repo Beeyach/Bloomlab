@@ -6,7 +6,7 @@
  * threshold: states are earned by kinds of evidence, assistance and repetition.
  */
 
-export const MASTERY_RULES_VERSION = '2026.09.02-r2';
+export const MASTERY_RULES_VERSION = '2026.09.02-r3';
 
 /** The eight states (spec §29). NEEDS_REFRESH is an overlay on an earned ladder state. */
 export const MASTERY_STATES = [
@@ -114,6 +114,26 @@ export const INDEPENDENT_KINDS: readonly EvidenceKind[] = [
   'real_ghl',
   'retrieval',
 ];
+
+/**
+ * What resets the review clock (`last_demonstrated`), explicitly (spec §30, §32; MAS-005, MAS-011).
+ * A demonstration is evidence that:
+ * - is one of `kinds` (every independent-capable kind: an ordinary or independent exercise, a
+ *   pressure test, an explanation, sales use, fieldwork, real-GHL proof, a retrieval);
+ * - has `result: passed` and no critical failure;
+ * - was done with at most `max_assistance` (a nudge or two; never a concept reminder or a
+ *   worked example);
+ * - for fieldwork and real-GHL kinds, carries `real_ghl.provided: true` (unverified fieldwork is
+ *   not a pass at all).
+ * Exposure, quizzes and guided practice never reset the clock, whatever their result; neither
+ * do failed or partial attempts. A failed retrieval does the opposite: it forces NEEDS_REFRESH.
+ */
+export const DEMONSTRATION_RULES = {
+  kinds: INDEPENDENT_KINDS,
+  results: ['passed'],
+  max_assistance: 'light',
+  proof_required_for: ['fieldwork', 'real_ghl'],
+} as const;
 
 /** Kinds that leave a skill at LEARNING no matter how many there are (spec §29, MAS-002). */
 export const EXPOSURE_ONLY_KINDS: readonly EvidenceKind[] = ['exposure', 'quiz'];

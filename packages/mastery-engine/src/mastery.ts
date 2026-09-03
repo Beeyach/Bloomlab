@@ -2,6 +2,7 @@ import {
   demonstrationKey,
   isAttempt,
   isFailure,
+  isDemonstration,
   isFieldworkPass,
   isIndependentPass,
   isPass,
@@ -127,10 +128,9 @@ export function evaluateSkill(
   const counts = countEvidence(history);
   const ladder = ladderStateFor(skill, counts);
   const attempts = history.filter(isAttempt);
-  // A demonstration that resets the review clock is a pass at the PRACTICED bar or better:
-  // an independent-capable kind with at most light help. A guided or worked-example pass
-  // neither restores a refresh nor postpones review (MAS-011).
-  const lastPass = [...history].reverse().find(isPracticedPass) ?? null;
+  // Only a demonstration (DEMONSTRATION_RULES) moves the review clock: a guided or
+  // worked-example pass neither restores a refresh nor postpones review (MAS-011).
+  const lastPass = [...history].reverse().find(isDemonstration) ?? null;
   const lastAttempt = attempts.at(-1) ?? null;
   const importance = importanceOf(skill);
   const rate = failureRate(attempts);

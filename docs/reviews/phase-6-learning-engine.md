@@ -8,7 +8,7 @@ The mastery engine is a domain package, not UI state and not a points system: pu
 
 | Layer | Where | What |
 |---|---|---|
-| Rules | `packages/mastery-engine/src/rules.ts` | `MASTERY_RULES_VERSION = 2026.09.02-r2`; states, ladder, assistance table, evidence kinds, ladder rules, confidence, review and session constants. Nothing else in the engine holds a number. |
+| Rules | `packages/mastery-engine/src/rules.ts` | `MASTERY_RULES_VERSION = 2026.09.02-r3`; states, ladder, assistance table, evidence kinds, ladder rules, confidence, review and session constants. Nothing else in the engine holds a number. |
 | Evidence | `src/evidence.ts` | `SkillEvidenceSchema` (spec §30, every field required), `assistanceFromHints`, `effectiveAssistance`, the pass / independent / pressure / fieldwork / sales predicates. |
 | Mastery | `src/mastery.ts` | `evaluateSkill` → state, ladder state, refresh overlay, confidence, missing requirements, review due and priority, counts. |
 | Review | `src/review.ts` | importance, failure rate, intervals, due dates, NEEDS_REFRESH overlay, priority, `scheduleReviews`. |
@@ -70,6 +70,22 @@ Effective assistance is the maximum of the recorded level, the hint roll-up, and
 - priority = importance × (1 + overdue_days ÷ 7) + 2 × failure_rate + 3 if NEEDS_REFRESH
 - queue: due items by priority desc, upcoming by due date; the queue never blocks anything
 
+## What resets the review clock (`DEMONSTRATION_RULES`, D-051)
+
+`last_demonstrated` — the anchor of every review interval and of the NEEDS_REFRESH overlay — moves only on a **demonstration**: `isDemonstration(evidence)` in `packages/mastery-engine/src/evidence.ts`, whose terms are the constant `DEMONSTRATION_RULES` in `rules.ts`.
+
+| Evidence | Resets the clock? |
+|---|---|
+| independent exercise, deterministic exercise, pressure test, explanation, sales use, retrieval — `passed`, no critical failure, at most light assistance | yes |
+| fieldwork, real-GHL — as above **and** `real_ghl.provided: true` | yes |
+| fieldwork or real-GHL without the proof provided | no (not a pass at all) |
+| exposure, quiz (any result), guided practice | never |
+| any kind with `failed` or `partial`, or a `passed` result carrying a critical failure | no |
+| any kind done with a concept reminder, three or more nudges, or a worked example (guided / heavy) | no |
+| a failed retrieval | no — it forces NEEDS_REFRESH |
+
+Tested kind by kind, result by result, assistance level by assistance level and with and without proof in `test/demonstration.test.ts` (27 cases); the test also asserts that every declared evidence kind is classified.
+
 ## Session-builder algorithm (spec §33, TA§70; MAS-006)
 
 Budgets: 30m → 30, 1h → 60, 2h → 120, deep → 240 minutes. Decisions, in order:
@@ -112,7 +128,7 @@ ok: true
 
 ## Version stamping
 
-`currentVersions()` = `{ app: 0.1.0 (@bloomlab/shared), content: 2026.09.02 and content_hash e15441abc7fc (compiled bundle), simulator: 0.0.0 (@bloomlab/simulator-core), rules: 2026.09.02-r2 }`, written on every attempt and evidence row at write time and never rewritten. Derived rows record the content version and rules version they were computed under. The Learning section shows the stamp on each recent evidence row; `/api/health` and `/system` show the triplet.
+`currentVersions()` = `{ app: 0.1.0 (@bloomlab/shared), content: 2026.09.02 and content_hash e15441abc7fc (compiled bundle), simulator: 0.0.0 (@bloomlab/simulator-core), rules: 2026.09.02-r3 }`, written on every attempt and evidence row at write time and never rewritten. Derived rows record the content version and rules version they were computed under. The Learning section shows the stamp on each recent evidence row; `/api/health` and `/system` show the triplet.
 
 ## Migrations
 
@@ -126,10 +142,11 @@ None. `skill_evidence`, `exercise_attempts`, `skill_progress`, `campaign_progres
 | `test/mastery.test.ts` | 10 | scenarios 1–7, fieldwork and sales-use requirements, eight states only, rules version (16) |
 | `test/review.test.ts` | 9 | scenarios 12–14, interval arithmetic, failed retrieval, queue ordering, and the explicit refresh round trip: MASTERED → NEEDS_REFRESH → unassisted retrieval → MASTERED preserved with `review_due` advanced by the MASTERED interval; the INDEPENDENT variant with a requirement still missing; an assisted retrieval does not restore |
 | `test/campaign.test.ts` | 7 | scenarios 8–11, refresh never locks, completion |
+| `test/demonstration.test.ts` | 27 | what resets `last_demonstrated`: every kind, failed / partial / critical results, light vs guided vs heavy assistance, fieldwork with and without proof, failed retrieval forces refresh, unverified fieldwork is never a pass |
 | `test/session.test.ts` | 7 | scenario 15, first-session behaviour, determinism, four lengths + Continue, focus and weak-prerequisite repair, pressure/fieldwork steps, assistance-dependence retries |
 | `apps/web/src/data/learning/learning.test.ts` | 10 | scenarios 16–18, incomplete record rejected, content-change safety (DATA-011), exposure = LEARNING, unlock + gate, session from real content, link-time re-key |
 
-Engine total 54; web total 49 (10 new); repository total 265 tests in 35 files. Typecheck (8 workspaces), lint, Prettier, docs validator, `content:check` and the production build are green (`npm run ci`).
+Engine total 81; web total 49 (10 new); repository total 292 tests in 36 files. Typecheck (8 workspaces), lint, Prettier, docs validator, `content:check` and the production build are green (`npm run ci`).
 
 ## Requirement statuses
 
