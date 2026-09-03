@@ -469,7 +469,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | CNT-008 | Client schema: id, business_name, industry, locations, team, offers, lead_sources, current_systems, metrics, problems, relationship_state, assets, hidden_facts, voice, history. | P0 | 5 | PASSED | §38 |
 | CNT-009 | Persistent fictional clients with persistent state across the §37 industries (med spa, coach, consultant, therapist, photographer, realtor, gym, pet service, HVAC, roofing, cleaning, remodeling, dentist, chiropractor, law firm, accounting, recruiting, course creator, wedding vendor, B2B service). | P1 | 24 | NOT_STARTED | §37 |
 | CNT-010 | Glossary content type and search integration. | P2 | 24 | NOT_STARTED | §98, TA§71 |
-| CNT-011 | Content tests run in CI (all IDs valid, no missing prerequisites, no unknown GHL features). | P0 | 5 | IMPLEMENTED_UNVERIFIED | TA§73 |
+| CNT-011 | Content tests run in CI (all IDs valid, no missing prerequisites, no unknown GHL features). | P0 | 5 | PASSED | TA§73 |
 
 ## GHL — GoHighLevel Accuracy
 

@@ -187,7 +187,7 @@ Preview build (`CLOUDFLARE_ENV=preview`), `vite preview` on 4173: `/system` rend
 ## Not done / honest gaps
 
 - **CNT-007, DATA-011, INF-013 partial**: attempt records that store `content_version` / `content_hash` do not exist until Phases 6 and 9. The stamping contract (manifest → lock → bundle → app and Worker) is complete.
-- **CNT-011 implemented, unverified**: the CI step exists; it is marked PASSED once the first run on this branch is green.
+- **CNT-011 passed** on the branch's first CI run (33718316982: Checks and Preview deploy green, `content:check` included).
 - **CNT-009 not started**: three persistent clients, not twenty; the schema and hidden state are complete.
 - **Curriculum is a seed**: gates 6 and 12 have no authored skills; every seeded skill has coverage gaps; the compiler reports 36 warnings and the `/system` screen lists them. Authoring is Phase 24.
 - **Registry depth**: 10 of 34 records are name-verified from GHL's official list pages only; their `supported_configs` are labelled as not individually verified.
