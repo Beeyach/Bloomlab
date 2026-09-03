@@ -20,12 +20,19 @@ const waitFor = async (page, expression, tries = 80) => {
 const fact = (label) =>
   `[...document.querySelectorAll('dt')].find((dt) => dt.textContent.trim() === ${JSON.stringify(label)})?.nextElementSibling?.textContent.trim() ?? null`;
 
-const clickButton = async (page, text) => {
-  const clicked = await page.evaluate(
-    `(() => { const b = [...document.querySelectorAll('button')].find((x) => x.textContent.trim() === ${JSON.stringify(text)}); if (!b) return false; b.scrollIntoView({ block: 'center' }); b.click(); return true; })()`,
-  );
-  if (!clicked) throw new Error(`No button labelled "${text}"`);
-  await sleep(500);
+/** Waits for the control to exist before clicking it: a deployed host renders slower than localhost. */
+const clickButton = async (page, text, tries = 40) => {
+  for (let i = 0; i < tries; i += 1) {
+    const clicked = await page.evaluate(
+      `(() => { const b = [...document.querySelectorAll('button')].find((x) => x.textContent.trim() === ${JSON.stringify(text)}); if (!b) return false; b.scrollIntoView({ block: 'center' }); b.click(); return true; })()`,
+    );
+    if (clicked) {
+      await sleep(500);
+      return;
+    }
+    await sleep(250);
+  }
+  throw new Error(`No button labelled "${text}" after waiting`);
 };
 
 const counts = (page) =>
@@ -141,6 +148,18 @@ try {
   };
 
   // 7. Offline: the engine has no network to lose, so the run must keep working.
+  // The shell has to be in the precache before the network goes away, or an offline reload has
+  // nothing to load — on a deployed host that install takes longer than the first page view.
+  report.steps.serviceWorker = await page.evaluate(`(async () => {
+    const registration = await navigator.serviceWorker.ready;
+    for (let i = 0; i < 100 && !navigator.serviceWorker.controller; i += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    const names = await caches.keys();
+    let entries = 0;
+    for (const name of names) entries += (await (await caches.open(name)).keys()).length;
+    return { scope: registration.scope, controlled: !!navigator.serviceWorker.controller, entries };
+  })()`);
   const workers = await serviceWorkerSessions(browser, new URL(BASE).origin);
   await page.send('Network.enable');
   await page.send('Network.emulateNetworkConditions', {
