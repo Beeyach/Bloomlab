@@ -1,0 +1,208 @@
+# The CRM Lab's training account (Phase 11, CRM-001). Glowhaus a few weeks further on than the
+# no-show scenario: two people sharing the work, a consultation pipeline with deals sitting in it,
+# and a data model that is deliberately half-tidy. The treatment interest of three contacts is
+# recorded three different ways — a field on one, tags on another, nothing at all on a third —
+# because CRM-003 asks that a poor-but-possible choice be allowed and its cost be discoverable
+# later, not blocked by a warning the moment the learner reaches for it.
+id: SC-glowhaus-crm
+title: Glowhaus — the account as it actually is
+client: CL-glowhaus-medspa
+summary: >-
+  Two people share Glowhaus's front desk and its consultations pipeline. The contact records are
+  usable but inconsistent: one lead's treatment interest is a custom field, another's is three
+  tags, a third has none. Ownership is uneven and two deals have been sitting untouched.
+initial_account_state:
+  users:
+    - id: priya
+      name: Priya Raman
+      role: admin
+    - id: dana
+      name: Dana Okafor
+  contacts:
+    - id: maria
+      first_name: Maria
+      last_name: Delgado
+      email: maria.delgado@example.com
+      phone: '+15125550142'
+      tags: [meta-lead, booked]
+      custom_fields:
+        treatment_interest: Signature Facial
+      timezone: America/Chicago
+      source: Meta lead ad
+      owner_id: priya
+    # Jordan's interest was recorded as tags instead of a field. Three of them, because it changed
+    # twice and nothing removed the old ones. This is the CRM-003 case, seeded rather than staged.
+    - id: jordan
+      first_name: Jordan
+      last_name: Pike
+      email: jordan.pike@example.com
+      tags: [meta-lead, wants-membership, wants-laser, wants-facial]
+      source: Meta lead ad
+      owner_id: dana
+    - id: lena
+      first_name: Lena
+      last_name: Ortiz
+      email: lena.ortiz@example.com
+      phone: '+15125550177'
+      tags: [walk-in]
+      dnd: true
+      source: Walk-in
+      owner_id: priya
+    # No phone and no owner: the record a learner has to notice and fix.
+    - id: aisha
+      first_name: Aisha
+      last_name: Bello
+      email: aisha.bello@example.com
+      tags: [referral]
+      source: Referral
+    # No email, and the only contact nobody has touched.
+    - id: theo
+      first_name: Theo
+      last_name: Marsh
+      phone: '+15125550188'
+      tags: [walk-in]
+      source: Walk-in
+      owner_id: dana
+  tags:
+    - meta-lead
+    - walk-in
+    - referral
+    - booked
+    - no-show
+    - rebooked
+    - wants-membership
+    - wants-laser
+    - wants-facial
+  custom_fields:
+    - key: treatment_interest
+      label: Treatment interest
+      type: dropdown
+      options: [Signature Facial, Membership, Laser]
+    - key: skin_concern
+      label: Skin concern
+      type: text
+    - key: referred_by
+      label: Referred by
+      type: text
+    - key: deal_source
+      label: Deal source
+      type: dropdown
+      object: opportunity
+      options: [Meta lead ad, Walk-in, Referral, Repeat client]
+  custom_values:
+    - key: front_desk_phone
+      value: '+15125550100'
+    - key: booking_link
+      value: https://glowhausaustin.com/book
+  pipelines:
+    - id: consultations
+      name: Consultations
+      stages: [New Lead, Contacted, Consult Booked, Consult Done, Won, Lost]
+  opportunities:
+    - id: opp-maria
+      name: Maria — signature facial
+      contact_id: maria
+      pipeline_id: consultations
+      stage: Consult Booked
+      value: 410
+      owner_id: priya
+      custom_fields:
+        deal_source: Meta lead ad
+    - id: opp-jordan
+      name: Jordan — membership
+      contact_id: jordan
+      pipeline_id: consultations
+      stage: Contacted
+      value: 1490
+      owner_id: dana
+      custom_fields:
+        deal_source: Meta lead ad
+    - id: opp-lena
+      name: Lena — laser course
+      contact_id: lena
+      pipeline_id: consultations
+      stage: New Lead
+      value: 2200
+      owner_id: priya
+    - id: opp-aisha
+      name: Aisha — referral consult
+      contact_id: aisha
+      pipeline_id: consultations
+      stage: New Lead
+      value: 380
+  notes:
+    - id: note-maria-1
+      contact_id: maria
+      author_id: priya
+      body: Asked twice about parking. Send the map with the reminder.
+      at: '2026-09-01T14:20:00-05:00'
+    - id: note-jordan-1
+      opportunity_id: opp-jordan
+      author_id: dana
+      body: >-
+        Wanted laser in July, then the membership, now asking about facials again. The tags have
+        all three and I cannot tell which is current.
+      at: '2026-09-02T11:05:00-05:00'
+  tasks:
+    - id: task-lena
+      contact_id: lena
+      title: Call Lena about the laser course
+      description: She is on do-not-disturb, so this has to be a call rather than a text.
+      due_at: '2026-09-04T10:00:00-05:00'
+      assigned_to: priya
+    - id: task-aisha
+      opportunity_id: opp-aisha
+      title: Find out who referred Aisha
+      due_at: '2026-09-05T09:00:00-05:00'
+      assigned_to: dana
+  calendars:
+    - id: consultation
+      name: Consultation
+      duration_minutes: 30
+      timezone: America/Chicago
+  appointments:
+    - id: appt-maria
+      contact_id: maria
+      calendar_id: consultation
+      starts_at: '2026-09-04T15:00:00-05:00'
+      status: booked
+  forms:
+    - id: consult-request
+      name: Consultation request
+      fields: [first_name, email, phone, treatment_interest]
+simulation_time: '2026-09-03T09:00:00-05:00'
+timezone: America/Chicago
+seed: 1102
+scheduled_events:
+  - at: '2026-09-04T09:00:00-05:00'
+    type: sms.sent
+    description: The confirmation Glowhaus already sends the morning of a consult.
+    payload:
+      contact_id: maria
+      body: See you at 3pm today. Reply STOP to opt out.
+      purpose: confirmation
+injectable_events:
+  - id: new-enquiry
+    type: form.submitted
+    description: A new consultation request arrives from the website form.
+    payload:
+      form_id: consult-request
+      contact_id: rowan
+      values:
+        first_name: Rowan
+        email: rowan.hale@example.com
+        phone: '+15125550163'
+  - id: maria-books-again
+    type: appointment.status_changed
+    description: Maria's consultation is marked as showed.
+    payload:
+      appointment_id: appt-maria
+      status: showed
+hidden_facts:
+  who_actually_answers: Dana answers the phone before noon; Priya after.
+  why_the_tags_exist: >-
+    The tags came from a form that used to write a tag per answer. Nobody removed the old ones
+    when a lead changed their mind, so a contact can carry three at once.
+failure_modes:
+  - dnd
+  - missing_phone
