@@ -77,7 +77,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | CUR-033 | Content coverage matrix (Skill × Learn / Guided / Practice / Fix / Independent / Pressure / Fieldwork / Sales Use) generated from content data, not maintained by hand. | P1 | 5 | PASSED | §137 |
 | CUR-034 | Minimum curriculum: one master graph, Field Ready path, practical work for every core skill, independent assessment, retrieval, pricing, negotiation, calls, written sales, proposals, prospecting, real GHL fieldwork. | P0 | 24 | NOT_STARTED | §144 |
 | CUR-035 | Field Ready content complete from placement through capstone before advanced curriculum; no hundreds of shallow lessons before the learning loop works. | P1 | 24 | NOT_STARTED | PHASE 24 |
-| CUR-036 | Academy behaves like an interactive editorial publication: strong typography, short sections, diagrams, inline simulations, interaction, expandable depth. Not "video + paragraph + next lesson". | P1 | 8 | NOT_STARTED | §76 |
+| CUR-036 | Academy behaves like an interactive editorial publication: strong typography, short sections, diagrams, inline simulations, interaction, expandable depth. Not "video + paragraph + next lesson". | P1 | 8 | PARTIAL | §76 |
 
 ## MAS — Mastery
 
@@ -304,7 +304,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DES-017 | Visual review of major screens at 1440 / 1024 / 768 / 390 / 320 checking hierarchy, density, material, interaction, holo restraint, slop patterns, responsive composition, long-session comfort. | P1 | all | IN_PROGRESS | §135 |
 | DES-018 | Screen coverage matrix maintained: Screen × Desktop / Tablet / Mobile / Empty / Loading / Error / Keyboard / Touch. No major screen complete with desktop only. | P1 | all | IN_PROGRESS | §136 |
 | DES-019 | Visual language exists early; product is never built with generic temporary UI to be "styled later". | P0 | 2 | PASSED | PHASE 2 |
-| DES-020 | Academy visual design is editorial (strong typography, diagrams, inline simulation embeds). | P1 | 8 | NOT_STARTED | §76 |
+| DES-020 | Academy visual design is editorial (strong typography, diagrams, inline simulation embeds). | P1 | 8 | PASSED | §76 |
 
 ## HOL — Holographic Material
 

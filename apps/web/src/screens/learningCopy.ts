@@ -183,3 +183,9 @@ export function stateSentence(evaluation: SkillEvaluation): string {
   const opening = lead[evaluation.state];
   return needed.length > 0 ? `${opening} Still needed: ${joinWords(needed)}.` : opening;
 }
+
+/** Where a step runs today: a unit opens in the Academy; anything else opens the capability (Phase 9 runs exercises). */
+export function stepDestination(step: SessionItem | null, skillId: string): string {
+  if (step?.kind === 'unit') return `/academy/${step.content_id}?skill=${skillId}`;
+  return `/skills/${skillId}`;
+}

@@ -2,11 +2,11 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-03 (end of Phase 7)
+Last updated: 2026-09-03 (end of Phase 8)
 
 ## Current state
 
-- The product has curriculum content compiled in (Phase 5), a working learning engine over it (Phase 6) and its first learner-facing screens (Phase 7: the Command Center at `/`, the Campaign and the Skill Map), but no runtime that produces evidence and no simulator yet: units are not rendered (Phase 8) and exercises are not run (Phase 9), so evidence still enters through the diagnostic form on `/system`.
+- The product has curriculum content compiled in (Phase 5), a working learning engine over it (Phase 6), the Command Center, Campaign and Skill Map (Phase 7) and the Academy (Phase 8): the three authored units render and finishing one records exposure evidence. Exercises are not run yet (Phase 9) and there is no simulator (Phase 10), so every other kind of evidence still enters through the diagnostic form on `/system`.
 - `/system` (diagnostics) and `/design` (gallery) exist only in local and preview environments; both are off in production by flag.
 - The semantic components are presentational: Phase 7 wires SkillCard, HoloTerritory, MasteryBadge and StatusPill to the learning engine; the simulator components are wired by their phases. Prop shapes may still change when those data models land; they share tokens, so the visual language will not.
 - Deployment is live: every push to `main` deploys the `bloomlab` Worker (https://bloomlab.cool-sunset-2169.workers.dev) and every pull request redeploys the single shared `bloomlab-preview` Worker (D-020). Both hosts are public `workers.dev` URLs serving the foundation app with no learner data. D1 databases and R2 buckets do not exist yet (Phase 4).
@@ -15,9 +15,20 @@ Last updated: 2026-09-03 (end of Phase 7)
 - The ~128k ElevenLabs credits have an expiry window; voice asset generation (VOI-005) is scheduled for Phase 20. Risk: credits expire before Phase 20. By design this is not a functional dependency.
 - Prettier does not format Markdown (`*.md` is ignored) so the control documents keep their hand-laid tables.
 
+## Phase 8 — academy
+
+- **Three units exist.** The Academy renders whatever `content/learning-units/` holds; today that is Funnel math, Tag / custom field / custom value, and What a workflow actually does. The rest of the curriculum is Phase 24.
+- **The `<Simulation>` embed simulates nothing yet.** In the workflow unit it states the scenario, workflow and contact it will run and that the shared GHL simulator arrives with Phase 10; the workflow's structure is drawn by the `<Diagram kind="workflow">` above it. Nothing pretends to execute (CUR-036 PARTIAL).
+- **Practice pointers do not run.** `<Exercise>` embeds and the next step after a unit show the authored exercise (type, mode, minutes) and say the exercise runner arrives with Phase 9.
+- **Two diagram kinds and one interactive kind.** `funnel` and `workflow` diagrams, and the `funnel-math` interactive, are what the compiler accepts; a unit that needs another kind needs a new renderer (validated at build time, never a broken page).
+- **Finishing is one exposure per unit.** A unit already finished cannot be recorded again: the engine has no use for a second exposure (D-062), so "read it again" is welcome but silent. Reading position is not stored; the contents list and browser scroll restoration cover navigation.
+- **Offline was verified by emulation.** The Academy probe drives Chrome with the page and service worker offline; a physical phone in airplane mode was not used. `navigator.onLine` stays true under DevTools emulation, so the offline indicator is verified separately by the Phase 3 probe.
+- **Keyboard arrow keys on the slider are verified in Chrome, not in jsdom**, which does not implement range-input key handling; the unit test covers focus, value change and Enter.
+- **The Academy has no rail entry.** Units are reached from a capability's next step, the session plan and the capability sheet; a browsable index of units is not part of spec §73's rail and would become the "course sidebar" the spec rejects.
+
 ## Phase 7 — command center + skill map
 
-- **Continue opens the capability, not an exercise.** Units are not rendered (Phase 8) and exercises are not run (Phase 9), so "Continue" and every plan item open the capability's sheet on the Skill Map, which names the next step and shows its text. Evidence still enters through the diagnostic form on `/system`.
+- **Continue opens a unit or the capability, never an exercise.** Since Phase 8 a unit step opens in the Academy; an exercise step still opens the capability's sheet, which names it and says the runner arrives with Phase 9. Evidence other than exposure still enters through the diagnostic form on `/system`.
 - **Some capabilities have no suitable next step yet.** The builder asks for a guided or practice exercise before an independent one; where the seed content authors only an independent-mode exercise (or none), the screens say "No suitable next exercise is authored for this capability yet." rather than pointing at the wrong thing. This is a content gap (`SKILL_NO_PRACTICE`, `SKILL_NO_UNIT` warnings), closed by Phase 24.
 - **The rail has three of seven areas** (D-053). Simulator, Clients, Portfolio and Playground appear with their phases.
 - **No active-client block on the Command Center.** The persistent-client system and its "active client" state are Phase 24; DES-010 stays PARTIAL until then.

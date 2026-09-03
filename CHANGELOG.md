@@ -4,6 +4,16 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 8 · Academy
+
+- Academy unit screen at `/academy/:unitId` (`apps/web/src/academy/`): the authored MDX rendered as an editorial reading surface — masthead, contents list with the current section, prose components (headings with anchors, lists, tables for concept comparisons, code), and the embed vocabulary: `Callout`, `Depth` (native disclosure), `Feature` (registry-backed technical note with fidelity and official documentation), `Exercise` (practice pointer to the authored exercise), `Simulation` (the shared-simulator host, honest about Phase 10), `Diagram` (`funnel` from four rates, `workflow` from the scenario's definition) and `Interactive` (`funnel-math`: sliders and numbers recompute counts, revenue, profit, the biggest leak and what each single lift buys; reset).
+- Build-time MDX: the content plugin serves `virtual:bloomlab-content/units` and compiles each unit body to its own lazily imported React module (`@mdx-js/mdx`, no MDX parser in the client, one chunk per unit) (D-063). The compiler validates `Diagram` and `Interactive` kinds and their attributes (`MISSING_WORKFLOW` for a workflow a scenario does not define).
+- Content: the funnel-math unit gains its funnel diagram and interactive; the workflow unit gains the booking-confirmation path diagram; `content_version` 2026.09.03.
+- Completion: "Finish this unit" records exposure evidence for the unit's skills through `recordEvidence` (source `learning_unit`, result `exposed`, no score, no attempt); opening a unit records nothing; a finished unit is never recorded twice (D-062). The finish panel then shows the engine's next step for the capability — another unit to read, or the exercise that arrives with Phase 9.
+- Phase 7 navigation: Continue and session-plan items open a unit directly when the next step is a unit; the capability sheet links "Read this unit" (D-064).
+- Review tooling: `scripts/review/academy-probe.mjs` (keyboard on the interactive, disclosure and Finish; the evidence row; reload; offline unit and offline completion; reduced motion; touch at 390 px); the capture list gains the three units.
+- Verification: 14 Academy tests over the real bundle (`academy.test.tsx`) plus the updated Phase 7 tests; the five-width capture audit; the Academy probe; `docs/reviews/phase-8-academy.md`.
+
 ### Added — Phase 7 · Command Center + Skill Map
 
 - App shell rail (`AppRail`): a 72 px left column from 768 px and a 64 px bottom bar on phones with Home, Campaign and Skill Map (System and Design behind their flags); `aria-current` on the active area, 44 px targets, visible focus (D-053). Three icons (`IconHome`, `IconCampaign`, `IconMap`) join the design system.

@@ -48,6 +48,7 @@ import {
   relativeDay,
   skillTitle,
   stateSentence,
+  stepDestination,
 } from './learningCopy';
 
 const SESSION_LENGTHS: SessionLength[] = ['30m', '1h', '2h', 'deep'];
@@ -164,7 +165,7 @@ function ContinueObject({
             <Button
               variant="primary"
               iconEnd={<IconArrowRight size={16} />}
-              onClick={() => navigate(`/skills/${skillId}`)}
+              onClick={() => navigate(stepDestination(step, skillId))}
             >
               Continue
             </Button>
@@ -272,7 +273,7 @@ function SessionBuilder({ focusId }: { focusId: string | undefined }) {
                     const described = describeStep(item);
                     return (
                       <li key={item.id} className={styles.item}>
-                        <Link to={`/skills/${item.skill_id}`} className={styles.itemLink}>
+                        <Link to={stepDestination(item, item.skill_id)} className={styles.itemLink}>
                           <span className={styles.itemVerb}>{described.verb}</span>
                           <span className={styles.itemTitle}>{described.title}</span>
                         </Link>
