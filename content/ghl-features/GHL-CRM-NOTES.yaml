@@ -1,0 +1,33 @@
+# Verified 2026-09-03 against "Efficiently Use Notes for Contacts, Opportunities & Companies".
+# Direct fetch of help.gohighlevel.com is blocked by this build environment's egress proxy, so the
+# article was read through indexed search summaries rather than opened; the wording below is what
+# those summaries attribute to the official page. Re-open the source directly at the next review.
+id: GHL-CRM-NOTES
+official_name: Notes
+area: Contacts
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-03
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000004555-efficiently-using-highlevel-notes-for-managing-contacts-opportunities-and-company-records
+known_limitations:
+  - Simulated — plain-text internal notes on a contact or an opportunity, stamped with simulator time.
+  - Not simulated — rich text, attachments, company notes, and the note-association feature that links one note to both a contact and an opportunity.
+skills:
+  - SK-ARCHITECT-pipeline-design
+supported_configs:
+  options:
+    - Contact note
+    - Opportunity note
+  notes: >-
+    Internal only. A note records context for the team; a client never sees it in a portal or in
+    any outbound message.
+approximation_note: >-
+  Training approximation — Bloomlab stores one plain-text body per note against one record.
+  HighLevel also supports rich text, attachments, company notes and notes linked to a contact and
+  an opportunity at once.
+verification_note: >-
+  Internal-only visibility, and notes living on contacts, opportunities and companies, confirmed
+  through search summaries of the official help article, 2026-09-03. Direct page fetch was blocked
+  by the build environment's egress proxy.
