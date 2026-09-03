@@ -1,0 +1,19 @@
+# Verified 2026-09-02 against "Workflow Trigger - Contact Created".
+id: GHL-WF-CONTACT-CREATED
+official_name: Contact Created
+area: Workflows
+feature_type: trigger
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002486-workflow-trigger-contact-created
+known_limitations: []
+skills:
+  - SK-AUTOMATE-workflow-foundations
+supported_configs:
+  filters:
+    - Created by
+    - Has tag
+  notes: Fires whenever a contact record is created, whatever created it.
+verification_note: Name confirmed on the help-center article, 2026-09-02.

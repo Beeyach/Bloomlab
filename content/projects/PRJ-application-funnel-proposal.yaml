@@ -1,0 +1,33 @@
+# Starter project (spec §154): the selling half of an Application Funnel — discovery, pricing,
+# negotiation — for a persistent client.
+id: PRJ-application-funnel-proposal
+title: Application Funnel Proposal
+tier: field_ready
+brief: |
+  Marcus at Summit wants fewer unqualified calls and faster replies to applications, and he has
+  a cheaper quote in hand. Run discovery, price the application funnel, and handle the
+  push-back — ending with a proposal he can accept or a clean walk-away.
+client: CL-summit-coaching
+skills:
+  - SK-SELL-discovery-call
+  - SK-SELL-project-pricing
+  - SK-SELL-negotiation-basics
+stages:
+  - id: s1
+    name: Discovery
+    exercises:
+      - EX-SAY_IT-summit-discovery
+    deliverable: A discovery recap Marcus agrees with.
+  - id: s2
+    name: Pricing
+    exercises:
+      - EX-PRICE_IT-summit-application-funnel
+    deliverable: A priced scope with deposit, timeline, inclusions and exclusions.
+  - id: s3
+    name: Negotiation
+    exercises:
+      - EX-NEGOTIATE_IT-summit-freelancer-quote
+    deliverable: A response to the cheaper quote that keeps margin or walks away.
+fieldwork_required: false
+portfolio: PF-application-qualification-system
+capstone: false

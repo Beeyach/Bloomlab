@@ -1,0 +1,12 @@
+id: GL-pipeline
+term: Pipeline
+definition: >-
+  An ordered set of stages that represents a sales process. Opportunities move through the
+  stages left to right; a stage change can fire a workflow.
+aliases: [sales pipeline]
+related_skills:
+  - SK-ARCHITECT-pipeline-design
+ghl_features:
+  - GHL-CRM-PIPELINES
+  - GHL-CRM-OPPORTUNITIES
+  - GHL-WF-PIPELINE-STAGE-CHANGED

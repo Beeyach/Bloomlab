@@ -1,0 +1,22 @@
+# Verified 2026-09-02 against "Workflow Trigger - Contact Tag": fires after the tag change is
+# applied, for Added or Removed.
+id: GHL-WF-CONTACT-TAG
+official_name: Contact Tag
+area: Workflows
+feature_type: trigger
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002482-workflow-trigger-contact-tag
+known_limitations: []
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+  - SK-AUTOMATE-reentry-and-duplicates
+supported_configs:
+  filters:
+    - Tag Added
+    - Tag Removed
+    - Tag
+  notes: The workflow fires after the tag update is actually applied.
+verification_note: Name, Added/Removed and tag filter confirmed on the help-center article, 2026-09-02.

@@ -1,4 +1,6 @@
-import { APP_VERSION, CONTENT_VERSION, parseRuntimeEnvironment } from '@bloomlab/shared';
+import contentVersion from 'virtual:bloomlab-content/version';
+
+import { APP_VERSION, parseRuntimeEnvironment } from '@bloomlab/shared';
 import { SIMULATOR_VERSION } from '@bloomlab/simulator-core';
 
 import { authenticate } from './sync/auth';
@@ -26,7 +28,7 @@ export interface HealthResponse {
   environment: string;
   versions: {
     app: string;
-    content: string | null;
+    content: string;
     simulator: string;
   };
 }
@@ -70,7 +72,11 @@ async function handleApi(request: Request, url: URL, env: Env): Promise<Response
     const body: HealthResponse = {
       ok: true,
       environment: parseRuntimeEnvironment(env.BLOOMLAB_ENV),
-      versions: { app: APP_VERSION, content: CONTENT_VERSION, simulator: SIMULATOR_VERSION },
+      versions: {
+        app: APP_VERSION,
+        content: contentVersion.content_version,
+        simulator: SIMULATOR_VERSION,
+      },
     };
     return json(body);
   }

@@ -1,0 +1,21 @@
+id: SK-AUTOMATE-reentry-and-duplicates
+title: Re-entry and duplicate messages
+territory: AUTOMATE
+tier: field_ready
+summary: >-
+  Recognise duplicate enrollment, repeated triggers and overlapping workflows from their
+  symptoms, and fix them with re-entry settings, exits and goal events instead of more branches.
+prerequisites:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features:
+  - GHL-WF-CONTACT-TAG
+  - GHL-WF-REMOVE-FROM-WORKFLOW
+  - GHL-WF-GOAL-EVENT
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: true
+  fieldwork_required: false
+keywords: [re-entry, duplicate enrollment, overlapping workflows, exit, goal event]

@@ -1,0 +1,26 @@
+# Verified 2026-09-02 against "How to Use the Send SMS Action in HighLevel Workflows".
+id: GHL-WF-SEND-SMS
+official_name: Send SMS
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002474-workflow-action-send-sms
+known_limitations:
+  - Carrier delivery, number registration and message-segment cost are not simulated; a send either succeeds, is skipped for DND, or fails for a missing phone.
+skills:
+  - SK-AUTOMATE-workflow-foundations
+  - SK-AUTOMATE-appointment-reminders
+  - SK-AUTOMATE-no-show-recovery
+supported_configs:
+  config_fields:
+    - name: template
+      type: template
+      required: true
+      description: Message body with merge fields such as {{contact.first_name}}.
+    - name: from_number
+      type: reference
+      required: false
+verification_note: Name confirmed on the help-center article, 2026-09-02.

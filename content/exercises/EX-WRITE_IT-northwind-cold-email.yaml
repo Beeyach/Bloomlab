@@ -1,0 +1,40 @@
+# WRITE IT (spec §27): a cold email built on verified evidence.
+id: EX-WRITE_IT-northwind-cold-email
+type: WRITE_IT
+title: Cold email to Gary at Northwind
+mode: practice
+difficulty: 2
+estimated_minutes: 15
+skills:
+  - SK-SELL-evidence-based-audit
+scenario: SC-northwind-audit
+format: cold_email
+instructions: |
+  Write the first cold email to Gary Lindqvist. Opener, one piece of evidence you actually
+  observed, why it matters to him, one problem, one clear next step. Under 120 words. No claims
+  you could not defend if he called you on them.
+allowed_features: []
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: email.word_count
+    operator: lte
+    value: 120
+    description: Under 120 words.
+  - id: a2
+    type: state
+    path: email.has_call_to_action
+    operator: equals
+    value: true
+    description: One clear next step.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V1
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: Your test enquiry took 22 hours to get a reply. That is evidence. "Your marketing is weak" is not.
+fieldwork: null
+portfolio: null

@@ -1,0 +1,11 @@
+id: GL-trigger
+term: Trigger
+definition: >-
+  The event that starts a workflow — a form submitted, a tag added, an appointment status
+  change. A trigger can carry filters so only matching events enroll a contact.
+aliases: [workflow trigger]
+related_skills:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features:
+  - GHL-WF-FORM-SUBMITTED
+  - GHL-WF-APPOINTMENT-STATUS

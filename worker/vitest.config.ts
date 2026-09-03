@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
+import { bloomlabContent } from '@bloomlab/content-schema/vite';
 import { cloudflareTest, readD1Migrations } from '@cloudflare/vitest-pool-workers';
 import { defineConfig } from 'vitest/config';
 
@@ -11,6 +12,11 @@ export default defineConfig(async () => {
   );
   return {
     plugins: [
+      // The Worker reports the compiled content version (spec §101); tests see the real one.
+      bloomlabContent({
+        rootDir: fileURLToPath(new URL('../content', import.meta.url)),
+        enforceLock: false,
+      }),
       cloudflareTest({
         wrangler: { configPath: './wrangler.jsonc' },
         isolatedStorage: true,

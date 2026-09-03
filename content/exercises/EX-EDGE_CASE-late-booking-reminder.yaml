@@ -1,0 +1,54 @@
+# EDGE CASE, pressure mode: a booking made forty minutes before the appointment.
+id: EX-EDGE_CASE-late-booking-reminder
+type: EDGE_CASE
+title: Booked forty minutes before the appointment
+mode: pressure
+difficulty: 4
+estimated_minutes: 15
+skills:
+  - SK-AUTOMATE-appointment-reminders
+scenario: SC-glowhaus-no-show
+instructions: |
+  Your reminder workflow waits until 24 hours before the appointment and then texts. Jordan books
+  a consultation for **forty minutes from now**.
+
+  Predict what Jordan receives and when. Then make the system behave sensibly for late bookings:
+  a late booker should get one confirmation and no stale "tomorrow" reminder.
+allowed_features:
+  - GHL-WF-CUSTOMER-BOOKED-APPOINTMENT
+  - GHL-WF-APPOINTMENT-STATUS
+  - GHL-WF-WAIT
+  - GHL-WF-IF-ELSE
+  - GHL-WF-SEND-SMS
+starting_state:
+  contact_id: jordan
+expected_outcomes:
+  - id: a1
+    type: event
+    event: sms.sent
+    count: { exactly: 1 }
+    where: { contact_id: jordan, purpose: confirmation }
+    description: Jordan receives one confirmation.
+  - id: a2
+    type: negative
+    event: sms.sent
+    where: { contact_id: jordan, purpose: reminder_24h }
+    description: No "tomorrow" reminder is sent for an appointment forty minutes away.
+critical_failures:
+  - id: c1
+    type: negative
+    event: sms.sent
+    where: { contact_id: jordan, after: appointment.start }
+    description: Nothing is sent after the appointment has already started.
+grading:
+  mode: deterministic
+  weights:
+    correctness: 50
+    edge_cases: 30
+    architecture: 10
+    maintainability: 5
+    explanation: 5
+  pass_threshold: 80
+hints: []
+fieldwork: null
+portfolio: null

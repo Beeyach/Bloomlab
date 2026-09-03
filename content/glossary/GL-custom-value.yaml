@@ -1,0 +1,11 @@
+id: GL-custom-value
+term: Custom value
+definition: >-
+  An account-wide setting referenced as a merge field — the booking link, the front-desk phone,
+  the owner's name. Change it once and every template and workflow that uses it follows.
+aliases: [account value]
+related_skills:
+  - SK-ARCHITECT-custom-values
+  - SK-SCALE-snapshot-portability
+ghl_features:
+  - GHL-CRM-CUSTOM-VALUES

@@ -1,0 +1,11 @@
+id: GL-workflow
+term: Workflow
+definition: >-
+  GHL's automation: a trigger with filters, followed by actions that run top to bottom for each
+  enrolled contact — sends, tags, waits, branches — until the contact exits.
+aliases: [automation]
+related_skills:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features:
+  - GHL-WF-WAIT
+  - GHL-WF-IF-ELSE

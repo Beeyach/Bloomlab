@@ -1,0 +1,30 @@
+# Versioned rubric (AI-011): cold email, follow-up, client update, explanation for an audience.
+id: WRITTEN_COMMUNICATION_RUBRIC_V1
+version: 1
+title: Written client communication
+applies_to:
+  - WRITE_IT
+  - EXPLAIN_IT
+model_class: cheap
+output_schema: ai_grading_v1
+items:
+  - id: r1
+    tier: critical
+    criterion: Describes only behaviour the system actually has; makes no claim the evidence does not support.
+    weight: 5
+  - id: r2
+    tier: required
+    criterion: Written for the stated audience — the owner version is free of GHL jargon; the builder version is precise.
+    weight: 4
+  - id: r3
+    tier: required
+    criterion: One clear purpose and one clear next step.
+    weight: 3
+  - id: r4
+    tier: quality
+    criterion: Short — within the word limit, no filler, no apology.
+    weight: 2
+  - id: r5
+    tier: bonus
+    criterion: Uses the reader's own words or numbers back to them.
+    weight: 1

@@ -115,18 +115,30 @@ The application receives indexed data (skill graph, campaign paths, exercise ind
 
 Each release records `app_version`, `content_version` (e.g. `2026.09.17`), `simulator_version`. Attempts store all three. When GHL changes later, new exercises reference the updated registry version; old attempts keep the version they were completed against. Completed historical exercises are never mutated (DATA-011).
 
-## 7. ID conventions (finalised in Phase 5)
+## 7. ID conventions (finalised in Phase 5, D-036)
 
-Proposed, to keep IDs stable and searchable:
+The file name is the record's `id` (D-035). Patterns are enforced by `packages/content-schema/src/ids.ts`.
 
 | Type | Pattern | Example |
 |---|---|---|
-| Skill | `SK-<TERRITORY>-<slug>` | `SK-AUTOMATE-appointment-relative-wait` |
-| GHL feature | `GHL-<AREA>-<slug>` | `GHL-WF-WAIT` |
+| Skill | `SK-<TERRITORY>-<slug>` (territory must match the record) | `SK-AUTOMATE-appointment-reminders` |
+| GHL feature | `GHL-<AREA>-<NAME>` (upper case) | `GHL-WF-WAIT` |
 | Campaign | `CAMP-<NAME>` | `CAMP-FIELD_READY` |
-| Learning unit | `LU-<slug>` | `LU-funnel-math-basics` |
-| Exercise | `EX-<TYPE>-<slug>` | `EX-FIX_IT-double-reminder` |
-| Scenario | `SC-<client>-<slug>` | `SC-glowhaus-no-show` |
+| Learning unit | `LU-<slug>` (`.mdx`) | `LU-funnel-math-basics` |
+| Exercise | `EX-<TYPE>-<slug>` (type must match the record) | `EX-FIX_IT-double-reminder` |
+| Scenario | `SC-<slug>` | `SC-glowhaus-no-show` |
 | Client | `CL-<slug>` | `CL-glowhaus-medspa` |
-| Rubric | `<NAME>_RUBRIC_V<n>` | `SALES_DISCOVERY_RUBRIC_V3` |
-| Simulator fixture | `<AREA>-<nnn>` | `WAIT-003` |
+| Rubric | `<NAME>_RUBRIC_V<n>` (`version` must equal *n*) | `SALES_DISCOVERY_RUBRIC_V1` |
+| Project | `PRJ-<slug>` | `PRJ-consultation-booking-system` |
+| Portfolio item | `PF-<slug>` | `PF-consultation-booking-system` |
+| Glossary | `GL-<slug>` | `GL-custom-value` |
+| Simulator fixture | `<AREA>-<nnn>` | `WAIT-003` (Phase 10) |
+
+## 8. Implementation (Phase 5)
+
+- **Package** `packages/content-schema`: `src/schemas/` (Zod, strict objects), `src/ids.ts`, `src/bundle.ts` (bundle types, issue codes), `src/compile/` (sources, parse, validate, graph, resolve, coverage, compile, reports), `src/node.ts` (disk loader, lock, reports), `src/vite.ts` (plugin). Browser code imports only the root entry.
+- **Pipeline**: `readContentDir` → `classifySources` (folder + extension rules) → `parseAndValidateFiles` (YAML / MDX front matter → schema; file name = id; duplicates) → `crossValidate` (references, graph, campaign order, feature use, embeds) → indexes, campaign paths, coverage, freshness, search → `ContentBundle`. `validateSources` never throws and returns every issue; `compileSources` throws `ContentBuildError`.
+- **Delivery**: the Vite plugin compiles once per build and serves `virtual:bloomlab-content` (app) and `virtual:bloomlab-content/version` (Worker); `vite dev` watches `content/` and reloads. The client bundle contains no YAML or MDX parser.
+- **Versioning**: `content/content.yaml` + generated `content/content.lock.yaml`; `npm run content:build | check | lock` (`scripts/content.mjs`); CI runs `content:check`. The bundle carries `content_version`, `content_hash`, `schema_version`.
+- **Reports**: `.content/coverage-content.md`, `.content/coverage-ghl.md`, `.content/freshness.md`, `.content/bundle.json`, `.content/summary.txt` (git-ignored, regenerated on every build). The `/system` screen shows the same numbers from the bundle.
+- **Warnings (non-fatal)**: `ORPHAN_SKILL`, `SKILL_NO_UNIT`, `SKILL_NO_PRACTICE`, `GATE_WITHOUT_SKILLS`, `GATE_WITHOUT_PROJECT`, `UNIT_NO_EMBEDS`, `FEATURE_NEEDS_REVIEW_USED`, `DEPRECATED_FEATURE_USED`, `FEATURE_STALE`.

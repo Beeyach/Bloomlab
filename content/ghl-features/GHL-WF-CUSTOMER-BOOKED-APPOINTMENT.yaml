@@ -1,0 +1,20 @@
+# Verified 2026-09-02 against "Workflow Trigger - Customer Booked Appointment".
+id: GHL-WF-CUSTOMER-BOOKED-APPOINTMENT
+official_name: Customer Booked Appointment
+area: Workflows
+feature_type: trigger
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002675-workflow-trigger-customer-booked-appointment
+known_limitations:
+  - Fires for bookings the customer makes; staff-made bookings use Appointment Status instead. The simulator follows the same split.
+skills:
+  - SK-BUILD-consultation-calendar
+  - SK-AUTOMATE-appointment-reminders
+supported_configs:
+  filters:
+    - In Calendar
+    - Has tag
+verification_note: Name confirmed on the help-center article, 2026-09-02.

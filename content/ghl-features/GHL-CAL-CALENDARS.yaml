@@ -1,0 +1,34 @@
+# Verified 2026-09-02 against "How to Set Up a Booking Calendar in HighLevel" and the availability
+# settings guide (slot duration, slot interval, buffer, minimum notice).
+id: GHL-CAL-CALENDARS
+official_name: Calendars
+area: Calendars
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000005061-getting-started-setup-a-booking-calendar
+known_limitations:
+  - Simulated — personal booking calendars with duration, availability and time zone.
+  - Not simulated — round robin, class booking, service and group calendars, payments at booking.
+skills:
+  - SK-BUILD-consultation-calendar
+supported_configs:
+  options:
+    - Personal Booking
+    - Round Robin
+    - Class Booking
+    - Service Calendar
+  config_fields:
+    - name: duration_minutes
+      type: duration
+      required: true
+    - name: buffer_minutes
+      type: duration
+      required: false
+    - name: minimum_notice_hours
+      type: duration
+      required: false
+approximation_note: Training approximation — one calendar type is simulated; team and class calendars are practised in GHL.
+verification_note: Calendar types and availability settings confirmed on the help-center articles, 2026-09-02.

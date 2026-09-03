@@ -1,0 +1,19 @@
+# Name verified 2026-09-02 on "A List of Workflow Triggers" (Events group).
+id: GHL-WF-SURVEY-SUBMITTED
+official_name: Survey Submitted
+area: Workflows
+feature_type: trigger
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002292-a-list-of-workflow-triggers
+known_limitations:
+  - Multi-page survey logic, scoring and disqualification pages are not simulated; the trigger delivers the final answers only.
+skills:
+  - SK-BUILD-lead-capture-form
+supported_configs:
+  filters:
+    - Survey is
+approximation_note: Training approximation — the simulator treats a survey as a single submission with its answers; real survey branching is practised in GHL.
+verification_note: Name confirmed on the triggers list page, 2026-09-02; filters not individually verified.

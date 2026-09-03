@@ -1,0 +1,19 @@
+# Name verified 2026-09-02 on "A List of Workflow Actions" (Contact group).
+id: GHL-WF-REMOVE-CONTACT-TAG
+official_name: Remove Contact Tag
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002294-what-are-workflow-actions-complete-list-
+known_limitations: []
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+supported_configs:
+  config_fields:
+    - name: tag
+      type: reference
+      required: true
+verification_note: Name confirmed on the actions list page, 2026-09-02.

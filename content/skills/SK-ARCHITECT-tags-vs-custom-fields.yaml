@@ -1,0 +1,20 @@
+id: SK-ARCHITECT-tags-vs-custom-fields
+title: Tags vs custom fields
+territory: ARCHITECT
+tier: field_ready
+summary: >-
+  Decide whether a fact about a contact is a tag (something happened), a custom field (a value),
+  or belongs on the opportunity — and defend the choice.
+prerequisites: []
+ghl_features:
+  - GHL-CRM-CONTACTS
+  - GHL-CRM-TAGS
+  - GHL-CRM-CUSTOM-FIELDS
+judgment_competencies:
+  - tag_or_field
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 3
+  pressure_test: true
+  fieldwork_required: false
+keywords: [tag, custom field, data model, opportunity field]

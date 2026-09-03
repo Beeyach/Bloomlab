@@ -1,0 +1,36 @@
+# Evidence scenario: what can actually be observed about Northwind from the outside (SAL-001).
+id: SC-northwind-audit
+title: Northwind — the outside-in audit
+client: CL-northwind-hvac
+summary: >-
+  Everything the learner can verify from Northwind's public presence and a test enquiry, plus
+  what they cannot. Findings must be sorted into Verified, Likely and Unknown.
+initial_account_state:
+  contacts: []
+  tags: []
+  custom_fields: []
+  custom_values: []
+  pipelines: []
+  opportunities: []
+  calendars: []
+  appointments: []
+  forms:
+    - id: request-service
+      name: Request Service
+      fields: [name, phone, email, address, issue]
+  workflows: []
+simulation_time: '2026-09-03T11:00:00-04:00'
+timezone: America/New_York
+seed: 6201
+scheduled_events:
+  - at: '2026-09-04T09:12:00-04:00'
+    type: enquiry.response
+    payload: { channel: email, hours_after_submission: 22 }
+    description: The test enquiry submitted at 11:00 gets an email reply the next morning.
+injectable_events: []
+hidden_facts:
+  form_delivers_to: Tina's inbox only
+  google_ads_landing_page_form_rate: 0.031
+  quote_follow_up_rate: 0
+  answers_phone_after_hours: false
+failure_modes: []

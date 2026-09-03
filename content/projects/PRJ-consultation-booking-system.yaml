@@ -1,0 +1,45 @@
+# Starter project (spec §154, CUR-030): Qualification → calendar → confirmation → reminders →
+# cancellation → no-show recovery, for a persistent client.
+id: PRJ-consultation-booking-system
+title: Consultation Booking System
+tier: field_ready
+brief: |
+  Glowhaus books consultations by hand and loses two in five to no-shows. Build the booking and
+  recovery system end to end: calendar, confirmation, reminders that respect cancellations and
+  late bookings, no-show recovery that reaches everyone it should and nobody it should not, and
+  a pipeline that shows Priya where every lead stands. Then explain it to her, and to whoever
+  maintains it next.
+client: CL-glowhaus-medspa
+skills:
+  - SK-BUILD-consultation-calendar
+  - SK-AUTOMATE-appointment-reminders
+  - SK-AUTOMATE-no-show-recovery
+  - SK-ARCHITECT-pipeline-design
+  - SK-DELIVER-client-explanation
+stages:
+  - id: s1
+    name: Understand the existing workflow
+    exercises:
+      - EX-RUN_THE_LEAD-booking-confirmation
+    deliverable: A written prediction that matches the execution log.
+  - id: s2
+    name: Build recovery
+    exercises:
+      - EX-BUILD_IT-no-show-recovery
+    deliverable: A published no-show recovery workflow passing every deterministic check.
+  - id: s3
+    name: Break it on purpose
+    exercises:
+      - EX-EDGE_CASE-no-show-missing-phone
+      - EX-EDGE_CASE-late-booking-reminder
+      - EX-FIX_IT-double-reminder
+    deliverable: The system survives a missing phone, a late booking and a duplicate sender.
+  - id: s4
+    name: Explain and ship
+    exercises:
+      - EX-EXPLAIN_IT-no-show-system
+      - EX-FIELDWORK-snapshot-no-show-system
+    deliverable: Two explanations and a snapshot loaded into a second real sub-account.
+fieldwork_required: true
+portfolio: PF-consultation-booking-system
+capstone: false

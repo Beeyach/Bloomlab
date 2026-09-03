@@ -1,0 +1,25 @@
+# Verified 2026-09-02 against "Workflow Action – Update Contact Field | Use Dynamic Values".
+id: GHL-WF-UPDATE-CONTACT-FIELD
+official_name: Update Contact Field
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/48001214441-workflow-action-update-contact-field
+known_limitations: []
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+  - SK-AUTOMATE-no-show-recovery
+supported_configs:
+  config_fields:
+    - name: field
+      type: reference
+      required: true
+      description: Standard or custom contact field.
+    - name: value
+      type: template
+      required: true
+      description: Static value or a dynamic value from a merge field.
+verification_note: Name and dynamic-value support confirmed on the help-center article, 2026-09-02.

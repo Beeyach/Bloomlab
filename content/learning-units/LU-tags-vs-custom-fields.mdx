@@ -1,0 +1,61 @@
+---
+id: LU-tags-vs-custom-fields
+title: Tag, custom field, or custom value?
+territory: ARCHITECT
+tier: field_ready
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+  - SK-ARCHITECT-custom-values
+ghl_features:
+  - GHL-CRM-TAGS
+  - GHL-CRM-CUSTOM-FIELDS
+  - GHL-CRM-CUSTOM-VALUES
+estimated_minutes: 20
+summary: >-
+  Three places to put a fact, three different meanings. Decide by asking what the fact is, who
+  changes it, and what will read it later.
+---
+
+## Three questions
+
+Before you store anything about a contact, ask:
+
+1. **Is it a value or an event?** "Interested in the Signature Facial" is a value — it can change
+   and there is exactly one of it. "Attended the open house" is an event — it happened, and it
+   can happen alongside other events.
+2. **Who changes it?** A form, a workflow, a person at the front desk, or the account owner once
+   a year?
+3. **What reads it later?** A reminder template, an If/Else branch, a smart list, a report?
+
+## Tags record that something happened
+
+A tag is a label with no value. `booked`, `no-show`, `meta-lead`. Workflows can add and remove
+them, triggers can fire on them, smart lists can filter by them. A tag is the wrong tool the
+moment you find yourself creating `interest-facial`, `interest-membership`, `interest-laser` —
+that is a value pretending to be three events.
+
+<Feature id="GHL-CRM-TAGS" />
+
+## Custom fields hold a value per contact
+
+`treatment_interest: Signature Facial` is one field with one value that a form can set, a
+workflow can update, and a template can print. Custom fields exist on contacts and on
+opportunities; a deal-specific fact like "quoted price" belongs on the opportunity.
+
+<Feature id="GHL-CRM-CUSTOM-FIELDS" />
+
+<Depth title="When a field should live on the opportunity instead">
+  If the same person can have two deals at once — two treatment plans, two properties, two projects
+  — then anything that differs between the deals belongs on the opportunity, not on the contact.
+  Putting it on the contact means the second deal overwrites the first.
+</Depth>
+
+## Custom values are the account's settings
+
+The front-desk phone number, the booking link, the owner's first name. They appear in dozens of
+templates and change once a year. Put them in custom values, reference them as merge fields, and
+a snapshot of the account into a second location needs one screen of edits instead of forty.
+
+<Feature id="GHL-CRM-CUSTOM-VALUES" />
+
+<Exercise id="EX-ARCHITECTURE_DECISION-treatment-interest" />

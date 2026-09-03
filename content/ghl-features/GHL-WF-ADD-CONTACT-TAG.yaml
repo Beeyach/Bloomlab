@@ -1,0 +1,21 @@
+# Verified 2026-09-02 against "Add Contact Tag Workflow Action in HighLevel".
+id: GHL-WF-ADD-CONTACT-TAG
+official_name: Add Contact Tag
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003111-workflow-action-add-contact-tag
+known_limitations: []
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+  - SK-AUTOMATE-workflow-foundations
+supported_configs:
+  config_fields:
+    - name: tag
+      type: reference
+      required: true
+      description: One or more existing tags.
+verification_note: Name confirmed on the help-center article, 2026-09-02.

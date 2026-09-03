@@ -1,0 +1,53 @@
+# Sales scenario: discovery, pricing and negotiation with Summit (PRI-002 economics, NEG-001).
+id: SC-summit-discovery
+title: Summit — the application funnel proposal
+client: CL-summit-coaching
+summary: >-
+  Marcus wants fewer unqualified discovery calls and faster replies to applications. He has a
+  cheaper quote in hand and will push on price. The right build is an application funnel with
+  qualification routing and follow-up; the right price is not the lowest one.
+initial_account_state:
+  contacts: []
+  tags: []
+  custom_fields: []
+  custom_values: []
+  pipelines: []
+  opportunities: []
+  calendars: []
+  appointments: []
+  forms: []
+  workflows: []
+simulation_time: '2026-09-03T10:00:00-06:00'
+timezone: America/Denver
+seed: 5101
+scheduled_events: []
+injectable_events:
+  - id: freelancer-quote
+    type: client.message
+    description: Marcus forwards the freelancer's nine-hundred-dollar quote mid-negotiation.
+    payload:
+      text: Someone else can do the Calendly and Zapier part for 900. Why is yours more?
+  - id: budget-objection
+    type: client.message
+    description: Marcus states a budget well below his real one.
+    payload:
+      text: I was thinking closer to fifteen hundred for the whole thing.
+hidden_facts:
+  freelancer_quote: 900
+  freelancer_includes_qualification: false
+  real_budget: 3500
+  hiring_assistant_soon: true
+failure_modes: []
+economics:
+  baseline_complexity: 3
+  estimated_labor_hours: 22
+  risk: 2
+  migration: true
+  locations: 1
+  integrations: 1
+  custom_development: false
+  rush: false
+  recurring_support: true
+hidden_state_overrides:
+  price_sensitivity: 75
+  urgency: 45

@@ -188,6 +188,8 @@ Bloomlab never requires the user's GHL credentials for ordinary training. Real-G
 
 Every release carries `app_version`, `content_version`, `simulator_version` (e.g. `app 0.8.3 · content 2026.09.17 · simulator 0.5`). Saved attempts record all three so old evidence remains historically valid when GHL or content changes.
 
+**Implementation (Phase 5):** `app_version` lives in `@bloomlab/shared`; `content_version` and `content_hash` come from the compiled bundle (`virtual:bloomlab-content` in the app, `virtual:bloomlab-content/version` in the Worker), stamped from `content/content.yaml` and locked by `content/content.lock.yaml` (D-037, D-038); `simulator_version` stays in `@bloomlab/simulator-core`. `/api/health` and `/system` show all three.
+
 ## 16. Feature flags, search, analytics (INF-010, INF-017, INF-018)
 
 Simple flags (`voice_calls`, `workflow_lab_v2`, `ai_negotiation`, `custom_objects`, `ghl_verification`) keep half-finished interfaces hidden. Global search uses a client-side index over skills, GHL features, lessons, glossary, clients, past exercises — no external search service. Analytics track learning events only (exercise attempted/passed, skill demonstrated, hint used, critical failure, fieldwork completed, gate completed, AI request, session duration).

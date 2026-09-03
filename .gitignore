@@ -40,3 +40,6 @@ worker-configuration.d.ts
 
 # Visual-review captures (scripts/review)
 .review/
+
+# Compiled content bundle and coverage reports (scripts/content.mjs)
+.content/

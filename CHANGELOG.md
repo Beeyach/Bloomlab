@@ -4,6 +4,16 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 5 · Content Engine
+
+- `@bloomlab/content-schema`: strict Zod schemas for all eleven content types (Skill, GHLFeature, Campaign, LearningUnit front matter, Exercise with the six assertion types, Scenario with account state and pricing economics, Client with the fifteen §38 fields and §39 hidden state, Rubric, Project, Portfolio, Glossary) plus the workflow-as-data definition (SIM-016) and the release manifest.
+- Compiler `source → validate → resolve → compile`: YAML and MDX loading, ID/file-name rule, duplicate detection, cross-reference validation (skills, prerequisites and cycles, GHL features, clients, scenarios, campaigns, projects, exercises, rubrics, portfolio), campaign prerequisite order, REAL_GHL-never-simulated, removed-feature and feature-type checks, MDX syntax and embed checks; every error reported at once with file, path and message. Warnings list coverage gaps without failing the build.
+- Compiled bundle: sorted records, skill graph (topological order, depth, dependents, territories), campaign paths, relationship indexes, the §137 content coverage matrix, the §138 GHL coverage matrix, the §151 freshness review list, a search index and the warnings; `npm run content:build` writes them to `.content/` (JSON + Markdown).
+- Content versioning: `content/content.yaml` (`content_version`, `schema_version`), `content/content.lock.yaml` (source hash per version), `npm run content:lock` / `content:check`; CI runs `content:check` (D-038).
+- Vite plugin `@bloomlab/content-schema/vite`: compiles at build time, fails the build on content errors, serves `virtual:bloomlab-content` (app) and `virtual:bloomlab-content/version` (Worker), rebuilds and reloads on content edits in `vite dev` (D-037). `/system` gains a Content section; `/api/health` reports the compiled content version.
+- Seed content proving every type and relationship: 22 skills across all ten territories, 34 GHL registry records verified on help.gohighlevel.com (dated, sourced, limitations and approximations labelled), Field Ready (13 gates) and Advanced Automation campaigns, 3 MDX units with live embeds, 16 exercises across 13 families, 4 scenarios, 3 persistent clients, 5 versioned rubrics, 2 projects, 2 portfolio templates, 8 glossary terms.
+- Tests: 71 content-engine tests — schema rules, the real tree, and fixture builds that fail on every broken-reference class (`docs/reviews/phase-5-content-engine.md`).
+
 ### Added — Phase 4 · D1 + Sync
 
 - D1 schema `migrations/0001_init.sql`: the §93 tables in six domains plus `notes` (D-029); databases `bloomlab-dev` (local, preview) and `bloomlab-prod` (production) bound as `DB`; CI applies migrations to dev on pull requests and to prod on `main` before each deploy (D-033).

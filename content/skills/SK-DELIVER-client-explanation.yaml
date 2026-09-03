@@ -1,0 +1,18 @@
+id: SK-DELIVER-client-explanation
+title: Client explanation
+territory: DELIVER
+tier: field_ready
+summary: >-
+  Explain a system to a business owner in their language, and the same system to another GHL
+  builder in precise terms, without inventing behaviour either way.
+prerequisites:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features: []
+judgment_competencies:
+  - admit_not_knowing
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+  sales_use: true
+keywords: [explanation, audience, jargon, handoff]

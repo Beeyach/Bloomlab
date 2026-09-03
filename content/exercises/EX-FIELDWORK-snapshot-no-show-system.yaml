@@ -1,0 +1,51 @@
+# FIELDWORK (spec §27): real work in GHL. Snapshots are REAL_GHL and may only appear here.
+id: EX-FIELDWORK-snapshot-no-show-system
+type: FIELDWORK
+title: Snapshot the no-show system into a fresh sub-account
+mode: independent
+difficulty: 3
+estimated_minutes: 60
+skills:
+  - SK-SCALE-snapshot-portability
+scenario: SC-glowhaus-no-show
+instructions: |
+  In your real GHL account, rebuild the Glowhaus no-show recovery system using custom values
+  for the booking link and front-desk phone, create a snapshot of it, and load the snapshot into
+  a second sub-account. Then confirm what did and did not come across.
+allowed_features:
+  - GHL-SNAP-SNAPSHOTS
+  - GHL-CRM-CUSTOM-VALUES
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: answers.custom_values_used
+    operator: equals
+    value: true
+    description: The booking link and phone are custom values, not hard-coded.
+  - id: a2
+    type: state
+    path: answers.contacts_included_in_snapshot
+    operator: equals
+    value: false
+    description: The learner knows contacts do not travel with a snapshot.
+critical_failures: []
+grading:
+  mode: deterministic
+  pass_threshold: 80
+hints: []
+fieldwork:
+  required: true
+  tasks:
+    - Rebuild the workflow with custom values for the booking link and the front-desk phone.
+    - Create a snapshot containing the workflow, calendar, form, custom fields and custom values.
+    - Load it into a second sub-account and set the two custom values there.
+  evidence:
+    - screenshot
+    - configuration_answers
+    - explanation
+    - test_results
+  reasoning_questions:
+    - Which assets did the snapshot not include, and what would break for the second location because of that?
+    - Why is the booking link a custom value rather than typed into the SMS template?
+portfolio: PF-consultation-booking-system

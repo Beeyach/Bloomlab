@@ -1,0 +1,24 @@
+id: SK-AUTOMATE-workflow-foundations
+title: Workflow foundations
+territory: AUTOMATE
+tier: field_ready
+summary: >-
+  Explain a workflow as event → trigger → filters → actions → exit, predict what a given contact
+  will experience, and build a simple send-and-tag workflow from a trigger.
+prerequisites: []
+ghl_features:
+  - GHL-WF-FORM-SUBMITTED
+  - GHL-WF-CONTACT-CREATED
+  - GHL-WF-SEND-SMS
+  - GHL-WF-SEND-EMAIL
+  - GHL-WF-ADD-CONTACT-TAG
+  - GHL-WF-WAIT
+  - GHL-WF-IF-ELSE
+judgment_competencies:
+  - automation_appropriate
+  - what_could_break
+mastery_requirements:
+  independent_evidence: 3
+  pressure_test: true
+  fieldwork_required: true
+keywords: [trigger, filter, action, enrollment, execution, exit]

@@ -1,0 +1,93 @@
+# Persistent fictional client (spec §37–§39). Glowhaus recurs through Field Ready: booking,
+# reminders, no-shows and the second location that breaks single-location assumptions.
+id: CL-glowhaus-medspa
+business_name: Glowhaus Med Spa
+industry: med_spa
+locations:
+  - name: Glowhaus South Congress
+    city: Austin
+    region: TX
+    timezone: America/Chicago
+team:
+  - name: Priya Raman
+    role: Owner and lead injector
+    notes: Runs treatments four days a week; answers the business phone between clients.
+  - name: Dana Whitfield
+    role: Front desk
+    notes: Handles bookings and follow-ups by hand; off on Mondays.
+  - name: Marisol Vega
+    role: Aesthetician
+offers:
+  - name: Consultation
+    price: 0
+    billing: one_time
+    notes: Free 30-minute consult; the real product is the treatment plan that follows.
+  - name: Signature Facial
+    price: 185
+    billing: one_time
+  - name: Membership
+    price: 149
+    billing: recurring
+    notes: Monthly facial plus product discount.
+lead_sources:
+  - Meta lead ads
+  - Google Business Profile
+  - Instagram DMs
+  - Walk-ins
+current_systems:
+  - Meta Lead Ads form (native form, leads emailed to the front desk)
+  - Square Appointments
+  - Shared Gmail inbox
+  - Paper reminder list at the front desk
+metrics:
+  monthly_leads: 140
+  booking_rate: 0.46
+  show_rate: 0.58
+  close_rate: 0.35
+  average_ticket: 410
+problems:
+  - Half of ad leads never book because nobody follows up the same day.
+  - Booked consultations no-show; reminders are sent only when Dana remembers.
+  - Leads live in three places (Meta, Square, Gmail) and none of them knows about the others.
+relationship_state:
+  stage: discovery
+  since: 2026-08-18
+  owner: Ary
+  notes: Referred by a member; Priya has been burned by an agency before and asks for proof.
+assets:
+  - kind: domain
+    name: glowhausaustin.com
+  - kind: brand
+    name: Glowhaus brand kit
+    notes: Logo, palette and three approved treatment photos.
+hidden_facts:
+  second_location_planned: true
+  second_location_opens: 2027-02-01
+  front_desk_leaving: true
+  meta_ads_monthly_spend: 2400
+  square_contract_ends: 2026-11-30
+voice:
+  character: VC-warm-owner
+  tone: Warm, quick, slightly distracted; protective of her staff and her reputation.
+  speaking_style: Short sentences, asks "so what would that actually look like?", dislikes jargon.
+  sample_phrases:
+    - So what would that actually look like for Dana?
+    - The last agency built something nobody here could change.
+    - I don't need fancy. I need the no-shows to stop.
+history:
+  - date: 2026-08-18
+    event: Inbound referral from a member; first call booked.
+  - date: 2026-08-21
+    event: Discovery call; Priya shared last quarter's booking and show numbers.
+hidden_state:
+  trust: 45
+  urgency: 70
+  price_sensitivity: 55
+  frustration: 60
+  technical_sophistication: 25
+  fear: 50
+  previous_bad_experience: 80
+  alternative_provider_strength: 30
+  actual_budget: 4500
+  stated_budget: 2500
+  decision_authority: sole

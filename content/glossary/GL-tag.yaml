@@ -1,0 +1,11 @@
+id: GL-tag
+term: Tag
+definition: >-
+  A label on a contact with no value of its own. It records that something happened or that the
+  contact belongs to a group; workflows, triggers and smart lists can all use it.
+aliases: [contact tag]
+related_skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+ghl_features:
+  - GHL-CRM-TAGS
+  - GHL-WF-ADD-CONTACT-TAG

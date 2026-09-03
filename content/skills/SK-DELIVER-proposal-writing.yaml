@@ -1,0 +1,18 @@
+id: SK-DELIVER-proposal-writing
+title: Proposal writing
+territory: DELIVER
+tier: field_ready
+summary: >-
+  Write a proposal that states the problem, the recommendation, scope, price, timeline,
+  assumptions, exclusions and how the client accepts it — short enough to be read.
+prerequisites:
+  - SK-SELL-project-pricing
+ghl_features: []
+judgment_competencies:
+  - scope_realistic
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+  sales_use: true
+keywords: [proposal, scope, assumptions, exclusions, acceptance]

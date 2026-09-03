@@ -5,10 +5,21 @@
   "type": "module",
   "description": "Content schemas, validation and build-time compiler for content/ (spec §98–§101)",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./node": "./src/node.ts",
+    "./vite": "./src/vite.ts"
   },
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mdx-js/mdx": "^3.1.1",
+    "unist-util-visit": "^5.1.0",
+    "yaml": "^2.9.0",
+    "zod": "^4.5.4"
+  },
+  "peerDependencies": {
+    "vite": "*"
   }
 }

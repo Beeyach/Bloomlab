@@ -1,0 +1,41 @@
+# A second curated path (spec §10): some of the same skill IDs as Field Ready plus harder ones.
+# Prerequisites taught by Field Ready count as available through requires_campaigns.
+id: CAMP-ADVANCED_AUTOMATION
+title: Advanced Automation
+pace_hint: 'Suggested pace: ~2 weeks after Field Ready'
+summary: >-
+  Deepen the automation territory: re-entry and duplicates under pressure, webhooks and
+  payloads, and building systems that survive a snapshot into a second location.
+requires_campaigns:
+  - CAMP-FIELD_READY
+gates:
+  - id: GATE-1
+    number: 1
+    name: Automation Under Pressure
+    summary: The same core skills, now assessed only by pressure tests.
+    skills:
+      - SK-AUTOMATE-reentry-and-duplicates
+      - SK-AUTOMATE-no-show-recovery
+    pass_criteria:
+      independent_evidence_per_skill: 3
+      pressure_test_required: true
+  - id: GATE-2
+    number: 2
+    name: Webhooks and Payloads
+    summary: Outbound and inbound webhooks, JSON, mapping, failures.
+    skills:
+      - SK-CONNECT-webhook-payloads
+    pass_criteria:
+      independent_evidence_per_skill: 2
+      fieldwork_required: true
+  - id: GATE-3
+    number: 3
+    name: Portable Systems
+    summary: Custom values, naming and snapshots that move a system to a new account cleanly.
+    skills:
+      - SK-SCALE-snapshot-portability
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      fieldwork_required: true
+    projects:
+      - PRJ-consultation-booking-system

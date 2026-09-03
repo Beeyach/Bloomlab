@@ -1,4 +1,4 @@
-export { APP_VERSION, CONTENT_VERSION } from './version';
+export { APP_VERSION } from './version';
 export {
   RUNTIME_ENVIRONMENTS,
   parseRuntimeEnvironment,

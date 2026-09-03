@@ -1,4 +1,4 @@
-# REQUIREMENTS MATRIX
+# REQUIREMENTS MATRIPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEIMPLEMENTED_UNVERIFIEPARTIAPARTIAL
 
 Authoritative requirement register for Bloomlab. Derived from `BLOOMLAB_MASTER_SPEC.md` (§ refs) and `docs/reference/BLOOMLAB_TECHNICAL_ARCHITECTURE_v1.md` (TA§ refs).
 
@@ -42,7 +42,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| CUR-001 | One master skill graph. Campaigns are curated paths that reference skill IDs; skills are never duplicated inside campaigns. | P0 | 5 | NOT_STARTED | §10, §144 |
+| CUR-001 | One master skill graph. Campaigns are curated paths that reference skill IDs; skills are never duplicated inside campaigns. | P0 | 5 | PASSED | §10, §144 |
 | CUR-002 | `FIELD_READY` campaign expressed as competency Gates 0–12, not days. | P0 | 6 | NOT_STARTED | §11 |
 | CUR-003 | Gate 0 Placement assesses funnel reasoning, lead capture, workflow basics, fields vs values, pipeline basics, basic pricing, written prospect response, short spoken discovery; strong basics clear early requirements. | P1 | 24 | NOT_STARTED | §11 |
 | CUR-004 | Gate 1 Funnel Thinking: customer journey, funnel purpose, traffic intent, offers, friction, CTA, conversion, funnel math, bottleneck thinking. | P1 | 24 | NOT_STARTED | §11 |
@@ -57,7 +57,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | CUR-013 | Gate 10 Pricing and Negotiation: scope, fixed pricing, recurring pricing, deposits, revisions, exclusions, risk, negotiation, reducing scope, walking away. | P1 | 24 | NOT_STARTED | §11 |
 | CUR-014 | Gate 11 Proposal and Delivery: proposal, acceptance, onboarding, dependencies, build order, client updates, QA, handoff. | P1 | 24 | NOT_STARTED | §11 |
 | CUR-015 | Gate 12 Field Ready Capstone: no instructional handholding; diagnose → design → price → negotiate → propose → build → test → explain, with part of implementation in real GHL. | P1 | 24 | NOT_STARTED | §11, §155 |
-| CUR-016 | Permanent skill map has nine territories — STRATEGIZE, BUILD, AUTOMATE, ARCHITECT, DIAGNOSE, CONNECT, SELL, DELIVER, SCALE — plus JUDGMENT measured centrally across all. | P0 | 5 | NOT_STARTED | §12 |
+| CUR-016 | Permanent skill map has nine territories — STRATEGIZE, BUILD, AUTOMATE, ARCHITECT, DIAGNOSE, CONNECT, SELL, DELIVER, SCALE — plus JUDGMENT measured centrally across all. | P0 | 5 | PASSED | §12 |
 | CUR-017 | Judgment competencies measured: whether a funnel/automation/GHL/tag-or-field/custom code is needed, whether to contact a prospect, whether evidence supports an audit claim, whether to accept a project, realistic scope/price/complexity, admitting not knowing, what could break, what is missing. Reward "I don't know yet, but this is how I would verify it" over fabricated confidence. | P1 | 24 | NOT_STARTED | §13 |
 | CUR-018 | STRATEGIZE curriculum tiers: Field Ready (customer path … bottleneck reasoning; 11 core funnel families), Practitioner (webinar … course enrollment), Advanced (multi-funnel … advanced diagnosis), Specialist (complete business-system architecture). | P1 | 24 | NOT_STARTED | §14 |
 | CUR-019 | BUILD curriculum: conversion layout, copy, GHL Funnel Builder (current real features), GHL Websites, Forms, Surveys, Calendars, Payments (progressive). | P1 | 24 | NOT_STARTED | §15 |
@@ -74,7 +74,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | CUR-030 | Starter projects: Lead Capture System, Consultation Booking, Application Funnel, Reactivation, Full Capstone (complete fictional Bloomwired client). | P1 | 24 | NOT_STARTED | §154 |
 | CUR-031 | Capstone exam: no normal hints; learner receives business, offers, staff, metrics, current systems, problems, hidden edge cases, client communications, budget constraints; must diagnose, architect, build, test, troubleshoot, price, negotiate, propose, explain; reasoning questions asked; major implementation in real GHL. | P1 | 24 | NOT_STARTED | §155 |
 | CUR-032 | Post-Field-Ready paths: Automation Specialist, Funnel & Conversion Specialist, Sales Operator, Technical GHL Specialist, Agency Systems, GHL AI Specialist, recommended Bloomwired Operator Path. | P2 | 25 | NOT_STARTED | §157 |
-| CUR-033 | Content coverage matrix (Skill × Learn / Guided / Practice / Fix / Independent / Pressure / Fieldwork / Sales Use) generated from content data, not maintained by hand. | P1 | 5 | NOT_STARTED | §137 |
+| CUR-033 | Content coverage matrix (Skill × Learn / Guided / Practice / Fix / Independent / Pressure / Fieldwork / Sales Use) generated from content data, not maintained by hand. | P1 | 5 | PASSED | §137 |
 | CUR-034 | Minimum curriculum: one master graph, Field Ready path, practical work for every core skill, independent assessment, retrieval, pricing, negotiation, calls, written sales, proposals, prospecting, real GHL fieldwork. | P0 | 24 | NOT_STARTED | §144 |
 | CUR-035 | Field Ready content complete from placement through capstone before advanced curriculum; no hundreds of shallow lessons before the learning loop works. | P1 | 24 | NOT_STARTED | PHASE 24 |
 | CUR-036 | Academy behaves like an interactive editorial publication: strong typography, short sections, diagrams, inline simulations, interaction, expandable depth. Not "video + paragraph + next lesson". | P1 | 8 | NOT_STARTED | §76 |
@@ -381,7 +381,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DATA-008 | Export Bloomlab Data: versioned backup containing progress, evidence, projects, notes, simulator saves, portfolio metadata. | P1 | 23 | NOT_STARTED | §150, TA§80 |
 | DATA-009 | Restore Backup validates version and schema, requires confirmation, never silently overwrites. | P2 | 26 | NOT_STARTED | §150, TA§81 |
 | DATA-010 | Separate development and production D1 (`bloomlab-dev`, `bloomlab-prod`); migrations never tested against production first. | P0 | 4 | PASSED | §104, TA§61 |
-| DATA-011 | Content update safety: completed historical attempts are never mutated when GHL features or content change. | P0 | 5 | NOT_STARTED | TA§82 |
+| DATA-011 | Content update safety: completed historical attempts are never mutated when GHL features or content change. | P0 | 5 | PARTIAL | TA§82 |
 
 ## AI — Runtime AI
 
@@ -459,29 +459,29 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| CNT-001 | Curriculum is never hardcoded inside JSX. | P0 | 5 | NOT_STARTED | §98, TA§52 |
-| CNT-002 | `content/` tree: skills, ghl-features, campaigns, learning-units, exercises, scenarios, clients, rubrics, projects, portfolio, glossary. | P0 | 5 | NOT_STARTED | §98, TA§53 |
-| CNT-003 | YAML for structured definitions; Markdown/MDX for learning prose and interactive embeds. | P0 | 5 | NOT_STARTED | §98 |
-| CNT-004 | Zod (or equivalent) schemas for every content type: SkillSchema, ExerciseSchema, ScenarioSchema, ClientSchema, GHLFeatureSchema, RubricSchema, CampaignSchema, LearningUnitSchema, ProjectSchema, GlossarySchema. | P0 | 5 | NOT_STARTED | §99, TA§54 |
-| CNT-005 | Validation enforces unique IDs and valid prerequisites, skill refs, GHL feature refs, client refs, scenario refs, campaign refs, exercise refs. Build fails on any broken reference. | P0 | 5 | NOT_STARTED | §99 |
-| CNT-006 | Build-time compilation `source → validate → resolve → compile → optimized bundle`; the giant content folder is never parsed at runtime. | P0 | 5 | NOT_STARTED | §100, TA§55 |
-| CNT-007 | Content version recorded on every release; attempts preserve version metadata so old evidence stays historically valid. | P0 | 5 | NOT_STARTED | §101 |
-| CNT-008 | Client schema: id, business_name, industry, locations, team, offers, lead_sources, current_systems, metrics, problems, relationship_state, assets, hidden_facts, voice, history. | P0 | 5 | NOT_STARTED | §38 |
+| CNT-001 | Curriculum is never hardcoded inside JSX. | P0 | 5 | PASSED | §98, TA§52 |
+| CNT-002 | `content/` tree: skills, ghl-features, campaigns, learning-units, exercises, scenarios, clients, rubrics, projects, portfolio, glossary. | P0 | 5 | PASSED | §98, TA§53 |
+| CNT-003 | YAML for structured definitions; Markdown/MDX for learning prose and interactive embeds. | P0 | 5 | PASSED | §98 |
+| CNT-004 | Zod (or equivalent) schemas for every content type: SkillSchema, ExerciseSchema, ScenarioSchema, ClientSchema, GHLFeatureSchema, RubricSchema, CampaignSchema, LearningUnitSchema, ProjectSchema, GlossarySchema. | P0 | 5 | PASSED | §99, TA§54 |
+| CNT-005 | Validation enforces unique IDs and valid prerequisites, skill refs, GHL feature refs, client refs, scenario refs, campaign refs, exercise refs. Build fails on any broken reference. | P0 | 5 | PASSED | §99 |
+| CNT-006 | Build-time compilation `source → validate → resolve → compile → optimized bundle`; the giant content folder is never parsed at runtime. | P0 | 5 | PASSED | §100, TA§55 |
+| CNT-007 | Content version recorded on every release; attempts preserve version metadata so old evidence stays historically valid. | P0 | 5 | PARTIAL | §101 |
+| CNT-008 | Client schema: id, business_name, industry, locations, team, offers, lead_sources, current_systems, metrics, problems, relationship_state, assets, hidden_facts, voice, history. | P0 | 5 | PASSED | §38 |
 | CNT-009 | Persistent fictional clients with persistent state across the §37 industries (med spa, coach, consultant, therapist, photographer, realtor, gym, pet service, HVAC, roofing, cleaning, remodeling, dentist, chiropractor, law firm, accounting, recruiting, course creator, wedding vendor, B2B service). | P1 | 24 | NOT_STARTED | §37 |
 | CNT-010 | Glossary content type and search integration. | P2 | 24 | NOT_STARTED | §98, TA§71 |
-| CNT-011 | Content tests run in CI (all IDs valid, no missing prerequisites, no unknown GHL features). | P0 | 5 | NOT_STARTED | TA§73 |
+| CNT-011 | Content tests run in CI (all IDs valid, no missing prerequisites, no unknown GHL features). | P0 | 5 | PASSED | TA§73 |
 
 ## GHL — GoHighLevel Accuracy
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| GHL-001 | Capability registry at `content/ghl-features/` with required fields id, official_name, area, feature_type, implementation_type, status, simulation_fidelity, last_verified, source_url, known_limitations, skills (plus supported_configs). | P0 | 5 | NOT_STARTED | §25, TA§29 |
-| GHL-002 | `implementation_type` ∈ native_ghl, integration, custom_code, external_service. | P0 | 5 | NOT_STARTED | §25 |
-| GHL-003 | `status` ∈ current, needs_review, deprecated, removed. | P0 | 5 | NOT_STARTED | §25 |
-| GHL-004 | `simulation_fidelity` ∈ A, B, C, REAL_GHL; approximations clearly labelled; fictional native functionality never taught. | P0 | 5 | NOT_STARTED | §26, TA§30 |
+| GHL-001 | Capability registry at `content/ghl-features/` with required fields id, official_name, area, feature_type, implementation_type, status, simulation_fidelity, last_verified, source_url, known_limitations, skills (plus supported_configs). | P0 | 5 | PASSED | §25, TA§29 |
+| GHL-002 | `implementation_type` ∈ native_ghl, integration, custom_code, external_service. | P0 | 5 | PASSED | §25 |
+| GHL-003 | `status` ∈ current, needs_review, deprecated, removed. | P0 | 5 | PASSED | §25 |
+| GHL-004 | `simulation_fidelity` ∈ A, B, C, REAL_GHL; approximations clearly labelled; fictional native functionality never taught. | P0 | 5 | PASSED | §26, TA§30 |
 | GHL-005 | No supposed native GHL feature is ever exposed in Bloomlab without a registry entry. | P0 | all | NOT_STARTED | §25 |
-| GHL-006 | Trigger, action and product names verified against official current GHL documentation before entering the registry; obsolete API patterns never taught as current; old YouTube tutorials never blindly reproduced. | P0 | 5 | NOT_STARTED | §16, §23, §151 |
-| GHL-007 | GHL coverage matrix generated: GHL Feature × Skill / Simulator / Fidelity / Exercise / Fieldwork / Last Verified. | P1 | 5 | NOT_STARTED | §138 |
+| GHL-006 | Trigger, action and product names verified against official current GHL documentation before entering the registry; obsolete API patterns never taught as current; old YouTube tutorials never blindly reproduced. | P0 | 5 | PASSED | §16, §23, §151 |
+| GHL-007 | GHL coverage matrix generated: GHL Feature × Skill / Simulator / Fidelity / Exercise / Fieldwork / Last Verified. | P1 | 5 | PASSED | §138 |
 | GHL-008 | Freshness: features not verified recently are flagged; a maintenance script generates a review list. | P2 | 26 | NOT_STARTED | TA§83 |
 | GHL-009 | Simulator approximations and mismatches with real GHL recorded honestly in KNOWN_LIMITATIONS.md. | P0 | all | NOT_STARTED | §140 |
 | GHL-010 | Exact real GHL terminology used in UI wherever a real feature is represented. | P0 | all | NOT_STARTED | §44, §51 |

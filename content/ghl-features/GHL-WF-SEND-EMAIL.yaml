@@ -1,0 +1,27 @@
+# Name verified 2026-09-02 on "A List of Workflow Actions" (Communication group).
+id: GHL-WF-SEND-EMAIL
+official_name: Send Email
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002294-what-are-workflow-actions-complete-list-
+known_limitations:
+  - Deliverability, open tracking and email-builder templates are not simulated; the send is recorded with subject and body.
+skills:
+  - SK-AUTOMATE-workflow-foundations
+  - SK-AUTOMATE-no-show-recovery
+supported_configs:
+  config_fields:
+    - name: subject
+      type: template
+      required: true
+    - name: body
+      type: template
+      required: true
+    - name: from_name
+      type: string
+      required: false
+verification_note: Name confirmed on the actions list page, 2026-09-02; fields not individually verified.

@@ -20,7 +20,11 @@ describe('worker', () => {
     const body = (await response.json()) as HealthResponse;
     expect(body.ok).toBe(true);
     expect(body.environment).toBe('local');
-    expect(body.versions).toEqual({ app: '0.1.0', content: null, simulator: '0.0.0' });
+    expect(body.versions).toEqual({
+      app: '0.1.0',
+      content: expect.stringMatching(/^\d{4}\.\d{2}\.\d{2}/),
+      simulator: '0.0.0',
+    });
   });
 
   it('returns 404 JSON for unknown API routes', async () => {

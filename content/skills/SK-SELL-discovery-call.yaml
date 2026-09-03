@@ -1,0 +1,20 @@
+id: SK-SELL-discovery-call
+title: Discovery call
+territory: SELL
+tier: field_ready
+summary: >-
+  Run a discovery conversation that uncovers process, volume, pain, urgency, budget and
+  decision process — listening more than talking and never pitching early.
+prerequisites:
+  - SK-SELL-evidence-based-audit
+  - SK-STRATEGIZE-bottleneck-diagnosis
+ghl_features: []
+judgment_competencies:
+  - what_is_missing
+  - admit_not_knowing
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: true
+  fieldwork_required: false
+  sales_use: true
+keywords: [discovery, listening, questions, budget, decision process]

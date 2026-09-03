@@ -1,0 +1,21 @@
+# Verified 2026-09-02 against "HighLevel Snapshots Overview: Copy Account Assets Fast". Not
+# simulated: the learner builds and loads snapshots in a real GHL account (REAL_GHL).
+id: GHL-SNAP-SNAPSHOTS
+official_name: Snapshots
+area: Snapshots
+feature_type: product
+implementation_type: native_ghl
+status: current
+simulation_fidelity: REAL_GHL
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/48000982511-snapshots-overview
+known_limitations:
+  - Snapshots include workflows, funnels, calendars, forms, emails, custom fields and custom values; they do not include contacts, appointments, conversations, reputation data, Stripe connections or integrations.
+skills:
+  - SK-SCALE-snapshot-portability
+supported_configs:
+  options:
+    - Create snapshot from sub-account
+    - Load snapshot into new sub-account
+    - Load snapshot into existing sub-account
+verification_note: Included and excluded asset types confirmed on the help-center article, 2026-09-02.

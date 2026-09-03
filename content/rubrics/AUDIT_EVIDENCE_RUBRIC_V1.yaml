@@ -1,0 +1,31 @@
+# Versioned rubric (AI-011, SAL-001): every finding Verified / Likely / Unknown.
+id: AUDIT_EVIDENCE_RUBRIC_V1
+version: 1
+title: Evidence-based audit and prospect reasoning
+applies_to:
+  - AUDIT_IT
+  - PROSPECT_IT
+model_class: cheap
+output_schema: ai_grading_v1
+rewards_verified_uncertainty: true
+items:
+  - id: r1
+    tier: critical
+    criterion: No unsupported claim is presented as a fact.
+    weight: 5
+  - id: r2
+    tier: required
+    criterion: Every finding or decision carries a label (Verified / Likely / Unknown; Contact / Maybe / Skip) and a reason.
+    weight: 4
+  - id: r3
+    tier: required
+    criterion: At least one Verified finding comes from something the learner actually observed or tested.
+    weight: 3
+  - id: r4
+    tier: quality
+    criterion: Unknowns say what would confirm them.
+    weight: 2
+  - id: r5
+    tier: bonus
+    criterion: Recognises a prospect that should be skipped, or an audit claim that should be withdrawn.
+    weight: 2

@@ -1,0 +1,19 @@
+id: SK-SELL-negotiation-basics
+title: Negotiation basics
+territory: SELL
+tier: field_ready
+summary: >-
+  Handle a budget objection or a cheaper quote by clarifying, holding, reducing scope, phasing
+  or walking away — and recognise which one the moment calls for.
+prerequisites:
+  - SK-SELL-project-pricing
+ghl_features: []
+judgment_competencies:
+  - price_realistic
+  - accept_project
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: true
+  fieldwork_required: false
+  sales_use: true
+keywords: [objection, discount, hold, reduce scope, phase, walk away]

@@ -1,0 +1,47 @@
+# PRICE IT (spec §27, PRI-002): choose price, deposit, recurring, timeline, revisions,
+# inclusions, exclusions; hidden economics revealed after submission.
+id: EX-PRICE_IT-summit-application-funnel
+type: PRICE_IT
+title: Price Summit's application funnel
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-SELL-project-pricing
+scenario: SC-summit-discovery
+instructions: |
+  Scope: an application form with qualification routing, a discovery calendar, automated
+  follow-up for applicants and for no-shows, migration of the Typeform questions, and a monthly
+  check-in.
+
+  Set a project price, deposit, recurring fee (if any), timeline, number of revisions, and the
+  inclusions and exclusions. Then explain the number in three sentences Marcus would accept.
+  There is no single right price; there are wrong ones.
+allowed_features: []
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: price.deposit
+    operator: exists
+    description: A deposit is set.
+  - id: a2
+    type: state
+    path: price.exclusions_count
+    operator: gte
+    value: 2
+    description: At least two explicit exclusions.
+critical_failures:
+  - id: c1
+    type: state
+    path: price.total
+    operator: gte
+    value: 1200
+    description: A total below the estimated labor cost is a critical pricing failure.
+grading:
+  mode: mixed
+  rubric: PRICING_REASONING_RUBRIC_V1
+  pass_threshold: 70
+hints: []
+fieldwork: null
+portfolio: PF-application-qualification-system

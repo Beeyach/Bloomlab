@@ -1,0 +1,23 @@
+# Name verified 2026-09-02 on "A List of Workflow Triggers" (Opportunities group).
+id: GHL-WF-OPPORTUNITY-STATUS-CHANGED
+official_name: Opportunity Status Changed
+area: Workflows
+feature_type: trigger
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002292-a-list-of-workflow-triggers
+known_limitations: []
+skills:
+  - SK-ARCHITECT-pipeline-design
+supported_configs:
+  filters:
+    - Pipeline
+    - Status
+  options:
+    - Open
+    - Won
+    - Lost
+    - Abandoned
+verification_note: Name confirmed on the triggers list page, 2026-09-02; status options from the opportunities guide.
