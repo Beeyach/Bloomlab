@@ -1,8 +1,13 @@
 import Dexie, { type EntityTable, type Table } from 'dexie';
 
 import type {
+  CampaignProgressRecord,
   DeviceRecord,
+  ExerciseAttemptRecord,
   NoteRecord,
+  ReviewQueueRecord,
+  SkillEvidenceRecord,
+  SkillProgressRecord,
   SyncConflictRecord,
   SyncOperation,
   SyncShadowRecord,
@@ -11,7 +16,7 @@ import type {
 } from './types';
 
 export const DB_NAME = 'bloomlab';
-export const DB_VERSION = 2;
+export const DB_VERSION = 3;
 
 /**
  * The IndexedDB database behind every local-first flow (DATA-002). Dexie is the whole data
@@ -29,6 +34,12 @@ export class BloomlabDatabase extends Dexie {
   // Compound primary keys: `[entity, entity_id]`.
   declare sync_shadow: Table<SyncShadowRecord, [string, string]>;
   declare sync_conflicts: Table<SyncConflictRecord, [string, string]>;
+  // Phase 6: learning records (spec §93 Learning domain, synced by kind).
+  declare skill_evidence: EntityTable<SkillEvidenceRecord, 'id'>;
+  declare exercise_attempts: EntityTable<ExerciseAttemptRecord, 'id'>;
+  declare skill_progress: EntityTable<SkillProgressRecord, 'id'>;
+  declare campaign_progress: EntityTable<CampaignProgressRecord, 'id'>;
+  declare review_queue: EntityTable<ReviewQueueRecord, 'id'>;
 
   constructor(name: string = DB_NAME) {
     super(name);
@@ -41,9 +52,17 @@ export class BloomlabDatabase extends Dexie {
       sync_state: '&entity',
     });
     // v2 (Phase 4): the server-confirmed state per record and unresolved conflicts.
-    this.version(DB_VERSION).stores({
+    this.version(2).stores({
       sync_shadow: '&[entity+entity_id]',
       sync_conflicts: '&[entity+entity_id], detected_at',
+    });
+    // v3 (Phase 6): evidence and attempts (append-only) and the derived progress rows.
+    this.version(DB_VERSION).stores({
+      skill_evidence: '&id, skill_id, occurred_at, updated_at',
+      exercise_attempts: '&id, exercise_id, updated_at',
+      skill_progress: '&id, skill_id, updated_at',
+      campaign_progress: '&id, campaign_id, updated_at',
+      review_queue: '&id, skill_id, due_at, updated_at',
     });
   }
 }

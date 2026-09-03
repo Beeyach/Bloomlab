@@ -1,0 +1,129 @@
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--bl-space-2);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--bl-space-1) var(--bl-space-3);
+  align-items: start;
+  padding: var(--bl-space-2) 0;
+  border-top: 1px solid var(--bl-color-border);
+  font-size: var(--bl-font-size-sm);
+}
+
+.row:first-child {
+  border-top: 0;
+}
+
+.rowHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2);
+  font-family: var(--bl-font-mono);
+}
+
+.rowMeta {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+}
+
+@media (min-width: 768px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--bl-space-3);
+  align-items: end;
+}
+
+.formWide {
+  grid-column: 1 / -1;
+}
+
+.hints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-3);
+  font-size: var(--bl-font-size-sm);
+}
+
+.hints label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bl-space-1);
+  min-height: 44px;
+}
+
+.actions {
+  margin-top: var(--bl-space-3);
+}
+
+.plan {
+  margin: var(--bl-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--bl-space-2);
+}
+
+.block {
+  padding: var(--bl-space-2) 0;
+  border-top: 1px solid var(--bl-color-border);
+}
+
+.block h4 {
+  margin: 0 0 var(--bl-space-1);
+  font-size: var(--bl-font-size-sm);
+  font-weight: 600;
+}
+
+.block ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: var(--bl-font-size-sm);
+}
+
+.block li {
+  overflow-wrap: anywhere;
+}
+
+.notes {
+  margin: var(--bl-space-2) 0 0;
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+.gates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-1);
+  margin: var(--bl-space-1) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--bl-font-size-sm);
+  font-family: var(--bl-font-mono);
+}
+
+.gates li {
+  padding: 2px var(--bl-space-2);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-sm);
+}
+
+.gates li[data-status='passed'] {
+  border-color: var(--bl-color-success);
+}
+
+.gates li[data-status='locked'] {
+  color: var(--bl-color-text-soft);
+}

@@ -6,13 +6,14 @@ Last updated: 2026-09-02
 
 ## CURRENT PHASE
 
-Phase 5 — Content Engine: **complete** — `packages/content-schema` holds strict Zod schemas for all eleven content types, the compiler (`source → validate → resolve → compile`), the coverage and freshness reports, the content version lock and a Vite plugin that compiles `content/` at build time and hands the bundle to the app (`virtual:bloomlab-content`) and the Worker (`virtual:bloomlab-content/version`). A broken reference of any kind fails the build with file, path and message; the seed content (22 skills across all ten territories, 34 verified GHL registry records, two campaigns, 3 MDX units, 16 exercises, 4 scenarios, 3 clients, 5 rubrics, 2 projects, 2 portfolio templates, 8 glossary terms) compiles with zero errors and 36 honest coverage warnings. Verified by 71 content-engine tests, a fourteen-breakage demonstration, and the running preview (`/system` Content section, `/api/health` content version) — see `docs/reviews/phase-5-content-engine.md`. CNT-007, DATA-011 and INF-013 stay partial until attempt records exist (Phases 6 and 9); CNT-011 passed on the first CI run of the branch (run 33718316982). Phase 4 (D1 + Sync) is complete and its PR is awaiting merge. Phase 6 — Learning Engine is waiting for the go-ahead.
+Phase 6 — Learning Engine: **complete** — `packages/mastery-engine` is a pure, deterministic domain package (no React, no network, no AI) with versioned explicit rules: the eight mastery states (NEEDS_REFRESH as an overlay on the earned ladder), an evidence schema carrying every §30 field and the version stamp, the assistance table (nudge / concept reminder / worked example → independent / light / guided / heavy), skill evaluation (state, confidence, missing requirements, review priority), the evidence-based review scheduler, clock-free prerequisite and campaign-gate evaluation, and the session builder (30 min / 1 h / 2 h / deep, Continue). Learner records live on the Phase 3/4 path: append-only evidence and attempts plus derived skill, campaign and review rows in Dexie v3, synced through the existing outbox and Worker with no new migration. Verified by 51 engine tests over the required scenarios, 9 web persistence / sync tests, and `npm run review:learning` across two browser contexts (A records → B receives the same derived rows → B records a worked-example pass offline → reconnect → both agree). Evidence enters through the diagnostic form on `/system` until Phases 8–9 produce it. CUR-002 stays partial (two Field Ready gates have no authored skills); INF-018 (P2 analytics) is not started. Phase 7 — Command Center + Skill Map is waiting for the go-ahead.
 
 ## VERSIONS
 
 - app: 0.1.0
 - content: 2026.09.02 (`content/content.yaml`, locked by `content/content.lock.yaml`)
 - simulator: 0.0.0 (no engine yet)
+- mastery rules: 2026.09.03-r4 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
 
 ## PASSED
 
@@ -98,13 +99,29 @@ Phase 5:
 - GHL-006 — evidence: every record's `source_url` is an https page on `help.gohighlevel.com` (schema rule; YouTube and http fail the test), with `last_verified: 2026-09-02` and a `verification_note` saying what was confirmed where; the verification log is in `docs/reviews/phase-5-content-engine.md`. Names follow the current help-center articles (e.g. `Wait` with alias `Wait Step`, `If/Else`, `Webhook` with alias `Custom Webhook`, `Create/Update Opportunity`).
 - GHL-007 — evidence: `buildGhlCoverage` derives GHL Feature × Skill / Simulator / Fidelity / Exercise / Fieldwork / Last Verified; the test checks `GHL-WF-APPOINTMENT-STATUS` (simulated, used by the BUILD IT) and `GHL-SNAP-SNAPSHOTS` (REAL_GHL, never simulated, fieldwork only); `.content/coverage-ghl.md` is written on every build.
 
+Phase 6:
+
+- MAS-001 — evidence: `MASTERY_STATES` is exactly the eight states; `evaluateSkill` returns only them (engine test "only ever emits the eight states"); NEEDS_REFRESH keeps `refresh_from` so the earned rung is never lost.
+- MAS-002 — evidence: `EXPOSURE_ONLY_KINDS` (exposure, quiz) never count as attempts; ten exposures plus a passed quiz evaluate to LEARNING (engine test 2); the web test records a unit exposure and reads LEARNING.
+- MAS-003 — evidence: `SkillEvidenceSchema` requires skill, exercise, result, score, assistance, difficulty, critical failures, date, versions (app, content, content hash, simulator, rules) and real-GHL evidence; the engine test removes each field and expects rejection; `recordEvidence` validates inside the write transaction and an incomplete record writes nothing (web test).
+- MAS-005 — evidence: due reviews go into the session's retrieval block; a due or NEEDS_REFRESH prerequisite never locks what depends on it (campaign test "never locks"); a failed retrieval sets NEEDS_REFRESH immediately and re-queues the skill (review test); a passed retrieval restores the earned state with the history intact (review test 14).
+- MAS-006 — evidence: `buildSession` offers 30m / 1h / 2h / deep (30 / 60 / 120 / 240 min), consumes active campaign, current gate, weak prerequisites, review due, recent failures, assistance dependence, pending fieldwork and the active project, is deterministic (same input → equal plan), contains no AI call, and Continue rebuilds without the finished items (session tests); the diagnostic UI exposes Build my session and Continue.
+- MAS-007 — evidence: `assistanceFromHints` implements the four levels from hint use; `assistanceDependence` is computed on every plan; UI copy names levels only ("independent", "guided") with no grades or shaming; MASTERED requires unassisted passes (D-045).
+- MAS-008 — evidence: `packages/mastery-engine` imports only `zod`; inputs skill definition, evidence history (assistance, difficulty, recency, critical failures, fieldwork requirement) → outputs `state`, `confidence`, `missing_requirements`, `review_priority` (plus the counts behind them); 51 tests.
+- MAS-009 — evidence: the scheduler uses last_demonstrated, failure_rate, mastery (ladder) level and importance to compute review_due and priority; tests cover interval arithmetic, ordering by priority and exclusion of skills below PRACTICED.
+- MAS-011 — evidence: a pass with a worked example rolls up to heavy assistance, evaluates to GUIDED, and counts zero independent passes (engine test 4; the two-device probe records one and both devices show "independent 0/3").
+- PRD-002 — evidence: no engine function that decides availability, gates or next work takes a clock; the campaign test evaluates the same history "two years later" and gets identical gate statuses; grep of the app finds no "tomorrow" / "come back" copy.
+- PRD-003 — evidence: gates resolve on evidence counts and kinds (campaign test 9); a quiz never changes the ladder; an independent exercise does (web test).
+- CNT-007 — evidence: every evidence and attempt record stores `versions.content` and `versions.content_hash` at write time (web test 16) and keeps them when the bundle changes (web test "never rewrites").
+- DATA-011 — evidence: after recording evidence, recomputing against a bundle with a new content version and every registry record marked deprecated leaves the stored evidence byte-identical while the derived row records the new content version (web test).
+- INF-013 — evidence: `currentVersions()` stamps app (`@bloomlab/shared`), content + hash (compiled bundle), simulator (`@bloomlab/simulator-core`) and rules on every attempt and evidence record; `/api/health` and `/system` show the triplet; the Learning section shows the stamp on every recent evidence row.
+
 Deployment:
 
 - RSP-005 — evidence: PR #1 triggered CI run 33659265707; the Preview deploy job ran (not skipped), built with `CLOUDFLARE_ENV: preview` and deployed `bloomlab-preview` to https://bloomlab-preview.cool-sunset-2169.workers.dev. `/api/health` returned `{"environment":"preview"}` and the preview `/system` route was reachable from a phone-width viewport.
 
 ## IN PROGRESS
 
-- INF-013 — `app_version` (`@bloomlab/shared`), `content_version` + `content_hash` (compiled bundle) and `simulator_version` (`@bloomlab/simulator-core`) are surfaced by `/api/health` and `/system`, and the client warns when the Worker's content version differs; attempt records that persist them arrive with the learning engine (Phase 6) and exercise runner (Phase 9).
 - DES-006 — cross-cutting: Phase 2 gallery reviewed against the §70 list (no gradient heroes, gradient text, glassmorphism, blobs, icon-per-heading, card-everything, fake stats, emoji nav, trophies, huge shadows, confetti); re-checked every phase.
 - DES-008 — density mechanism (`data-density`, `--bl-density-row`) implemented in ToolPanel and rows; per-environment assignment happens with the screens (Phase 7+).
 - DES-012 — ClientCaseCover with the abstract IdentityMark exists; three persistent clients are seeded as content (Phase 5); the Clients environment is Phase 24.
@@ -119,8 +136,7 @@ Deployment:
 
 - DATA-001 — the whole chain `UI → local state → IndexedDB → sync queue → server` runs end to end and is verified across two browser contexts on the local and deployed preview (`npm run review:sync`): a note written on device A lands in Dexie and the outbox before any network call, syncs to D1, and appears on device B. Remaining acceptance interactions — moving a workflow node and completing a deterministic exercise offline — belong to Phases 12 and 9.
 - SYNC-007 — every synced record carries `id, learner_id, updated_at, revision, device_id, deleted_at` (plus `created_at`), the outbox coalesces repeated pending changes per record so a keystroke stream becomes one operation, the Worker rejects writes for another learner, and soft deletes travel as tombstones. Remaining: "not every drag coordinate" is proven only once workflow nodes exist (Phase 12).
-- CNT-007 — the compiled bundle carries `content_version`, `content_hash` and `schema_version`; the version is stamped from `content/content.yaml`, enforced by `content/content.lock.yaml` and `npm run content:check`, and surfaced by `/system` and `/api/health`. Remaining: attempt records that store the version (Phases 6 and 9).
-- DATA-011 — the mechanism that keeps historical evidence valid is in place: content changes require a new `content_version`, the bundle pins `content_hash`, rubric changes create a new `_V<n>` record by rule, and registry records change status rather than disappearing. Remaining: attempt records to prove non-mutation against (Phases 6 and 9).
+- CUR-002 — `CAMP-FIELD_READY` defines gates 0–12 as competency gates (placement plus twelve progression gates) and the engine resolves them on evidence only; gates 6 (Conversion and Copy) and 12 (Capstone) have no authored skills yet, so their §11 competencies are not mapped to skills until Phase 24.
 - INF-001 — React + TypeScript + Vite + Cloudflare Workers/Static Assets + Dexie (IndexedDB) + D1 (dev and prod, bound and migrated) are in place and building; R2 (Phase 20) and Claude / ElevenLabs / Google Speech-to-Text (Phases 19–21) are not yet wired.
 - INF-004 — local / preview / production are defined in `worker/wrangler.jsonc` with distinct Worker names and `BLOOMLAB_ENV` vars, and the client maps Vite modes in `apps/web/src/app/runtime.ts`. Preview and production deploys are now live and verified: `bloomlab-preview` on pull requests and `bloomlab` on `main`, each with its own D1 database and secrets. Remaining: R2 buckets and the AI/voice secrets per environment (Phases 19–21).
 - INF-005 — `.github/workflows/ci.yml` runs typecheck, lint, format check, unit tests, docs validation, content validation (`content:check`, since Phase 5) and build on pull requests and `main`; the preview deploy job (PR #1, run 33659265707) and the production deploy job (run 33658838902) both ran only after the checks passed; since Phase 4 each deploy job applies D1 migrations (dev on PRs, prod on `main`) before deploying, and the Worker tests run inside workerd. Remaining: the simulator regression step (Phase 10).
@@ -140,7 +156,7 @@ None
 
 ## NEXT
 
-Phase 6 — Learning Engine targets: MAS-001 … MAS-011 (mastery states, evidence records that store the version triplet, review scheduler, session builder) on top of the compiled skill graph and campaign paths; closes CNT-007, DATA-011 and INF-013.
+Phase 7 — Command Center + Skill Map targets: DES-009 … DES-013, PRD-007, PRD-012 … PRD-014, MAS-007 (the quiet meter's screen), the learner-facing views over the Phase 6 derived rows — real progress state, no fake metrics.
 
 ## PHASE CHECKLIST (§163)
 
@@ -150,7 +166,7 @@ Phase 6 — Learning Engine targets: MAS-001 … MAS-011 (mastery states, eviden
 - [x] Phase 3 — Local-First Data: IndexedDB, data services, local state persistence, sync queue primitives (DATA-001 completes with the Phase 4 transport)
 - [x] Phase 4 — D1 + Sync: learner, sync key, hashing, device sessions, sync, conflicts, offline recovery (verified across two browser contexts with `npm run review:sync`)
 - [x] Phase 5 — Content Engine: schemas, YAML/MDX loading, validation, compilation, IDs, prerequisite resolution, feature registry (seed content compiled and verified; curriculum authoring is Phase 24)
-- [ ] Phase 6 — Learning Engine: skills, campaigns, mastery, evidence, review queue, session builder
+- [x] Phase 6 — Learning Engine: skills, campaigns, mastery, evidence, review queue, session builder (deterministic engine, learner records synced, verified across two browser contexts with `npm run review:learning`)
 - [ ] Phase 7 — Command Center + Skill Map: premium UI, real progress state, no fake metrics
 - [ ] Phase 8 — Academy: interactive learning units with embedded small simulations
 - [ ] Phase 9 — Exercise Runner: core shell + deterministic grading; Build It, Fix It, Run the Lead, Edge Case, Architecture Decision, Rebuild Blind
@@ -174,4 +190,4 @@ Phase 6 — Learning Engine targets: MAS-001 … MAS-011 (mastery states, eviden
 
 ## ROLL-UP
 
-311 requirements registered · 68 PASSED · 10 IN_PROGRESS · 7 PARTIAL · 0 BLOCKED · 2 DEFERRED · 224 NOT_STARTED. Run the validator for the live count by status and priority.
+311 requirements registered · 82 PASSED · 9 IN_PROGRESS · 6 PARTIAL · 0 BLOCKED · 2 DEFERRED · 212 NOT_STARTED. Run the validator for the live count by status and priority.

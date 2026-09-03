@@ -7,124 +7,19 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import {
-  openPage,
-  screenshot,
-  serviceWorkerSessions,
-  session,
-  setViewport,
-  sleep,
-} from './cdp.mjs';
+import { screenshot, setViewport, sleep } from './cdp.mjs';
+import { probeHelpers } from './probe-lib.mjs';
 
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review');
 const BASE = process.env.BASE ?? 'http://localhost:4173';
-const ORIGIN = new URL(BASE).origin;
 
-const conditions = (offline) => ({
-  offline,
-  latency: 0,
-  downloadThroughput: -1,
-  uploadThroughput: -1,
-});
-
-async function waitFor(page, expression, tries = 80) {
-  for (let i = 0; i < tries; i++) {
-    if (await page.evaluate(expression)) return true;
-    await sleep(125);
-  }
-  return false;
-}
-
-const hasButton = (name) =>
-  `[...document.querySelectorAll('button')].some((b) => b.textContent.trim() === ${JSON.stringify(name)})`;
-const bodyHas = (text) => `document.body.textContent.includes(${JSON.stringify(text)})`;
-
-async function click(page, selectorOrText) {
-  const box = await page.evaluate(`(() => {
-    const wanted = ${JSON.stringify(selectorOrText)};
-    const el = wanted.startsWith('#') || wanted.includes('[')
-      ? document.querySelector(wanted)
-      : [...document.querySelectorAll('button, a')].find((b) => b.textContent.trim() === wanted);
-    if (!el) return null;
-    el.scrollIntoView({ block: 'center' });
-    const r = el.getBoundingClientRect();
-    const x = r.left + r.width / 2, y = r.top + r.height / 2;
-    const at = document.elementFromPoint(x, y);
-    return { x, y, hit: at ? at.tagName + ' ' + (at.textContent || '').trim().slice(0, 30) : null, sameElement: !!at && (at === el || el.contains(at)) };
-  })()`);
-  if (!box) throw new Error(`Nothing to click for ${selectorOrText}`);
-  if (!box.sameElement) console.log(`click ${selectorOrText}: point hits ${box.hit}`);
-  await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...box });
-  await page.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed',
-    ...box,
-    button: 'left',
-    clickCount: 1,
-  });
-  await page.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    ...box,
-    button: 'left',
-    clickCount: 1,
-  });
-}
-
-async function typeInto(page, selector, text) {
-  await page.evaluate(
-    `(() => { const el = document.querySelector(${JSON.stringify(selector)}); el.focus(); el.select?.(); })()`,
-  );
-  await page.send('Input.insertText', { text });
-}
-
-const text = (page, selector) =>
-  page.evaluate(`document.querySelector(${JSON.stringify(selector)})?.textContent?.trim() ?? null`);
-
-const indicator = (page) => text(page, '[role=status]');
+const { waitFor, hasButton, bodyHas, click, typeInto, text, indicator, diag, syncNow, device } =
+  probeHelpers({ base: BASE });
 
 const newestNote = (page) =>
   page.evaluate(
     "(() => { const t = document.querySelector('textarea'); return t ? t.value : null; })()",
   );
-
-/** The diagnostics rows that matter for sync: records, link and sync/cursor lines. */
-const diag = (page) =>
-  page.evaluate(
-    "[...document.querySelectorAll('dd')].map((d) => d.textContent.trim()).filter((t) => /^(device \\d|linked|not linked|Synced|Saved|Offline|Syncing)/.test(t))",
-  );
-
-/** Clicks "Sync now" on /system and waits until the outbox is empty. */
-async function syncNow(page) {
-  await waitFor(page, hasButton('Sync now'));
-  await click(page, 'Sync now');
-  return waitFor(page, bodyHas('sync_queue 0'));
-}
-
-async function device(name) {
-  const s = await session();
-  await s.page.send('Network.enable');
-  await setViewport(s.page, 1024, 900, { mobile: false });
-  // One attachment per service worker: emulation state belongs to the session that set it, so
-  // going back online must reuse the session that went offline.
-  let workers = null;
-  return {
-    name,
-    ...s,
-    async go(path) {
-      await openPage(s.page, `${BASE}${path}`);
-    },
-    async setOffline(on) {
-      workers ??= await serviceWorkerSessions(s.browser, ORIGIN);
-      if (workers.count) {
-        await workers.send('Network.enable').catch(() => undefined);
-        await workers
-          .send('Network.emulateNetworkConditions', conditions(on))
-          .catch(() => undefined);
-      }
-      await s.page.send('Network.emulateNetworkConditions', conditions(on));
-      await sleep(300);
-    },
-  };
-}
 
 mkdirSync(OUT, { recursive: true });
 const report = { base: BASE, steps: [] };

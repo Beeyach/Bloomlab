@@ -1,18 +1,98 @@
-/** Mastery states (spec §29, MAS-001). The engine is Phase 6. */
-export const MASTERY_STATES = [
-  'UNSEEN',
-  'LEARNING',
-  'GUIDED',
-  'PRACTICED',
-  'INDEPENDENT',
-  'PRESSURE_TESTED',
-  'MASTERED',
-  'NEEDS_REFRESH',
-] as const;
-
-export type MasteryState = (typeof MASTERY_STATES)[number];
-
-/** Assistance meter states (spec §34, MAS-007). */
-export const ASSISTANCE_LEVELS = ['independent', 'light', 'guided', 'heavy'] as const;
-
-export type AssistanceLevel = (typeof ASSISTANCE_LEVELS)[number];
+/**
+ * @bloomlab/mastery-engine — deterministic mastery, evidence, review and session logic
+ * (spec §28–§34, TA§68–§70). No React, no network, no AI: pure functions over evidence.
+ */
+export {
+  ASSISTANCE_LEVELS,
+  ASSISTANCE_RULES,
+  CONFIDENCE_RULES,
+  DEMONSTRATION_RULES,
+  EVIDENCE_KINDS,
+  EVIDENCE_RESULTS,
+  EXPOSURE_ONLY_KINDS,
+  HINT_LEVELS,
+  INDEPENDENT_KINDS,
+  LADDER_RULES,
+  MASTERY_LADDER,
+  MASTERY_RULES_VERSION,
+  MASTERY_STATES,
+  PRACTICE_KINDS,
+  REVIEW_DEMONSTRATION_KINDS,
+  REVIEW_RULES,
+  SESSION_LENGTHS,
+  SESSION_RULES,
+  assistanceRank,
+  ladderRank,
+  type AssistanceLevel,
+  type EvidenceKind,
+  type EvidenceResult,
+  type HintLevel,
+  type LadderState,
+  type MasteryState,
+  type SessionLength,
+} from './rules.ts';
+export type {
+  CampaignDefinition,
+  CampaignEvaluation,
+  EvidenceCounts,
+  EvidenceSource,
+  EvidenceVersions,
+  ExerciseMode,
+  ExerciseSummary,
+  GateEvaluation,
+  GateSkillStatus,
+  GateStatus,
+  MissingRequirement,
+  RealGhlEvidence,
+  ReviewItem,
+  ReviewSchedule,
+  SessionBlock,
+  SessionBlockKind,
+  SessionContent,
+  SessionFocus,
+  SessionInput,
+  SessionItem,
+  SessionItemKind,
+  SessionPlan,
+  SkillDefinition,
+  SkillEvaluation,
+  SkillEvidence,
+} from './types.ts';
+export {
+  SkillEvidenceSchema,
+  assistanceFromHints,
+  dayOf,
+  demonstrationKey,
+  effectiveAssistance,
+  hasRequiredProof,
+  isAttempt,
+  isDemonstration,
+  isFailure,
+  isFieldworkPass,
+  isIndependentPass,
+  isPass,
+  isPracticedPass,
+  isPressurePass,
+  isSalesUsePass,
+  validateEvidence,
+  type EvidenceIssue,
+} from './evidence.ts';
+export {
+  atLeast,
+  countEvidence,
+  evaluateSkill,
+  evaluateSkills,
+  ladderStateFor,
+  missingRequirementsFor,
+} from './mastery.ts';
+export {
+  failureRate,
+  importanceOf,
+  refreshOverlay,
+  reviewDueFor,
+  reviewIntervalDays,
+  reviewPriorityFor,
+  scheduleReviews,
+} from './review.ts';
+export { evaluateCampaign, skillPassesGate, unsatisfiedPrerequisites } from './campaign.ts';
+export { assistanceDependence, buildSession, nextStepFor } from './session.ts';

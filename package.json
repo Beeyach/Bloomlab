@@ -30,7 +30,8 @@
     "review:sync": "node scripts/review/sync-probe.mjs",
     "content:build": "node scripts/content.mjs build",
     "content:check": "node scripts/content.mjs check",
-    "content:lock": "node scripts/content.mjs lock"
+    "content:lock": "node scripts/content.mjs lock",
+    "review:learning": "node scripts/review/learning-probe.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

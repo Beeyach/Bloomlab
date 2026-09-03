@@ -43,6 +43,15 @@ export type {
   SyncStateRecord,
   WorkspaceRecord,
 } from './types';
-export { LOCAL_SYNC_ENTITIES } from './types';
-export type { SyncConflictRecord, SyncShadowRecord } from './types';
+export { DERIVED_SYNC_ENTITIES, LOCAL_SYNC_ENTITIES } from './types';
+export type {
+  CampaignProgressRecord,
+  ExerciseAttemptRecord,
+  ReviewQueueRecord,
+  SkillEvidenceRecord,
+  SkillProgressRecord,
+  SyncConflictRecord,
+  SyncShadowRecord,
+} from './types';
 export * from './sync';
+export * from './learning';

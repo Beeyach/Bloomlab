@@ -15,6 +15,7 @@
   "dependencies": {
     "@bloomlab/content-schema": "*",
     "@bloomlab/design-system": "*",
+    "@bloomlab/mastery-engine": "*",
     "@bloomlab/shared": "*",
     "@bloomlab/simulator-core": "*",
     "dexie": "^4.4.5",
