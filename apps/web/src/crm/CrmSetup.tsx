@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import type { CustomFieldType } from '@bloomlab/simulator-core';
-import { Button, Field, Input, Select } from '@bloomlab/design-system';
+import { Button, Field, Input, Select, Textarea } from '@bloomlab/design-system';
 
 import type { StoredRun } from '../simulator/store';
 import { createPipeline, defineField, updatePipeline, type CrmOutcome } from './commands';
@@ -182,8 +182,11 @@ function StageEditor({ run, pipelineId, apply }: CrmSetupProps & { pipelineId: s
   return (
     <div className={styles.section}>
       <h3 className={styles.stageName}>{pipeline.name}</h3>
-      <Field label="Stages" hint="One per line, in order. Reordering moves nothing.">
-        <textarea
+      <Field
+        label={`Stages in ${pipeline.name}`}
+        hint="One per line, in order. Reordering moves nothing."
+      >
+        <Textarea
           rows={Math.max(3, next.length + 1)}
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
