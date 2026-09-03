@@ -70,6 +70,7 @@
 /* Area switch. Buttons, not links: the area is a view of one account, not a place. */
 .modes {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--bl-space-1);
   margin: 0;
   padding: 0;
@@ -250,6 +251,20 @@
   font-size: var(--bl-font-size-sm);
 }
 
+/* On a coarse pointer the whole chip is the touch target (A11Y-007). */
+@media (pointer: coarse) {
+  .chip {
+    min-height: 44px;
+    padding-right: 0;
+  }
+
+  .chipRemove {
+    width: 44px;
+    height: 44px;
+    margin-right: 0;
+  }
+}
+
 /* The remove control sits inside the chip and still answers a 44 px touch. */
 .chipRemove {
   display: inline-flex;
@@ -421,7 +436,11 @@
   font-size: var(--bl-font-size-sm);
 }
 
-/* One stage at a time on phones, chosen from the switcher rather than by dragging. */
+/*
+ * One stage at a time on phones, chosen from the switcher rather than by dragging. The switcher
+ * names the stage in view (aria-current) and jumps to any other; it is the primary way through
+ * the board below 1024, with the scroller underneath as the second.
+ */
 .stageSwitch {
   display: flex;
   flex-wrap: wrap;
@@ -429,6 +448,29 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.stageSwitchButton {
+  min-height: 44px;
+  padding: 0 var(--bl-space-3);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-full);
+  background: var(--bl-color-surface);
+  font: inherit;
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+  cursor: pointer;
+}
+
+.stageSwitchButton[aria-current='true'] {
+  border-color: var(--bl-color-ink);
+  background: var(--bl-color-ink);
+  color: var(--bl-color-surface);
+}
+
+.stageSwitchButton:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
 }
 
 @media (max-width: 767px) {

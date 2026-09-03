@@ -105,9 +105,7 @@ function RecordPanel({ run, contact, apply }: ContactDetailProps) {
   return (
     <Stack gap={4}>
       <div className={styles.section}>
-        <Row label="Email" value={contact.email} missing="No email" />
-        <Row label="Phone" value={contact.phone} missing="No phone" />
-        <Row label="Source" value={contact.source} missing="No source recorded" />
+        <Details contact={contact} apply={apply} />
         <div className={styles.sectionRow}>
           <span className={styles.rowLabel}>Do not disturb</span>
           <span className={styles.rowValue}>
@@ -477,6 +475,131 @@ function TasksPanel({ run, contact, apply }: ContactDetailProps) {
       </ul>
     </Stack>
   );
+}
+
+/**
+ * The standard fields: read as rows, edited as one form, saved as one `CONTACT_UPDATED` carrying
+ * only what changed. A blank email or phone clears it — the Lab does not stop a learner from
+ * removing the only way to reach someone; that is a fact the account then shows plainly.
+ */
+function Details({ contact, apply }: Pick<ContactDetailProps, 'contact' | 'apply'>) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(() => detailsOf(contact));
+
+  if (!editing) {
+    return (
+      <>
+        <Row label="Email" value={contact.email} missing="No email" />
+        <Row label="Phone" value={contact.phone} missing="No phone" />
+        <Row label="Source" value={contact.source} missing="No source recorded" />
+        <Row label="Timezone" value={contact.timezone} missing="Account timezone" />
+        <div className={styles.actions}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setDraft(detailsOf(contact));
+              setEditing(true);
+            }}
+          >
+            Edit details
+          </Button>
+        </div>
+      </>
+    );
+  }
+
+  const set = (key: keyof ContactDetails) => (event: { target: { value: string } }) =>
+    setDraft((previous) => ({ ...previous, [key]: event.target.value }));
+
+  return (
+    <form
+      className={styles.formGrid}
+      aria-label="Contact details"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const changes = changedDetails(contact, draft);
+        if (Object.keys(changes).length === 0) {
+          setEditing(false);
+          return;
+        }
+        void apply((r) => updateContact(r, contact.id, changes)).then((ok) => {
+          if (ok) setEditing(false);
+        });
+      }}
+    >
+      <Field label="First name" required>
+        <Input value={draft.first_name} onChange={set('first_name')} />
+      </Field>
+      <Field label="Last name">
+        <Input value={draft.last_name} onChange={set('last_name')} />
+      </Field>
+      <Field label="Email">
+        <Input type="email" value={draft.email} onChange={set('email')} />
+      </Field>
+      <Field label="Phone">
+        <Input type="tel" value={draft.phone} onChange={set('phone')} />
+      </Field>
+      <Field label="Source" hint="Where this contact came from.">
+        <Input value={draft.source} onChange={set('source')} />
+      </Field>
+      <Field
+        label="Timezone"
+        hint="An IANA zone such as America/Chicago. Blank uses the account's."
+      >
+        <Input value={draft.timezone} onChange={set('timezone')} />
+      </Field>
+      <div className={`${styles.actions} ${styles.formWide}`}>
+        <Button type="submit" variant="primary" size="sm">
+          Save details
+        </Button>
+        <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(false)}>
+          Cancel
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+interface ContactDetails {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  source: string;
+  timezone: string;
+}
+
+const detailsOf = (contact: Contact): ContactDetails => ({
+  first_name: contact.first_name,
+  last_name: contact.last_name ?? '',
+  email: contact.email ?? '',
+  phone: contact.phone ?? '',
+  source: contact.source ?? '',
+  timezone: contact.timezone ?? '',
+});
+
+/** Only what differs from the record, with blanks as null, so the event says exactly what moved. */
+function changedDetails(contact: Contact, draft: ContactDetails) {
+  const changes: Partial<{
+    first_name: string;
+    last_name: string | null;
+    email: string | null;
+    phone: string | null;
+    source: string | null;
+    timezone: string | null;
+  }> = {};
+  const trimmed = Object.fromEntries(
+    Object.entries(draft).map(([key, value]) => [key, value.trim()]),
+  ) as ContactDetails;
+  if (trimmed.first_name && trimmed.first_name !== contact.first_name) {
+    changes.first_name = trimmed.first_name;
+  }
+  for (const key of ['last_name', 'email', 'phone', 'source', 'timezone'] as const) {
+    const next = trimmed[key] || null;
+    if (next !== (contact[key] ?? null)) changes[key] = next;
+  }
+  return changes;
 }
 
 function Row({ label, value, missing }: { label: string; value: string | null; missing: string }) {

@@ -107,9 +107,7 @@ describe('the consequence is graded from the learner’s own account (CRM-003)',
     for (const tag of ['wants-membership', 'wants-laser', 'wants-facial']) {
       run = (await removeTag(run, 'jordan', tag, db)).run;
     }
-    run = (
-      await updateContact(run, 'maria', { custom_fields: { treatment_interest: 'Laser' } }, db)
-    ).run;
+    await updateContact(run, 'maria', { custom_fields: { treatment_interest: 'Laser' } }, db);
 
     const report = await gradeAgainstTheAccount();
     expect(report.tiers.quality.find((row) => row.id === 'a6')?.passed).toBe(false);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { Opportunity, Pipeline } from '@bloomlab/simulator-core';
 import {
@@ -35,6 +35,9 @@ import { contactName, daysSince, describeActivity, ownerName, simulatorTime } fr
  * keyboard, with a screen reader and with a thumb, and commits exactly one simulator event when
  * it changes. Drag would be an enhancement on top of this, never the only way through, so the
  * accessible path is the one that exists rather than the fallback nobody tests.
+ *
+ * Below 1024 a stage switcher sits above the board: it names the stage in view and jumps to any
+ * other, so a learner on a phone always knows where they are without scrolling to find out.
  */
 
 export interface PipelineBoardProps {
@@ -64,14 +67,61 @@ export function PipelineBoard({
     <OpportunityDetail run={run} opportunity={selected} pipeline={pipeline} apply={apply} />
   ) : null;
 
+  const board = useRef<HTMLOListElement>(null);
+  const [inView, setInView] = useState(pipeline.stages[0] ?? '');
+
+  // Which stage column is in view, read from the board's own scroll position. Only wired when
+  // the board is a scroller (narrow), and only ever sets local UI state — nothing here is saved.
+  useEffect(() => {
+    const element = board.current;
+    if (!element || !narrow) return;
+    const update = () => {
+      const columns = [...element.querySelectorAll<HTMLElement>('[data-stage]')];
+      const left = element.scrollLeft;
+      let best = columns[0];
+      for (const column of columns) {
+        if (Math.abs(column.offsetLeft - left) < Math.abs((best?.offsetLeft ?? 0) - left)) {
+          best = column;
+        }
+      }
+      const stage = best?.dataset.stage;
+      if (stage) setInView(stage);
+    };
+    update();
+    element.addEventListener('scroll', update, { passive: true });
+    return () => element.removeEventListener('scroll', update);
+  }, [narrow, pipeline.stages]);
+
+  const jumpTo = (stage: string) => {
+    const column = board.current?.querySelector<HTMLElement>(`[data-stage="${CSS.escape(stage)}"]`);
+    column?.scrollIntoView?.({ inline: 'start', block: 'nearest' });
+    setInView(stage);
+  };
+
   return (
     <div className={styles.workspace} data-detail={selected ? 'open' : 'closed'}>
       <div className={styles.listPane}>
-        <ol className={styles.board} aria-label={`${pipeline.name} stages`}>
+        {narrow && (
+          <ul className={styles.stageSwitch} aria-label="Go to stage" data-stage-switch>
+            {pipeline.stages.map((stage) => (
+              <li key={stage}>
+                <button
+                  type="button"
+                  className={styles.stageSwitchButton}
+                  aria-current={inView === stage ? 'true' : undefined}
+                  onClick={() => jumpTo(stage)}
+                >
+                  {stage}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <ol ref={board} className={styles.board} aria-label={`${pipeline.name} stages`} data-board>
           {pipeline.stages.map((stage) => {
             const inStage = deals.filter((deal) => deal.stage === stage);
             return (
-              <li key={stage} className={styles.stage}>
+              <li key={stage} className={styles.stage} data-stage={stage}>
                 <div className={styles.stageHead}>
                   <h3 className={styles.stageName}>{stage}</h3>
                   <span className={styles.stageCount}>

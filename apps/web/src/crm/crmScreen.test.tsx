@@ -256,3 +256,70 @@ describe('setup defines the structure (CRM-001, CRM-003)', () => {
     expect(document.body.textContent).not.toMatch(/should use|use a custom field instead|wrong/i);
   });
 });
+
+describe('standard fields are edited as one event (CRM-001)', () => {
+  it('saves only what changed, through CONTACT_UPDATED', async () => {
+    await openLab();
+    fireEvent.click(contactRow('theo') as HTMLElement);
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit details' }));
+    const form = await screen.findByRole('form', { name: 'Contact details' });
+    fireEvent.change(within(form).getByLabelText(/^Email/), {
+      target: { value: 'theo.marsh@example.com' },
+    });
+    fireEvent.click(within(form).getByRole('button', { name: 'Save details' }));
+    expect(await screen.findByText('theo.marsh@example.com')).toBeInTheDocument();
+    const events = await db.sim_events.toArray();
+    const update = events
+      .map((row) => row.event as { type: string; payload: Record<string, unknown> })
+      .find((event) => event.type === 'CONTACT_UPDATED' && event.payload.contact_id === 'theo');
+    expect(update?.payload).toEqual({ contact_id: 'theo', email: 'theo.marsh@example.com' });
+  });
+
+  it('cancels without writing anything', async () => {
+    await openLab();
+    fireEvent.click(contactRow('theo') as HTMLElement);
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit details' }));
+    const before = await db.sim_events.count();
+    const form = await screen.findByRole('form', { name: 'Contact details' });
+    fireEvent.change(within(form).getByLabelText(/^Phone/), { target: { value: '' } });
+    fireEvent.click(within(form).getByRole('button', { name: 'Cancel' }));
+    expect(await screen.findByText('+15125550188')).toBeInTheDocument();
+    expect(await db.sim_events.count()).toBe(before);
+  });
+});
+
+describe('a phone gets a stage switcher, not a drag (CRM-004)', () => {
+  it('names every stage and marks the one in view', async () => {
+    const original = window.matchMedia;
+    window.matchMedia = ((query: string) =>
+      ({
+        matches: /max-width: 1023px/.test(query),
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        onchange: null,
+        dispatchEvent: () => false,
+      }) as MediaQueryList) as typeof window.matchMedia;
+    try {
+      await openLab('/crm?area=pipeline');
+      const switcher = await screen.findByRole('list', { name: 'Go to stage' });
+      const buttons = within(switcher).getAllByRole('button');
+      expect(buttons.map((button) => button.textContent)).toEqual([
+        'New Lead',
+        'Contacted',
+        'Consult Booked',
+        'Consult Done',
+        'Won',
+        'Lost',
+      ]);
+      expect(buttons[0]).toHaveAttribute('aria-current', 'true');
+      fireEvent.click(buttons[3] as HTMLElement);
+      await waitFor(() => expect(buttons[3]).toHaveAttribute('aria-current', 'true'));
+      expect(buttons[0]).not.toHaveAttribute('aria-current');
+    } finally {
+      window.matchMedia = original;
+    }
+  });
+});
