@@ -14,7 +14,7 @@ Implements spec §88–§93 and §146 and the Phase 4 line of §163: learner, sy
 | Contract | `packages/shared/src/sync.ts`, `syncMerge.ts` | Entity kinds (simple / append / snapshot), envelope, API types, `decideMerge` (D-030). |
 | Worker | `worker/src/sync/` | `link` (key → `SHA-256(secret + pepper)`, device + session token), `push`, `pull`, `devices`, `revoke`, `label`; bearer sessions matched by hash; 503 without a pepper. |
 | Client | `apps/web/src/data/sync/` | `linkThisDevice` (re-keys local records), `syncNow` (push → pull, shadows, conflicts), `resolveConflict`, `startSyncScheduler`; Dexie v2 (`sync_shadow`, `sync_conflicts`). |
-| UI | `screens/SyncScreen.tsx`, `app/ConflictChooser.tsx` | Create or enter a key, recovery warning, copy / download / QR / "I saved it", connected devices with revoke, show key; "Two versions were changed" chooser; indicator links to `/sync`. |
+| UI | `screens/SyncScreen.tsx`, `app/ConflictChooser.tsx` | Create or enter a key, recovery warning, copy / download / QR / "I saved it", connected devices with revoke, show key; "Two versions were changed" chooser (closing it postpones; "Choose now" on `/sync` reopens it; nothing is discarded until a choice); indicator links to `/sync`. |
 | Secrets | Cloudflare | `SYNC_KEY_PEPPER` set per environment from random bytes, never printed (D-034); `worker/.dev.vars` locally. |
 
 ## Tests
