@@ -15,6 +15,7 @@
   "dependencies": {
     "@bloomlab/content-schema": "*",
     "@bloomlab/design-system": "*",
+    "@bloomlab/exercise-engine": "*",
     "@bloomlab/mastery-engine": "*",
     "@bloomlab/shared": "*",
     "@bloomlab/simulator-core": "*",

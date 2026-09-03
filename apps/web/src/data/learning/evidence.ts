@@ -11,6 +11,8 @@ import {
   type RealGhlEvidence,
 } from '@bloomlab/mastery-engine';
 
+import type { GradeReport } from '@bloomlab/exercise-engine';
+
 import { db, type BloomlabDatabase } from '../db';
 import { nowIso } from '../envelope';
 import type { ExerciseAttemptRecord, SkillEvidenceRecord } from '../types';
@@ -44,6 +46,16 @@ export interface RecordEvidenceInput {
    * random id append-only sync expects.
    */
   evidence_ids?: Record<string, string>;
+  /**
+   * The id of the attempt row to write. The exercise runner mints it when the learner starts and
+   * passes it here, so finalizing the same attempt twice cannot become two attempts (D-068).
+   * Two genuinely separate attempts carry two different ids and stay two rows.
+   */
+  attempt_id?: string;
+  /** When the learner actually began; defaults to the completion time for evidence with no runner. */
+  started_at?: string;
+  /** The deterministic grade, stored on the attempt row (D-069). */
+  grade?: GradeReport | null;
 }
 
 export interface RecordEvidenceOptions extends RecomputeOptions {
@@ -83,22 +95,26 @@ export async function recordEvidence(
     async () => {
       let attempt: ExerciseAttemptRecord | null = null;
       if (withAttempt) {
-        attempt = await stores.attempts.create({
-          exercise_id: input.exercise_id ?? null,
-          exercise_type: input.exercise_type ?? null,
-          skill_ids: [...input.skill_ids],
-          source: input.source,
-          started_at: occurredAt,
-          completed_at: occurredAt,
-          result: input.result,
-          score: input.score ?? null,
-          assistance,
-          hints_used: hints,
-          difficulty: input.difficulty ?? 3,
-          critical_failures: input.critical_failures ?? [],
-          mode: input.mode ?? null,
-          versions,
-        });
+        attempt = await stores.attempts.create(
+          {
+            exercise_id: input.exercise_id ?? null,
+            exercise_type: input.exercise_type ?? null,
+            skill_ids: [...input.skill_ids],
+            source: input.source,
+            started_at: input.started_at ?? occurredAt,
+            completed_at: occurredAt,
+            result: input.result,
+            score: input.score ?? null,
+            assistance,
+            hints_used: hints,
+            difficulty: input.difficulty ?? 3,
+            critical_failures: input.critical_failures ?? [],
+            mode: input.mode ?? null,
+            versions,
+            grade: input.grade ?? null,
+          },
+          input.attempt_id,
+        );
       }
       const evidence: SkillEvidenceRecord[] = [];
       for (const skillId of input.skill_ids) {

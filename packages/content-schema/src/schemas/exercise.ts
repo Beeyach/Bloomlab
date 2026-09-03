@@ -47,9 +47,18 @@ export const SALES_EXERCISE_TYPES: readonly ExerciseType[] = [
   'EXPLAIN_IT',
 ];
 
+/**
+ * Which bucket a check belongs to (EXR-003). `critical_failures` are always critical, so only
+ * the three scored tiers are authorable; an expected outcome without a tier is `required`,
+ * which is what every exercise written before Phase 9 means.
+ */
+export const ASSERTION_TIERS = ['required', 'quality', 'bonus'] as const;
+export type AuthorableAssertionTier = (typeof ASSERTION_TIERS)[number];
+
 const assertionBase = {
   id: z.string().regex(/^a[0-9]+$|^[a-z][a-z0-9_]*$/, 'Assertion IDs are short lower-case tokens'),
   description: z.string().trim().min(5),
+  tier: z.enum(ASSERTION_TIERS).optional(),
 };
 
 /** The six deterministic assertion types (TA§32, EXR-002). */
@@ -116,6 +125,30 @@ const hint = z.strictObject({
   text: markdown,
 });
 
+/**
+ * Deterministic markers for written work (EXR-002 "learner response metadata"). Each key names a
+ * fact the exercise wants to detect — `merge_field`, `names_missing_information` — and lists the
+ * phrases that count as naming it. The runner matches them case-insensitively against what the
+ * learner wrote and exposes the result as `decision.reasoning_mentions` (the keys found) and
+ * `answer.<key>` (a boolean), which state assertions then read. The vocabulary is content, never
+ * code, and it is never shown to the learner (D-070). This is not rubric grading: it decides one
+ * authored marker, not the quality of an argument.
+ */
+/**
+ * The structured architectures an exercise offers, when its level offers them (EXR-009: the
+ * later-level version of the same family authors none and takes the decision as writing). The
+ * options are content — the exercise's own instructions name them — never a list in React.
+ */
+const decisionOption = z.strictObject({
+  value: z.string().regex(/^[a-z][a-z0-9_]*$/, 'Decision values are lower-case tokens'),
+  label: z.string().trim().min(2),
+});
+
+const responseMarkers = z.record(
+  z.string().regex(/^[a-z][a-z0-9_]*$/, 'Marker keys are lower-case tokens'),
+  z.array(z.string().trim().min(2)).min(1),
+);
+
 const fieldwork = z.strictObject({
   required: z.boolean(),
   tasks: stringList.min(1),
@@ -174,6 +207,8 @@ export const ExerciseSchema = z
       pass_threshold: z.number().int().min(1).max(100).default(70),
     }),
     hints: z.array(hint).max(3).default([]),
+    response_markers: responseMarkers.default({}),
+    decision_options: z.array(decisionOption).default([]),
     fieldwork: fieldwork.nullable().default(null),
     portfolio: portfolioRef.nullable().default(null),
     /** WRITE IT / SAY IT / EXPLAIN IT: what kind of piece, in the spec's own words. */
@@ -184,6 +219,12 @@ export const ExerciseSchema = z
       ctx.addIssue({ code: 'custom', path, message });
     requireUnique(ctx, exercise.skills, ['skills'], 'skill');
     requireUnique(ctx, exercise.allowed_features, ['allowed_features'], 'allowed feature');
+    requireUnique(
+      ctx,
+      exercise.decision_options.map((option) => option.value),
+      ['decision_options'],
+      'decision option',
+    );
     requireUnique(
       ctx,
       [...exercise.expected_outcomes, ...exercise.critical_failures].map((a) => a.id),
@@ -230,6 +271,87 @@ export const ExerciseSchema = z
     ) {
       issue(['hints'], 'REBUILD BLIND never provides a worked example');
     }
+    // ---- checks the Phase 9 grader relies on: a malformed rule must fail the build, never
+    // reach a learner as a check that silently cannot be judged (EXR-002, CNT-005).
+    const markerKeys = new Set(Object.keys(exercise.response_markers));
+    const checkAssertion = (
+      assertion: Assertion,
+      where: 'expected_outcomes' | 'critical_failures',
+      index: number,
+    ) => {
+      const at = (field: string) => [where, index, field];
+      if (where === 'critical_failures' && assertion.tier) {
+        issue(at('tier'), 'Critical failures are always the critical tier; drop the tier');
+      }
+      if (assertion.type === 'event') {
+        const { exactly, min, max } = assertion.count;
+        if (exactly === undefined && min === undefined && max === undefined) {
+          issue(at('count'), 'An event assertion needs exactly, min or max');
+        }
+        if (min !== undefined && max !== undefined && min > max) {
+          issue(at('count'), `min ${min} is above max ${max}`);
+        }
+      }
+      if (assertion.type === 'architecture') {
+        const needsFeature = [
+          'trigger_exists',
+          'action_exists',
+          'feature_used',
+          'feature_not_used',
+        ];
+        if (needsFeature.includes(assertion.requirement) && !assertion.ghl_feature) {
+          issue(at('ghl_feature'), `${assertion.requirement} names the GHL feature it looks for`);
+        }
+        if (assertion.requirement === 'node_count_max' && typeof assertion.value !== 'number') {
+          issue(at('value'), 'node_count_max needs a numeric limit');
+        }
+      }
+      if (assertion.type === 'state') {
+        const [root, ...rest] = assertion.path.split('.');
+        // A decision the exercise offers as options must expect one of them.
+        if (
+          root === 'decision' &&
+          rest[0] === 'choice' &&
+          assertion.operator === 'equals' &&
+          exercise.decision_options.length > 0 &&
+          !exercise.decision_options.some((option) => option.value === assertion.value)
+        ) {
+          issue(
+            at('value'),
+            `decision.choice "${String(assertion.value)}" is not one of the decision_options`,
+          );
+        }
+        const needsValue = ['equals', 'contains', 'not_contains', 'gte', 'lte'];
+        if (needsValue.includes(assertion.operator) && assertion.value === undefined) {
+          issue(at('value'), `Operator ${assertion.operator} needs a value to compare`);
+        }
+        // A check on written work must name a marker the exercise actually defines, or nothing
+        // deterministic could ever decide it.
+        if (root === 'answer') {
+          const key = rest.join('.');
+          if (!markerKeys.has(key)) {
+            issue(at('path'), `answer.${key} needs a response_markers entry named ${key}`);
+          }
+        }
+        if (
+          root === 'decision' &&
+          rest[0] === 'reasoning_mentions' &&
+          typeof assertion.value === 'string' &&
+          !markerKeys.has(assertion.value)
+        ) {
+          issue(
+            at('value'),
+            `decision.reasoning_mentions "${assertion.value}" needs a response_markers entry`,
+          );
+        }
+      }
+    };
+    exercise.expected_outcomes.forEach((assertion, index) =>
+      checkAssertion(assertion, 'expected_outcomes', index),
+    );
+    exercise.critical_failures.forEach((assertion, index) =>
+      checkAssertion(assertion, 'critical_failures', index),
+    );
     if (exercise.type === 'RUN_THE_LEAD' && !exercise.starting_state.contact_id) {
       issue(['starting_state', 'contact_id'], 'RUN THE LEAD names the contact that gets enrolled');
     }

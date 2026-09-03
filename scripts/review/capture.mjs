@@ -50,6 +50,13 @@ const defaultPages = [
   ['academy', '/academy/LU-funnel-math-basics?skill=SK-STRATEGIZE-funnel-math'],
   ['academy-workflow', '/academy/LU-workflow-foundations'],
   ['academy-tags', '/academy/LU-tags-vs-custom-fields'],
+  [
+    'exercise',
+    '/exercise/EX-ARCHITECTURE_DECISION-treatment-interest?skill=SK-ARCHITECT-tags-vs-custom-fields',
+  ],
+  ['exercise-build', '/exercise/EX-BUILD_IT-no-show-recovery'],
+  ['exercise-pressure', '/exercise/EX-REBUILD_BLIND-appointment-reminders'],
+  ['exercise-fixit', '/exercise/EX-FIX_IT-double-reminder'],
   ['sync', '/sync'],
   ['system', '/system'],
   ['notfound', '/nope'],

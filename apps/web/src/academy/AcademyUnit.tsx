@@ -95,17 +95,13 @@ function NextStep({
           <p className={styles.nextMeta}>
             {step.minutes} min{described.detail ? ` · ${described.detail}` : ''} · {step.reason}
           </p>
-          {step.kind === 'unit' ? (
-            <Link to={stepDestination(step, skillId)} className={styles.nextAction}>
-              Continue reading
-            </Link>
-          ) : (
-            <p className={styles.nextMeta}>
-              {step.kind === 'exercise' ? 'Exercises' : 'Retrieval challenges'} run in the exercise
-              runner, which arrives with Phase 9. Until then, this is where {skillTitle(skillId)}{' '}
-              stands.
-            </p>
-          )}
+          <Link to={stepDestination(step, skillId)} className={styles.nextAction}>
+            {step.kind === 'unit'
+              ? 'Continue reading'
+              : step.kind === 'retrieval'
+                ? 'Run the retrieval'
+                : 'Run the exercise'}
+          </Link>
         </>
       ) : (
         <p className={styles.nextMeta}>

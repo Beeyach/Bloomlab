@@ -184,8 +184,12 @@ export function stateSentence(evaluation: SkillEvaluation): string {
   return needed.length > 0 ? `${opening} Still needed: ${joinWords(needed)}.` : opening;
 }
 
-/** Where a step runs today: a unit opens in the Academy; anything else opens the capability (Phase 9 runs exercises). */
+/** Where a step runs: a unit in the Academy, an exercise or retrieval in the runner. */
 export function stepDestination(step: SessionItem | null, skillId: string): string {
   if (step?.kind === 'unit') return `/academy/${step.content_id}?skill=${skillId}`;
+  if (step?.kind === 'exercise') return `/exercise/${step.content_id}?skill=${skillId}`;
+  // A retrieval runs the authored exercise as a review vehicle (spec §32, D-072).
+  if (step?.kind === 'retrieval')
+    return `/exercise/${step.content_id}?skill=${skillId}&run=retrieval`;
   return `/skills/${skillId}`;
 }

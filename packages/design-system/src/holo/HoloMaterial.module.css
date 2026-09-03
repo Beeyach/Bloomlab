@@ -42,7 +42,11 @@
   transform: perspective(900px) rotateX(calc(var(--holo-ny) * -1 * var(--bl-holo-tilt-max)))
     rotateY(calc(var(--holo-nx) * var(--bl-holo-tilt-max)))
     translate3d(0, calc(var(--holo-lift) * -5px), 0) scale(calc(1 + var(--holo-lift) * 0.012));
-  transform-style: preserve-3d;
+  /* Flat on purpose: `preserve-3d` establishes a 3D rendering context, and a browser must then
+     ignore this element's `overflow: hidden` for its children — which let the square glare and
+     grain layers paint past the rounded corners while the pointer was on the card. No child has
+     a 3D transform, so flattening costs nothing and the tilt above is unaffected (D-074). */
+  transform-style: flat;
   /* The shadow moves away from the pointer and deepens with the lift, so the card reads as
      rising off the surface (the reference's tactile hover) rather than merely tilting. */
   box-shadow:
@@ -58,6 +62,9 @@
 .layer {
   position: absolute;
   inset: 0;
+  /* Every layer carries the card's own corner radius, so none of them can show a square edge
+     even where a browser declines to clip. */
+  border-radius: inherit;
   pointer-events: none;
 }
 

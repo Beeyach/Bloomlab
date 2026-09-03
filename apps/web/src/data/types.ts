@@ -5,6 +5,7 @@
  * strings so they sort, diff and travel to D1 unchanged.
  */
 
+import type { GradeReport } from '@bloomlab/exercise-engine';
 import type {
   AssistanceLevel,
   EvidenceCounts,
@@ -81,6 +82,12 @@ export interface ExerciseAttemptRecord extends SyncEnvelope {
   critical_failures: string[];
   mode: ExerciseMode | null;
   versions: EvidenceVersions;
+  /**
+   * What the deterministic grader decided, kept with the attempt so a later rules change cannot
+   * rewrite history and the result view survives a reload (D-069). Absent on attempts recorded
+   * before Phase 9 and on evidence entered by hand.
+   */
+  grade?: GradeReport | null;
 }
 
 /** Derived: the engine's evaluation of one skill, materialised for screens and sync. */

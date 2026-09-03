@@ -64,6 +64,7 @@ export {
   dayOf,
   demonstrationKey,
   effectiveAssistance,
+  maxAssistance,
   hasRequiredProof,
   isAttempt,
   isDemonstration,

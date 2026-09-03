@@ -92,7 +92,7 @@ export function Feature({ id }: { id: string }) {
   );
 }
 
-/** The practice that follows the reading: a real exercise record, run by the Phase 9 exercise runner. */
+/** The practice that follows the reading: opens the real exercise in the runner. */
 export function Exercise({ id }: { id: string }) {
   const exercise = content.exercises.find((candidate) => candidate.id === id);
   const headingId = useId();
@@ -107,13 +107,15 @@ export function Exercise({ id }: { id: string }) {
         {exercise.title}
       </h3>
       <p className={styles.practiceText}>
-        This exercise runs in the exercise runner, which arrives with Phase 9. Its instructions and
-        grading are already authored; finishing this unit records that you have read it, and the
-        exercise is where the capability gets demonstrated.
+        Finishing this unit records that you read it. The exercise is where the capability gets
+        demonstrated.
       </p>
       <p className={styles.practiceText}>
-        <Link to={`/skills/${exercise.skills[0] ?? ''}`} className={styles.featureLink}>
-          See where this capability stands
+        <Link
+          to={`/exercise/${exercise.id}?skill=${exercise.skills[0] ?? ''}`}
+          className={styles.featureLink}
+        >
+          Open this exercise
         </Link>
       </p>
     </aside>

@@ -26,6 +26,20 @@ expected_outcomes:
     value: true
     description: The learner names at least one thing they would need to verify.
 critical_failures: []
+response_markers:
+  names_missing_information:
+    - need to know
+    - need to find out
+    - would need
+    - would ask
+    - i would ask
+    - ask priya
+    - find out
+    - check whether
+    - confirm
+    - verify
+    - not clear
+    - unknown
 grading:
   mode: rubric
   rubric: SYSTEM_DESIGN_RUBRIC_V1

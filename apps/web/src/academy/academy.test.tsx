@@ -148,8 +148,9 @@ describe('Academy unit rendering (CUR-036, DES-020)', () => {
       within(depth).getByText('Why show rate is usually the cheapest fix'),
     ).toBeInTheDocument();
     expect(document.querySelector('[data-embed="callout"]')).toHaveTextContent('Idea');
+    // The practice pointer now opens the real runner (Phase 9).
     expect(document.querySelector('[data-embed="exercise"]')).toHaveTextContent(
-      'arrives with Phase 9',
+      'Open this exercise',
     );
   });
 

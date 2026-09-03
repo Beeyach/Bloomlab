@@ -40,6 +40,8 @@ No family may be replaced by a static approximation (EXR-024): interactive simul
 
 Hint levels: **Nudge** (small directional clue) · **Concept Reminder** (principle) · **Worked Example** (high assistance). Assistance is tracked per attempt and rolled up quietly as Independent · Light Assistance · Guided · Heavy Assistance. The learner is never shamed. A heavily assisted pass is not independent mastery evidence.
 
+**Implementation (Phase 9):** the runner reveals the authored ladder one level at a time, records each reveal on the active attempt, and carries the levels into the attempt row and the evidence. Assistance is the mastery engine's own roll-up, never a second table in UI code; a guided-mode exercise is guided at least. A pressure exercise authors no hints and the runner offers no hint control, no lesson link and no worked example (EXR-019). An attempt has one stable id from the first keystroke, lives in the local workspace so a reload resumes it, and finalizes once through `recordEvidence` — Try again is a new attempt and the earlier one is immutable (D-068).
+
 ## 4. Grading
 
 ### 4.1 Deterministic assertions (EXR-002)
@@ -53,9 +55,13 @@ Hint levels: **Nudge** (small directional clue) · **Concept Reminder** (princip
 | Negative | cancelled contact received no reminder |
 | Sequence | opportunity created before assignment notification |
 
+**Implementation (Phase 9, `packages/exercise-engine`, grader `2026.09.04-r1`):** the grader is pure — no React, DOM, IndexedDB, network, AI, randomness or wall clock. A runtime translates its own state into a `GradingContext` (state tree · events with simulator timestamps and a stable emitted index · named reference instants · normalized architecture with no node coordinates · which of those the run supplies) and the grader returns a `GradeReport`. **state**: seven operators over dotted paths resolved by own properties only. **event**: type plus `where` field equality, then exactly / min / max. **timing**: the event closest to reference + offset, ties broken by (timestamp, index), tolerance inclusive. **architecture**: trigger · action · branch · feature used or not · node limit · re-entry, across every workflow in the solution. **negative**: no matching event. **sequence**: earliest `before` precedes earliest `after`, equal timestamps ordered by emitted index. An assertion whose source the run cannot supply is `unevaluated`, and the report is then `partial` and never `passed` (D-067).
+
 ### 4.2 Rubric tiers (EXR-003)
 
 **critical** (e.g. cancelled appointment must not receive reminder) · **required** (confirmation sent; 24-hour reminder sent; opportunity created) · **quality** (naming, modularity, no duplicate actions) · **bonus** (graceful handling of missing phone number).
+
+**Implementation (Phase 9):** `critical_failures` are always the critical tier; an expected outcome may author `required`, `quality` or `bonus` and defaults to `required`. The score is the share of **required and quality** checks passed; **bonus** is reported and left out of the denominator; **critical** is a gate, never a number, and one failed critical check fails the attempt at any score (MAS-004). The authored per-dimension weights are not applied because no assertion names a dimension — EXR-023 introduces that model in Phase 12 (D-067). Every report carries `EXERCISE_GRADER_VERSION` and is stored on the attempt row (D-069).
 
 ### 4.3 Critical failure system (MAS-004, EXR-023)
 

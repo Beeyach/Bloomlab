@@ -38,6 +38,25 @@ grading:
   mode: mixed
   rubric: SYSTEM_DESIGN_RUBRIC_V1
   pass_threshold: 70
+# The architectures the instructions offer at this level (EXR-009 removes them at later levels).
+decision_options:
+  - value: tag
+    label: Tag
+  - value: contact_custom_field
+    label: Contact custom field
+  - value: custom_value
+    label: Custom value
+  - value: opportunity_field
+    label: Opportunity field
+# Phrases that count as naming the fact each marker describes. Never shown to the learner; they
+# decide one authored deterministic check, not the quality of the argument.
+response_markers:
+  merge_field:
+    - merge field
+    - merge fields
+    - '{{'
+    - template
+    - templates
 hints:
   - level: nudge
     text: Is "interested in Laser" something that happened, or a value that can change?

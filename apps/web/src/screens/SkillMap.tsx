@@ -45,6 +45,7 @@ import {
   relativeDay,
   skillTitle,
   stateSentence,
+  stepDestination,
 } from './learningCopy';
 import styles from './SkillMap.module.css';
 
@@ -225,11 +226,13 @@ function SkillDetail({
                 Read this unit
               </Link>
             ) : (
-              <p className={styles.detailMeta}>
-                {step.kind === 'exercise'
-                  ? 'Exercises run in the exercise runner, which arrives with Phase 9.'
-                  : 'Retrieval challenges run with the exercise runner, which arrives with Phase 9.'}
-              </p>
+              <Link
+                to={stepDestination(step, skill.id)}
+                className={styles.nextLink}
+                data-testid="open-exercise"
+              >
+                {step.kind === 'retrieval' ? 'Run this retrieval' : 'Run this exercise'}
+              </Link>
             )}
           </Surface>
         )}
