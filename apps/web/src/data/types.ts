@@ -33,6 +33,12 @@ export const LOCAL_SYNC_ENTITIES = [
   'skill_progress',
   'campaign_progress',
   'review_queue',
+  // Phase 10: simulator saves. `sim_projects` is the run header (snapshot merge, so two devices
+  // editing one run raise a conflict rather than silently picking a winner); `sim_events` and
+  // `sim_snapshots` are append-only, which is exactly what an authoritative history wants.
+  'sim_projects',
+  'sim_events',
+  'sim_snapshots',
 ] as const satisfies readonly SyncEntity[];
 export type LocalSyncEntity = (typeof LOCAL_SYNC_ENTITIES)[number];
 
@@ -212,4 +218,51 @@ export interface WorkspaceRecord {
   key: string;
   value: unknown;
   updated_at: string;
+}
+
+/**
+ * One simulator run's header (SIM-013). The account, the clock, the queue and the generator's
+ * position live here; the run's history lives in `sim_events`, and its checkpoints in
+ * `sim_snapshots`, so a long run does not rewrite a large row on every event.
+ */
+export interface SimProjectRecord extends SyncEnvelope {
+  scenario_id: string;
+  run_id: string;
+  /**
+   * The run's current reset generation (D-087). Every reset mints a fresh one, so the append-only
+   * history of one generation can never collide with another's.
+   */
+  generation: string;
+  /** The engine that produced this run (SIM-019). */
+  simulator_version: string;
+  clock_now: string;
+  timezone: string;
+  account: unknown;
+  queue: unknown;
+  random: unknown;
+  sequence: number;
+  queue_sequence: number;
+  /** How many events the run had processed when it was saved. */
+  log_length: number;
+  execution: unknown;
+  diagnostics: unknown;
+}
+
+/** One processed event, append-only, exactly as the engine logged it. */
+export interface SimEventRecord extends SyncEnvelope {
+  run_id: string;
+  /** Which reset generation of the run this event belongs to (D-087). */
+  generation: string;
+  sequence: number;
+  event: unknown;
+}
+
+/** One checkpoint, append-only (SIM-013). */
+export interface SimSnapshotRecord extends SyncEnvelope {
+  run_id: string;
+  /** Which reset generation of the run this checkpoint belongs to (D-087). */
+  generation: string;
+  log_length: number;
+  label: string;
+  checkpoint: unknown;
 }

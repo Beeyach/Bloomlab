@@ -8,6 +8,8 @@ import { listOperations } from '../syncQueue';
 import { FakeSyncServer } from '../sync/fakeServer';
 import { syncNow } from '../sync/engine';
 import { createSyncKey, linkThisDevice } from '../sync/link';
+import { SIMULATOR_VERSION } from '@bloomlab/simulator-core';
+
 import { freshDatabase } from '../testing';
 import { recordEvidence } from './evidence';
 import { derivedId } from './ids';
@@ -81,7 +83,7 @@ describe('learner records on the local-first path (DATA-001, DATA-002, MAS-003)'
       app: '0.1.0',
       content: content.content_version,
       content_hash: content.content_hash,
-      simulator: '0.0.0',
+      simulator: SIMULATOR_VERSION,
       rules: MASTERY_RULES_VERSION,
     };
     expect(evidence[0]?.versions).toEqual(expected);

@@ -1,16 +1,12 @@
 /* Shared pieces */
 .embedLabel {
   margin: 0 0 var(--bl-space-2);
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 
 .mono {
-  font-family: var(--bl-font-mono);
   font-size: 0.9em;
 }
 
@@ -39,11 +35,8 @@
 }
 
 .calloutLabel {
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 
@@ -75,7 +68,6 @@
 
 .depthSummary::before {
   content: '+';
-  font-family: var(--bl-font-mono);
   font-weight: var(--bl-font-weight-semibold);
   color: var(--bl-color-text-soft);
 }
@@ -91,11 +83,8 @@
 }
 
 .depthLabel {
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 
@@ -242,7 +231,7 @@
 }
 
 .funnelCount {
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
   color: var(--bl-color-ink-deep);
@@ -251,7 +240,7 @@
 .funnelRate {
   grid-area: rate;
   margin-top: 2px;
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-xs);
   color: var(--bl-color-text-soft);
 }
@@ -315,10 +304,7 @@
 }
 
 .pathKind {
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: var(--bl-font-size-sm);
   color: var(--bl-color-text-soft);
 }
 
@@ -327,7 +313,6 @@
 }
 
 .pathDetail {
-  font-family: var(--bl-font-mono);
   font-size: var(--bl-font-size-xs);
   line-height: 1.5;
   color: var(--bl-color-text-soft);
@@ -392,10 +377,7 @@
 .legend {
   padding: 0;
   margin-bottom: var(--bl-space-1);
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: var(--bl-font-size-sm);
   color: var(--bl-color-text-soft);
 }
 
@@ -443,7 +425,7 @@
 }
 
 .sliderLabel output {
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-weight: var(--bl-font-weight-semibold);
 }
 
@@ -484,7 +466,7 @@
 }
 
 .resultMeta {
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-xs);
   color: var(--bl-color-text-soft);
 }
@@ -496,10 +478,7 @@
 
 .resultHeading {
   margin: var(--bl-space-3) 0 0;
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: var(--bl-font-size-sm);
   color: var(--bl-color-text-soft);
 }
 
@@ -522,7 +501,7 @@
 }
 
 .leverResult {
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-xs);
 }
 

@@ -171,8 +171,12 @@ describe('Campaign (PRD-007)', () => {
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Field Ready' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Field Ready campaign')).toBeInTheDocument();
-    expect(screen.getByText('Suggested pace: ~30 days at 3–5 hours/day')).toBeInTheDocument();
+    // The campaign's kind and pace read as one metadata line under the title; there is no
+    // eyebrow repeating the heading above it (DES-021).
+    expect(
+      screen.getByText('Campaign · Suggested pace: ~30 days at 3–5 hours/day'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Field Ready campaign')).not.toBeInTheDocument();
 
     const current = await screen.findByRole('listitem', { current: 'step' });
     expect(current).toHaveTextContent('Funnel Thinking');

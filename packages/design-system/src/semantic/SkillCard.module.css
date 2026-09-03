@@ -11,6 +11,17 @@
   color: inherit;
   cursor: pointer;
 }
+/*
+ * The focus ring is a spread shadow, not an offset outline: a shadow always follows the
+ * element's `border-radius`, while WebKit before 16.4 paints an outline as a hard rectangle
+ * around a transformed element — a square ring on a rounded card (D-075). The transparent
+ * outline is what forced-colours mode paints, so the ring survives there too.
+ */
+.card:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--bl-color-focus);
+}
 
 .material {
   width: 100%;
@@ -43,30 +54,24 @@
 
 .top {
   display: flex;
-  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--bl-space-2) var(--bl-space-3);
 }
 
-/* In a narrow card the badge drops under the title (right-aligned) instead of squeezing the
-   title into hyphenated fragments or poking out of the card. */
+/* The badge holds the top-right corner at every width: it never shrinks, and the title beside it
+   wraps its own text rather than pushing it onto a line of its own. */
 .top > :last-child {
+  flex: 0 0 auto;
   margin-left: auto;
 }
 
-.territory {
-  display: block;
-  color: var(--bl-color-text-soft);
-  font-size: var(--bl-font-size-xs);
-  font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: var(--bl-font-tracking-eyebrow);
-  text-transform: uppercase;
-}
-
 .title {
-  display: block;
-  margin-top: var(--bl-space-1);
+  /* Takes the row's spare width so the badge stays beside it and a long title wraps its own
+     text rather than pushing the badge onto a second line. The old top margin spaced the title
+     from a territory label that no longer sits above it (DES-021). */
+  flex: 1 1 auto;
+  min-width: 0;
   font-family: var(--bl-font-display);
   font-size: var(--bl-font-size-lg);
   font-weight: var(--bl-font-weight-semibold);

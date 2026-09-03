@@ -10,6 +10,17 @@
   text-align: left;
   cursor: pointer;
 }
+/*
+ * The focus ring is a spread shadow, not an offset outline: a shadow always follows the
+ * element's `border-radius`, while WebKit before 16.4 paints an outline as a hard rectangle
+ * around a transformed element — a square ring on a rounded card (D-075). The transparent
+ * outline is what forced-colours mode paints, so the ring survives there too.
+ */
+.cover:focus-visible {
+  outline: 3px solid transparent;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--bl-color-focus);
+}
 
 .material {
   width: 100%;
@@ -32,10 +43,8 @@
 
 .industry {
   color: var(--bl-color-text-soft);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: var(--bl-font-tracking-eyebrow);
-  text-transform: uppercase;
 }
 
 .name {

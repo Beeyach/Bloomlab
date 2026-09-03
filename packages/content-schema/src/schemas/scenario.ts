@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { eventTypeFromContent, isSimulatorEventType } from '@bloomlab/simulator-core';
+
 import {
   clientRef,
   factRecord,
@@ -186,16 +188,47 @@ export const PricingEconomicsSchema = z.strictObject({
   recurring_support: z.boolean(),
 });
 
+/**
+ * Events a scenario may schedule or offer. Two runtimes consume them, and the name says which.
+ *
+ * Most are GoHighLevel account events from the simulator's catalogue (spec §44), named the way
+ * content names them (`appointment.status_changed`) or by the engine's own type. Those must
+ * resolve, because a scenario scheduling an event the engine has never heard of is a content bug
+ * and the compiler is where a content bug should surface — not the middle of a learner's run.
+ *
+ * The rest belong to the roleplay runtime (spec §39): a client speaking during a discovery or
+ * negotiation, or a prospect's own business answering a test enquiry during an outside-in audit.
+ * They are not account events and the simulator refuses to run them; they are listed explicitly
+ * rather than allowed by a loose fallback, so a typo is still caught.
+ */
+export const ROLEPLAY_EVENT_TYPES = [
+  /** The client says something in a call or a thread (Call Room, Phases 16–17). */
+  'client.message',
+  /** The prospect's business replies to a test enquiry (AUDIT_IT fieldwork). */
+  'enquiry.response',
+] as const;
+
+const scenarioEventName = z
+  .string()
+  .min(1)
+  .refine(
+    (name) =>
+      isSimulatorEventType(name) ||
+      eventTypeFromContent(name) !== null ||
+      (ROLEPLAY_EVENT_TYPES as readonly string[]).includes(name),
+    { message: 'Neither a simulator event (spec §44) nor a roleplay event (spec §39)' },
+  );
+
 const scheduledEvent = z.strictObject({
   at: isoDateTime,
-  type: z.string().min(1),
+  type: scenarioEventName,
   payload: z.record(z.string(), z.unknown()).default({}),
   description: z.string().optional(),
 });
 
 const injectableEvent = z.strictObject({
   id: z.string().regex(/^[a-z][a-z0-9_-]*$/),
-  type: z.string().min(1),
+  type: scenarioEventName,
   description: z.string().min(5),
   payload: z.record(z.string(), z.unknown()).default({}),
 });

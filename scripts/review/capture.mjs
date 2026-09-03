@@ -59,6 +59,7 @@ const defaultPages = [
   ['exercise-fixit', '/exercise/EX-FIX_IT-double-reminder'],
   ['sync', '/sync'],
   ['system', '/system'],
+  ['simulator', '/system/simulator?scenario=SC-glowhaus-no-show'],
   ['notfound', '/nope'],
 ];
 const pages = process.env.PAGES

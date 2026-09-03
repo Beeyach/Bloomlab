@@ -1,3 +1,4 @@
+import { SIMULATOR_VERSION } from '@bloomlab/simulator-core';
 import { env as testEnv } from 'cloudflare:test';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -23,7 +24,7 @@ describe('worker', () => {
     expect(body.versions).toEqual({
       app: '0.1.0',
       content: expect.stringMatching(/^\d{4}\.\d{2}\.\d{2}/),
-      simulator: '0.0.0',
+      simulator: SIMULATOR_VERSION,
     });
   });
 

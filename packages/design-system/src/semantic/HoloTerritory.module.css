@@ -10,9 +10,75 @@
   text-align: left;
   cursor: pointer;
 }
+/*
+ * The focus ring is a spread shadow, not an offset outline: a shadow always follows the
+ * element's `border-radius`, while WebKit before 16.4 paints an outline as a hard rectangle
+ * around a transformed element — a square ring on a rounded card (D-075). The transparent
+ * outline is what forced-colours mode paints, so the ring survives there too.
+ */
+.territory:focus-visible {
+  outline: 3px solid transparent;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--bl-color-focus);
+}
+
+/*
+ * Selected: the territory whose capabilities are open below (D-088).
+ *
+ * It reads as the card the light is on, not as a card in a box. The edge is one of the material's
+ * own spectral colours rather than ink, and under it sits a soft lilac pool — the same lavender
+ * the mastery material glows with. Both are spread shadows on the untransformed button, so they
+ * follow its 24 px radius on every engine and neither can draw the straight edge an offset
+ * outline drew on a tablet (D-075, D-086).
+ *
+ * Colour is not carrying this alone: a selected card also says "Showing" (A11Y-005).
+ */
+.territory[aria-pressed='true'] {
+  box-shadow:
+    0 0 0 2px var(--bl-color-lavender),
+    0 8px 24px rgb(169 155 255 / 0.38);
+}
+
+/* The material wakes up with it: the rim goes to full white and the card's own glow turns
+   lavender. Both are the material's own properties — an inset rim inside the rounded box and a
+   spread shadow — so the shape is unchanged and the holographic response is untouched. */
+.territory[aria-pressed='true'] .material {
+  --holo-ring: rgb(255 255 255 / 1);
+  --holo-glow: rgb(169 155 255 / 0.4);
+  --holo-glow-ambient: rgb(169 155 255 / 0.22);
+}
+
+/* Selected *and* focused: the spectral edge hugs the card and the focus ring sits outside it,
+   so focus stays distinguishable from selection instead of one silently replacing the other. */
+.territory[aria-pressed='true']:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--bl-color-lavender),
+    0 0 0 5px var(--bl-color-focus),
+    0 8px 24px rgb(169 155 255 / 0.38);
+}
 
 .material {
   width: 100%;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--bl-space-3);
+}
+
+/* The word that keeps selection off colour alone. Quiet, in the card's own typography, on a
+   translucent white chip that sits in the foil rather than on top of it. */
+.showing {
+  flex: none;
+  padding: var(--bl-space-1) var(--bl-space-2);
+  border-radius: var(--bl-radius-full);
+  background: rgb(255 255 255 / 0.72);
+  box-shadow: inset 0 0 0 1px rgb(169 155 255 / 0.55);
+  font-size: var(--bl-font-size-sm);
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .inner {
@@ -49,7 +115,7 @@
 
 .count {
   display: block;
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-sm);
 }
 

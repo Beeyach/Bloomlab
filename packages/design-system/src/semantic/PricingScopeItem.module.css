@@ -51,7 +51,7 @@
 }
 
 .price {
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-sm);
   white-space: nowrap;
   text-align: right;

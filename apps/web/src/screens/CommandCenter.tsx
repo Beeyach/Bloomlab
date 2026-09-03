@@ -127,25 +127,25 @@ function ContinueObject({
     <section aria-labelledby="continue-title" className={styles.continue}>
       <HoloMaterial variant="collectible" radius="xl" className={styles.object}>
         <div className={styles.objectBody}>
-          <p className={styles.eyebrow}>
+          <h2 id="continue-title" className={styles.objectTitle}>
+            {skill.title}
+          </h2>
+          <p className={styles.objectContext}>
             {campaignContent ? `${campaignContent.title} campaign` : 'Next capability'}
             {gate && ` · Gate ${gate.number} · ${gate.name}`}
             {focused && ' · Your focus'}
             {!focused && !inGate && campaign?.work_ahead.includes(skillId) && ' · Work ahead'}
           </p>
-          <h2 id="continue-title" className={styles.objectTitle}>
-            {skill.title}
-          </h2>
           <p className={styles.state}>
             <MasteryBadge state={evaluation.state} />
             <span>{stateSentence(evaluation)}</span>
           </p>
           {described && step && (
             <p className={styles.step}>
-              <span className={styles.stepVerb}>Next · {described.verb}</span>
               <span className={styles.stepTitle}>{described.title}</span>
               <span className={styles.stepMeta}>
-                {step.minutes} min{described.detail ? ` · ${described.detail}` : ''}
+                Next · {described.verb} · {step.minutes} min
+                {described.detail ? ` · ${described.detail}` : ''}
               </span>
             </p>
           )}

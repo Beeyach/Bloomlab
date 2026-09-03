@@ -88,7 +88,6 @@ export const density = {
 export const typography = {
   display: "'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Inter Variable', sans-serif",
   ui: "'Inter Variable', Inter, system-ui, sans-serif",
-  mono: "'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace",
 } as const;
 
 export const zIndex = {

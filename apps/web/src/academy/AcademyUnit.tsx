@@ -90,10 +90,10 @@ function NextStep({
     <div className={styles.next} data-testid="next-step">
       {step && described ? (
         <>
-          <p className={styles.nextEyebrow}>Next · {described.verb}</p>
           <p className={styles.nextTitle}>{described.title}</p>
           <p className={styles.nextMeta}>
-            {step.minutes} min{described.detail ? ` · ${described.detail}` : ''} · {step.reason}
+            Next · {described.verb} · {step.minutes} min
+            {described.detail ? ` · ${described.detail}` : ''} · {step.reason}
           </p>
           <Link to={stepDestination(step, skillId)} className={styles.nextAction}>
             {step.kind === 'unit'
@@ -242,14 +242,14 @@ export default function AcademyUnit() {
   return (
     <article className={styles.unit} aria-labelledby="unit-title">
       <header className={styles.masthead}>
-        <p className={styles.eyebrow}>
-          Academy · {TERRITORY_LABELS[unit.territory as Territory]} · {unit.estimated_minutes} min
-          read
-        </p>
         <h1 id="unit-title" className={styles.title}>
           {unit.title}
         </h1>
         <p className={styles.lede}>{unit.summary}</p>
+        <p className={styles.meta}>
+          Academy · {TERRITORY_LABELS[unit.territory as Territory]} · {unit.estimated_minutes} min
+          read
+        </p>
         <p className={styles.for}>
           For{' '}
           {unit.skills.map((id, index) => (

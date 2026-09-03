@@ -12,13 +12,10 @@
   border-bottom: 1px solid var(--bl-color-border);
 }
 
-.eyebrow {
+.meta {
   margin: 0;
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 
@@ -83,10 +80,7 @@
 .contentsLabel,
 .contentsMeta {
   margin: 0;
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: var(--bl-font-size-sm);
   color: var(--bl-color-text-soft);
 }
 
@@ -115,7 +109,7 @@
 .contentsLink::before {
   counter-increment: section;
   content: counter(section, decimal-leading-zero);
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-xs);
 }
 
@@ -176,16 +170,6 @@
   padding: var(--bl-space-4) var(--bl-space-5);
   border-radius: var(--bl-radius-lg);
   background: var(--bl-color-mist);
-}
-
-.nextEyebrow {
-  margin: 0;
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
-  font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--bl-color-text-soft);
 }
 
 .nextTitle {

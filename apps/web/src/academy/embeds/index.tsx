@@ -3,6 +3,8 @@ import { Link } from 'react-router';
 
 import { EXERCISE_LABELS, type ExerciseType } from '@bloomlab/design-system';
 
+import { initialAccount, toZone, type SimulatorScenario } from '@bloomlab/simulator-core';
+
 import { content } from '../../content/bundle';
 import { modeWord } from '../../screens/learningCopy';
 import styles from './embeds.module.css';
@@ -145,28 +147,39 @@ export function Simulation({
   const contact = scenario.initial_account_state.contacts.find(
     (candidate) => candidate.id === contactId,
   );
+  // Real engine output: the account exactly as the simulator compiles it from this scenario.
+  // Nothing below is described from the YAML by hand, and nothing is played back as if it ran.
+  const account = initialAccount(scenario as unknown as SimulatorScenario);
+  const compiled = contactId ? account.contacts[contactId] : undefined;
+  const starts = compiled
+    ? Object.values(account.appointments).find((row) => row.contact_id === compiled.id)
+    : undefined;
+
   return (
     <aside className={styles.simulation} aria-labelledby={headingId} data-embed="simulation">
-      <p className={styles.embedLabel}>Inline simulation · arrives with Phase 10</p>
       <h3 id={headingId} className={styles.simulationTitle}>
         {workflow ? `Run ${workflow.name}` : scenario.title}
         {contact ? ` for ${contact.first_name} ${contact.last_name}` : ''}
       </h3>
       <p className={styles.simulationText}>
-        This embed will enrol {contact ? contact.first_name : 'a contact'} in{' '}
-        {workflow ? `"${workflow.name}"` : 'the scenario'} on Bloomlab's GHL simulator and show,
-        step by step, what they receive. The simulator core is Phase 10, so nothing runs here yet —
-        the workflow's structure is drawn in the diagram above, and the prediction you wrote down is
-        still the point of this section.
-      </p>
-      <p className={styles.simulationMeta}>
-        Scenario <code className={styles.mono}>{scenario.id}</code>
-        {workflow && (
+        This is the starting state the simulator actually loads, at{' '}
+        {toZone(scenario.simulation_time, scenario.timezone)} in {scenario.timezone}.
+        {compiled && (
           <>
             {' '}
-            · workflow <code className={styles.mono}>{workflow.id}</code>
+            {compiled.first_name} carries{' '}
+            {compiled.tags.length > 0 ? compiled.tags.join(', ') : 'no tags'};{' '}
+            {compiled.phone ? 'a phone number is on file' : 'there is no phone number on file'}
+            {compiled.dnd ? ' and the contact is on do-not-disturb' : ''}
+            {starts ? `; the appointment starts ${starts.starts_at}` : ''}.
           </>
         )}
+      </p>
+      <p className={styles.simulationText}>
+        Stepping {contact ? (compiled?.first_name ?? 'the contact') : 'a contact'} through{' '}
+        {workflow ? `"${workflow.name}"` : 'the scenario'} node by node needs the Workflow Lab,
+        which arrives in Phase 12. The structure is drawn in the diagram above, and the prediction
+        you wrote down is still the point of this section.
       </p>
     </aside>
   );

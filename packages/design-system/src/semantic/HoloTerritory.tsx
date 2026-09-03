@@ -25,6 +25,9 @@ export function HoloTerritory({
 }: HoloTerritoryProps) {
   const ratio = total > 0 ? Math.min(1, demonstrated / total) : 0;
   const complete = total > 0 && demonstrated >= total;
+  // Selection is read from the same attribute the stylesheet keys on, so the word and the
+  // material can never disagree about which territory is open (D-088).
+  const selected = rest['aria-pressed'] === true || rest['aria-pressed'] === 'true';
   return (
     <button
       type={type}
@@ -38,9 +41,12 @@ export function HoloTerritory({
         className={styles.material}
       >
         <span className={styles.inner}>
-          <span>
-            <span className={styles.name}>{TERRITORY_LABELS[territory]}</span>
-            <span className={styles.scope}>{scope}</span>
+          <span className={styles.head}>
+            <span>
+              <span className={styles.name}>{TERRITORY_LABELS[territory]}</span>
+              <span className={styles.scope}>{scope}</span>
+            </span>
+            {selected ? <span className={styles.showing}>Showing</span> : null}
           </span>
           <span className={styles.progress}>
             <span className={styles.count}>

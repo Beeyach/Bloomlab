@@ -13,6 +13,9 @@ describe('BloomlabDatabase', () => {
       'exercise_attempts',
       'notes',
       'review_queue',
+      'sim_events',
+      'sim_projects',
+      'sim_snapshots',
       'skill_evidence',
       'skill_progress',
       'sync_conflicts',
@@ -25,6 +28,9 @@ describe('BloomlabDatabase', () => {
     expect(database.notes.schema.primKey.name).toBe('id');
     expect(database.sync_queue.schema.primKey.auto).toBe(true);
     expect(database.sync_shadow.schema.primKey.keyPath).toEqual(['entity', 'entity_id']);
+    // Phase 10: a run's history is append-only and indexed by the run it belongs to.
+    expect(database.sim_events.schema.primKey.name).toBe('id');
+    expect(database.sim_events.schema.indexes.map((index) => index.name)).toContain('run_id');
     database.close();
   });
 

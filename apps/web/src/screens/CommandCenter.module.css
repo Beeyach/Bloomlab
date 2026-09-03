@@ -28,12 +28,10 @@
   padding: var(--bl-space-6);
 }
 
-.eyebrow {
+.objectContext {
   margin: 0;
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--bl-color-ink-soft);
 }
 
@@ -62,14 +60,6 @@
   padding: var(--bl-space-3) var(--bl-space-4);
   border-radius: var(--bl-radius-md);
   background: rgb(255 255 255 / 0.55);
-}
-
-.stepVerb {
-  font-size: var(--bl-font-size-xs);
-  font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--bl-color-ink-soft);
 }
 
 .stepTitle {
@@ -221,10 +211,8 @@
 
 .blockTitle {
   margin: 0 0 var(--bl-space-2);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 
@@ -267,10 +255,8 @@
 }
 
 .itemVerb {
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 

@@ -146,3 +146,68 @@ Every bug fix adds a regression fixture. If a change to the wait engine breaks `
 ## 13. Versioning (SIM-019)
 
 The simulator carries its own `simulator_version`. Attempts record it alongside `app_version` and `content_version`.
+
+---
+
+## 14. Implemented architecture (Phase 10)
+
+What the engine is, as built. This section records decisions the spec left open; where it and the
+sections above differ in detail, the sections above state the requirement and this states the
+implementation.
+
+**Package.** `packages/simulator-core`, pure TypeScript, importing nothing outside its own
+modules. A source-level test enforces the absence of React, the DOM, IndexedDB, Dexie, Cloudflare,
+`fetch`, Claude, `Math.random()`, `Date.now()` and any read of the machine's timezone.
+
+**Transition.** `applyEvent(account, event, state) → { account, records, generated }` is pure and
+never mutates its input. `processEvent(state, pending)` owns identity, order and the log, and
+feeds generated events back through itself breadth-first, so a generated event travels the same
+path as an injected one. There is no second route into the state.
+
+**Event envelope.** `id` (`ev-<run>-<sequence>`, deterministic), `type`, `at` (simulator time),
+`sequence` (total order), `payload`, `origin` (`scenario` · `injected` · `generated` · `clock`),
+`source` (what produced it, and what caused it), `run_id`, `scenario_id`.
+
+**Names.** The catalogue keeps the spec's names; content and the grader address the same events in
+the dotted lower-case form, one deterministic transformation away (D-076).
+
+**Clock.** ISO instants carrying their offset. A minute and an hour are absolute durations; a day
+is a calendar day in the scenario's zone, so 09:00 stays 09:00 across a daylight-saving change.
+Zones are data and are validated; nothing reads the device.
+
+**Scheduler.** Total order of (timestamp, insertion sequence, stable id) — D-077. The queue's
+insertion counter is separate from the event sequence so queuing never shifts event identity.
+
+**Cascade safety.** 500 events per operation, then an explicit `CASCADE_LIMIT` carrying the trail.
+Nothing is silently dropped (D-078).
+
+**Execution log.** `ExecutionRecord` with a stable id, the run, simulator time, the shared
+sequence, a `kind` from the nine categories, workflow / run / node / contact / event references,
+structured `data` and a machine `reason`. The interface derives words; the log stores facts.
+
+**Randomness.** mulberry32, state carried in the run, position preserved across a snapshot
+(D-081).
+
+**Snapshots.** Authored scenario + append-only event log + a checkpoint every 25 events, each
+hashed and validated on restore (D-080).
+
+**Replay and rewind.** Replay re-runs only root events and regenerates consequences, so ids can
+never duplicate; `rewind` is replay to an earlier index, which is what undo means here (D-079).
+
+**Reset.** Rebuilds from the authored scenario. The content object is never mutated.
+
+**Persistence.** Outside the core: `sim_projects`, `sim_events` and `sim_snapshots` on the
+existing local-first sync path (D-082).
+
+**Grading.** A translation-only adapter in the app supplies state, events and references, never
+architecture (D-083).
+
+### Phase boundary
+
+Phase 10 owns the account, the clock, the queue, the catalogue, the log and the run. It does not
+execute workflows: enrolment, step completion, exit and refused re-entry are recorded as entities
+and events, but nothing walks a contact from node to node, evaluates a branch or serves a wait.
+That is the Workflow Lab (Phase 12), which is also where the Playground (SIM-015) and the Web
+Worker (SIM-014) belong. The realistic-failure library (SIM-011) is Phase 15; the two failure
+conditions Phase 10 enforces — a contact with no phone, and do-not-disturb — are properties of an
+outbound message, not of that library.

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Content schemas, validation and build-time compiler for content/ (spec §98–§101)",
+  "description": "Content schemas, validation and build-time compiler for content/ (spec \u00a798\u2013\u00a7101)",
   "exports": {
     ".": "./src/index.ts",
     "./node": "./src/node.ts",
@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "@bloomlab/simulator-core": "*",
     "@mdx-js/mdx": "^3.1.1",
     "unist-util-visit": "^5.1.0",
     "yaml": "^2.9.0",

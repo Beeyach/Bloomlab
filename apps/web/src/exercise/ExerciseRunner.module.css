@@ -4,7 +4,7 @@
 }
 
 /* A broken system reads as an incident: understated, never a siren (DES-013). */
-.incident .eyebrow {
+.incident .meta {
   color: var(--bl-color-ink);
 }
 
@@ -16,13 +16,10 @@
   border-bottom: 1px solid var(--bl-color-border);
 }
 
-.eyebrow {
+.meta {
   margin: 0;
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 
@@ -119,10 +116,7 @@
 
 .context {
   margin: 0;
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: var(--bl-font-size-sm);
   color: var(--bl-color-text-soft);
 }
 
@@ -142,10 +136,7 @@
 
 .featuresTitle {
   margin: 0;
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: var(--bl-font-size-sm);
   color: var(--bl-color-text-soft);
 }
 
@@ -159,7 +150,7 @@
   font-size: var(--bl-font-size-sm);
 }
 
-.featureList li::before {
+.featureList li + li::before {
   content: '· ';
   color: var(--bl-color-text-soft);
 }
@@ -283,11 +274,8 @@
   margin: 0;
 }
 
-.assistanceLabel {
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.assistanceNote {
+  font-size: var(--bl-font-size-sm);
   color: var(--bl-color-text-soft);
 }
 
@@ -315,10 +303,7 @@
 
 .hintLevel {
   margin: 0;
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: var(--bl-font-size-sm);
   color: var(--bl-color-text-soft);
 }
 
@@ -386,7 +371,7 @@
 }
 
 .score {
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-weight: var(--bl-font-weight-semibold);
   color: var(--bl-color-text);
 }
@@ -401,11 +386,8 @@
 
 .criticalLabel {
   margin: 0;
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .criticalItem {
@@ -431,11 +413,8 @@
   justify-content: space-between;
   gap: var(--bl-space-2);
   margin: 0;
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 
@@ -482,16 +461,13 @@
 }
 
 .diff dt {
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: var(--bl-font-size-sm);
   color: var(--bl-color-text-soft);
 }
 
 .diff dd {
   margin: 0;
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
 

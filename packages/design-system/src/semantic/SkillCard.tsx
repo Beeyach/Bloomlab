@@ -39,18 +39,15 @@ export function SkillCard({
   const inner = (
     <span className={styles.inner}>
       <span className={styles.top}>
-        <span>
-          <span className={styles.territory}>{TERRITORY_LABELS[territory]}</span>
-          <span className={styles.title}>{title}</span>
-        </span>
+        <span className={styles.title}>{title}</span>
         <MasteryBadge state={state} />
       </span>
       {summary && <span className={styles.summary}>{summary}</span>}
-      {demonstrations !== undefined && (
-        <span className={styles.meta}>
-          {demonstrations} {demonstrations === 1 ? 'demonstration' : 'demonstrations'}
-        </span>
-      )}
+      <span className={styles.meta}>
+        {TERRITORY_LABELS[territory]}
+        {demonstrations !== undefined &&
+          ` · ${demonstrations} ${demonstrations === 1 ? 'demonstration' : 'demonstrations'}`}
+      </span>
     </span>
   );
 

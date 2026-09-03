@@ -2,7 +2,7 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-04 (end of Phase 9)
+Last updated: 2026-09-05 (end of Phase 10)
 
 ## Current state
 
@@ -14,6 +14,71 @@ Last updated: 2026-09-04 (end of Phase 9)
 - GHL feature names are verified only for the 34 registry records (Phase 5); the gallery samples in `/design` still use illustrative labels and are not wired to the registry (GHL-005 / GHL-010 apply from the screens onward).
 - The ~128k ElevenLabs credits have an expiry window; voice asset generation (VOI-005) is scheduled for Phase 20. Risk: credits expire before Phase 20. By design this is not a functional dependency.
 - Prettier does not format Markdown (`*.md` is ignored) so the control documents keep their hand-laid tables.
+
+## Phase 10 — simulator core
+
+- **No workflow executes yet, and that is the single largest gap.** The engine records enrolment,
+  step completion, exit and a refused duplicate enrolment as real entities and events, but nothing
+  walks a contact from node to node, evaluates an If/Else, serves a Wait or sends what a node
+  configures. That is the Workflow Lab (Phase 12). Everything downstream of it follows: SIM-001 is
+  PARTIAL for the "fire a workflow" link of its chain, SIM-010 is PARTIAL because `branch_result`
+  and `waiting` have no producer, and the five Phase 9 exercise families that need a run
+  (Build It, Fix It, Run the Lead, Edge Case, Rebuild Blind) are **no more runnable than they were
+  before this phase**. `EXERCISE_RUNTIMES` is deliberately still empty: registering a runtime that
+  cannot produce the expected messages, tags and branches would fail a learner for a phase that
+  has not shipped (D-083).
+- **The Academy's inline simulation still does not run a workflow.** It now shows the account the
+  simulator actually compiles — the contact as the engine loads it, its tags, whether a phone is on
+  file, do-not-disturb, the appointment instant, the run's clock and zone — instead of describing
+  what a later phase will do. Stepping a contact through the workflow needs Phase 12, so CUR-036
+  stays PARTIAL and the embed says so in those words.
+- **Simulator runs sync, and two devices produce two runs.** `sim_projects`, `sim_events` and
+  `sim_snapshots` ride the existing sync path (D-082), and a run id is minted per run rather than
+  per scenario, so a learner who starts the same scenario on two devices gets two runs rather than
+  a merge. That is the honest reading of what happened; there is no cross-device "resume this run
+  over there" yet. One run edited on two devices raises a `sim_projects` conflict through the
+  existing chooser, which has not been exercised on real hardware for this entity — only in tests.
+- **Cross-device sync of simulator saves is untested against a live second device.** The unit tests
+  cover the local write path and the outbox; the two-device probe covers notes and learning
+  records, not simulator runs.
+- **The scheduled-event queue is only reachable from a scenario or the engine API.** The harness
+  shows the queue and drains it, and the injector can create a future appointment, but there is no
+  control for queuing an arbitrary event by hand; `schedule()` is covered by unit tests.
+- **Two failure conditions, not nine.** A contact with no phone and a contact on do-not-disturb are
+  enforced because they are properties of an outbound message. The rest of SIM-011 — invalid
+  webhook auth, missing field, unavailable appointment, bad condition, workflow loop, integration
+  failure — is Phase 15, and duplicate enrolment is enforced here only because re-entry is a
+  property of the workflow definition.
+- **The harness is a developer surface.** `/system/simulator` is behind the `system_diagnostics`
+  flag and unreachable in production, by URL as well as by navigation. It is deliberately plain:
+  it is not a Lab, and the dark workspace belongs to Phase 12.
+- **`Intl` is a dependency of the clock.** Calendar-day arithmetic and zone offsets use
+  `Intl.DateTimeFormat` with an explicit `timeZone`. That is deterministic and never reads the
+  device's zone, but it does mean the engine relies on the runtime's IANA database being present
+  and current. A runtime without full ICU would resolve zones differently.
+- **The tablet holographic interaction is confirmed fixed by the user. REAL TABLET USER CHECK:
+  PASS.** The user tested diagnostic cards A to I on the actual tablet and reported all nine clean:
+  no rectangular flash, no pointed-corner flash, touch-down, hold and release all correct, and the
+  Skill Map's own holographic interaction clean on the same device. Case A is the card exactly as
+  it ships, so what fixed it is one of the two WebKit version gaps closed alongside the diagnostic
+  — most likely `button { -webkit-appearance: none }`, without which WebKit before Safari 15.4
+  keeps the native button chrome and paints it on `:active` as a square fill over the button's box,
+  which is the reported symptom exactly. The two shipped together, so this is a reasoned
+  attribution rather than an isolated one. What the diagnostic settled is that **the material was
+  never at fault**: every case that removed a piece of it came back identical to the card that
+  keeps them, so nothing about the holographic interaction had to be weakened and nothing was
+  (D-086, Phase 10 review §28).
+- **`/system/holo` and the `surface="split"` prop are kept though the investigation is closed.**
+  The diagnostic route stays behind the diagnostics flag, unreachable in production, and
+  `HoloMaterial.surface` keeps its `split` value, whose only consumer is that route. This symptom
+  was misdiagnosed twice from a desktop; if it returns, the instrument that named it should already
+  exist. Both can be deleted in one commit if they are ever judged not to be worth their keep.
+- **A second checkpoint at a log position already checkpointed keeps the first one's label.**
+  Snapshot rows are addressed by `(run, generation, log length)`, which is content-addressed on
+  purpose: two devices that checkpoint at the same position have checkpointed the same state, and
+  the append union should treat those as one row rather than two. The cost is that marking a second
+  checkpoint at the same position without advancing the run does not record the new label. No
+  learner-facing surface takes checkpoint labels yet; the harness is the only caller.
 
 ## Phase 9 — exercise runner
 

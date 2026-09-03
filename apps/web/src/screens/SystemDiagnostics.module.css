@@ -19,10 +19,8 @@
 .heading {
   margin: var(--bl-space-4) 0 0;
   color: var(--bl-color-text-soft);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: var(--bl-font-tracking-eyebrow);
-  text-transform: uppercase;
 }
 
 .list {
@@ -39,7 +37,7 @@
 
 .list dd {
   margin: 0;
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
 
@@ -76,7 +74,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-xs);
   line-height: var(--bl-font-leading-relaxed);
   overflow-wrap: anywhere;

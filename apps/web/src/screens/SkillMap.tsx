@@ -209,10 +209,10 @@ function SkillDetail({
 
         {step && described && (
           <Surface tone="mist" padding="sm" className={styles.next}>
-            <p className={styles.nextEyebrow}>Next · {described.verb}</p>
             <p className={styles.nextTitle}>{described.title}</p>
             <p className={styles.detailMeta}>
-              {step.minutes} min{described.detail ? ` · ${described.detail}` : ''} · {step.reason}
+              Next · {described.verb} · {step.minutes} min
+              {described.detail ? ` · ${described.detail}` : ''} · {step.reason}
             </p>
             {stepExercise && (
               <p className={styles.nextText}>{excerpt(stepExercise.instructions)}</p>
@@ -371,13 +371,12 @@ export default function SkillMap() {
   return (
     <Stack as="section" gap={6} className={styles.screen} aria-labelledby="map-title">
       <header className={styles.header}>
-        <p className={styles.eyebrow}>Nine territories · judgment at the centre</p>
         <h1 id="map-title" className={styles.title}>
           Skill Map
         </h1>
         <p className={styles.lead}>
-          Every capability, where it stands, and what it opens. Prerequisites decide what is
-          available; no date does.
+          Nine territories with judgment at the centre. Every capability, where it stands, and what
+          it opens. Prerequisites decide what is available; no date does.
         </p>
       </header>
 
@@ -414,10 +413,10 @@ export default function SkillMap() {
       >
         <header className={styles.panelHeader}>
           <div>
-            <p className={styles.eyebrow}>{TERRITORY_SCOPE[selected]}</p>
             <h2 id="territory-title" className={styles.panelTitle}>
               {TERRITORY_LABELS[selected]}
             </h2>
+            <p className={styles.panelScope}>{TERRITORY_SCOPE[selected]}</p>
           </div>
           <p className={styles.panelCount}>
             {selectedSkills.length === 0

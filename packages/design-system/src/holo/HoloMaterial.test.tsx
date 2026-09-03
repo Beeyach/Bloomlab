@@ -137,3 +137,50 @@ describe('HoloMaterial', () => {
     expect(holo).toHaveAttribute('data-variant', 'soft');
   });
 });
+
+describe('the split surface (D-086)', () => {
+  it('renders one surface by default: the layers sit directly on the transformed root', () => {
+    render(
+      <HoloMaterial data-testid="card">
+        <span>Face</span>
+      </HoloMaterial>,
+    );
+    const card = screen.getByTestId('card');
+    expect(card.dataset.surface).toBe('single');
+    expect(card.querySelector('[data-layer="surface"]')).toBeNull();
+    for (const layer of ['pearl', 'bands', 'grain', 'glare', 'rim', 'content']) {
+      expect(card.querySelector(`:scope > [data-layer="${layer}"]`)).not.toBeNull();
+    }
+  });
+
+  it('moves every layer inside one clipping element when asked to split', () => {
+    render(
+      <HoloMaterial surface="split" data-testid="card">
+        <span>Face</span>
+      </HoloMaterial>,
+    );
+    const card = screen.getByTestId('card');
+    expect(card.dataset.surface).toBe('split');
+    const surface = card.querySelector('[data-layer="surface"]');
+    expect(surface).not.toBeNull();
+    // The same layers, in the same order, one level deeper. Nothing is added or dropped.
+    for (const layer of ['pearl', 'bands', 'grain', 'glare', 'rim', 'content']) {
+      expect(card.querySelector(`:scope > [data-layer="${layer}"]`)).toBeNull();
+      expect(surface?.querySelector(`:scope > [data-layer="${layer}"]`)).not.toBeNull();
+    }
+    expect(screen.getByText('Face')).toBeInTheDocument();
+  });
+
+  it('keeps the pointer physics on the root either way', async () => {
+    render(
+      <HoloMaterial surface="split" data-testid="card">
+        <span>Face</span>
+      </HoloMaterial>,
+    );
+    const card = screen.getByTestId('card');
+    mockRect(card);
+    fireEvent.pointerDown(card, { clientX: 200, clientY: 0, pointerType: 'touch' });
+    await waitFor(() => expect(card.dataset.tracking).toBe('true'));
+    await waitFor(() => expect(Number(prop(card, '--holo-nx'))).toBeGreaterThan(0.9), settled);
+  });
+});
