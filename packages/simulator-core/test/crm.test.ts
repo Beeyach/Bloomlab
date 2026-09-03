@@ -79,7 +79,10 @@ describe('ownership (CRM-001, D-089)', () => {
   it('refuses an owner the account does not have, and changes nothing', () => {
     const before = run();
     const error = refusal(() =>
-      fire(before, { type: 'CONTACT_ASSIGNED', payload: { contact_id: 'maria', owner_id: 'ghost' } }),
+      fire(before, {
+        type: 'CONTACT_ASSIGNED',
+        payload: { contact_id: 'maria', owner_id: 'ghost' },
+      }),
     );
     expect(error?.code).toBe('UNKNOWN_ENTITY');
     expect(before.account.contacts.maria?.owner_id).toBe('priya');
@@ -181,7 +184,12 @@ describe('custom field definitions (CRM-001, D-090)', () => {
   it('keeps a dropdown’s options and refuses a repeated one', () => {
     const next = fire(run(), {
       type: 'FIELD_DEFINED',
-      payload: { key: 'interest', label: 'Interest', type: 'dropdown', options: ['Facial', 'Laser'] },
+      payload: {
+        key: 'interest',
+        label: 'Interest',
+        type: 'dropdown',
+        options: ['Facial', 'Laser'],
+      },
     });
     expect(next.account.custom_fields.interest?.options).toEqual(['Facial', 'Laser']);
     expect(
@@ -197,7 +205,10 @@ describe('custom field definitions (CRM-001, D-090)', () => {
   it('refuses a change of type or object once the field exists', () => {
     expect(
       refusal(() =>
-        fire(run(), { type: 'FIELD_UPDATED', payload: { key: 'treatment_interest', type: 'number' } }),
+        fire(run(), {
+          type: 'FIELD_UPDATED',
+          payload: { key: 'treatment_interest', type: 'number' },
+        }),
       )?.code,
     ).toBe('INVALID_PAYLOAD');
     expect(
@@ -299,7 +310,10 @@ describe('pipelines (CRM-001, D-093)', () => {
     ).toBe('DUPLICATE_ENTITY');
     expect(
       refusal(() =>
-        fire(run(), { type: 'PIPELINE_CREATED', payload: { pipeline_id: 'p', name: 'P', stages: [] } }),
+        fire(run(), {
+          type: 'PIPELINE_CREATED',
+          payload: { pipeline_id: 'p', name: 'P', stages: [] },
+        }),
       )?.code,
     ).toBe('INVALID_PAYLOAD');
     expect(
@@ -399,7 +413,12 @@ describe('notes (CRM-001, D-091)', () => {
   it('records a note on a contact at simulator time', () => {
     const next = fire(run(), {
       type: 'NOTE_ADDED',
-      payload: { note_id: 'n1', contact_id: 'maria', body: 'Prefers evenings.', author_id: 'priya' },
+      payload: {
+        note_id: 'n1',
+        contact_id: 'maria',
+        body: 'Prefers evenings.',
+        author_id: 'priya',
+      },
     });
     expect(next.account.notes.n1).toMatchObject({
       contact_id: 'maria',
@@ -422,12 +441,16 @@ describe('notes (CRM-001, D-091)', () => {
   });
 
   it('refuses a note attached to nothing, to a stranger, or to a mismatched pair', () => {
-    expect(refusal(() => fire(run(), { type: 'NOTE_ADDED', payload: { note_id: 'n', body: 'x' } }))?.code).toBe(
-      'INVALID_PAYLOAD',
-    );
+    expect(
+      refusal(() => fire(run(), { type: 'NOTE_ADDED', payload: { note_id: 'n', body: 'x' } }))
+        ?.code,
+    ).toBe('INVALID_PAYLOAD');
     expect(
       refusal(() =>
-        fire(run(), { type: 'NOTE_ADDED', payload: { note_id: 'n', contact_id: 'ghost', body: 'x' } }),
+        fire(run(), {
+          type: 'NOTE_ADDED',
+          payload: { note_id: 'n', contact_id: 'ghost', body: 'x' },
+        }),
       )?.code,
     ).toBe('UNKNOWN_ENTITY');
     expect(
@@ -494,7 +517,10 @@ describe('tasks (CRM-001, D-091)', () => {
   it('refuses an unknown target, an unknown assignee and an unreadable due date', () => {
     expect(
       refusal(() =>
-        fire(run(), { type: 'TASK_CREATED', payload: { task_id: 't', contact_id: 'ghost', title: 'x' } }),
+        fire(run(), {
+          type: 'TASK_CREATED',
+          payload: { task_id: 't', contact_id: 'ghost', title: 'x' },
+        }),
       )?.code,
     ).toBe('UNKNOWN_ENTITY');
     expect(
@@ -521,10 +547,11 @@ describe('tasks (CRM-001, D-091)', () => {
         fire(run(), { type: 'TASK_CREATED', payload: { task_id: 't', contact_id: 'maria' } }),
       )?.code,
     ).toBe('INVALID_PAYLOAD');
-    let state = create(run());
+    const state = create(run());
     expect(
-      refusal(() => fire(state, { type: 'TASK_COMPLETED', payload: { task_id: 't1', completed: 'yes' } }))
-        ?.code,
+      refusal(() =>
+        fire(state, { type: 'TASK_COMPLETED', payload: { task_id: 't1', completed: 'yes' } }),
+      )?.code,
     ).toBe('INVALID_PAYLOAD');
   });
 });
@@ -532,10 +559,18 @@ describe('tasks (CRM-001, D-091)', () => {
 describe('the CRM mutations replay like everything else (SIM-018)', () => {
   it('reproduces a whole CRM session from its log', () => {
     let state = run();
-    state = fire(state, { type: 'CONTACT_ASSIGNED', payload: { contact_id: 'jordan', owner_id: 'dana' } });
+    state = fire(state, {
+      type: 'CONTACT_ASSIGNED',
+      payload: { contact_id: 'jordan', owner_id: 'dana' },
+    });
     state = fire(state, {
       type: 'FIELD_DEFINED',
-      payload: { key: 'interest', label: 'Interest', type: 'dropdown', options: ['Facial', 'Laser'] },
+      payload: {
+        key: 'interest',
+        label: 'Interest',
+        type: 'dropdown',
+        options: ['Facial', 'Laser'],
+      },
     });
     state = fire(state, {
       type: 'CONTACT_UPDATED',

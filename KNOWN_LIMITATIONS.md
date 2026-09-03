@@ -171,6 +171,23 @@ Last updated: 2026-09-05 (end of Phase 10)
 - No Durable Objects, Queues, Redis, Supabase, Firebase, separate Node server, or vector database in v1 (INF-006, INF-007, INF-008).
 - Environments are chosen at build time (`CLOUDFLARE_ENV` + Vite mode, D-013); one build artefact cannot be promoted between environments.
 
+## Phase 11 — CRM Lab
+
+- **No move between pipelines.** An opportunity's stage picker offers the stages of its own pipeline; `PIPELINE_STAGE_CHANGED` is scoped to the deal's pipeline and a stage from another is refused. Moving a deal to a different pipeline is not offered in Phase 11.
+- **No deletion.** Contacts, opportunities, fields, pipelines, notes and tasks cannot be deleted from the Lab. Acceptance does not need it and no deletion event was added to claim CRUD.
+- **One pipeline on the board.** The board shows the account's first pipeline; the training scenario authors one. Creating a second pipeline works and its deals can be created into it, but the board does not switch between pipelines yet.
+- **Custom Values have no editor.** CRM-001's nine areas do not include them; the account's `custom_values` are untouched and a compact editor is later ARCHITECT work.
+- **GHL verification method.** The build environment's egress proxy denies `help.gohighlevel.com`, so the three registry records added this phase (owners, notes, tasks) were verified through search-engine summaries of the official articles, dated and stated in each `verification_note`. Re-verify by direct read when a machine with access next touches them.
+- **Physical two-device testing did not happen.** Cross-device behaviour is proved with two simulated devices in tests and the existing sync semantics; no CRM-specific sync protocol exists.
+- **The consequence exercise is one exercise.** CRM-003's consequence is `EX-FIX_IT-jordan-treatment-interest`; other consequences the spec lists (merge-field output, a filter that cannot answer, an automation depending on one value) arrive with the Labs that produce them (Phases 12–15).
+
 ## Simulator approximations versus real GHL
 
-None yet — no simulator exists. When populated, each entry records: feature id, fidelity (A / B / C / REAL_GHL), what differs from real GHL, and why.
+| Feature | Fidelity | What differs | Why |
+|---|---|---|---|
+| `GHL-CRM-OWNERS` decoupled contact / opportunity owners | B | The opportunity owner defaults to the contact owner at creation and can then differ; the two follower-sync sub-settings are not modelled. | Phase 11 teaches ownership, not follower management. |
+| `GHL-CRM-NOTES` | B | Plain text, on contacts and opportunities; no rich text, no company notes, no editing after the fact. | Companies are Phase 25; editing a note would need an event nothing in Phase 11 requires. |
+| `GHL-CRM-TASKS` | B | Title, description, due date, assignee, linked record, complete / reopen; no recurrence, priority, reminders or Spaces. | The acceptance needs a usable task, not task-management parity. |
+| `GHL-CRM-CONTACTS` do-not-disturb | A (one gap) | One global flag; HighLevel also allows DND per channel. | A per-channel model arrives when the Conversations Lab needs it. |
+| `GHL-CRM-OPPORTUNITIES` | A (one gap) | One contact per opportunity; no followers or additional contacts. | Phase 11 acceptance needs the contact link preserved, nothing more. |
+| `GHL-CRM-CUSTOM-FIELDS` | A | Seven types (text, number, date, checkbox, dropdown, phone, email) with dropdown options; no file, textarea, radio or multi-select types, no folders. | Unsupported types are not shown as supported (D-090). |

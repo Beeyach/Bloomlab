@@ -266,14 +266,31 @@ try {
   // Enter activates a button only through a char event, as a real keypress does; Tab and the
   // arrows are raw key events. This mirrors the academy probe, which is known to work.
   const keys = async (key, times = 1) => {
-    const code = key === 'Tab' ? 9 : key === 'Enter' ? 13 : key === ' ' ? 32 : key === 'Escape' ? 27 : 0;
+    const code =
+      key === 'Tab' ? 9 : key === 'Enter' ? 13 : key === ' ' ? 32 : key === 'Escape' ? 27 : 0;
     for (let i = 0; i < times; i += 1) {
       if (key === 'Enter') {
-        await page.send('Input.dispatchKeyEvent', { type: 'keyDown', key, code: key, text: '\r', windowsVirtualKeyCode: code });
+        await page.send('Input.dispatchKeyEvent', {
+          type: 'keyDown',
+          key,
+          code: key,
+          text: '\r',
+          windowsVirtualKeyCode: code,
+        });
       } else {
-        await page.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key, code: key, windowsVirtualKeyCode: code });
+        await page.send('Input.dispatchKeyEvent', {
+          type: 'rawKeyDown',
+          key,
+          code: key,
+          windowsVirtualKeyCode: code,
+        });
       }
-      await page.send('Input.dispatchKeyEvent', { type: 'keyUp', key, code: key, windowsVirtualKeyCode: code });
+      await page.send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key,
+        code: key,
+        windowsVirtualKeyCode: code,
+      });
       await sleep(60);
     }
   };
