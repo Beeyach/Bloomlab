@@ -58,7 +58,7 @@ describe('review scheduling (spec §32, TA§69; MAS-005, MAS-009)', () => {
     expect(scheduleReviews([result], new Date(at(6))).due[0]?.reason).toBe('needs_refresh');
   });
 
-  it('14. a passed retrieval restores the earned state; history is intact', () => {
+  it('14. a passed retrieval restores the earned state without advancing it; history is intact', () => {
     const due = Date.parse(at(1)) + 21 * DAY;
     const later = new Date(due + 20 * DAY);
     const stale = evaluateSkill(BETA, independentBeta, later);
@@ -72,9 +72,9 @@ describe('review scheduling (spec §32, TA§69; MAS-005, MAS-009)', () => {
       }),
     ];
     const restored = evaluateSkill(BETA, refreshed, later);
-    expect(restored.state).toBe('MASTERED');
+    expect(restored.state).toBe('INDEPENDENT');
     expect(restored.counts.evidence).toBe(2);
-    expect(restored.counts.independent_passes).toBe(2);
+    expect(restored.counts.independent_passes).toBe(1);
     expect(restored.last_demonstrated).toBe(refreshed[1]?.occurred_at);
     expect(restored.refresh_from).toBeNull();
   });
@@ -144,7 +144,7 @@ describe('refresh round trip: NEEDS_REFRESH → unassisted retrieval → earned 
     expect(restored.confidence).toBeGreaterThan(stale.confidence);
     // History intact: every earlier row still counted, the retrieval added, nothing rewritten.
     expect(restored.counts.evidence).toBe(3);
-    expect(restored.counts.independent_passes).toBe(3);
+    expect(restored.counts.independent_passes).toBe(2);
     expect(scheduleReviews([restored], new Date(retrievalAt)).due).toEqual([]);
   });
 
@@ -170,7 +170,7 @@ describe('refresh round trip: NEEDS_REFRESH → unassisted retrieval → earned 
     expect(restored.state).toBe('INDEPENDENT');
     expect(restored.ladder_state).toBe('INDEPENDENT');
     expect(restored.refresh_from).toBeNull();
-    expect(restored.missing_requirements).toEqual(['pressure_test']);
+    expect(restored.missing_requirements).toEqual(['independent_evidence', 'pressure_test']);
     expect(restored.review_due).toBe(new Date(Date.parse(retrievalAt) + 14 * DAY).toISOString());
   });
 

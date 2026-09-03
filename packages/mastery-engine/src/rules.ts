@@ -6,7 +6,7 @@
  * threshold: states are earned by kinds of evidence, assistance and repetition.
  */
 
-export const MASTERY_RULES_VERSION = '2026.09.02-r3';
+export const MASTERY_RULES_VERSION = '2026.09.03-r4';
 
 /** The eight states (spec §29). NEEDS_REFRESH is an overlay on an earned ladder state. */
 export const MASTERY_STATES = [
@@ -103,7 +103,11 @@ export const PRACTICE_KINDS: readonly EvidenceKind[] = [
   'retrieval',
 ];
 
-/** Kinds whose unassisted pass counts as an independent demonstration. Guided practice never does. */
+/**
+ * Kinds whose unassisted pass counts as an independent demonstration toward INDEPENDENT and
+ * MASTERED. Guided practice never does. Retrieval is deliberately absent: a review challenge
+ * maintains mastery, it never advances it (D-052).
+ */
 export const INDEPENDENT_KINDS: readonly EvidenceKind[] = [
   'deterministic_exercise',
   'independent_exercise',
@@ -112,14 +116,20 @@ export const INDEPENDENT_KINDS: readonly EvidenceKind[] = [
   'sales_use',
   'fieldwork',
   'real_ghl',
+];
+
+/** Kinds that count as a demonstration for review scheduling: the progression kinds plus retrieval. */
+export const REVIEW_DEMONSTRATION_KINDS: readonly EvidenceKind[] = [
+  ...INDEPENDENT_KINDS,
   'retrieval',
 ];
 
 /**
  * What resets the review clock (`last_demonstrated`), explicitly (spec §30, §32; MAS-005, MAS-011).
  * A demonstration is evidence that:
- * - is one of `kinds` (every independent-capable kind: an ordinary or independent exercise, a
- *   pressure test, an explanation, sales use, fieldwork, real-GHL proof, a retrieval);
+ * - is one of `kinds` (REVIEW_DEMONSTRATION_KINDS: an ordinary or independent exercise, a
+ *   pressure test, an explanation, sales use, fieldwork, real-GHL proof, or a retrieval — the
+ *   one kind that resets the clock without counting toward INDEPENDENT or MASTERED);
  * - has `result: passed` and no critical failure;
  * - was done with at most `max_assistance` (a nudge or two; never a concept reminder or a
  *   worked example);
@@ -129,7 +139,7 @@ export const INDEPENDENT_KINDS: readonly EvidenceKind[] = [
  * do failed or partial attempts. A failed retrieval does the opposite: it forces NEEDS_REFRESH.
  */
 export const DEMONSTRATION_RULES = {
-  kinds: INDEPENDENT_KINDS,
+  kinds: REVIEW_DEMONSTRATION_KINDS,
   results: ['passed'],
   max_assistance: 'light',
   proof_required_for: ['fieldwork', 'real_ghl'],
