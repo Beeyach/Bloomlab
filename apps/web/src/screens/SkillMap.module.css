@@ -8,12 +8,10 @@
   max-width: 44rem;
 }
 
-.eyebrow {
+.panelScope {
   margin: 0;
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 
@@ -43,14 +41,14 @@
   min-width: 0;
 }
 
+/*
+ * Selected territory. A spread shadow follows the card's 24 px radius on every engine, where an
+ * offset outline is painted as a rectangle by older WebKit around the transformed material —
+ * the square ring the tablet report described (D-075). The focus ring itself belongs to
+ * `HoloTerritory`, so selection and focus can never disagree about the shape.
+ */
 .territory[aria-pressed='true'] {
-  outline: 2px solid var(--bl-color-ink);
-  outline-offset: 3px;
-}
-
-.territory:focus-visible {
-  outline: 3px solid var(--bl-color-focus);
-  outline-offset: 3px;
+  box-shadow: 0 0 0 2px var(--bl-color-ink);
 }
 
 @media (min-width: 768px) {
@@ -198,10 +196,8 @@
 
 .detailTerritory {
   margin: 0;
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 
@@ -225,15 +221,6 @@
   gap: var(--bl-space-1);
 }
 
-.nextEyebrow {
-  margin: 0;
-  font-size: var(--bl-font-size-xs);
-  font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--bl-color-text-soft);
-}
-
 .nextTitle {
   margin: 0;
   font-weight: var(--bl-font-weight-semibold);
@@ -251,10 +238,8 @@
 
 .detailHeading {
   margin: 0;
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 

@@ -10,6 +10,25 @@
   text-align: left;
   cursor: pointer;
 }
+/*
+ * The focus ring is a spread shadow, not an offset outline: a shadow always follows the
+ * element's `border-radius`, while WebKit before 16.4 paints an outline as a hard rectangle
+ * around a transformed element — a square ring on a rounded card (D-075). The transparent
+ * outline is what forced-colours mode paints, so the ring survives there too.
+ */
+.territory:focus-visible {
+  outline: 3px solid transparent;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--bl-color-focus);
+}
+
+/* Selected *and* focused: the selection ring hugs the card and the focus ring sits outside it,
+   so focus stays distinguishable from selection instead of one silently replacing the other. */
+.territory[aria-pressed='true']:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--bl-color-ink),
+    0 0 0 5px var(--bl-color-focus);
+}
 
 .material {
   width: 100%;
@@ -49,7 +68,7 @@
 
 .count {
   display: block;
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-sm);
 }
 

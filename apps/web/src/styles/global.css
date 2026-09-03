@@ -28,11 +28,52 @@ a {
   text-underline-offset: 0.15em;
 }
 
-/* Visible focus everywhere (A11Y-002). */
+/*
+ * Visible focus everywhere (A11Y-002).
+ *
+ * This rule must never set `border-radius`: it applied to whatever was focused, so focusing a
+ * 24 px-radius holographic card collapsed its corners to 6 px while the material inside kept its
+ * own radius — a pointed corner appearing exactly during a tap, which is what the tablet report
+ * was seeing (D-075). An element's focus ring follows the radius the element already has.
+ */
 :focus-visible {
   outline: 2px solid var(--bl-color-focus);
   outline-offset: 2px;
-  border-radius: var(--bl-radius-sm);
+}
+
+/*
+ * The platform's own tap highlight is a rectangle painted over the touched element's box, so on
+ * a rounded holographic card it flashes square corners under the finger. Every element listed
+ * here answers the touch itself — holographic press physics, an `:active` treatment, a 44 px
+ * target that visibly responds — so the native rectangle is suppressed rather than replaced
+ * (D-075). Anchors in body copy are deliberately left alone: the platform highlight is their
+ * only touch feedback, and it already follows whatever radius they have.
+ */
+button,
+summary,
+[role='button'],
+[role='tab'] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Buttons the design system paints itself never want the platform's button chrome, which is
+   drawn as a rectangle on `:active` in WebKit. Semantics are untouched. */
+button {
+  appearance: none;
+}
+
+/*
+ * Bloomlab has no monospace typography in user-facing UI (DES-022): technical labels, counts,
+ * IDs, logs, simulator time and code snippets are all set in Inter. `code`, `pre`, `kbd` and
+ * `samp` stay semantic, but the user agent gives them a monospace family by default, so they are
+ * told explicitly to inherit the product's typography instead.
+ */
+code,
+pre,
+kbd,
+samp {
+  font-family: inherit;
+  font-size: inherit;
 }
 
 /* Inputs never fall below 16px on mobile (A11Y-008). */
