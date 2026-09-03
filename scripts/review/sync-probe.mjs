@@ -231,15 +231,13 @@ try {
     B.page,
     "document.body.textContent.includes('Two versions were changed')",
   );
-  await sleep(400);
-  await screenshot(
-    B.page,
-    `${OUT}/sync-b-conflict.png`,
-    { x: 0, y: 0, width: 1024, height: 900 },
-    false,
-  );
+  await sleep(1000);
+  await screenshot(B.page, `${OUT}/sync-b-conflict.png`, undefined, false);
   step('conflict shown on B', {
     chooser,
+    dialog: await B.page.evaluate(
+      `(() => { const d = document.querySelector('dialog'); if (!d) return null; const r = d.getBoundingClientRect(); const cs = getComputedStyle(d); return { open: d.open, top: Math.round(r.top), height: Math.round(r.height), opacity: cs.opacity, transform: cs.transform, scrollY }; })()`,
+    ),
     bNoteStillLocal: await newestNote(B.page),
     versions: await B.page.evaluate(
       "[...document.querySelectorAll('dialog pre')].map((p) => p.textContent)",

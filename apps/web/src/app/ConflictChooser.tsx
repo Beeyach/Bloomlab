@@ -6,6 +6,7 @@ import { ENVELOPE_FIELDS, type SyncRecord } from '@bloomlab/shared';
 
 import { db, resolveConflict, syncNow, type LocalSyncEntity } from '../data';
 import styles from './ConflictChooser.module.css';
+import { dismissConflictPrompt, useDismissedConflict } from './conflictPrompt';
 
 /** A readable summary of a record: its text body when it has one, else its own fields. */
 function describe(record: SyncRecord): string {
@@ -24,6 +25,7 @@ const when = (iso: string) => new Date(iso).toLocaleString();
  */
 export function ConflictChooser() {
   const conflict = useLiveQuery(() => db.sync_conflicts.orderBy('detected_at').first(), []);
+  const dismissed = useDismissedConflict();
   const [busy, setBusy] = useState<'local' | 'server' | null>(null);
 
   async function choose(choice: 'local' | 'server') {
@@ -35,13 +37,19 @@ export function ConflictChooser() {
   }
 
   if (!conflict) return null;
+  const key = `${conflict.entity}:${conflict.entity_id}`;
   const local = conflict.local as SyncRecord;
   const server = conflict.server as SyncRecord;
 
   return (
-    <Sheet open onClose={() => undefined} title="Two versions were changed.">
+    <Sheet
+      open={dismissed !== key}
+      onClose={() => dismissConflictPrompt(key)}
+      title="Two versions were changed."
+    >
       <p className={styles.lede}>
-        Choose which version to keep. The other one is dropped only after you choose.
+        Choose which version to keep. The other one is dropped only after you choose; closing this
+        keeps both for later.
       </p>
       <div className={styles.versions}>
         <Surface padding="sm" className={styles.version}>

@@ -29,6 +29,7 @@ import {
   type DeviceRecord,
   type SyncStatus,
 } from '../data';
+import { reopenConflictPrompt } from '../app/conflictPrompt';
 import styles from './SyncScreen.module.css';
 
 const RECOVERY_WARNING =
@@ -340,10 +341,14 @@ function Linked({ device }: { device: DeviceRecord }) {
           </p>
         )}
         {conflicts > 0 && (
-          <p className={styles.muted} role="status">
-            {conflicts === 1 ? 'One change' : `${conflicts} changes`} need your choice — see the
-            prompt at the top of the screen.
-          </p>
+          <Cluster gap={3} className={styles.statusRow} role="status">
+            <span className={styles.muted}>
+              {conflicts === 1 ? 'One change needs' : `${conflicts} changes need`} your choice.
+            </span>
+            <Button size="sm" variant="primary" onClick={reopenConflictPrompt}>
+              Choose now
+            </Button>
+          </Cluster>
         )}
       </Surface>
 
