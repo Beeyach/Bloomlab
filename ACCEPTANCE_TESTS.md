@@ -178,6 +178,8 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **SIM-017** Regression suite exists with stable fixture IDs; CI fails when a fixture breaks (demonstrated by an intentional break on a branch).
 - **SIM-018** Reset returns to the initial scenario; replay reproduces the log.
 - **SIM-019** `simulator_version` is exported and recorded in attempts.
+- **DES-021** No user-facing screen shows a tiny upper-case label above a heading, and the information such labels carried is still on screen somewhere sensible.
+- **DES-022** No user-facing screen renders text in a monospace family, including logs, counts, IDs and code snippets.
 
 ## Phase 11 — CRM Lab
 

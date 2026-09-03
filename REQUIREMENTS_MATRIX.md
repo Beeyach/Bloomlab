@@ -128,25 +128,25 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| SIM-001 | One shared simulated GHL account model across all labs. A form submitted in Funnel Lab can create a contact, populate fields, fire a workflow, create an opportunity, send simulated SMS, create an appointment and affect reporting. Labs are not separate mini-games. | P0 | 10 | NOT_STARTED | §41, §145 |
-| SIM-002 | Deterministic TypeScript package `packages/simulator-core`; no simulation logic inside React components. | P0 | 10 | NOT_STARTED | §42, TA§19 |
-| SIM-003 | Transition model `State + Event → Transition → New State + Events (+ execution records)` via pure reducers that never call Claude, mutate globals, read system time, use uncontrolled randomness, or perform network requests. | P0 | 10 | NOT_STARTED | §42, TA§22 |
-| SIM-004 | Simulated account model supports progressively: account, users, contacts, companies, tags, custom fields, custom values, opportunities, pipelines, appointments, calendars, forms, surveys, products, payments, conversations, workflows, workflow runs, tasks, notes, analytics, event log. | P0 | 10 | NOT_STARTED | §43, TA§20 |
-| SIM-005 | Event catalogue per §44 (CONTACT_*, TAG_*, FORM_SUBMITTED, SURVEY_SUBMITTED, APPOINTMENT_*, SMS_SENT/RECEIVED, EMAIL_SENT/OPENED, OPPORTUNITY_*, PIPELINE_STAGE_CHANGED, PAYMENT_*, REFUND_ISSUED, TIME_ADVANCED, WORKFLOW_*, WEBHOOK_*). Real GHL terminology used in UI for real features. | P0 | 10 | NOT_STARTED | §44, TA§21 |
-| SIM-006 | Every scenario has its own deterministic clock storing simulation time, timezone and scheduled future events. Graded behavior never depends on wall-clock time. | P0 | 10 | NOT_STARTED | §45, TA§23 |
-| SIM-007 | Time Machine: +1 minute, +1 hour, +1 day, Next Event; current simulated date/time always clearly shown. | P1 | 10 | NOT_STARTED | §46 |
-| SIM-008 | Event scheduler is a priority queue of future events; Next Event advances the clock to the earliest queued event with no AI. | P0 | 10 | NOT_STARTED | TA§24 |
-| SIM-009 | Event Injector allows scenario-defined events: contact reply, tag added, appointment cancellation, appointment reschedule, payment, form submission, opportunity movement. | P1 | 10 | NOT_STARTED | §47 |
-| SIM-010 | Execution log stores trigger, data, step, start, completion, branch result, skipped action, waiting, failure, exit reason. | P0 | 10 | NOT_STARTED | §48 |
+| SIM-001 | One shared simulated GHL account model across all labs. A form submitted in Funnel Lab can create a contact, populate fields, fire a workflow, create an opportunity, send simulated SMS, create an appointment and affect reporting. Labs are not separate mini-games. Phase 10: one shared account exists and cross-domain transitions land in it — the integration test drives form → contact → tag → opportunity → SMS → appointment → payment → reporting counters through a single state and a single history. PARTIAL because the "fire a workflow" link in that chain needs a workflow to execute, which is the Workflow Lab (Phase 12); Phase 10 records enrolment, step completion and exit as entities and events but never walks a contact from node to node. | P0 | 10 | PARTIAL | §41, §145 |
+| SIM-002 | Deterministic TypeScript package `packages/simulator-core`; no simulation logic inside React components. | P0 | 10 | PASSED | §42, TA§19 |
+| SIM-003 | Transition model `State + Event → Transition → New State + Events (+ execution records)` via pure reducers that never call Claude, mutate globals, read system time, use uncontrolled randomness, or perform network requests. | P0 | 10 | PASSED | §42, TA§22 |
+| SIM-004 | Simulated account model supports progressively: account, users, contacts, companies, tags, custom fields, custom values, opportunities, pipelines, appointments, calendars, forms, surveys, products, payments, conversations, workflows, workflow runs, tasks, notes, analytics, event log. | P0 | 10 | PASSED | §43, TA§20 |
+| SIM-005 | Event catalogue per §44 (CONTACT_*, TAG_*, FORM_SUBMITTED, SURVEY_SUBMITTED, APPOINTMENT_*, SMS_SENT/RECEIVED, EMAIL_SENT/OPENED, OPPORTUNITY_*, PIPELINE_STAGE_CHANGED, PAYMENT_*, REFUND_ISSUED, TIME_ADVANCED, WORKFLOW_*, WEBHOOK_*). Real GHL terminology used in UI for real features. | P0 | 10 | PASSED | §44, TA§21 |
+| SIM-006 | Every scenario has its own deterministic clock storing simulation time, timezone and scheduled future events. Graded behavior never depends on wall-clock time. | P0 | 10 | PASSED | §45, TA§23 |
+| SIM-007 | Time Machine: +1 minute, +1 hour, +1 day, Next Event; current simulated date/time always clearly shown. | P1 | 10 | PASSED | §46 |
+| SIM-008 | Event scheduler is a priority queue of future events; Next Event advances the clock to the earliest queued event with no AI. | P0 | 10 | PASSED | TA§24 |
+| SIM-009 | Event Injector allows scenario-defined events: contact reply, tag added, appointment cancellation, appointment reschedule, payment, form submission, opportunity movement. | P1 | 10 | PASSED | §47 |
+| SIM-010 | Execution log stores trigger, data, step, start, completion, branch result, skipped action, waiting, failure, exit reason. Phase 10: one structured execution-log model with stable ids and deterministic order, storing data rather than display strings. It records trigger, input, step completion, skipped action (missing phone, do-not-disturb, tag already present), failure and exit (including a refused duplicate enrolment) for behaviour that exists. PARTIAL because branch results and waiting are produced by workflow execution (Phase 12); the kinds are defined and typed but nothing emits them yet. | P0 | 10 | PARTIAL | §48 |
 | SIM-011 | Realistic failures simulated: missing phone, DND, invalid webhook auth, missing field, unavailable appointment, duplicate enrollment, bad condition, workflow loop, integration failure. Observable symptoms shown before fixes. | P1 | 15 | NOT_STARTED | §49 |
-| SIM-012 | Seeded deterministic randomness; scenario specifies `seed`; identical inputs give identical grading results. | P0 | 10 | NOT_STARTED | TA§25 |
-| SIM-013 | Snapshots: initial scenario + event log + periodic checkpoints provide undo, rewind, replay, troubleshooting, reproducible grading. Full state is not serialised after every event. | P0 | 10 | NOT_STARTED | TA§26, §145 |
+| SIM-012 | Seeded deterministic randomness; scenario specifies `seed`; identical inputs give identical grading results. | P0 | 10 | PASSED | TA§25 |
+| SIM-013 | Snapshots: initial scenario + event log + periodic checkpoints provide undo, rewind, replay, troubleshooting, reproducible grading. Full state is not serialised after every event. | P0 | 10 | PASSED | TA§26, §145 |
 | SIM-014 | Heavy simulation runs in a browser Web Worker where beneficial; UI never blocks during large workflow executions. | P1 | 12 | NOT_STARTED | §97, TA§27 |
 | SIM-015 | Playground: once a feature is unlocked it stays available for free experimentation without an assigned exercise. | P1 | 12 | NOT_STARTED | §61 |
-| SIM-016 | Workflow definition schema: `id, name, trigger, trigger_filters, nodes[], edges[], settings`; node `id, type, ghl_feature_id, config, position`. Layout is separate from behavior — moving a node never changes automation. | P0 | 10 | NOT_STARTED | TA§28 |
-| SIM-017 | Simulator regression suite with fixture IDs (e.g. WAIT-001 fixed wait, WAIT-002 appointment-relative, WAIT-003 late enrollment, WAIT-004 cancellation during wait). Every bug fix adds a regression fixture. CI fails on regression. | P0 | 10 | NOT_STARTED | §133, TA§74 |
-| SIM-018 | Replay and reset of any scenario. | P0 | 10 | NOT_STARTED | §145 |
-| SIM-019 | Simulator has its own version; attempts record `simulator_version`. | P0 | 10 | NOT_STARTED | §101, TA§56 |
+| SIM-016 | Workflow definition schema: `id, name, trigger, trigger_filters, nodes[], edges[], settings`; node `id, type, ghl_feature_id, config, position`. Layout is separate from behavior — moving a node never changes automation. | P0 | 10 | PASSED | TA§28 |
+| SIM-017 | Simulator regression suite with fixture IDs (e.g. WAIT-001 fixed wait, WAIT-002 appointment-relative, WAIT-003 late enrollment, WAIT-004 cancellation during wait). Every bug fix adds a regression fixture. CI fails on regression. | P0 | 10 | PASSED | §133, TA§74 |
+| SIM-018 | Replay and reset of any scenario. | P0 | 10 | PASSED | §145 |
+| SIM-019 | Simulator has its own version; attempts record `simulator_version`. | P0 | 10 | PASSED | §101, TA§56 |
 
 ## WFL — Workflow Lab
 
@@ -305,6 +305,8 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DES-018 | Screen coverage matrix maintained: Screen × Desktop / Tablet / Mobile / Empty / Loading / Error / Keyboard / Touch. No major screen complete with desktop only. | P1 | all | IN_PROGRESS | §136 |
 | DES-019 | Visual language exists early; product is never built with generic temporary UI to be "styled later". | P0 | 2 | PASSED | PHASE 2 |
 | DES-020 | Academy visual design is editorial (strong typography, diagrams, inline simulation embeds). | P1 | 8 | PASSED | §76 |
+| DES-021 | No eyebrows, kickers or overlines in user-facing product UI: no tiny, widely tracked upper-case label above a heading, and no pre-title category label used as decoration. Information such as exercise type, mode, duration, campaign or module context is recomposed into a subtitle, a normal metadata row, nearby body copy, a status treatment or navigation context — never dropped. The primary navigation rail keeps its own labels. | P1 | 10 | PASSED | §70, D-084 |
+| DES-022 | No monospace typography in user-facing product UI: technical labels, counts, event logs, simulator time, IDs, metadata, execution history, status text and code snippets are set in the product typography (Bricolage Grotesque for display, Inter for everything else). `code`, `pre`, `kbd` and `samp` stay semantic but inherit the product font. Aligned figures use tabular numerals, not a monospace family. | P1 | 10 | PASSED | §66, §70, D-085 |
 
 ## HOL — Holographic Material
 

@@ -47,15 +47,43 @@ Initial tokens. Tune slightly only for contrast and polish, staying within the D
 
 Status is never conveyed by colour alone (A11Y-005). Semantic colours are never used as small text; they outline controls (error) or sit as glyphs beside a text label. `packages/design-system/src/color/contrast.test.ts` enforces every pairing above.
 
-## 4. Typography (DES-005)
+## 4. Typography (DES-005, DES-021, DES-022)
 
 | Role | Face | Fallback class |
 |---|---|---|
 | Display | Bricolage Grotesque | expressive display grotesk |
-| UI / Body | Inter | highly readable UI sans |
-| Technical | IBM Plex Mono | restrained technical mono |
+| Everything else | Inter | highly readable UI sans |
 
 Substitution only with a strong implementation reason, retaining the class. Generic system fonts only as performance fallback, never everywhere. Mobile input font size ≥ 16 px (A11Y-008).
+
+### NO MONOSPACE IN USER-FACING PRODUCT UI (DES-022)
+
+There is no technical typeface role. Technical labels, counts, event logs, simulator time, IDs,
+metadata, execution history, status text, diagnostic-looking product information, Academy code
+snippets and Exercise Runner result details are all set in Inter. Simulator logs must not look
+like a hacker console.
+
+`code`, `pre`, `kbd` and `samp` stay semantic where the meaning calls for them, but the user agent
+gives them a monospace family by default, so they are told explicitly to inherit the product
+typography. Where the intent is aligned figures — counts, scores, prices, elapsed time,
+timestamps — use `font-variant-numeric: tabular-nums`, which is what that intent actually needs.
+Developer-only source code is source code; this rule is about rendered UI (D-085).
+
+### NO EYEBROWS, KICKERS OR OVERLINES (DES-021)
+
+No tiny, widely tracked upper-case label above a heading. No pre-title category label used as
+decoration. No tiny upper-case pre-heading strip anywhere in the user-facing product.
+
+Renaming the class does not satisfy this rule — the treatment is what is banned. Information that
+matters (exercise type, mode, retrieval state, duration, campaign context, module or client) is
+recomposed rather than dropped: into a subtitle beneath the title, a normal metadata row, the
+sentence it belonged in, a status treatment, or navigation context.
+
+The one exception is the primary navigation rail, whose small-caps labels are navigation, not a
+pre-heading strip.
+
+Both rules are enforced by `apps/web/src/styles/designRules.test.ts`, which reads the stylesheets
+and fails on the treatment rather than on a class name (D-084, D-085).
 
 ## 5. Token categories (DES-014)
 
