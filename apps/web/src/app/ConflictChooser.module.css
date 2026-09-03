@@ -26,10 +26,8 @@
 .versionTitle {
   margin: 0;
   color: var(--bl-color-text-soft);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: var(--bl-font-tracking-eyebrow);
-  text-transform: uppercase;
 }
 
 .meta {

@@ -8,15 +8,6 @@
   max-width: 44rem;
 }
 
-.eyebrow {
-  margin: 0;
-  font-size: var(--bl-font-size-xs);
-  font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--bl-color-text-soft);
-}
-
 .title {
   margin: 0;
   font-family: var(--bl-font-display);
@@ -67,15 +58,6 @@
   justify-content: space-between;
   gap: var(--bl-space-2) var(--bl-space-4);
   align-items: flex-start;
-}
-
-.gateNumber {
-  margin: 0;
-  font-size: var(--bl-font-size-xs);
-  font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--bl-color-text-soft);
 }
 
 .gateName {

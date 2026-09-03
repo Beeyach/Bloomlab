@@ -49,10 +49,10 @@ export function ClientCaseCover({
       >
         <span className={styles.inner}>
           <span className={styles.head}>
-            <span className={styles.industry}>{industry}</span>
             <IdentityMark seed={businessName} size={44} />
           </span>
           <span className={styles.name}>{businessName}</span>
+          <span className={styles.industry}>{industry}</span>
           <span className={styles.foot}>
             <StatusPill
               label={RELATIONSHIP_LABELS[relationship]}

@@ -69,6 +69,6 @@
 
 .elapsed {
   color: var(--bl-color-text-soft);
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-xs);
 }

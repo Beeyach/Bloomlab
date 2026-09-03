@@ -54,8 +54,9 @@ function Gate({
       >
         <header className={styles.gateHeader}>
           <div>
-            <p className={styles.gateNumber}>Gate {gate.number}</p>
-            <h2 className={styles.gateName}>{gate.name}</h2>
+            <h2 className={styles.gateName}>
+              Gate {gate.number} · {gate.name}
+            </h2>
           </div>
           <StatusPill label={pill.label} tone={pill.tone} glyph={pill.glyph} />
         </header>
@@ -128,11 +129,10 @@ export default function CampaignScreen() {
   return (
     <Stack as="section" gap={6} className={styles.screen} aria-labelledby="campaign-title">
       <header className={styles.header}>
-        <p className={styles.eyebrow}>{definition.title} campaign</p>
         <h1 id="campaign-title" className={styles.title}>
           {definition.title}
         </h1>
-        <p className={styles.pace}>{definition.pace_hint}</p>
+        <p className={styles.pace}>Campaign · {definition.pace_hint}</p>
         <p className={styles.lead}>{definition.summary}</p>
         {evaluation && gatesWithSkills && (
           <p className={styles.standing}>

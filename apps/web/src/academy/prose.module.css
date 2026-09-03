@@ -61,7 +61,6 @@
   padding: 0.1em 0.35em;
   border-radius: var(--bl-radius-sm);
   background: var(--bl-color-mist);
-  font-family: var(--bl-font-mono);
   font-size: 0.875em;
 }
 
@@ -71,7 +70,6 @@
   overflow-x: auto;
   border-radius: var(--bl-radius-md);
   background: var(--bl-color-mist);
-  font-family: var(--bl-font-mono);
   font-size: var(--bl-font-size-sm);
   line-height: 1.55;
 }
@@ -126,11 +124,8 @@
   padding: var(--bl-space-2) var(--bl-space-3);
   border-bottom: 1px solid var(--bl-color-border-strong);
   text-align: left;
-  font-family: var(--bl-font-mono);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--bl-color-text-soft);
 }
 

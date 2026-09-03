@@ -37,8 +37,8 @@ export function ExercisePrompt({
       className={cx(styles.prompt, className)}
       aria-label={`${EXERCISE_LABELS[family]}: ${title}`}
     >
-      <p className={styles.family}>{EXERCISE_LABELS[family]}</p>
       <h2 className={styles.title}>{title}</h2>
+      <p className={styles.family}>{EXERCISE_LABELS[family]}</p>
       <div className={styles.body}>{children}</div>
       {(skills.length > 0 || noHints || assistance) && (
         <div className={styles.foot}>

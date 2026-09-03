@@ -40,7 +40,7 @@
 }
 
 .value {
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 

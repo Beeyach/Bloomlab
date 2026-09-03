@@ -25,6 +25,5 @@
   padding: 0.1em 0.35em;
   border-radius: var(--bl-radius-sm);
   background: var(--bl-color-mist);
-  font-family: var(--bl-font-mono);
   font-size: 0.875em;
 }

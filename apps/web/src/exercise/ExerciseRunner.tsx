@@ -243,14 +243,14 @@ export default function ExerciseRunner() {
       aria-labelledby="exercise-title"
     >
       <header className={styles.masthead}>
-        <p className={styles.eyebrow}>
-          {treatment.eyebrow} · {MODE_WORDS[exercise.mode]} · {exercise.estimated_minutes} min
-          {run === 'retrieval' && ' · Retrieval'}
-        </p>
         <h1 id="exercise-title" className={styles.title}>
           {exercise.title}
         </h1>
         <p className={styles.stance}>{treatment.stance}</p>
+        <p className={styles.meta}>
+          {treatment.family} · {MODE_WORDS[exercise.mode]} · {exercise.estimated_minutes} min
+          {run === 'retrieval' && ' · Retrieval'}
+        </p>
         {skillId && (
           <p className={styles.for}>
             {run === 'retrieval' ? 'Reviewing ' : 'For '}

@@ -13,7 +13,7 @@
 }
 
 .time {
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-xs);
   color: var(--bl-color-text-soft);
   white-space: nowrap;
@@ -45,7 +45,6 @@
   padding: 1px var(--bl-space-2);
   border-radius: var(--bl-radius-sm);
   background: var(--bl-color-surface-2);
-  font-family: var(--bl-font-mono);
   font-size: var(--bl-font-size-xs);
 }
 

@@ -41,10 +41,10 @@ export function HintDrawer({
         Assistance
       </h2>
       <p className={styles.assistance}>
-        <span className={styles.assistanceLabel}>Assistance</span>
         <span className={styles.assistanceValue}>
           {ASSISTANCE_WORDS[assistanceFromHints(revealed)]}
         </span>
+        <span className={styles.assistanceNote}>so far on this attempt</span>
       </p>
       <ol className={styles.hintList}>
         {exercise.hints.map((hint) => {

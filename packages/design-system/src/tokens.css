@@ -84,7 +84,6 @@
   --bl-font-display:
     'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Inter Variable', sans-serif;
   --bl-font-ui: 'Inter Variable', Inter, system-ui, sans-serif;
-  --bl-font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
   --bl-font-size-xs: 0.75rem;
   --bl-font-size-sm: 0.875rem;
   --bl-font-size-md: 1rem;
@@ -100,7 +99,6 @@
   --bl-font-weight-semibold: 600;
   --bl-font-weight-bold: 700;
   --bl-font-tracking-display: -0.02em;
-  --bl-font-tracking-eyebrow: 0.08em;
 
   /* ---- holographic material (spec §67–§68) ---- */
   --bl-holo-tilt-max: 6deg;

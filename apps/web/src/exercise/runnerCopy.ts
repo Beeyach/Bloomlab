@@ -8,7 +8,7 @@ import type { AssistanceLevel, HintLevel } from '@bloomlab/mastery-engine';
  */
 export interface FamilyTreatment {
   /** The family's own name, as the learner sees it. */
-  eyebrow: string;
+  family: string;
   /** One line about what this family asks of them. */
   stance: string;
   /** Heading over the work area. */
@@ -23,7 +23,7 @@ export interface FamilyTreatment {
 }
 
 const DEFAULT_TREATMENT: FamilyTreatment = {
-  eyebrow: 'Exercise',
+  family: 'Exercise',
   stance: 'Work it through, then submit.',
   workTitle: 'Your work',
   responseLabel: 'Your answer',
@@ -34,14 +34,14 @@ const DEFAULT_TREATMENT: FamilyTreatment = {
 
 export const FAMILY_TREATMENTS: Partial<Record<Exercise['type'], Partial<FamilyTreatment>>> = {
   BUILD_IT: {
-    eyebrow: 'Build it',
+    family: 'Build it',
     stance: 'An objective, and the features you are allowed to use.',
     workTitle: 'Your build',
     responseLabel: 'How you would build it',
     responseHelp: 'Your plan is saved with the attempt. The build itself happens in the Lab.',
   },
   FIX_IT: {
-    eyebrow: 'Fix it',
+    family: 'Fix it',
     stance: 'Something broke. Find out why.',
     workTitle: 'Your diagnosis',
     responseLabel: 'What is causing it, and what you would change',
@@ -49,28 +49,28 @@ export const FAMILY_TREATMENTS: Partial<Record<Exercise['type'], Partial<FamilyT
     tone: 'incident',
   },
   RUN_THE_LEAD: {
-    eyebrow: 'Run the lead',
+    family: 'Run the lead',
     stance: 'Predict first, then run it and compare.',
     workTitle: 'Your prediction',
     responseLabel: 'What happens, in order',
     responseHelp: 'Written down before the run, and not editable afterwards.',
   },
   EDGE_CASE: {
-    eyebrow: 'Edge case',
+    family: 'Edge case',
     stance: 'One variable changed. Does the system still hold?',
     workTitle: 'Your verdict',
     responseLabel: 'What the contact receives, and when',
     responseHelp: 'Say what breaks and what you would change.',
   },
   ARCHITECTURE_DECISION: {
-    eyebrow: 'Architecture decision',
+    family: 'Architecture decision',
     stance: 'Choose where the fact lives, and defend it.',
     workTitle: 'Your decision',
     responseLabel: 'Why, and what would go wrong with the runner-up',
     responseHelp: 'Two sentences is enough. Name the alternative you rejected.',
   },
   REBUILD_BLIND: {
-    eyebrow: 'Rebuild blind',
+    family: 'Rebuild blind',
     stance: 'No lesson, no hints, no worked example.',
     workTitle: 'Your rebuild',
     responseLabel: 'The system you would build, step by step',
@@ -78,7 +78,7 @@ export const FAMILY_TREATMENTS: Partial<Record<Exercise['type'], Partial<FamilyT
     offersLesson: false,
   },
   WHAT_WOULD_YOU_BUILD: {
-    eyebrow: 'What would you build?',
+    family: 'What would you build?',
     stance: 'A business problem. No feature named.',
     workTitle: 'Your answer',
     responseLabel: 'What is happening, what you still need to know, and what you would build first',

@@ -19,10 +19,8 @@
 .heading {
   margin: 0;
   color: var(--bl-color-text-soft);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: var(--bl-font-tracking-eyebrow);
-  text-transform: uppercase;
 }
 
 .lede,
@@ -65,15 +63,13 @@
 .keyLabel {
   margin: 0;
   color: var(--bl-color-text-soft);
-  font-size: var(--bl-font-size-xs);
+  font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: var(--bl-font-tracking-eyebrow);
-  text-transform: uppercase;
 }
 
 .key {
   margin: 0;
-  font-family: var(--bl-font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--bl-font-size-md);
   line-height: var(--bl-font-leading-relaxed);
   letter-spacing: 0.04em;
