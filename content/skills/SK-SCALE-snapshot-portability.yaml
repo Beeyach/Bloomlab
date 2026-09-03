@@ -1,0 +1,21 @@
+id: SK-SCALE-snapshot-portability
+title: Snapshot portability
+territory: SCALE
+tier: practitioner
+summary: >-
+  Build so that a working system can be snapshotted into a second location or a new client:
+  custom values instead of hard-coded text, named assets, and nothing client-specific left inside.
+prerequisites:
+  - SK-AUTOMATE-no-show-recovery
+  - SK-ARCHITECT-custom-values
+ghl_features:
+  - GHL-SNAP-SNAPSHOTS
+  - GHL-CRM-CUSTOM-VALUES
+judgment_competencies:
+  - complexity_justified
+  - what_could_break
+mastery_requirements:
+  independent_evidence: 1
+  pressure_test: false
+  fieldwork_required: true
+keywords: [snapshot, portability, second location, naming, reusable]

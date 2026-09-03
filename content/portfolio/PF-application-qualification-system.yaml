@@ -1,0 +1,25 @@
+# Portfolio template: item 3 of the Field Ready progression, labelled as a demonstration.
+id: PF-application-qualification-system
+project: PRJ-application-funnel-proposal
+label: Demonstration Build
+title: Application / Qualification System
+progression_number: 3
+artifacts:
+  - kind: brief
+    required: true
+    description: The project brief as given.
+  - kind: business_problem
+    required: true
+    description: Unqualified calls and slow application replies, in Marcus's numbers.
+  - kind: architecture
+    required: true
+    description: The proposed application funnel and routing.
+  - kind: learner_reasoning
+    required: true
+    description: Discovery recap, pricing reasoning and the negotiation transcript.
+  - kind: skills_demonstrated
+    required: true
+    description: Skills with their evidence level at completion.
+  - kind: assistance_level
+    required: true
+    description: Independent, light, guided or heavy, per exercise.

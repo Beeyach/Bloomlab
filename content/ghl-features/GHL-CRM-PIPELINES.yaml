@@ -1,0 +1,16 @@
+# Verified 2026-09-02 against "Pipelines in HighLevel | Manage Opportunities & Sales Stages".
+id: GHL-CRM-PIPELINES
+official_name: Pipelines
+area: Opportunities
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000001982-understanding-pipelines
+known_limitations: []
+skills:
+  - SK-ARCHITECT-pipeline-design
+supported_configs:
+  notes: Ordered stages; opportunities move left to right. Stage changes fire the Pipeline Stage Changed trigger.
+verification_note: Name and stage model confirmed on the help-center article, 2026-09-02.

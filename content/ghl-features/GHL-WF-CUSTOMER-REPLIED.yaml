@@ -1,0 +1,20 @@
+# Name verified 2026-09-02 on "A List of Workflow Triggers" (Events group).
+id: GHL-WF-CUSTOMER-REPLIED
+official_name: Customer Replied
+area: Workflows
+feature_type: trigger
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002292-a-list-of-workflow-triggers
+known_limitations:
+  - The simulator models SMS and email replies only; social and chat channels are not simulated.
+skills:
+  - SK-AUTOMATE-workflow-foundations
+supported_configs:
+  filters:
+    - Reply channel
+    - Contains phrase
+approximation_note: Training approximation — replies arrive on SMS or email in the simulator; other channels are practised in GHL.
+verification_note: Name confirmed on the triggers list page, 2026-09-02; filters not individually verified.

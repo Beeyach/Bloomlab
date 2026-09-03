@@ -1,0 +1,54 @@
+---
+id: LU-workflow-foundations
+title: What a workflow actually does
+territory: AUTOMATE
+tier: field_ready
+skills:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features:
+  - GHL-WF-FORM-SUBMITTED
+  - GHL-WF-SEND-SMS
+  - GHL-WF-WAIT
+  - GHL-WF-IF-ELSE
+estimated_minutes: 25
+summary: >-
+  Event, trigger, filters, actions, exit: read a workflow the way GHL executes it, predict what
+  one contact will experience, and see it run.
+---
+
+## An event happens
+
+Nothing runs until something happens: a form is submitted, a tag is added, an appointment is
+booked. In GHL that event is the workflow's **trigger**. A trigger can carry **filters** — this
+form, this calendar, this tag — and a contact only enrolls when the event matches them.
+
+<Feature id="GHL-WF-FORM-SUBMITTED" />
+
+## Then the actions run, top to bottom
+
+Once enrolled, the contact walks down the list of actions. `Send SMS` sends a message. `Add
+Contact Tag` records that something happened. `Wait` pauses the contact — for a set period, until
+a date, or relative to an appointment — and `If/Else` sends the contact down the first branch
+whose condition matches, or down the None branch when nothing does.
+
+<Feature id="GHL-WF-WAIT" />
+
+<Depth title="Merge fields: the contact's data inside the message">
+  A template like `Hi {{contact.first_name}}, you're booked on {{appointment.start_time}}` is
+  filled in per contact at send time. If the field is empty, the message goes out with a gap —
+  which is why required form fields matter to automation, not just to the CRM.
+</Depth>
+
+## Predict, then watch
+
+Here is Glowhaus's booking confirmation. Before you run it, write down what Maria will receive and
+what tag she will have afterwards. Then enroll her and compare.
+
+<Simulation scenario="SC-glowhaus-no-show" workflow="wf-booking-confirmation" contact="maria" />
+
+<Callout kind="warning">
+  The workflow does not know what you meant. It knows the trigger, the filters, and the order of the
+  actions. Every "the system sent the wrong thing" you will ever debug starts there.
+</Callout>
+
+<Exercise id="EX-RUN_THE_LEAD-booking-confirmation" />

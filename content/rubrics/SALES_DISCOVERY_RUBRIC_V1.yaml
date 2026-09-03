@@ -1,0 +1,36 @@
+# Versioned rubric (AI-011, CALL-003). Changing it means SALES_DISCOVERY_RUBRIC_V2.
+id: SALES_DISCOVERY_RUBRIC_V1
+version: 1
+title: Discovery conversation
+applies_to:
+  - SAY_IT
+model_class: strong
+output_schema: ai_grading_v1
+rewards_verified_uncertainty: true
+items:
+  - id: r1
+    tier: critical
+    criterion: Did not pitch a system before the client agreed with the diagnosis.
+    weight: 5
+  - id: r2
+    tier: required
+    criterion: Uncovered current process, volume, pain, urgency and budget with open questions.
+    guidance: Count the topics actually surfaced by the client's answers, not the questions asked.
+    weight: 4
+  - id: r3
+    tier: required
+    criterion: Listened — the client spoke for more than half of the conversation and was not interrupted.
+    weight: 3
+  - id: r4
+    tier: quality
+    criterion: Said the client's problem back in the client's words and got agreement.
+    weight: 2
+  - id: r5
+    tier: quality
+    criterion: Explained anything technical without GHL jargon.
+    weight: 2
+  - id: r6
+    tier: bonus
+    criterion: Admitted what they did not know yet and said how they would verify it.
+    guidance: Reward "I don't know yet, but this is how I would check" over fabricated confidence.
+    weight: 2

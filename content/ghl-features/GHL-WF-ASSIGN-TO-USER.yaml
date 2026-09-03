@@ -1,0 +1,23 @@
+# Name verified 2026-09-02 on "A List of Workflow Actions" (Contact group).
+id: GHL-WF-ASSIGN-TO-USER
+official_name: Assign to User
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002294-what-are-workflow-actions-complete-list-
+known_limitations:
+  - Round-robin weighting between users is simplified to equal rotation.
+skills:
+  - SK-ARCHITECT-pipeline-design
+supported_configs:
+  config_fields:
+    - name: users
+      type: reference
+      required: true
+    - name: only_if_unassigned
+      type: boolean
+      required: false
+verification_note: Name confirmed on the actions list page, 2026-09-02; fields not individually verified.

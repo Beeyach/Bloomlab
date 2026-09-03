@@ -1,0 +1,34 @@
+# Verified 2026-09-02 against "Workflow Trigger - Appointment Status". Statuses: New, Confirmed,
+# Cancelled, Showed, No-show, Invalid. A reschedule arrives as a new appointment.
+id: GHL-WF-APPOINTMENT-STATUS
+official_name: Appointment Status
+area: Workflows
+feature_type: trigger
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002619-workflow-trigger-appointment-status
+known_limitations:
+  - Rescheduled appointments are treated as new appointments, not as a distinct status — in GHL and in the simulator.
+  - Calendar-group and "Modified By" filters are accepted but not evaluated by the simulator.
+skills:
+  - SK-AUTOMATE-appointment-reminders
+  - SK-AUTOMATE-no-show-recovery
+supported_configs:
+  filters:
+    - Event Type
+    - Appointment Status
+    - Tag
+    - In Calendar
+    - In Calendar Group
+    - Only for Grouped Calendar
+    - Modified By
+  options:
+    - New
+    - Confirmed
+    - Cancelled
+    - Showed
+    - No-show
+    - Invalid
+verification_note: Name, the six statuses and the filter list confirmed on the help-center article, 2026-09-02.

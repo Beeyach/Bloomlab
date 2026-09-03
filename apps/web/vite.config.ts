@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
+import { bloomlabContent } from '@bloomlab/content-schema/vite';
 import { cloudflare } from '@cloudflare/vite-plugin';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
@@ -9,6 +10,9 @@ export default defineConfig({
   // Root-level public/ per the spec §102 layout.
   publicDir: fileURLToPath(new URL('../../public', import.meta.url)),
   plugins: [
+    // Curriculum compiled from content/ at build time (spec §100, CNT-006); a broken reference
+    // fails the build, and the app imports `virtual:bloomlab-content` instead of parsing files.
+    bloomlabContent({ rootDir: fileURLToPath(new URL('../../content', import.meta.url)) }),
     react(),
     // Installable PWA (DATA-003, spec §87): the service worker precaches the app shell and
     // stable assets; `/api/*` is never cached; curriculum (Phase 5) is served stale-while-revalidate.

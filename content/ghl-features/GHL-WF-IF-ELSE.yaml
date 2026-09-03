@@ -1,0 +1,27 @@
+# Verified 2026-09-02 against "Using If/Else Workflow Action to Automate Decision-Making":
+# branches evaluated top-down, first match wins, an unremovable None branch as fallback.
+id: GHL-WF-IF-ELSE
+official_name: If/Else
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002471-workflow-action-if-else
+known_limitations:
+  - Appointment-specific filter options and dynamic custom values inside conditions are simplified to field comparisons.
+skills:
+  - SK-AUTOMATE-workflow-foundations
+  - SK-AUTOMATE-no-show-recovery
+supported_configs:
+  config_fields:
+    - name: branches
+      type: json
+      required: true
+      description: Ordered condition groups (AND / OR segments); the first matching branch wins.
+  options:
+    - None branch (automatic fallback)
+aliases:
+  - If Else
+verification_note: Name, top-down evaluation and the None branch confirmed on the help-center article, 2026-09-02.

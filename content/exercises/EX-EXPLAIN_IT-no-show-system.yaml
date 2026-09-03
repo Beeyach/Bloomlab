@@ -1,0 +1,38 @@
+# EXPLAIN IT (spec §27): the same system for two audiences.
+id: EX-EXPLAIN_IT-no-show-system
+type: EXPLAIN_IT
+title: Explain the no-show system twice
+mode: independent
+difficulty: 2
+estimated_minutes: 15
+skills:
+  - SK-DELIVER-client-explanation
+scenario: SC-glowhaus-no-show
+format: two_audiences
+instructions: |
+  Explain the no-show recovery system you built, twice. Once for Priya, who will never open the
+  workflow builder. Once for another GHL builder who will maintain it after you. Each under 150
+  words. Do not describe behaviour the system does not have.
+allowed_features: []
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: explanation.owner_jargon_count
+    operator: lte
+    value: 1
+    description: The owner version is nearly free of GHL jargon.
+  - id: a2
+    type: state
+    path: explanation.builder_names_trigger
+    operator: equals
+    value: true
+    description: The builder version names the trigger and its filter.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V1
+  pass_threshold: 70
+hints: []
+fieldwork: null
+portfolio: null

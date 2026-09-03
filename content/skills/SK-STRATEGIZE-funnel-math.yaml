@@ -1,0 +1,18 @@
+id: SK-STRATEGIZE-funnel-math
+title: Funnel math
+territory: STRATEGIZE
+tier: field_ready
+summary: >-
+  Turn a business's lead, booking, show and close numbers into a funnel and say where the
+  money leaks, in the owner's language.
+prerequisites: []
+ghl_features: []
+judgment_competencies:
+  - funnel_needed
+  - what_is_missing
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: true
+  fieldwork_required: false
+  sales_use: true
+keywords: [CPL, booking rate, show rate, close rate, bottleneck]

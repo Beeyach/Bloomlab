@@ -1,17 +1,18 @@
 import { Link } from 'react-router';
 
 import { Cluster, Grid, Stack, Surface } from '@bloomlab/design-system';
-import { APP_VERSION, CONTENT_VERSION } from '@bloomlab/shared';
+import { APP_VERSION } from '@bloomlab/shared';
 import { SIMULATOR_VERSION } from '@bloomlab/simulator-core';
 
 import { useFeatureFlags } from '../app/featureFlagsContext';
 import { getRuntimeEnvironment } from '../app/runtime';
+import { CONTENT_VERSION } from '../content/bundle';
 import { DeviceIdentity } from './DeviceIdentity';
 import styles from './FoundationHome.module.css';
 
 const FACTS = (environment: string) => [
   ['App', APP_VERSION],
-  ['Content', CONTENT_VERSION ?? 'none'],
+  ['Content', CONTENT_VERSION],
   ['Simulator', SIMULATOR_VERSION],
   ['Environment', environment],
 ];
@@ -30,8 +31,8 @@ export default function FoundationHome() {
         Bloomlab
       </h1>
       <p className={styles.lede}>
-        The repository foundation and design system are in place. No learning content is installed
-        yet.
+        The foundation, design system, local-first data, sync and the compiled curriculum are in
+        place. The learning engine that teaches from it arrives next.
       </p>
 
       <Grid as="dl" minColumn="8rem" gap={3} className={styles.facts}>

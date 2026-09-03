@@ -1,0 +1,125 @@
+# Broken system for FIX IT (spec §27): symptoms only. Maria received two reminder messages.
+# The fault is a second workflow that also sends a reminder on the same booking event.
+id: SC-glowhaus-double-reminder
+title: Glowhaus — Maria got two reminders
+client: CL-glowhaus-medspa
+summary: >-
+  Reminders were added last month. Since then every booked lead gets two reminder texts the day
+  before, and one lead replied "stop texting me". Dana says she only built one reminder.
+initial_account_state:
+  contacts:
+    - id: maria
+      first_name: Maria
+      last_name: Delgado
+      email: maria.delgado@example.com
+      phone: '+15125550142'
+      tags: [meta-lead, booked]
+      timezone: America/Chicago
+  tags: [meta-lead, booked, reminded]
+  custom_fields: []
+  custom_values:
+    - key: front_desk_phone
+      value: '+15125550100'
+  pipelines:
+    - id: consultations
+      name: Consultations
+      stages: [New Lead, Booked, Showed, Won, Lost]
+  opportunities: []
+  calendars:
+    - id: consultation
+      name: Consultation
+      duration_minutes: 30
+      timezone: America/Chicago
+  appointments:
+    - id: appt-maria
+      contact_id: maria
+      calendar_id: consultation
+      starts_at: '2026-09-05T14:00:00-05:00'
+  forms: []
+  workflows:
+    - id: wf-reminders
+      name: Appointment Reminders
+      trigger:
+        ghl_feature_id: GHL-WF-APPOINTMENT-STATUS
+        filters:
+          - field: appointment_status
+            operator: is
+            value: new
+      nodes:
+        - id: n1
+          type: wait
+          ghl_feature_id: GHL-WF-WAIT
+          label: Until 24h before
+          config:
+            wait_type: appointment
+            relative: before
+            hours: 24
+          position: { x: 0, y: 120 }
+        - id: n2
+          type: action
+          ghl_feature_id: GHL-WF-SEND-SMS
+          label: Reminder SMS
+          config:
+            template: 'Reminder: your Glowhaus consultation is tomorrow at {{appointment.start_time}}.'
+          position: { x: 0, y: 240 }
+        - id: n3
+          type: end
+          position: { x: 0, y: 360 }
+      edges:
+        - { from: n1, to: n2 }
+        - { from: n2, to: n3 }
+      settings:
+        allow_reentry: false
+        timezone: America/Chicago
+    - id: wf-booking-tags
+      name: Booking Tags
+      trigger:
+        ghl_feature_id: GHL-WF-CUSTOMER-BOOKED-APPOINTMENT
+        filters: []
+      nodes:
+        - id: n1
+          type: action
+          ghl_feature_id: GHL-WF-ADD-CONTACT-TAG
+          config:
+            tag: booked
+          position: { x: 0, y: 120 }
+        - id: n2
+          type: wait
+          ghl_feature_id: GHL-WF-WAIT
+          label: Until 24h before
+          config:
+            wait_type: appointment
+            relative: before
+            hours: 24
+          position: { x: 0, y: 240 }
+        - id: n3
+          type: action
+          ghl_feature_id: GHL-WF-SEND-SMS
+          label: Reminder SMS (copied from the old workflow)
+          config:
+            template: 'Reminder: your Glowhaus consultation is tomorrow at {{appointment.start_time}}.'
+          position: { x: 0, y: 360 }
+        - id: n4
+          type: end
+          position: { x: 0, y: 480 }
+      edges:
+        - { from: n1, to: n2 }
+        - { from: n2, to: n3 }
+        - { from: n3, to: n4 }
+      settings:
+        allow_reentry: true
+        timezone: America/Chicago
+simulation_time: '2026-09-03T09:00:00-05:00'
+timezone: America/Chicago
+seed: 4022
+scheduled_events: []
+injectable_events:
+  - id: maria-reschedules
+    type: appointment.rescheduled
+    description: Maria moves her appointment to the following week.
+    payload: { appointment_id: appt-maria, starts_at: '2026-09-12T14:00:00-05:00' }
+hidden_facts:
+  faulty_workflow: wf-booking-tags
+  complaint_count_last_month: 3
+failure_modes:
+  - duplicate_enrollment

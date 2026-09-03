@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 
 import { Button, IconRefresh, Stack, Surface } from '@bloomlab/design-system';
-import { APP_VERSION, CONTENT_VERSION, FEATURE_FLAGS } from '@bloomlab/shared';
+import { APP_VERSION, FEATURE_FLAGS } from '@bloomlab/shared';
 import { SIMULATOR_VERSION } from '@bloomlab/simulator-core';
 
 import { useFeatureFlags } from '../app/featureFlagsContext';
 import { getRuntimeEnvironment } from '../app/runtime';
+import { CONTENT_VERSION } from '../content/bundle';
+import { ContentDiagnostics } from './ContentDiagnostics';
 import { LocalDataDiagnostics } from './LocalDataDiagnostics';
 import styles from './SystemDiagnostics.module.css';
 
@@ -67,7 +69,7 @@ export default function SystemDiagnostics() {
         <dt>App version</dt>
         <dd>{APP_VERSION}</dd>
         <dt>Content version</dt>
-        <dd>{CONTENT_VERSION ?? 'none'}</dd>
+        <dd>{CONTENT_VERSION}</dd>
         <dt>Simulator version</dt>
         <dd>{SIMULATOR_VERSION}</dd>
         <dt>Environment</dt>
@@ -109,7 +111,12 @@ export default function SystemDiagnostics() {
           <dt>Worker app version</dt>
           <dd>{health.payload.versions.app}</dd>
           <dt>Worker content version</dt>
-          <dd>{health.payload.versions.content ?? 'none'}</dd>
+          <dd>
+            {health.payload.versions.content ?? 'none'}
+            {health.payload.versions.content !== CONTENT_VERSION && (
+              <span className={styles.warning}> — differs from client</span>
+            )}
+          </dd>
           <dt>Worker simulator version</dt>
           <dd>{health.payload.versions.simulator}</dd>
         </Surface>
@@ -124,6 +131,9 @@ export default function SystemDiagnostics() {
           </div>
         ))}
       </Surface>
+
+      <h2 className={styles.heading}>Content</h2>
+      <ContentDiagnostics />
 
       <h2 className={styles.heading}>Local data</h2>
       <LocalDataDiagnostics />

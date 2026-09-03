@@ -1,0 +1,22 @@
+# Verified 2026-09-02 against "A Guide to Understanding Opportunities in HighLevel".
+id: GHL-CRM-OPPORTUNITIES
+official_name: Opportunities
+area: Opportunities
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000001983-understanding-opportunities-in-highlevel
+known_limitations:
+  - One primary contact per opportunity; opportunity followers and custom-field layouts are not simulated.
+skills:
+  - SK-ARCHITECT-pipeline-design
+supported_configs:
+  options:
+    - Open
+    - Won
+    - Lost
+    - Abandoned
+  notes: A deal record with contact, pipeline, stage, status, value and owner.
+verification_note: Name and record shape confirmed on the help-center article, 2026-09-02.

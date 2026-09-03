@@ -1,0 +1,35 @@
+# WHAT WOULD YOU BUILD? (spec §27): the business problem, without naming the feature under test.
+id: EX-WHAT_WOULD_YOU_BUILD-glowhaus-leads
+type: WHAT_WOULD_YOU_BUILD
+title: 'Half of them never book'
+mode: independent
+difficulty: 3
+estimated_minutes: 20
+skills:
+  - SK-JUDGMENT-automation-appropriateness
+  - SK-STRATEGIZE-bottleneck-diagnosis
+client: CL-glowhaus-medspa
+instructions: |
+  Priya says: "We get leads from Meta ads, people fill out the form, half never book, reception
+  forgets to follow up, and booked consultations keep no-showing."
+
+  Say what is happening, what you still need to know, where the likely bottleneck is, what you
+  would build first, and what you would deliberately not build yet. Several answers are
+  defensible; an answer that automates everything on day one is not.
+allowed_features: []
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: answer.names_missing_information
+    operator: equals
+    value: true
+    description: The learner names at least one thing they would need to verify.
+critical_failures: []
+grading:
+  mode: rubric
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 70
+hints: []
+fieldwork: null
+portfolio: null

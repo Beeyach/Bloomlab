@@ -1,0 +1,41 @@
+# NEGOTIATE IT (spec §27, NEG-001 … NEG-005): the client pushes back with a cheaper quote.
+id: EX-NEGOTIATE_IT-summit-freelancer-quote
+type: NEGOTIATE_IT
+title: 'Someone else quoted nine hundred'
+mode: practice
+difficulty: 3
+estimated_minutes: 20
+skills:
+  - SK-SELL-negotiation-basics
+scenario: SC-summit-discovery
+instructions: |
+  You proposed the application funnel. Marcus replies: "Someone else can do the Calendly and
+  Zapier part for 900. Why is yours more?"
+
+  Respond. You may clarify, hold your price, reduce scope, phase the project, offer a
+  concession, or walk away. Winning the deal is not the only successful outcome — a clean walk-away
+  with the door open can score higher than a discount that loses money.
+allowed_features: []
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: negotiation.strategy
+    operator: exists
+    description: The response resolves to a recognised strategy.
+critical_failures:
+  - id: c1
+    type: state
+    path: negotiation.discount_below_cost
+    operator: equals
+    value: false
+    description: Discounting below the estimated labor cost is a critical failure.
+grading:
+  mode: mixed
+  rubric: PRICING_REASONING_RUBRIC_V1
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: What does the 900 quote leave out? Say that before you say anything about your price.
+fieldwork: null
+portfolio: null

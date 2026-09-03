@@ -1,0 +1,31 @@
+# Verified 2026-09-02 against "Workflow Action - Create/Update Opportunity".
+id: GHL-WF-CREATE-UPDATE-OPPORTUNITY
+official_name: Create/Update Opportunity
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002476-workflow-action-create-update-opportunity
+known_limitations:
+  - The separate "Create Opportunity" action (always creates a new record) is not in the registry yet.
+skills:
+  - SK-ARCHITECT-pipeline-design
+  - SK-AUTOMATE-no-show-recovery
+supported_configs:
+  config_fields:
+    - name: pipeline
+      type: reference
+      required: true
+    - name: stage
+      type: reference
+      required: true
+    - name: status
+      type: select
+      required: false
+      options: [Open, Won, Lost, Abandoned]
+    - name: value
+      type: number
+      required: false
+verification_note: Name confirmed on the help-center article, 2026-09-02.

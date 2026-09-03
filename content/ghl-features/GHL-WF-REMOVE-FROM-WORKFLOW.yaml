@@ -1,0 +1,21 @@
+# Name verified 2026-09-02 on "A List of Workflow Actions" (Internal Tools group).
+id: GHL-WF-REMOVE-FROM-WORKFLOW
+official_name: Remove from Workflow
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002294-what-are-workflow-actions-complete-list-
+known_limitations: []
+skills:
+  - SK-AUTOMATE-reentry-and-duplicates
+  - SK-AUTOMATE-no-show-recovery
+supported_configs:
+  config_fields:
+    - name: workflow
+      type: reference
+      required: true
+      description: This workflow, all workflows, or a specific one.
+verification_note: Name confirmed on the actions list page, 2026-09-02.

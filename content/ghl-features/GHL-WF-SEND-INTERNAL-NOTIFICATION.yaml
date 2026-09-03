@@ -1,0 +1,28 @@
+# Name verified 2026-09-02 on "A List of Workflow Actions" (Communication group).
+id: GHL-WF-SEND-INTERNAL-NOTIFICATION
+official_name: Send Internal Notification
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002294-what-are-workflow-actions-complete-list-
+known_limitations:
+  - The simulator records the notification in the log; it does not deliver to a user's email, SMS or app.
+skills:
+  - SK-AUTOMATE-no-show-recovery
+supported_configs:
+  config_fields:
+    - name: channel
+      type: select
+      required: true
+      options: [Email, SMS, In-app]
+    - name: recipient
+      type: reference
+      required: true
+    - name: message
+      type: template
+      required: true
+approximation_note: Training approximation — internal notifications are logged, not delivered.
+verification_note: Name confirmed on the actions list page, 2026-09-02; channel list not individually verified.

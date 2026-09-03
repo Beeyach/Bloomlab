@@ -1,0 +1,20 @@
+id: SK-STRATEGIZE-bottleneck-diagnosis
+title: Bottleneck diagnosis
+territory: STRATEGIZE
+tier: field_ready
+summary: >-
+  Given a funnel's numbers and a description of the business, name the one stage to fix first
+  and separate the observed problem from the hypothesis about its cause.
+prerequisites:
+  - SK-STRATEGIZE-funnel-math
+ghl_features: []
+judgment_competencies:
+  - funnel_needed
+  - automation_appropriate
+  - what_is_missing
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: true
+  fieldwork_required: false
+  sales_use: true
+keywords: [drop-off, hypothesis, problem, stage conversion]

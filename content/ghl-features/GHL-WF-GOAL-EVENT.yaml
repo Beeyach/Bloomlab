@@ -1,0 +1,22 @@
+# Verified 2026-09-02 against "Goal Event Workflow Action in HighLevel".
+id: GHL-WF-GOAL-EVENT
+official_name: Goal Event
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003328-workflow-action-goal-event
+known_limitations:
+  - Taught as a concept (skip ahead when the goal is met); the simulator does not yet jump contacts between steps.
+skills:
+  - SK-AUTOMATE-reentry-and-duplicates
+supported_configs:
+  config_fields:
+    - name: goal
+      type: select
+      required: true
+      options: [Appointment booked, Tag added, Replied, Pipeline stage reached]
+approximation_note: Conceptual demonstration — goal jumps are explained and practised in GHL, not simulated.
+verification_note: Name confirmed on the help-center article, 2026-09-02; goal options not individually verified.

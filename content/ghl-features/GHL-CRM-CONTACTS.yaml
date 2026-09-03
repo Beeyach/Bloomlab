@@ -1,0 +1,22 @@
+# Verified 2026-09-02 against "How to Create a New Contact in HighLevel | Getting Started".
+id: GHL-CRM-CONTACTS
+official_name: Contacts
+area: Contacts
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000005055-getting-started-create-and-manage-contacts
+known_limitations:
+  - Duplicate detection follows the simulator's rule (same email or phone); GHL's merge tooling is not reproduced.
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+supported_configs:
+  options:
+    - Standard fields
+    - Tags
+    - Custom fields
+    - DND
+    - Owner
+verification_note: Name and standard-field set confirmed on the help-center article, 2026-09-02.

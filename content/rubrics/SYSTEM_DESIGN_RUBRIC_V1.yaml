@@ -1,0 +1,35 @@
+# Versioned rubric (AI-011, CUR-017): open-ended design and architecture decisions.
+id: SYSTEM_DESIGN_RUBRIC_V1
+version: 1
+title: System design judgment
+applies_to:
+  - WHAT_WOULD_YOU_BUILD
+  - ARCHITECTURE_DECISION
+model_class: strong
+output_schema: ai_grading_v1
+rewards_verified_uncertainty: true
+items:
+  - id: r1
+    tier: critical
+    criterion: Does not propose automating a step whose input the business cannot yet produce reliably.
+    weight: 5
+  - id: r2
+    tier: required
+    criterion: Separates what is happening from the hypothesis about why, and names what is still unknown.
+    weight: 4
+  - id: r3
+    tier: required
+    criterion: Chooses the simplest structure that solves the stated problem and says what is deliberately left out.
+    weight: 3
+  - id: r4
+    tier: quality
+    criterion: Names what would break — second location, missing phone, duplicate enrollment, late booking.
+    weight: 3
+  - id: r5
+    tier: quality
+    criterion: Defends the data-model choice (tag, field, custom value, opportunity field) against its runner-up.
+    weight: 2
+  - id: r6
+    tier: bonus
+    criterion: Says "I don't know yet" where appropriate and how they would find out.
+    weight: 2

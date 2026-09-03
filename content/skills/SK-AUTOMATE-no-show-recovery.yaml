@@ -1,0 +1,27 @@
+id: SK-AUTOMATE-no-show-recovery
+title: No-show recovery
+territory: AUTOMATE
+tier: field_ready
+summary: >-
+  When an appointment is marked No-show, re-engage the contact, move the opportunity, alert the
+  team, and handle the contact who has no phone or has opted out.
+prerequisites:
+  - SK-AUTOMATE-appointment-reminders
+  - SK-ARCHITECT-pipeline-design
+ghl_features:
+  - GHL-WF-APPOINTMENT-STATUS
+  - GHL-WF-SEND-SMS
+  - GHL-WF-SEND-EMAIL
+  - GHL-WF-IF-ELSE
+  - GHL-WF-CREATE-UPDATE-OPPORTUNITY
+  - GHL-WF-SEND-INTERNAL-NOTIFICATION
+  - GHL-WF-UPDATE-CONTACT-FIELD
+  - GHL-WF-REMOVE-FROM-WORKFLOW
+judgment_competencies:
+  - automation_appropriate
+  - what_could_break
+mastery_requirements:
+  independent_evidence: 3
+  pressure_test: true
+  fieldwork_required: true
+keywords: [no-show, rebook, pipeline movement, internal alert, missing phone, DND]

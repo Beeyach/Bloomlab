@@ -1,0 +1,17 @@
+# Verified 2026-09-02 through the Add Contact Tag action and Contact Tag trigger articles; tags
+# are a primary filter for smart lists, campaigns and workflows.
+id: GHL-CRM-TAGS
+official_name: Tags
+area: Contacts
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003111-workflow-action-add-contact-tag
+known_limitations: []
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+supported_configs:
+  notes: Free-form labels on a contact; a tag records that something happened, not a value.
+verification_note: Confirmed as the segmentation primitive on the help-center article, 2026-09-02.

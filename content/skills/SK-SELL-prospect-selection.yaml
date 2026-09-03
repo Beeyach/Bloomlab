@@ -1,0 +1,19 @@
+id: SK-SELL-prospect-selection
+title: Prospect selection
+territory: SELL
+tier: field_ready
+summary: >-
+  Decide Contact, Maybe or Skip for a business from fit, economics, recurring need, technical
+  fit and access to the decision maker — and say why.
+prerequisites:
+  - SK-SELL-evidence-based-audit
+ghl_features: []
+judgment_competencies:
+  - contact_prospect
+  - accept_project
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+  sales_use: true
+keywords: [ICP, prospecting, contact, maybe, skip]

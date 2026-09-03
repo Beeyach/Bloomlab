@@ -1,0 +1,48 @@
+# Verified 2026-09-02 against "Workflow Wait Action Setup and Options in HighLevel". The
+# list page calls it "Wait Step"; the article and builder call it "Wait".
+id: GHL-WF-WAIT
+official_name: Wait
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002470-workflow-action-wait
+known_limitations:
+  - Simulated wait types — a set period of time, a specific date and time, an upcoming appointment or booking (at / before / after), the contact to reply, specific conditions to be met.
+  - Not simulated — a recurring schedule, the contact to take an action, a user to reply, the Advance Window; these are practised in GHL.
+skills:
+  - SK-AUTOMATE-workflow-foundations
+  - SK-AUTOMATE-appointment-reminders
+supported_configs:
+  options:
+    - A set period of time
+    - A specific date and time
+    - A recurring schedule
+    - An upcoming appointment or booking
+    - The contact to reply
+    - The contact to take an action
+    - Specific conditions to be met
+    - A user to reply
+  config_fields:
+    - name: wait_type
+      type: select
+      required: true
+      options: [period, date, appointment, reply, condition]
+    - name: relative
+      type: select
+      required: false
+      options: [at, before, after]
+      description: For appointment waits.
+    - name: hours
+      type: duration
+      required: false
+    - name: timeout_hours
+      type: duration
+      required: false
+      description: For reply and condition waits.
+approximation_note: Training approximation — five of the eight wait types run in the simulator; recurring schedules, contact actions and user replies are practised in GHL.
+aliases:
+  - Wait Step
+verification_note: Name and the eight wait types confirmed on the help-center article, 2026-09-02.

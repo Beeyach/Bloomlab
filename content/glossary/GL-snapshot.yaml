@@ -1,0 +1,11 @@
+id: GL-snapshot
+term: Snapshot
+definition: >-
+  A reusable copy of a sub-account's configuration — workflows, funnels, calendars, forms,
+  custom fields and custom values — that can be loaded into another sub-account. Contacts,
+  appointments and conversations do not travel with it.
+aliases: []
+related_skills:
+  - SK-SCALE-snapshot-portability
+ghl_features:
+  - GHL-SNAP-SNAPSHOTS

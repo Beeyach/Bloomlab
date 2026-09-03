@@ -1,0 +1,42 @@
+# AUDIT IT (spec §27, SAL-001): findings forced into Verified / Likely / Unknown.
+id: EX-AUDIT_IT-northwind-outside-in
+type: AUDIT_IT
+title: Audit Northwind from the outside
+mode: practice
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SELL-evidence-based-audit
+scenario: SC-northwind-audit
+instructions: |
+  You have Northwind's website, their Google Business Profile, a Google Ads landing page, and one
+  test enquiry you submitted at 11:00 this morning.
+
+  Write at least three findings. Label each **Verified** (you observed it), **Likely** (evidence
+  suggests it) or **Unknown** (needs confirmation). Any claim you cannot support is a penalty, not
+  a point.
+allowed_features: []
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: audit.findings_count
+    operator: gte
+    value: 3
+    description: At least three findings.
+  - id: a2
+    type: state
+    path: audit.unsupported_claims
+    operator: equals
+    value: 0
+    description: No unlabelled or unsupported claims.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: AUDIT_EVIDENCE_RUBRIC_V1
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: The 22-hour reply to your enquiry is something you observed. Their close rate is not.
+fieldwork: null
+portfolio: null

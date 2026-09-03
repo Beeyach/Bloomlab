@@ -1,0 +1,88 @@
+# Persistent fictional client: a home-services company used for audits, prospecting and
+# explaining systems to a non-technical owner.
+id: CL-northwind-hvac
+business_name: Northwind Heating & Air
+industry: hvac
+locations:
+  - name: Northwind Columbus
+    city: Columbus
+    region: OH
+    timezone: America/New_York
+team:
+  - name: Gary Lindqvist
+    role: Owner
+    notes: Twenty years in the trade; runs dispatch from his truck.
+  - name: Tina Okafor
+    role: Office manager
+    notes: Answers the phone, books jobs, chases invoices.
+  - name: Field technicians (4)
+    role: Technicians
+offers:
+  - name: Diagnostic Visit
+    price: 89
+    billing: one_time
+  - name: Maintenance Plan
+    price: 19
+    billing: recurring
+    notes: Monthly; two tune-ups a year.
+  - name: System Replacement
+    price: 7800
+    billing: one_time
+lead_sources:
+  - Google Ads
+  - Google Business Profile calls
+  - Yard signs and truck wraps
+  - Home warranty referrals
+current_systems:
+  - ServiceTitan (scheduling and invoicing)
+  - Website contact form emailed to Tina
+  - Personal cell phone texts
+metrics:
+  monthly_leads: 210
+  booking_rate: 0.71
+  show_rate: 0.9
+  close_rate: 0.48
+  average_ticket: 640
+problems:
+  - Web form leads sit in the inbox overnight; competitors call back within minutes.
+  - No follow-up on unsold replacement quotes.
+  - Maintenance plan renewals lapse quietly.
+relationship_state:
+  stage: prospect
+  since: 2026-09-01
+  owner: Ary
+  notes: Found through a prospecting list; no contact yet.
+assets:
+  - kind: domain
+    name: northwindheating.com
+  - kind: form
+    name: Website "Request Service" form
+    notes: Emails Tina; not connected to anything else.
+hidden_facts:
+  servicetitan_stays: true
+  quote_follow_up_rate: 0
+  owner_prefers_phone: true
+  google_ads_monthly_spend: 5200
+voice:
+  character: VC-blunt-tradesman
+  tone: Blunt, busy, suspicious of "marketing people"; warms up to practical talk.
+  speaking_style: Interrupts, wants the point first, respects people who know the trade.
+  sample_phrases:
+    - I've got a tech on a roof, make it quick.
+    - We already pay for software. Why would I want another one?
+    - If it gets Tina off the phone for an hour a day, keep talking.
+history:
+  - date: 2026-09-01
+    event: Added to the prospect list from a Google Ads audit.
+hidden_state:
+  trust: 20
+  urgency: 35
+  price_sensitivity: 50
+  frustration: 40
+  technical_sophistication: 15
+  fear: 30
+  previous_bad_experience: 55
+  alternative_provider_strength: 40
+  actual_budget: 6000
+  stated_budget: 2000
+  decision_authority: sole

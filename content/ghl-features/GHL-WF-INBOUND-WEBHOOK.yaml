@@ -1,0 +1,22 @@
+# Verified 2026-09-02 against "How to use the Inbound Webhook Workflow Premium Action?".
+id: GHL-WF-INBOUND-WEBHOOK
+official_name: Inbound Webhook
+area: Workflows
+feature_type: trigger
+implementation_type: native_ghl
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/48001237383-how-to-use-the-inbound-webhook-workflow-premium-trigger
+known_limitations:
+  - A premium (paid-usage) trigger in GHL; the simulator shows the concept — a URL that starts a workflow with a JSON payload — without the mapping UI.
+skills:
+  - SK-CONNECT-webhook-payloads
+supported_configs:
+  config_fields:
+    - name: payload_sample
+      type: json
+      required: true
+      description: Example JSON used to map fields.
+approximation_note: Conceptual demonstration — payload mapping and premium-usage billing are practised in GHL, not simulated.
+verification_note: Name and premium status confirmed on the help-center article, 2026-09-02.

@@ -1,0 +1,38 @@
+# SAY IT (spec §27, CALL-003): spoken discovery in the Call Room.
+id: EX-SAY_IT-summit-discovery
+type: SAY_IT
+title: Discovery call with Marcus
+mode: practice
+difficulty: 3
+estimated_minutes: 20
+skills:
+  - SK-SELL-discovery-call
+scenario: SC-summit-discovery
+format: discovery
+instructions: |
+  Fifteen minutes with Marcus Hale. Find out his current process, volume, pain, urgency, tools,
+  budget and decision process. Listen more than you talk. Do not pitch a system until you can
+  say his problem back to him and he agrees.
+allowed_features: []
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: call.talk_ratio_learner
+    operator: lte
+    value: 0.5
+    description: The learner talks less than half the time.
+critical_failures:
+  - id: c1
+    type: state
+    path: call.pitched_before_diagnosis
+    operator: equals
+    value: false
+    description: Pitching before diagnosis is a critical failure.
+grading:
+  mode: mixed
+  rubric: SALES_DISCOVERY_RUBRIC_V1
+  pass_threshold: 70
+hints: []
+fieldwork: null
+portfolio: null

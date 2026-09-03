@@ -1,0 +1,21 @@
+id: SK-ARCHITECT-pipeline-design
+title: Pipeline design
+territory: ARCHITECT
+tier: field_ready
+summary: >-
+  Design pipeline stages that represent a real sales process, decide what moves an opportunity,
+  and keep status, value and owner meaningful.
+prerequisites:
+  - SK-ARCHITECT-tags-vs-custom-fields
+ghl_features:
+  - GHL-CRM-PIPELINES
+  - GHL-CRM-OPPORTUNITIES
+  - GHL-WF-PIPELINE-STAGE-CHANGED
+judgment_competencies:
+  - complexity_justified
+  - what_could_break
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: true
+  fieldwork_required: true
+keywords: [pipeline, stage, opportunity, status, owner]

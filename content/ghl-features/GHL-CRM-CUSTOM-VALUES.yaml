@@ -1,0 +1,18 @@
+# Verified 2026-09-02 against "How to use Custom Values in HighLevel": reusable account-level
+# values for templates and workflows (addresses, support contacts, branding).
+id: GHL-CRM-CUSTOM-VALUES
+official_name: Custom Values
+area: Settings
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/48001161575-how-to-use-custom-values
+known_limitations: []
+skills:
+  - SK-ARCHITECT-custom-values
+  - SK-SCALE-snapshot-portability
+supported_configs:
+  notes: Account-wide key/value pairs referenced as merge fields; they travel with snapshots.
+verification_note: Name and purpose confirmed on the help-center article, 2026-09-02.

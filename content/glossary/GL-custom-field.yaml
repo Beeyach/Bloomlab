@@ -1,0 +1,11 @@
+id: GL-custom-field
+term: Custom field
+definition: >-
+  A named value stored on a contact or an opportunity — treatment interest, quoted price,
+  preferred location. Forms fill it, workflows update it, templates print it.
+aliases: [contact field, opportunity field]
+related_skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+ghl_features:
+  - GHL-CRM-CUSTOM-FIELDS
+  - GHL-WF-UPDATE-CONTACT-FIELD

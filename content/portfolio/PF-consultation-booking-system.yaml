@@ -1,0 +1,34 @@
+# Portfolio template (spec §35–§36, PORT-001 … PORT-003): item 2 of the Field Ready progression.
+id: PF-consultation-booking-system
+project: PRJ-consultation-booking-system
+label: Simulation Project
+title: Consultation Booking System
+progression_number: 2
+artifacts:
+  - kind: brief
+    required: true
+    description: The project brief as given.
+  - kind: business_problem
+    required: true
+    description: The no-show and follow-up problem in the owner's numbers.
+  - kind: architecture
+    required: true
+    description: Pipeline, calendar, custom fields and custom values, and why.
+  - kind: workflows
+    required: true
+    description: The confirmation, reminder and recovery workflows as data.
+  - kind: screenshots
+    required: false
+    description: Real-GHL screenshots from the snapshot fieldwork.
+  - kind: learner_reasoning
+    required: true
+    description: The two explanations and the edge-case decisions.
+  - kind: skills_demonstrated
+    required: true
+    description: Skills with their evidence level at completion.
+  - kind: assistance_level
+    required: true
+    description: Independent, light, guided or heavy, per exercise.
+  - kind: real_ghl_evidence
+    required: true
+    description: Snapshot loaded into a second sub-account.

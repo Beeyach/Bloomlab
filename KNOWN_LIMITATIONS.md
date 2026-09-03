@@ -2,19 +2,31 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-02 (end of Phase 2)
+Last updated: 2026-09-02 (end of Phase 5)
 
 ## Current state
 
-- The product has no learning content, simulator, mastery engine or sync. Phases 1–2 delivered the repository foundation and the design system (tokens, primitives, HoloMaterial, motion, eleven semantic components) plus a developer gallery to review them.
+- The product has curriculum content compiled in (Phase 5) but no learning engine, simulator or mastery engine yet: nothing teaches from the bundle until Phase 6+. Phases 1–4 delivered the repository foundation, the design system, local-first data and sync.
 - The home route is a Phase 1 foundation screen showing the version triplet and environment. It is not the Command Center (DES-010, Phase 7) and makes no claim to be.
 - `/system` (diagnostics) and `/design` (gallery) exist only in local and preview environments; both are off in production by flag.
 - The semantic components are presentational: they take typed props and will be wired to real engines from Phase 6 onward. Their prop shapes may change when the data models land; they share tokens, so the visual language will not.
 - Deployment is live: every push to `main` deploys the `bloomlab` Worker (https://bloomlab.cool-sunset-2169.workers.dev) and every pull request redeploys the single shared `bloomlab-preview` Worker (D-020). Both hosts are public `workers.dev` URLs serving the foundation app with no learner data. D1 databases and R2 buckets do not exist yet (Phase 4).
 - The dev machine runs Node 22.18 while `engines.node` is `>=22.22.0` (react-router 8's floor). Everything works locally with npm engine warnings; CI uses the latest 22.x.
-- No GHL feature names have been verified against official documentation yet. Names used in the gallery samples ("Send SMS", "If / Else", "Wait", "Appointment Status") are illustrative until the registry (GHL-001, GHL-006) is populated with `last_verified` and `source_url`.
+- GHL feature names are verified only for the 34 registry records (Phase 5); the gallery samples in `/design` still use illustrative labels and are not wired to the registry (GHL-005 / GHL-010 apply from the screens onward).
 - The ~128k ElevenLabs credits have an expiry window; voice asset generation (VOI-005) is scheduled for Phase 20. Risk: credits expire before Phase 20. By design this is not a functional dependency.
 - Prettier does not format Markdown (`*.md` is ignored) so the control documents keep their hand-laid tables.
+
+## Phase 5 — content engine
+
+- **Seed, not curriculum.** 22 skills, 16 exercises and 3 units prove the types and relationships; Field Ready's Gate 6 (Conversion and Copy) and Gate 12 (Capstone) have no authored skills, seven gates have no project, and every seeded skill has at least one coverage gap. The compiler reports all of it (`npm run content:build`, 36 warnings) and the `/system` Content section lists the gaps. Authoring is Phase 24.
+- **Three persistent clients, not twenty.** CNT-009 (≥ 20 clients across the §37 industries) stays NOT_STARTED; the client schema and hidden state are complete and exercised.
+- **Registry verification depth varies.** 24 records were verified on their own (or a directly related) help-center article; 10 (Send Email, Remove Contact Tag, Assign to User, Send Internal Notification, Remove from Workflow, Survey Submitted, Pipeline Stage Changed, Opportunity Status Changed, Customer Replied, Payment Received) have their name confirmed on GHL's official trigger/action list pages or a related article, and their `supported_configs` are marked as not individually verified in `verification_note`. Filters and config fields are the compiler's vocabulary for the Workflow Lab (Phase 12), not a claim about GHL's exact UI.
+- **Fidelity is declared, not yet exercised.** The simulator does not exist, so `simulation_fidelity` and `known_limitations` describe what Phase 10–14 must honour; the "Simulator approximations versus real GHL" section below fills in per feature once behaviour is implemented.
+- **MDX is validated, not rendered.** Units are syntax-checked and their embeds resolved at build time; the bundle carries the raw MDX body. Rendering (and the embed components) is the Academy, Phase 8.
+- **Attempt stamping is a contract, not a table yet.** The bundle carries `content_version` and `content_hash`; the attempt records that store them arrive with the learning engine (Phase 6) and exercise runner (Phase 9), so CNT-007, DATA-011 and INF-013 remain partial.
+- **Learning units and rubrics are not versioned individually.** A rubric change is a new `_V<n>` file by rule; a unit change is a content_version bump. Per-record history relies on Git.
+- **The content lock is a discipline.** `content:check` fails when sources change without a version bump; a developer can still bump-and-lock without reviewing what changed. Review happens in the pull request, where `content.lock.yaml` changes are visible.
+- **Warnings are printed twice during `vite build`** (once per Vite environment: client and Worker); the compile itself runs once.
 
 ## Phase 2 — design system
 

@@ -1,0 +1,37 @@
+# Verified 2026-09-02 against "How to Create and Use Custom Fields within HighLevel": contact and
+# opportunity custom fields; usable in forms, surveys, workflows and pipelines.
+id: GHL-CRM-CUSTOM-FIELDS
+official_name: Custom Fields
+area: Contacts
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: A
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/48001161579-how-to-use-custom-fields
+known_limitations:
+  - Field types simulated — text, number, date, checkbox, dropdown, phone, email; file uploads and signatures are not.
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+supported_configs:
+  options:
+    - Contact custom fields
+    - Opportunity custom fields
+  config_fields:
+    - name: type
+      type: select
+      required: true
+      options:
+        [
+          Short Text,
+          Long Text,
+          Dropdown,
+          Date Picker,
+          Phone,
+          Email,
+          Radio Select,
+          Checkbox Group,
+          URL,
+          Number,
+        ]
+verification_note: Name, the two field scopes and the type list confirmed on the help-center article, 2026-09-02.

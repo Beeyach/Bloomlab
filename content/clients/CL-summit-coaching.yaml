@@ -1,0 +1,82 @@
+# Persistent fictional client: a solo coach with an application funnel and a pricing story.
+id: CL-summit-coaching
+business_name: Summit Leadership Coaching
+industry: coach
+locations:
+  - name: Remote (Denver)
+    city: Denver
+    region: CO
+    timezone: America/Denver
+team:
+  - name: Marcus Hale
+    role: Founder and coach
+    notes: Sells and delivers everything himself; wants fewer unqualified calls, not more calls.
+offers:
+  - name: Discovery Call
+    price: 0
+    billing: one_time
+  - name: 12-Week Leadership Intensive
+    price: 3200
+    billing: package
+  - name: Executive Retainer
+    price: 1200
+    billing: recurring
+lead_sources:
+  - LinkedIn content
+  - Podcast guest spots
+  - Referrals from past clients
+current_systems:
+  - Calendly
+  - Typeform application
+  - Notion CRM board
+  - ConvertKit newsletter
+metrics:
+  monthly_leads: 38
+  booking_rate: 0.62
+  show_rate: 0.81
+  close_rate: 0.22
+  average_ticket: 3200
+problems:
+  - Too many discovery calls with people who cannot afford the program.
+  - Applications arrive by email and get answered days later.
+  - No follow-up after a call unless Marcus remembers.
+relationship_state:
+  stage: proposal
+  since: 2026-08-25
+  owner: Ary
+  notes: Wants a proposal with two price options; compares against a cheaper freelancer.
+assets:
+  - kind: domain
+    name: summitleadership.co
+  - kind: document
+    name: Current application questions (Typeform export)
+hidden_facts:
+  freelancer_quote: 900
+  freelancer_scope: Calendly embed and a Zapier to Notion; no qualification, no follow-up
+  cash_position: comfortable
+  wants_to_hire_assistant: true
+voice:
+  character: VC-measured-founder
+  tone: Calm, analytical, slightly sceptical; respects precision.
+  speaking_style: Asks for numbers, pauses before answering, tests whether you listened.
+  sample_phrases:
+    - Walk me through what happens after someone applies.
+    - Another person quoted nine hundred. What am I paying for beyond that?
+    - I'd rather talk to five right people than twenty wrong ones.
+history:
+  - date: 2026-08-25
+    event: Discovery call; shared application volume and close rate.
+  - date: 2026-08-28
+    event: Asked for a proposal with a lower-scope option.
+hidden_state:
+  trust: 55
+  urgency: 40
+  price_sensitivity: 65
+  frustration: 30
+  technical_sophistication: 60
+  fear: 25
+  previous_bad_experience: 20
+  alternative_provider_strength: 60
+  actual_budget: 3500
+  stated_budget: 1500
+  decision_authority: sole

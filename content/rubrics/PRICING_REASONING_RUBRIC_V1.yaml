@@ -1,0 +1,35 @@
+# Versioned rubric (AI-011, PRI-002, NEG-005): price, margin, scope, risk, reasoning.
+id: PRICING_REASONING_RUBRIC_V1
+version: 1
+title: Pricing and negotiation reasoning
+applies_to:
+  - PRICE_IT
+  - NEGOTIATE_IT
+model_class: cheap
+output_schema: ai_grading_v1
+items:
+  - id: r1
+    tier: critical
+    criterion: The price (or the concession) does not fall below the estimated labor cost.
+    weight: 5
+  - id: r2
+    tier: required
+    criterion: Scope, inclusions and exclusions are explicit; migration, integrations and rush are accounted for.
+    weight: 4
+  - id: r3
+    tier: required
+    criterion: The reasoning names the risk the price carries and who bears it.
+    weight: 3
+  - id: r4
+    tier: quality
+    criterion: A cheaper competing quote is answered on scope before price.
+    guidance: Clarifying what the other quote omits counts; matching it does not.
+    weight: 3
+  - id: r5
+    tier: quality
+    criterion: The explanation is in the client's terms — outcomes and effort, not feature lists.
+    weight: 2
+  - id: r6
+    tier: bonus
+    criterion: Offers a phased or reduced-scope option that keeps margin, or walks away cleanly.
+    weight: 2

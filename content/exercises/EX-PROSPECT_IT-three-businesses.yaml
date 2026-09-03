@@ -1,0 +1,40 @@
+# PROSPECT IT (spec §27): Contact / Maybe / Skip with reasoning, across several businesses.
+id: EX-PROSPECT_IT-three-businesses
+type: PROSPECT_IT
+title: Contact, maybe, or skip?
+mode: practice
+difficulty: 2
+estimated_minutes: 20
+skills:
+  - SK-SELL-prospect-selection
+prospects:
+  - CL-northwind-hvac
+  - CL-summit-coaching
+  - CL-glowhaus-medspa
+instructions: |
+  Three businesses, what you can see of them, and no more. For each, decide **Contact**,
+  **Maybe** or **Skip**, and give the reason in one or two sentences: fit, economics, recurring
+  need, technical fit, access to the decision maker. Skipping a bad-fit prospect is a correct answer.
+allowed_features: []
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: decisions.count
+    operator: equals
+    value: 3
+    description: Every business gets a decision.
+  - id: a2
+    type: state
+    path: decisions.with_reasoning
+    operator: equals
+    value: 3
+    description: Every decision has a reason.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: AUDIT_EVIDENCE_RUBRIC_V1
+  pass_threshold: 70
+hints: []
+fieldwork: null
+portfolio: null

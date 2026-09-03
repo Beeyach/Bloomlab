@@ -1,0 +1,34 @@
+# Verified 2026-09-02 against "Workflow Action - Webhook (Outbound)": POST by default, custom
+# key-value data with merge fields, no files, payload not shown in execution logs.
+id: GHL-WF-WEBHOOK
+official_name: Webhook
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-02
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003299-workflow-action-webhook-outbound-
+known_limitations:
+  - Cannot send files or images.
+  - The payload only carries data related to the triggering event.
+  - Execution logs confirm the call but do not show the payload.
+skills:
+  - SK-CONNECT-webhook-payloads
+supported_configs:
+  config_fields:
+    - name: url
+      type: string
+      required: true
+    - name: method
+      type: select
+      required: true
+      options: [POST, GET, PUT, PATCH, DELETE]
+    - name: custom_data
+      type: json
+      required: false
+      description: Key-value pairs; values may use merge fields.
+approximation_note: Training approximation — the simulator shows the outgoing payload it would send and the response code; no request leaves the sandbox.
+aliases:
+  - Custom Webhook
+verification_note: Name, default method, custom data and the three limitations confirmed on the help-center article, 2026-09-02.
