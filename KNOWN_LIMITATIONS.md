@@ -56,9 +56,28 @@ Last updated: 2026-09-05 (end of Phase 10)
   `Intl.DateTimeFormat` with an explicit `timeZone`. That is deterministic and never reads the
   device's zone, but it does mean the engine relies on the runtime's IANA database being present
   and current. A runtime without full ICU would resolve zones differently.
-- **The tablet holographic fix is verified by automation, not yet by the user.** See the Phase 10
-  review: the automated 1024 px and 768 px touch checks pass on decoded pixels at every pointer
-  stage, and the real-tablet check is still pending.
+- **The tablet holographic rectangle is not fixed. REAL TABLET USER CHECK: FAILED on the current
+  Phase 10 build.** The user tested the deployed preview on a real tablet after D-075 and still
+  sees the sharp rectangular flash when tapping a rounded holographic card. That report is
+  authoritative; the automated 1024 px and 768 px touch checks passing on decoded pixels at every
+  pointer stage is not evidence against it, because a probe reads what the page says it painted and
+  what is in dispute is what the device's compositor put on the glass. Desktop Chromium under touch
+  emulation has never reproduced it. Rather than a fourth CSS change chosen from the same evidence,
+  this round ships `/system/holo` behind the diagnostics flag: nine copies of the real interactive
+  card, each with exactly one property changed, labelled A to I so the answer comes back as a
+  letter (D-086, Phase 10 review §28). Until the user reports which letters stop flashing, the root
+  cause is unknown and **Phase 10 does not merge**.
+- **Two tablet-engine defects found alongside it are fixed, and neither is claimed to be that
+  symptom.** `button { appearance: none }` had no `-webkit-appearance: none`, so D-075's stated
+  suppression of the native `:active` chrome never happened on WebKit before Safari 15.4; and
+  `.rim` used `mask` / `mask-composite` with no prefixed pair, so on those same engines the conic
+  rim gradient washes the whole card under a finger instead of being cut back to 1.5 px.
+- **A second checkpoint at a log position already checkpointed keeps the first one's label.**
+  Snapshot rows are addressed by `(run, generation, log length)`, which is content-addressed on
+  purpose: two devices that checkpoint at the same position have checkpointed the same state, and
+  the append union should treat those as one row rather than two. The cost is that marking a second
+  checkpoint at the same position without advancing the run does not record the new label. No
+  learner-facing surface takes checkpoint labels yet; the harness is the only caller.
 
 ## Phase 9 — exercise runner
 

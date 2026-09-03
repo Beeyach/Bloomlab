@@ -203,6 +203,10 @@ state, not history, and is persisted with the run (D-079).
 clock, its queue as written, the seed at position zero, no history. The content object is never
 mutated — proved by JSON-comparing the scenario before and after a run plus a reset.
 
+What the engine does not decide is storage identity. A reset run is persisted under a new
+generation so its append-only history can never collide with the run's earlier lives; the rule is
+in §21 and D-087.
+
 ## 15. Simulator version
 
 `2026.09.05-r1`, the project's date-plus-revision convention. Carried on every run and every saved
@@ -295,9 +299,57 @@ this phase added the Dexie v4 tables, the record types and three entries to
 `LOCAL_SYNC_ENTITIES`. Push and pull are generic over `SyncEntity` and needed no change; **no D1
 migration was required**.
 
-Run ids are minted by the app (`sr-<uuid>`), not the engine. Event rows are `se:<run>:<sequence>`
-and snapshot rows `ss:<run>:<log length>`, so saving the same log twice writes the same rows —
-tested.
+Run ids are minted by the app (`sr-<uuid>`), not the engine.
+
+### Reset identity (D-087)
+
+**A reset starts a new generation of the run. An append-only id is never reused, and no history
+row is ever rewritten, resurrected or deleted.**
+
+The rule, exactly:
+
+- A run carries a **generation**, a token the app mints when the run starts and mints again,
+  freshly random, at every reset. It is never reused.
+- Append rows are `se:<run id>:<generation>:<sequence>` and
+  `ss:<run id>:<generation>:<log length>`, and carry the generation as a column. Saving the same
+  log twice still writes the same rows.
+- The generation lives on the run's `sim_projects` header, which is patched, never recreated, so a
+  reset leaves one run in the list rather than two.
+- **Reset touches no history row.** The earlier generations' events and checkpoints stay exactly
+  as written and stay replayable; they are simply no longer the run's current life.
+- A load reads the header's generation and takes only the rows carrying it.
+- Membership is decided by the `run_id` and `generation` fields, not by parsing an id. A row saved
+  before generations existed carries none and reads as generation `0`, so a run stored by the
+  earlier build still loads and still resumes.
+- Whether an event still needs writing is decided by its sequence **within the current
+  generation** — never by a primary key belonging to another one.
+
+The defect this replaces: `resetStoredRun` soft-deleted the run's history and reset the engine's
+sequence to zero, so the second life asked for the ids the first life had used. `saveRun` read
+every primary key for the run, tombstones included, as "already saved", and skipped them — a reset
+run recorded nothing, and a reload came back to an empty log. Filtering the tombstones out would
+not have been enough: `createSyncableStore.create()` uses `table.add()`, so a tombstoned row still
+occupies its key, and resurrecting or overwriting it would rewrite a fact another device holds.
+
+Why a random token rather than a counter: two devices that each reset the same run while offline
+would both mint generation 1, and the append union would silently drop one device's history as a
+duplicate of the other's.
+
+Covered by four unit tests and one two-device test, each of which fails when the colliding
+identity is put back:
+
+| Test | Proves |
+|---|---|
+| never reuses an append id, and leaves the old history exactly as it was | Run, several events, checkpoint, persist, reset, new events, new checkpoint, persist, reload. The reloaded log and state hash equal the post-reset run, the new checkpoint is there, no new id is one the first life used, every first-life row is byte-identical with `deleted_at` still null and `revision` still 1, the outbox holds the new appends, a second save writes no row and queues no further append, and the post-reset log replays to the post-reset run and not to the run before it. |
+| mints fresh ids even where an earlier build tombstoned the first life | The shipped build's tombstones are stepped over rather than asked for again. Post-reset rows are all new ids, all live; the tombstones stay tombstones; the reload returns the new life. |
+| resets in place: one run in the list, not two | `listRuns` returns one row for the scenario, still the same run id, with `log_length` back to 0. |
+| reads a run saved before generations existed, and resets it forward | A run whose rows carry no generation and use the old three-segment id loads as generation `0` with its log intact, then resets into a fresh generation and records normally. |
+| a reset across two devices | Device A runs, syncs; B pulls the run. A resets, runs again, syncs. Every post-reset append row is accepted by the server rather than mistaken for one it already held; every pre-reset row is still there, `deleted_at` null, `revision` 1. B pulls and lands in the new life with the matching state hash, holds both generations' rows, and still sees one run. |
+
+The browser probe adds the same journey on the built preview: run → reset → new activity → reload.
+After a reset the harness records two events, two execution records and a checkpoint, all three
+survive the reload at the same simulator time, and a replay of the reset run reproduces it
+exactly.
 
 Verified, in tests and again in the browser against the built preview: the run, its event log, its
 scheduled queue, its simulator time and its generator position all survive a reload; execution
@@ -483,12 +535,76 @@ local backdrop during the gesture, no radius collapses, no opaque offset outline
 holographic card, no native tap highlight is live on an element that could receive one, and every
 focused card still shows a visible ring.
 
-**REAL TABLET USER CHECK: PENDING.** This must be confirmed by the user on their own tablet
-against the deployed preview. Automation cannot reproduce an older iPadOS WebKit's outline
-behaviour, which is precisely why the fix does not rely on outlines following the radius.
+### REAL TABLET USER CHECK: FAILED on current Phase 10 build
 
-D-074 is left in the ledger as written. D-075 records that real-tablet testing proved it
-incomplete, and documents the three causes and the fix.
+The user tested the deployed preview on a real tablet after D-075 and **still sees the sharp
+rectangular flash when tapping a rounded holographic card.** That observation is authoritative.
+D-075 is therefore not a confirmed fix, the automated PASS above is not evidence against the
+report, and Phase 10 does not merge on it.
+
+The three causes D-075 found were real, are fixed, and stay fixed. They were not this one.
+
+### Why the third attempt is an instrument, not a fourth fix
+
+Three fixes in a row have now been made from a desktop against a symptom only a real device
+shows. A probe reads what the page says it painted; what is in dispute is what the device's
+compositor put on the glass, and desktop Chromium under touch emulation has never once reproduced
+it. Another CSS change chosen from the same evidence would be a fourth guess.
+
+So this round ships `/system/holo` (behind the diagnostics flag, unreachable in production): nine
+copies of the real interactive card — a `button` wrapping `HoloMaterial`, same radius, same ring —
+each with exactly one thing changed, labelled in plain words so the answer comes back as a letter.
+
+| | Card | What is changed | What it would prove |
+|---|---|---|---|
+| **A** | As it ships | Nothing | The control. If A does not flash, the fault is not in the material and we look at the screen the card sits on. |
+| **B** | No tilt | `transform: none` on the material | A changing transform is what promotes the card to its own compositor surface. |
+| **C** | No shadow | `box-shadow: none` on the material | A shadow is painted around the card, outside the rounded clip. |
+| **D** | No glare and no grain | The two oversized layers not painted | They are `inset: -50%` and `inset: -8%`, larger than the card, and are the only things here that can paint a square where a corner should be. |
+| **E** | Rounded `clip-path` | `clip-path: inset(0 round 24px)` added | A path is a different clipping mechanism from rounded overflow, and is not the one suspected of being dropped. |
+| **F** | Tilt outside, clip inside | `surface="split"`: the root keeps the transform and the shadow, an inner element takes the rounded clip and the blending group | Nothing then asks the device to apply a rounded clip to a surface whose transform is changing. |
+| **G** | No forced compositor layer | `will-change: auto` | The promotion is currently unconditional, including at rest. |
+| **H** | Layers kept inside the card | Glare and grain still move, by gradient position rather than by overhanging the box | If nothing hangs outside, losing the clip cannot draw a rectangle. This is D with the light kept, and is the version that could ship. |
+| **I** | No blending | `mix-blend-mode: normal`, `isolation: auto` | Blending forces the card to be flattened into one image before compositing. |
+
+F is a real structure, not a mock: `HoloMaterial` gained a `surface` prop, `single` (unchanged,
+what every product surface renders) and `split`. A comparison against a fake would prove nothing.
+
+A tap on a diagnostic card counts itself and changes nothing else. Selection is a separate control
+under each card, so the ring a selected card wears never rides along on a tap being observed.
+
+### Two defects fixed on their own terms
+
+Found while mapping the stack, fixed because they are wrong regardless, and **not** claimed to be
+the reported symptom:
+
+- `button { appearance: none }` had no `-webkit-appearance: none`. WebKit only honours the
+  unprefixed property from Safari 15.4, so D-075's stated suppression of the native `:active`
+  chrome — a square fill over the button's box — never happened on an older iPad, which is exactly
+  the device it was written for.
+- `.rim` used `mask` and `mask-composite: exclude` with no prefixed pair. On those same engines
+  the conic gradient is never cut back to a 1.5 px rim and washes the whole card under a finger.
+
+### What the probe now records
+
+`holo-touch-probe.mjs` drives all nine cases at both widths and reports their measurements
+**outside the verdict**. The cases deliberately remove parts of the material, so judging them by
+the product's pass rules would be a category error; their value is as the desktop baseline the
+tablet's answer is read against. On Chromium 141 at 1024 px and 768 px every case holds a 24 px
+radius through the whole gesture and every corner is steady, except case B on keyboard focus,
+where a card with no tilt seats its focus ring differently. The product cards still pass.
+
+That a desktop engine finds nothing wrong with any of the nine is the point: it is why the answer
+has to come from the tablet.
+
+### Status
+
+**REAL TABLET USER CHECK: FAILED on current Phase 10 build.** It may only change to PASS after the
+user personally confirms the new preview. **Phase 10 does not merge while this is unresolved.**
+
+D-074 is left in the ledger as written. D-075 records the three causes it found and fixed. D-086
+records that D-075 was also incomplete, the change of method, the diagnostic, and the two
+WebKit-version defects.
 
 ## 29. Eyebrow removal audit
 
