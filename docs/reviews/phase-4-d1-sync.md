@@ -21,9 +21,9 @@ Implements spec §88–§93 and §146 and the Phase 4 line of §163: learner, sy
 
 | Suite | Count | Runs in |
 |---|---|---|
-| Shared: sync key, merge rules | 10 | Node |
-| Worker: link, hashing, sessions, push/pull, conflict + force, rejections, devices/revoke/label, schema | 16 | workerd with the real migration (`@cloudflare/vitest-pool-workers`) |
-| Web: link re-keying, push/pull, pending-edit precedence, conflict both ways, offline failure, revoked session | 10 | jsdom + fake-indexeddb against an in-memory server using `decideMerge` |
+| Shared: sync key, merge rules | 9 | Node |
+| Worker: link, hashing, sessions, push/pull, conflict + force, rejections, idempotent replay, soft deletes, devices/revoke/label, schema, crypto helpers | 14 | workerd with the real migration (`@cloudflare/vitest-pool-workers`) |
+| Web: link re-keying, push/pull, pending-edit precedence, conflict both ways, offline failure, lost-response retry, deletion, revoked session | 12 | jsdom + fake-indexeddb against an in-memory server using `decideMerge` |
 | Web: Phase 3 store, queue, device, status, UI | 27 | jsdom |
 
 Total across the repository: 130 tests, all green; typecheck, lint, Prettier, docs validator and build green.
