@@ -360,7 +360,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | SYNC-004 | Device sessions: after key verification each device receives its own revocable session token; master key is not sent with every request. D1 stores device_id, learner_id, token_hash, created_at, last_seen_at, revoked_at, device_label. | P0 | 4 | PASSED | §89, TA§12 |
 | SYNC-005 | Connected-devices list with Revoke. | P2 | 4 | PASSED | §89, TA§12 |
 | SYNC-006 | Recovery: clear statement that losing all devices and the key means server recovery is impossible; offer copy key, download recovery file, QR, confirm-saved. Account creation never forced. | P1 | 4 | PASSED | §90, TA§13 |
-| SYNC-007 | Only meaningful state syncs (not every drag coordinate); syncable entities carry id, learner_id, updated_at, revision, device_id, deleted_at. | P0 | 4 | PASSED | §91, TA§14 |
+| SYNC-007 | Only meaningful state syncs (not every drag coordinate); syncable entities carry id, learner_id, updated_at, revision, device_id, deleted_at. | P0 | 4 | PARTIAL | §91, TA§14 |
 | SYNC-008 | Merge rules: append-only evidence merges; simple progress uses latest valid revision; complex simulator work uses explicit project snapshots. | P0 | 4 | PASSED | §91, TA§14 |
 | SYNC-009 | No silent destructive conflict resolution; on conflicting complex edits show "Two versions were changed. Choose which version to keep." | P0 | 4 | PASSED | §91, §146 |
 | SYNC-010 | Offline use with quiet reconnect sync; indicator "Saved on this device" → "Synced"; no modal interruption. | P0 | 4 | PASSED | §86, TA§8 |
@@ -371,7 +371,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| DATA-001 | Local-first flow `UI → local state → IndexedDB → sync queue → server`; normal interaction never waits on the server. | P0 | 3 | PASSED | §86 |
+| DATA-001 | Local-first flow `UI → local state → IndexedDB → sync queue → server`; normal interaction never waits on the server. | P0 | 3 | PARTIAL | §86 |
 | DATA-002 | IndexedDB via Dexie (or similarly small wrapper) for active application data; localStorage is never the main datastore; no custom IndexedDB ORM. | P0 | 3 | PASSED | §87, TA§7 |
 | DATA-003 | Installable PWA caching app shell, stable curriculum and stable assets via service worker; API responses not cached blindly; progress lives in IndexedDB. | P1 | 3 | PASSED | §87, TA§9 |
 | DATA-004 | Git = what Bloomlab teaches; D1 = what the learner has done. Static curriculum is not mirrored into D1. | P0 | 4 | PASSED | §92, TA§66 |

@@ -81,8 +81,15 @@ export function createSyncableStore<T extends SyncEnvelope>(
         const writer = await ensureDevice(database);
         const deleted = stampDelete(existing, writer);
         await table.put(deleted);
+        // The tombstone travels with the operation: the other devices need `deleted_at`.
         await enqueueOperation(
-          { entity, entity_id: id, op: 'delete', revision: deleted.revision, payload: null },
+          {
+            entity,
+            entity_id: id,
+            op: 'delete',
+            revision: deleted.revision,
+            payload: record(deleted),
+          },
           database,
         );
         return deleted;

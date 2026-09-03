@@ -357,3 +357,82 @@ describe('schema (DATA-004, DATA-005)', () => {
     }
   });
 });
+
+describe('idempotency and deletions', () => {
+  const opsFor = async (learnerId: string) =>
+    (
+      await env.DB.prepare('SELECT COUNT(*) AS n FROM sync_operations WHERE learner_id = ?1')
+        .bind(learnerId)
+        .first<{ n: number }>()
+    )?.n;
+
+  it('confirms a replayed push without a new revision or log row', async () => {
+    const record = note(n1, deviceA, 'once', '2026-09-02T10:01:00.000Z');
+    const first = await call<PushResponse>(
+      '/api/sync/push',
+      { operations: [{ seq: 1, entity: 'notes', base_revision: 0, record }] },
+      a.session_token,
+    );
+    // The client never saw the response: it retries the identical operation.
+    const replay = await call<PushResponse>(
+      '/api/sync/push',
+      { operations: [{ seq: 1, entity: 'notes', base_revision: 0, record }] },
+      a.session_token,
+    );
+    expect(first.body.outcomes).toEqual([{ seq: 1, status: 'applied', revision: 1 }]);
+    expect(replay.body.outcomes).toEqual([{ seq: 1, status: 'applied', revision: 1 }]);
+    expect(await opsFor(a.learner_id)).toBe(1);
+  });
+
+  it('propagates a soft delete to the other device and never resurrects it', async () => {
+    const live = note(n1, deviceA, 'to be removed', '2026-09-02T10:01:00.000Z');
+    await call(
+      '/api/sync/push',
+      { operations: [{ seq: 1, entity: 'notes', base_revision: 0, record: live }] },
+      a.session_token,
+    );
+    const first = await call<PullResponse>('/api/sync/pull', { cursor: 0 }, b.session_token);
+    expect(first.body.changes[0]?.record.deleted_at).toBeNull();
+
+    const removed = {
+      ...live,
+      updated_at: '2026-09-02T10:02:00.000Z',
+      deleted_at: '2026-09-02T10:02:00.000Z',
+    };
+    const deletion = await call<PushResponse>(
+      '/api/sync/push',
+      { operations: [{ seq: 2, entity: 'notes', base_revision: 1, record: removed }] },
+      a.session_token,
+    );
+    expect(deletion.body.outcomes).toEqual([{ seq: 2, status: 'applied', revision: 2 }]);
+
+    const second = await call<PullResponse>(
+      '/api/sync/pull',
+      { cursor: first.body.cursor },
+      b.session_token,
+    );
+    expect(second.body.changes).toHaveLength(1);
+    expect(second.body.changes[0]?.record).toMatchObject({
+      id: n1,
+      deleted_at: '2026-09-02T10:02:00.000Z',
+      revision: 2,
+    });
+
+    // A stale edit from B on the deleted note is a conflict, not a silent resurrection.
+    const stale = await call<PushResponse>(
+      '/api/sync/push',
+      {
+        operations: [
+          {
+            seq: 3,
+            entity: 'notes',
+            base_revision: 1,
+            record: note(n1, deviceB, 'zombie', '2026-09-02T10:03:00.000Z'),
+          },
+        ],
+      },
+      b.session_token,
+    );
+    expect(stale.body.outcomes[0]).toMatchObject({ status: 'conflict' });
+  });
+});

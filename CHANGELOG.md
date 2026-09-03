@@ -11,7 +11,8 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 - Shared sync contract in `@bloomlab/shared`: entity kinds, envelope, API types, `decideMerge`, and the sync key (256-bit, Crockford base32 `BLM-XXXX-…` display, tolerant normalisation).
 - Client sync engine: `linkThisDevice` (re-keys local records to the real learner), `syncNow` (push → pull, shadows, conflicts), `resolveConflict`, background scheduler; Dexie schema v2 adds `sync_shadow` and `sync_conflicts`.
 - Screens: `/sync` (create or enter a key, recovery warning, copy / download recovery file / QR / "I saved it", connected devices with revoke, show key), the "Two versions were changed" chooser in the app frame, the indicator now links to sync; the device rename reaches the server; diagnostics show link state, cursor, last error and a newest-note editor.
-- Verification: `npm run review:sync` drives two headless browsers through create-key → link → note sync → offline divergent edits → conflict chooser → convergence → revoke.
+- Idempotent pushes: a retry after a lost response is confirmed at the existing revision without a new log row; soft deletes propagate as tombstones and a stale edit of a deleted record is a conflict, not a resurrection.
+- Verification: `npm run review:sync` drives two headless browsers through create-key → A writes and syncs → B links and receives → offline divergent edits → conflict chooser → convergence → deletion → revoke.
 
 ### Added — Phase 3 · Local-First Data
 

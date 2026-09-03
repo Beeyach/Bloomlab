@@ -140,7 +140,12 @@ async function pushPending(
     if (batch.length === 0) return;
     const operations: PushOperation[] = [];
     for (const op of batch) {
-      if (!op.payload) continue; // deletes always carry the soft-deleted record as payload
+      if (!op.payload) {
+        // Every operation carries its record (deletes carry the tombstone); anything else is a
+        // programming error and must not sit in the queue as "syncing" forever.
+        await failOperation(op.seq as number, 'Operation has no record', database);
+        continue;
+      }
       const shadow = await database.sync_shadow.get([op.entity, op.entity_id]);
       operations.push({
         seq: op.seq as number,

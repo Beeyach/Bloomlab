@@ -24,6 +24,7 @@ import {
   getRecord,
   nowIso,
   operationsSince,
+  recordToPayload,
   recordsById,
   rowToRecord,
   type DeviceRow,
@@ -170,6 +171,17 @@ async function pushOne(op: PushOperation, session: Session, db: D1Database): Pro
   }
   const base = Number.isInteger(op.base_revision) ? op.base_revision : 0;
   const existing = await getRecord(db, op.entity, session.learnerId, record.id);
+  // Idempotent replay: a retry after a lost response carries the exact state the server already
+  // holds (same device, same updated_at, same fields). Confirm it without a new revision or log row.
+  if (
+    existing &&
+    existing.device_id === record.device_id &&
+    existing.updated_at === record.updated_at &&
+    existing.deleted_at === record.deleted_at &&
+    existing.payload === recordToPayload(record)
+  ) {
+    return { seq, status: 'applied', revision: existing.revision };
+  }
   const decision = decideMerge(
     SYNC_ENTITY_KINDS[op.entity],
     existing,

@@ -37,6 +37,8 @@ export class FakeSyncServer implements SyncApi {
   records = new Map<string, Map<string, SyncRecord>>(); // learner → `${entity}:${id}` → record
   log: { op_seq: number; learner_id: string; entity: string; id: string }[] = [];
   offline = false;
+  /** Apply the next push server-side but lose the response, like a dropped connection. */
+  dropNextPushResponse = false;
   calls = { link: 0, push: 0, pull: 0 };
 
   private guard() {
@@ -98,6 +100,15 @@ export class FakeSyncServer implements SyncApi {
       }
       const key = `${op.entity}:${op.record.id}`;
       const existing = store.get(key) ?? null;
+      if (
+        existing &&
+        existing.device_id === op.record.device_id &&
+        existing.updated_at === op.record.updated_at &&
+        existing.deleted_at === op.record.deleted_at
+      ) {
+        outcomes.push({ seq: op.seq, status: 'applied', revision: existing.revision });
+        continue;
+      }
       const decision = decideMerge(
         SYNC_ENTITY_KINDS[op.entity],
         existing,
@@ -121,6 +132,10 @@ export class FakeSyncServer implements SyncApi {
       } else {
         outcomes.push({ seq: op.seq, status: decision.action, server: existing as SyncRecord });
       }
+    }
+    if (this.dropNextPushResponse) {
+      this.dropNextPushResponse = false;
+      throw new SyncApiError(0, 'The server could not be reached');
     }
     return { outcomes };
   }

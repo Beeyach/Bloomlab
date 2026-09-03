@@ -1,8 +1,8 @@
-// Two-device sync check (SYNC-001, SYNC-004, SYNC-009, SYNC-010, SYNC-011): two separate headless
-// Chrome profiles against one server. Device A creates a Bloomlab Sync Key through the UI, device
-// B links with it, a note written on A appears on B, both devices edit the same note while
-// offline, and reconnecting shows the "Two versions were changed" chooser on the second device;
-// choosing keeps that version everywhere. Writes sync-probe.json and captures to .review/.
+// Two-device sync check (SYNC-001, SYNC-004, SYNC-007 … SYNC-011): two separate headless Chrome
+// profiles against one server. Device A creates a Bloomlab Sync Key, writes a note and syncs;
+// device B links with the key and receives it; both edit the same note offline and reconnect
+// (conflict chooser on B, choice converges both); A deletes the note and B sees it go; A revokes
+// B and B is refused. Writes sync-probe.json and captures to .review/.
 //   BASE=https://bloomlab-preview.example.workers.dev node scripts/review/sync-probe.mjs
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -35,6 +35,10 @@ async function waitFor(page, expression, tries = 80) {
   return false;
 }
 
+const hasButton = (name) =>
+  `[...document.querySelectorAll('button')].some((b) => b.textContent.trim() === ${JSON.stringify(name)})`;
+const bodyHas = (text) => `document.body.textContent.includes(${JSON.stringify(text)})`;
+
 async function click(page, selectorOrText) {
   const box = await page.evaluate(`(() => {
     const wanted = ${JSON.stringify(selectorOrText)};
@@ -44,9 +48,12 @@ async function click(page, selectorOrText) {
     if (!el) return null;
     el.scrollIntoView({ block: 'center' });
     const r = el.getBoundingClientRect();
-    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    const at = document.elementFromPoint(x, y);
+    return { x, y, hit: at ? at.tagName + ' ' + (at.textContent || '').trim().slice(0, 30) : null, sameElement: !!at && (at === el || el.contains(at)) };
   })()`);
   if (!box) throw new Error(`Nothing to click for ${selectorOrText}`);
+  if (!box.sameElement) console.log(`click ${selectorOrText}: point hits ${box.hit}`);
   await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...box });
   await page.send('Input.dispatchMouseEvent', {
     type: 'mousePressed',
@@ -78,6 +85,19 @@ const newestNote = (page) =>
   page.evaluate(
     "(() => { const t = document.querySelector('textarea'); return t ? t.value : null; })()",
   );
+
+/** The diagnostics rows that matter for sync: records, link and sync/cursor lines. */
+const diag = (page) =>
+  page.evaluate(
+    "[...document.querySelectorAll('dd')].map((d) => d.textContent.trim()).filter((t) => /^(device \\d|linked|not linked|Synced|Saved|Offline|Syncing)/.test(t))",
+  );
+
+/** Clicks "Sync now" on /system and waits until the outbox is empty. */
+async function syncNow(page) {
+  await waitFor(page, hasButton('Sync now'));
+  await click(page, 'Sync now');
+  return waitFor(page, bodyHas('sync_queue 0'));
+}
 
 async function device(name) {
   const s = await session();
@@ -116,12 +136,9 @@ const step = (name, data) => {
 const A = await device('A');
 const B = await device('B');
 try {
-  // ---------- A creates a key ----------
+  // ---------- A creates a key and links ----------
   await A.go('/sync');
-  await waitFor(
-    A.page,
-    "[...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Create a sync key')",
-  );
+  await waitFor(A.page, hasButton('Create a sync key'));
   await click(A.page, 'Create a sync key');
   await waitFor(A.page, "!!document.querySelector('[data-testid=sync-key]')");
   const key = await text(A.page, '[data-testid=sync-key]');
@@ -134,23 +151,34 @@ try {
   await click(A.page, 'Link this device');
   const aLinked = await waitFor(
     A.page,
-    "document.body.textContent.includes('Connected devices') || !!document.querySelector('[role=alert]')",
+    `${bodyHas('Connected devices')} || !!document.querySelector('[role=alert]')`,
   );
   step('A created a key and linked', {
     keyFormat: /^BLM(-[0-9A-HJKMNP-TV-Z]{4}){13}$/.test(key ?? ''),
     buttonEnabled: enabled,
-    linked:
-      aLinked && (await waitFor(A.page, "document.body.textContent.includes('This device')", 8)),
+    linked: aLinked && (await waitFor(A.page, bodyHas('This device'), 8)),
     alert: await text(A.page, '[role=alert]'),
   });
 
-  // ---------- B links with the same key (captured at phone width) ----------
+  // ---------- A writes learner data locally and it syncs ----------
+  await A.go('/system');
+  await waitFor(A.page, hasButton('Add test note'));
+  await click(A.page, 'Add test note');
+  const savedLocally = await waitFor(A.page, bodyHas('notes 1'), 16);
+  const aQueuedBefore = await A.page.evaluate(bodyHas('sync_queue 1'));
+  await syncNow(A.page);
+  const aNote = await newestNote(A.page);
+  step('A wrote a note: local write first, then the queue drained', {
+    savedLocally,
+    queuedBeforeSync: aQueuedBefore,
+    aNote,
+    aIndicator: await indicator(A.page),
+  });
+
+  // ---------- B links with the same key (captured at phone width) and receives the state ----------
   await setViewport(B.page, 390, 900, { mobile: true });
   await B.go('/sync');
-  await waitFor(
-    B.page,
-    "[...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'I already have a key')",
-  );
+  await waitFor(B.page, hasButton('I already have a key'));
   await screenshot(B.page, `${OUT}/sync-b-unlinked-390.png`, {
     x: 0,
     y: 0,
@@ -163,7 +191,7 @@ try {
   await click(B.page, 'Link this device');
   const bLinked = await waitFor(
     B.page,
-    "document.body.textContent.includes('Connected devices') || !!document.querySelector('[role=alert]')",
+    `${bodyHas('Connected devices')} || !!document.querySelector('[role=alert]')`,
   );
   await sleep(800);
   await screenshot(B.page, `${OUT}/sync-b-linked-390.png`, { x: 0, y: 0, width: 390, height: 900 });
@@ -177,33 +205,16 @@ try {
       "[...document.querySelectorAll('li')].map((li) => li.textContent.trim().slice(0, 40))",
     ),
   });
-
-  // ---------- A writes a note, B receives it ----------
-  await A.go('/system');
-  await waitFor(
-    A.page,
-    "[...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Add test note')",
-  );
-  await click(A.page, 'Add test note');
-  await sleep(300);
-  await click(A.page, 'Sync now');
-  await waitFor(A.page, "document.body.textContent.includes('sync_queue 0')");
-  const aNote = await newestNote(A.page);
   await B.go('/system');
-  await waitFor(
-    B.page,
-    "[...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Sync now')",
-  );
-  await click(B.page, 'Sync now');
+  await syncNow(B.page);
   const bGotNote = await waitFor(
     B.page,
     `(() => { const t = document.querySelector('textarea'); return !!t && t.value === ${JSON.stringify(aNote)}; })()`,
   );
-  step('note synced A → B', {
+  step('B received the synced state', {
     aNote,
     bNote: await newestNote(B.page),
     received: bGotNote,
-    aIndicator: await indicator(A.page),
     bIndicator: await indicator(B.page),
   });
 
@@ -220,24 +231,24 @@ try {
     bIndicator: await indicator(B.page),
     aNote: await newestNote(A.page),
     bNote: await newestNote(B.page),
+    aQueued: await A.page.evaluate(bodyHas('sync_queue 1')),
+    bQueued: await B.page.evaluate(bodyHas('sync_queue 1')),
   });
 
   await A.setOffline(false);
-  await click(A.page, 'Sync now');
-  await waitFor(A.page, "document.body.textContent.includes('sync_queue 0')");
+  await syncNow(A.page);
   await B.setOffline(false);
-  await click(B.page, 'Sync now');
-  const chooser = await waitFor(
-    B.page,
-    "document.body.textContent.includes('Two versions were changed')",
-  );
+  // The reconnect sync usually raises the chooser on its own; only nudge if it has not.
+  let chooser = await waitFor(B.page, "!!document.querySelector('dialog[open]')", 24);
+  if (!chooser) {
+    await click(B.page, 'Sync now');
+    chooser = await waitFor(B.page, "!!document.querySelector('dialog[open]')");
+  }
   await sleep(1000);
   await screenshot(B.page, `${OUT}/sync-b-conflict.png`, undefined, false);
-  step('conflict shown on B', {
+  step('reconnect: conflict shown on B, nothing discarded', {
     chooser,
-    dialog: await B.page.evaluate(
-      `(() => { const d = document.querySelector('dialog'); if (!d) return null; const r = d.getBoundingClientRect(); const cs = getComputedStyle(d); return { open: d.open, top: Math.round(r.top), height: Math.round(r.height), opacity: cs.opacity, transform: cs.transform, scrollY }; })()`,
-    ),
+    aIndicator: await indicator(A.page),
     bNoteStillLocal: await newestNote(B.page),
     versions: await B.page.evaluate(
       "[...document.querySelectorAll('dialog pre')].map((p) => p.textContent)",
@@ -246,10 +257,10 @@ try {
 
   // ---------- B keeps its version; A ends up with it ----------
   await click(B.page, "Keep this device's version");
-  await waitFor(B.page, "!document.body.textContent.includes('Two versions were changed')");
-  await click(B.page, 'Sync now');
-  await waitFor(B.page, "document.body.textContent.includes('sync_queue 0')");
-  await click(A.page, 'Sync now');
+  await waitFor(B.page, "!document.querySelector('dialog[open]')");
+  await waitFor(B.page, bodyHas('sync_conflicts 0'));
+  await syncNow(B.page);
+  await syncNow(A.page);
   const converged = await waitFor(
     A.page,
     "(() => { const t = document.querySelector('textarea'); return !!t && t.value === 'Edited on device B'; })()",
@@ -260,25 +271,35 @@ try {
     bNote: await newestNote(B.page),
     aIndicator: await indicator(A.page),
     bIndicator: await indicator(B.page),
+    aDiag: await diag(A.page),
+    bDiag: await diag(B.page),
+  });
+
+  // ---------- A deletes the note; B sees it go ----------
+  await click(A.page, 'Remove newest note');
+  await waitFor(A.page, bodyHas('No notes yet.'), 16);
+  await syncNow(A.page);
+  await syncNow(B.page);
+  const bGone = await waitFor(B.page, bodyHas('No notes yet.'));
+  step('deletion propagated A → B (tombstone kept)', {
+    aNoNotes: await A.page.evaluate(bodyHas('No notes yet.')),
+    bNoNotes: bGone,
+    bRowsStillStored: await B.page.evaluate(bodyHas('notes 1')),
+    aDiag: await diag(A.page),
+    bDiag: await diag(B.page),
   });
 
   // ---------- revoke B from A ----------
   await A.go('/sync');
-  const revokeVisible = await waitFor(
-    A.page,
-    "[...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Revoke')",
-  );
-  step('A opened connected devices', {
-    revokeVisible,
-    alert: await text(A.page, '[role=alert]'),
-    page: (await text(A.page, 'main'))?.slice(0, 300),
-  });
+  const revokeVisible = await waitFor(A.page, hasButton('Revoke'));
   await click(A.page, 'Revoke');
-  await waitFor(A.page, "document.body.textContent.includes('Revoked')");
+  await waitFor(A.page, bodyHas('Revoked'));
   await B.go('/system');
+  await waitFor(B.page, hasButton('Sync now'));
   await click(B.page, 'Sync now');
-  await sleep(1000);
+  await waitFor(B.page, bodyHas('not linked'), 24);
   step('B revoked from A', {
+    revokeVisible,
     aDevices: await A.page.evaluate(
       "[...document.querySelectorAll('li')].map((li) => li.textContent.trim().slice(0, 60))",
     ),
@@ -292,6 +313,7 @@ try {
   console.error(report.error);
 } finally {
   writeFileSync(`${OUT}/sync-probe.json`, JSON.stringify(report, null, 2));
+  console.log('ok:', report.ok === true);
   await A.close();
   await B.close();
 }

@@ -170,4 +170,42 @@ describe('syncNow (DATA-001, SYNC-007, SYNC-010)', () => {
     expect(isLinked(await ensureDevice(a))).toBe(false);
     expect((await listOperations(a))[0]?.status).toBe('pending'); // kept for after re-linking
   });
+
+  it('retries a push whose response was lost without duplicating anything (idempotency)', async () => {
+    const { a, b, notesA, notesB, server } = await twoDevices();
+    const note = await notesA.create(draft('sent once'));
+    server.dropNextPushResponse = true;
+
+    const lost = await syncNow(a, server);
+    expect(lost.status).toBe('failed');
+    expect((await listOperations(a))[0]?.status).toBe('pending');
+    expect(server.log).toHaveLength(1); // the server did apply it
+
+    const retry = await syncNow(a, server);
+    expect(retry).toMatchObject({ status: 'synced', pushed: 1 });
+    expect(await listOperations(a)).toHaveLength(0);
+    expect(server.log).toHaveLength(1); // no second revision, no second log row
+    expect((await notesA.get(note.id))?.revision).toBe(1);
+
+    await syncNow(b, server);
+    expect((await notesB.list()).map((n) => n.body)).toEqual(['sent once']);
+  });
+
+  it('propagates a deletion: the other device hides the note and keeps the tombstone', async () => {
+    const { a, b, notesA, notesB, server } = await twoDevices();
+    const note = await notesA.create(draft('temporary'));
+    await syncNow(a, server);
+    await syncNow(b, server);
+    expect((await notesB.list()).map((n) => n.id)).toEqual([note.id]);
+
+    await notesA.remove(note.id);
+    await syncNow(a, server);
+    await syncNow(b, server);
+
+    expect(await notesB.list()).toEqual([]);
+    const tombstone = await b.notes.get(note.id);
+    expect(tombstone?.deleted_at).not.toBeNull();
+    expect(tombstone?.revision).toBe(2);
+    expect(await listOperations(b)).toHaveLength(0);
+  });
 });

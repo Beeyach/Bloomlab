@@ -66,7 +66,7 @@ export interface SyncOperation {
   entity_id: string;
   op: SyncOperationKind;
   revision: number;
-  /** The full record for upserts, null for deletes. */
+  /** The full record as written, including the tombstone of a soft delete. */
   payload: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;

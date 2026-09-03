@@ -79,7 +79,8 @@ async function handleApi(request: Request, url: URL, env: Env): Promise<Response
       return await handleSync(request, env, url.pathname);
     } catch (error) {
       if (error instanceof HttpError) return json({ error: error.message }, error.status);
-      console.error('sync error', error);
+      // Message only: never the request, its body, headers or bound values (SEC-004).
+      console.error('sync error:', error instanceof Error ? error.message : String(error));
       return json({ error: 'Sync failed on the server' }, 500);
     }
   }
