@@ -1,0 +1,193 @@
+import type { AssistanceLevel, HintLevel } from '@bloomlab/mastery-engine';
+
+/**
+ * The deterministic exercise grader's contract (spec §27, TA§31–§33; EXR-001 … EXR-003).
+ *
+ * Nothing here knows about React, the DOM, IndexedDB, the network or the simulator package. A
+ * runtime — the Phase 10 simulator, a fieldwork submission, or the runner's own capture of what
+ * the learner wrote — translates its own state into a `GradingContext`, and the grader turns
+ * that plus the authored exercise into a `GradeReport`. Grading never reads the wall clock.
+ */
+
+/** One thing that happened during a run, in simulator time. */
+export interface GradingEvent {
+  /** Event name as authored: `sms.sent`, `tag.added`, `workflow.enrolled`. */
+  type: string;
+  /** When it happened, ISO 8601, in the run's own clock — never `Date.now()`. */
+  at: string;
+  /**
+   * Position in the run's emitted order. Two events with the same timestamp are ordered by this,
+   * so sequence and timing results never depend on sort stability.
+   */
+  index: number;
+  /** Flat fields the authored `where` conditions match on (`contact_id`, `purpose`, …). */
+  fields: Record<string, string | number | boolean | null>;
+}
+
+/** A workflow as the grader sees it: normalized, with no visual positions (EXR-002). */
+export interface GradingWorkflow {
+  id: string;
+  name?: string;
+  /** The trigger's verified GHL feature id, e.g. `GHL-WF-APPOINTMENT-STATUS`. */
+  trigger: { ghl_feature_id: string; filters?: Record<string, unknown>[] } | null;
+  nodes: GradingNode[];
+  settings?: { allow_reentry?: boolean };
+}
+
+export interface GradingNode {
+  id: string;
+  /** `action` · `wait` · `branch` · `goal` · `end`, as the workflow schema authors them. */
+  type: string;
+  /** The verified GHL feature this node performs, when it performs one. */
+  ghl_feature_id?: string | null;
+  label?: string | null;
+}
+
+/** Everything an architecture assertion may inspect. Node coordinates are deliberately absent. */
+export interface GradingArchitecture {
+  workflows: GradingWorkflow[];
+}
+
+/** Where each part of a grading context comes from; used to refuse a grade rather than fake one. */
+export const CONTEXT_SOURCES = [
+  'state',
+  'events',
+  'references',
+  'architecture',
+  'learner',
+] as const;
+export type ContextSource = (typeof CONTEXT_SOURCES)[number];
+
+/**
+ * State roots that hold what the learner supplied rather than what a runtime produced. A `state`
+ * assertion on `prediction.tag`, `decision.choice` or `answer.names_missing_information` is
+ * gradable from the runner alone; one on `contacts.maria.tags` needs a simulator.
+ */
+export const LEARNER_STATE_ROOTS = ['prediction', 'decision', 'answer'] as const;
+
+export interface GradingContext {
+  /**
+   * The state tree assertions address by path. A runtime merges its own state with the learner's
+   * `prediction` / `decision` / `answer` roots; both are addressed the same way.
+   */
+  state: Record<string, unknown>;
+  events: GradingEvent[];
+  /** Named instants timing assertions measure against: `appointment.start`, `appointment.no_show`. */
+  references: Record<string, string>;
+  architecture: GradingArchitecture | null;
+  /**
+   * What this context actually supplies. An assertion needing a source that is absent is reported
+   * as unevaluated, and the report can never be a pass (EXR-024: no fake grading).
+   */
+  provides: readonly ContextSource[];
+}
+
+/** Which bucket an assertion belongs to (EXR-003). */
+export const ASSERTION_TIERS = ['critical', 'required', 'quality', 'bonus'] as const;
+export type AssertionTier = (typeof ASSERTION_TIERS)[number];
+
+export type AssertionType = 'state' | 'event' | 'timing' | 'architecture' | 'negative' | 'sequence';
+
+/** The authored assertion shape the grader reads (structurally satisfied by the content schema). */
+export interface AssertionDefinition {
+  id: string;
+  description: string;
+  type: AssertionType;
+  tier?: AssertionTier;
+  // state
+  path?: string;
+  operator?: 'equals' | 'contains' | 'not_contains' | 'exists' | 'absent' | 'gte' | 'lte';
+  value?: string | number | boolean;
+  // event / negative / timing
+  event?: string;
+  count?: { exactly?: number; min?: number; max?: number };
+  where?: Record<string, string | number | boolean>;
+  relative_to?: string;
+  offset_minutes?: number;
+  tolerance_minutes?: number;
+  // architecture
+  requirement?:
+    | 'trigger_exists'
+    | 'action_exists'
+    | 'branch_exists'
+    | 'feature_used'
+    | 'feature_not_used'
+    | 'node_count_max'
+    | 'reentry_disabled';
+  ghl_feature?: string;
+  // sequence
+  before?: string;
+  after?: string;
+}
+
+/** The slice of an authored exercise the grader needs (structurally satisfied by `Exercise`). */
+export interface ExerciseDefinition {
+  id: string;
+  type: string;
+  mode: string;
+  expected_outcomes: readonly AssertionDefinition[];
+  critical_failures: readonly AssertionDefinition[];
+  grading: {
+    mode: 'deterministic' | 'rubric' | 'mixed';
+    rubric?: string;
+    pass_threshold: number;
+  };
+}
+
+/** What one assertion decided, and why (EXR-002: never merely "wrong"). */
+export interface AssertionResult {
+  id: string;
+  description: string;
+  type: AssertionType;
+  tier: AssertionTier;
+  passed: boolean;
+  /** What the exercise asked for, in words: "exactly 1 sms.sent where contact_id=maria". */
+  expected: string;
+  /** What the run actually showed: "2 matching events". */
+  observed: string;
+  /** Machine-readable detail for diagnostics and later UI. */
+  detail?: Record<string, unknown>;
+  /** The context could not supply what this assertion reads; it is not a pass and not a fail. */
+  unevaluated?: boolean;
+  /** Which source was missing, when unevaluated. */
+  missing_source?: ContextSource;
+}
+
+export type GradeOutcome = 'passed' | 'failed' | 'partial';
+
+export type GradeReason =
+  /** A critical assertion failed; the numeric score cannot override it (MAS-004). */
+  | 'critical_failure'
+  | 'below_threshold'
+  | 'threshold_met'
+  /** The exercise names a rubric, which a later phase evaluates (AI-006, Phase 19). */
+  | 'rubric_pending'
+  /** At least one assertion needs a runtime this context does not provide. */
+  | 'unevaluated_assertions'
+  /** The exercise authored no scorable assertion. */
+  | 'nothing_to_grade';
+
+export interface GradeReport {
+  exercise_id: string;
+  /** The rules that judged this attempt; stored with it so a later change cannot rewrite it. */
+  grader_version: string;
+  outcome: GradeOutcome;
+  reason: GradeReason;
+  /** Share of scored checks passed, 0–100; null when nothing could be scored. */
+  score: number | null;
+  pass_threshold: number;
+  assistance: AssistanceLevel;
+  hints_used: readonly HintLevel[];
+  /** Ids of the critical assertions that failed — these travel into the evidence record. */
+  failed_critical: string[];
+  tiers: Record<AssertionTier, AssertionResult[]>;
+  counts: {
+    scored_total: number;
+    scored_passed: number;
+    critical_total: number;
+    critical_passed: number;
+    unevaluated: number;
+  };
+  /** The rubric still owed, when the exercise is rubric-graded or mixed. */
+  rubric_pending: string | null;
+}

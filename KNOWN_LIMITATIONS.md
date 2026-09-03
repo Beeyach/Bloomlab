@@ -2,11 +2,11 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-03 (end of Phase 8)
+Last updated: 2026-09-04 (end of Phase 9)
 
 ## Current state
 
-- The product has curriculum content compiled in (Phase 5), a working learning engine over it (Phase 6), the Command Center, Campaign and Skill Map (Phase 7) and the Academy (Phase 8): the three authored units render and finishing one records exposure evidence. Exercises are not run yet (Phase 9) and there is no simulator (Phase 10), so every other kind of evidence still enters through the diagnostic form on `/system`.
+- The product has curriculum content compiled in (Phase 5), a working learning engine over it (Phase 6), the Command Center, Campaign and Skill Map (Phase 7), the Academy (Phase 8) and the exercise runner (Phase 9). Two exercise families can be finished end to end; the five that need a simulated account, an execution log or a workflow build wait for Phases 10 and 12. Evidence that no runnable family produces still enters through the diagnostic form on `/system`.
 - `/system` (diagnostics) and `/design` (gallery) exist only in local and preview environments; both are off in production by flag.
 - The semantic components are presentational: Phase 7 wires SkillCard, HoloTerritory, MasteryBadge and StatusPill to the learning engine; the simulator components are wired by their phases. Prop shapes may still change when those data models land; they share tokens, so the visual language will not.
 - Deployment is live: every push to `main` deploys the `bloomlab` Worker (https://bloomlab.cool-sunset-2169.workers.dev) and every pull request redeploys the single shared `bloomlab-preview` Worker (D-020). Both hosts are public `workers.dev` URLs serving the foundation app with no learner data. D1 databases and R2 buckets do not exist yet (Phase 4).
@@ -15,11 +15,25 @@ Last updated: 2026-09-03 (end of Phase 8)
 - The ~128k ElevenLabs credits have an expiry window; voice asset generation (VOI-005) is scheduled for Phase 20. Risk: credits expire before Phase 20. By design this is not a functional dependency.
 - Prettier does not format Markdown (`*.md` is ignored) so the control documents keep their hand-laid tables.
 
+## Phase 9 — exercise runner
+
+- **Two of the seven Phase 9 families can be finished by a learner today.** Architecture Decision and What Would You Build read only what the learner chooses and writes, so they run, grade and record. Build It, Fix It, Run the Lead, Edge Case and Rebuild Blind have their brief, work capture, hint ladder, attempt lifecycle and grading contract, but their checks need the simulator core (Phase 10) and, for building, the Workflow Lab (Phase 12). The runner names the missing runtime and offers no submit; it never grades a description as if it were a build.
+- **Both runnable families end in `partial`, not `passed`.** Each names a rubric, and rubric grading is the AI gateway (Phase 19). The deterministic checks run and are reported, the written work is preserved, and the evidence result is `partial` — which the mastery engine treats as not a pass, so a skill reaches LEARNING and no further. Nothing fabricates a rubric score.
+- **The score is the share of required and quality checks passed** (D-067). Bonus checks are reported and excluded from the denominator; critical checks are a gate, never a number. The authored per-dimension weights (correctness, edge cases, architecture, maintainability, explanation) are **not** applied, because no authored assertion says which dimension it belongs to; EXR-023 owns that model in Phase 12.
+- **Written work is reduced only by an authored vocabulary** (D-070). `response_markers` in the exercise file lists the phrases that count as naming a fact; the runner matches them case-insensitively and exposes `decision.reasoning_mentions` and `answer.<marker>`. It decides one authored marker, never the quality of an argument, and the compiler refuses an assertion on written work with no vocabulary to decide it.
+- **Active attempts are device-local.** The draft (attempt id, start time, revealed hints, response) lives in the local workspace and does not sync: a half-written attempt on a phone is not a fact about the learner. Finished attempts and their evidence sync normally.
+- **Attempt timing is learner activity metadata only.** The start and completion timestamps come from the device clock; deterministic grading never reads a clock, and simulator-backed grading will use simulator time.
+- **The runner renders a small Markdown subset** (paragraphs, ordered and unordered lists, bold, italic, inline code) for authored instructions and hints (D-071). It never interprets HTML, and prose stays in `content/`. A heading or table inside exercise instructions would render as plain text.
+- **The prediction fields are derived from assertion paths.** Run the Lead shows a field for `prediction.tag` because an assertion reads it; its label comes from the path so the expected value never leaks. An exercise that asks for a prediction its assertions do not read captures it as prose only.
+- **Touch, offline and reduced motion were verified by Chrome emulation**, not on a physical phone.
+- **The retrieval integration has no vehicle in the seed content for most skills.** The session builder picks an authored practice or independent exercise; where a due skill has none, no retrieval is offered and no evidence is invented.
+- **`EX-EDGE_CASE-late-booking-reminder`'s critical check reads an event field named `after`.** The grader matches `where` as exact field equality, so the simulator must label events with the reference they follow for that check to be judged. It is recorded here rather than rewritten, because changing authored content to suit the grader would be the wrong direction.
+
 ## Phase 8 — academy
 
 - **Three units exist.** The Academy renders whatever `content/learning-units/` holds; today that is Funnel math, Tag / custom field / custom value, and What a workflow actually does. The rest of the curriculum is Phase 24.
 - **The `<Simulation>` embed simulates nothing yet.** In the workflow unit it states the scenario, workflow and contact it will run and that the shared GHL simulator arrives with Phase 10; the workflow's structure is drawn by the `<Diagram kind="workflow">` above it. Nothing pretends to execute (CUR-036 PARTIAL).
-- **Practice pointers do not run.** `<Exercise>` embeds and the next step after a unit show the authored exercise (type, mode, minutes) and say the exercise runner arrives with Phase 9.
+- **Practice pointers now open the runner** (Phase 9). Whether the exercise can be finished there depends on its family; the runner says so on the page.
 - **Two diagram kinds and one interactive kind.** `funnel` and `workflow` diagrams, and the `funnel-math` interactive, are what the compiler accepts; a unit that needs another kind needs a new renderer (validated at build time, never a broken page).
 - **Finishing is one exposure per unit, for the learner and not merely for the device.** A completion row's id is derived from unit, skill and learner, so a second Finish writes nothing locally and two devices that finish the same unit offline converge on one row when they reconnect (D-062). The cost is that this one evidence row is re-keyed when a device links to a Sync Key; every other evidence row keeps a random id and an append union. Reading position is not stored; the contents list and browser scroll restoration cover navigation.
 - **Offline was verified by emulation.** The Academy probe drives Chrome with the page and service worker offline; a physical phone in airplane mode was not used. `navigator.onLine` stays true under DevTools emulation, so the offline indicator is verified separately by the Phase 3 probe.

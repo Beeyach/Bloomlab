@@ -38,6 +38,11 @@ export const APP_ROUTES: readonly AppRoute[] = [
     Component: lazy(() => import('../academy/AcademyUnit')),
   },
   {
+    id: 'exercise',
+    path: '/exercise/:exerciseId',
+    Component: lazy(() => import('../exercise/ExerciseRunner')),
+  },
+  {
     id: 'sync',
     path: '/sync',
     Component: lazy(() => import('../screens/SyncScreen')),

@@ -86,7 +86,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | MAS-001 | Mastery states: UNSEEN, LEARNING, GUIDED, PRACTICED, INDEPENDENT, PRESSURE_TESTED, MASTERED, NEEDS_REFRESH. | P0 | 6 | PASSED | §29 |
 | MAS-002 | Mastery is never awarded from quizzes alone. | P0 | 6 | PASSED | §29 |
 | MAS-003 | Evidence record stores skill, exercise, result, score, assistance, difficulty, critical failures, date, simulator version, content version, real-GHL evidence where required. | P0 | 6 | PASSED | §30 |
-| MAS-004 | Critical failure system: a dangerous failure (e.g. cancelled appointment receives reminder) fails the attempt regardless of numeric score. | P0 | 9 | NOT_STARTED | §31 |
+| MAS-004 | Critical failure system: a dangerous failure (e.g. cancelled appointment receives reminder) fails the attempt regardless of numeric score. | P0 | 9 | PASSED | §31 |
 | MAS-005 | Review system: old skills reappear as short retrieval challenges inside later sessions; review-due never blocks forward progress; failed retrieval re-queues the skill. | P1 | 6 | PASSED | §32 |
 | MAS-006 | Session Builder offers 30 min / 1 hour / 2 hours / Deep Session; inputs: active campaign, current gate, weak skills, review due, failures, active boss client, fieldwork, assistance dependence; assembled algorithmically with no AI; "Continue" available after session ends. | P1 | 6 | PASSED | §33, TA§70 |
 | MAS-007 | Assistance meter tracks Independent / Light Assistance / Guided / Heavy Assistance quietly, without shaming; mastery requires sufficient independent evidence. | P1 | 6 | PASSED | §34 |
@@ -99,15 +99,15 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| EXR-001 | Exercises are data-driven (`exercise_id, type, title, skills, scenario, instructions, allowed_features, starting_state, expected_outcomes, critical_failures, grading, hints, fieldwork, portfolio`). A new exercise usually requires content, not a new React page. | P0 | 9 | NOT_STARTED | TA§31 |
-| EXR-002 | Deterministic grading via code assertions: state, event, timing, architecture, negative, sequence. | P0 | 9 | NOT_STARTED | §27, TA§32 |
-| EXR-003 | Rubric tiers: critical, required, quality, bonus. | P0 | 9 | NOT_STARTED | TA§33 |
-| EXR-004 | BUILD IT: objective given, learner constructs solution with real GHL concepts, deterministic grading where possible. | P1 | 9 | NOT_STARTED | §27 |
-| EXR-005 | FIX IT: broken system with symptoms shown ("Maria received two reminder messages. Expected one."); faulty node not revealed immediately. | P1 | 9 | NOT_STARTED | §27 |
-| EXR-006 | RUN THE LEAD: learner predicts execution of a contact through a workflow, then actual execution is animated. | P1 | 9 | NOT_STARTED | §27 |
-| EXR-007 | EDGE CASE: one important variable changed (late booking, cancelled, missing phone, timezone, second location, duplicate); learner judges whether the system still works. | P1 | 9 | NOT_STARTED | §27 |
-| EXR-008 | WHAT WOULD YOU BUILD?: business problem without naming the GHL feature under test; multiple valid architectures accepted; AI used only where open-ended reasoning requires it. | P1 | 9 | NOT_STARTED | §27 |
-| EXR-009 | ARCHITECTURE DECISION: tag vs custom field vs custom value vs opportunity field vs custom object; multiple-choice support removed at later levels. | P1 | 9 | NOT_STARTED | §27 |
+| EXR-001 | Exercises are data-driven (`exercise_id, type, title, skills, scenario, instructions, allowed_features, starting_state, expected_outcomes, critical_failures, grading, hints, fieldwork, portfolio`). A new exercise usually requires content, not a new React page. | P0 | 9 | PASSED | TA§31 |
+| EXR-002 | Deterministic grading via code assertions: state, event, timing, architecture, negative, sequence. | P0 | 9 | PASSED | §27, TA§32 |
+| EXR-003 | Rubric tiers: critical, required, quality, bonus. | P0 | 9 | PASSED | TA§33 |
+| EXR-004 | BUILD IT: objective given, learner constructs solution with real GHL concepts, deterministic grading where possible. | P1 | 9 | PARTIAL | §27 |
+| EXR-005 | FIX IT: broken system with symptoms shown ("Maria received two reminder messages. Expected one."); faulty node not revealed immediately. | P1 | 9 | PARTIAL | §27 |
+| EXR-006 | RUN THE LEAD: learner predicts execution of a contact through a workflow, then actual execution is animated. | P1 | 9 | PARTIAL | §27 |
+| EXR-007 | EDGE CASE: one important variable changed (late booking, cancelled, missing phone, timezone, second location, duplicate); learner judges whether the system still works. | P1 | 9 | PARTIAL | §27 |
+| EXR-008 | WHAT WOULD YOU BUILD?: business problem without naming the GHL feature under test; multiple valid architectures accepted; AI used only where open-ended reasoning requires it. | P1 | 9 | PARTIAL | §27 |
+| EXR-009 | ARCHITECTURE DECISION: tag vs custom field vs custom value vs opportunity field vs custom object; multiple-choice support removed at later levels. | P1 | 9 | PARTIAL | §27 |
 | EXR-010 | FUNNEL AUTOPSY: simulated page plus data; inspect traffic source, conversion rate, scroll behavior, form completion, booking rate, drop-off; learner must separate problem from hypothesis. | P1 | 15 | NOT_STARTED | §27 |
 | EXR-011 | FUNNEL ASSEMBLY: blocks or blank architecture; learner creates page/funnel information structure; no forced universal order where several are valid. | P1 | 13 | NOT_STARTED | §27 |
 | EXR-012 | PROSPECT IT: multiple fake businesses; learner decides Contact / Maybe / Skip with required reasoning. | P1 | 16 | NOT_STARTED | §27 |
@@ -117,12 +117,12 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-016 | PRICE IT: learner sets project price, deposit, recurring, rush fee, timeline, revisions, inclusions, exclusions; hidden economics and risk revealed after submission. | P1 | 17 | NOT_STARTED | §27 |
 | EXR-017 | NEGOTIATE IT: client pushes back; learner may clarify, hold price, reduce scope, phase, concede, or walk away; winning is not the only success. | P1 | 18 | NOT_STARTED | §27 |
 | EXR-018 | EXPLAIN IT: technical explanation for different audiences (business owner, another GHL builder). | P1 | 16 | NOT_STARTED | §27 |
-| EXR-019 | REBUILD BLIND: no lesson, no step-by-step support; hints reduce independence evidence. | P1 | 9 | NOT_STARTED | §27 |
+| EXR-019 | REBUILD BLIND: no lesson, no step-by-step support; hints reduce independence evidence. | P1 | 9 | PARTIAL | §27 |
 | EXR-020 | FIELDWORK: real GHL work; Bloomlab collects screenshots, configuration answers, explanation, test results, then questions reasoning. | P1 | 22 | NOT_STARTED | §27 |
 | EXR-021 | BOSS CLIENT: persistent multi-stage engagement (audit → discovery → architecture → pricing → negotiation → proposal → implementation → QA → launch → reporting → change request); earlier decisions affect later consequences. | P1 | 24 | NOT_STARTED | §27 |
-| EXR-022 | Hint system: Nudge, Concept Reminder, Worked Example; assistance tracked per attempt. | P1 | 9 | NOT_STARTED | §28 |
+| EXR-022 | Hint system: Nudge, Concept Reminder, Worked Example; assistance tracked per attempt. | P1 | 9 | PASSED | §28 |
 | EXR-023 | Workflow scoring example (correctness 45%, edge cases 20%, architecture 15%, maintainability 10%, explanation 10%) with critical-failure override. | P1 | 12 | NOT_STARTED | §31 |
-| EXR-024 | No stub / no static replacement: a requirement that logs to console, shows fake success, is a static placeholder, says "coming soon", works only for a screenshot, or opens a nonfunctional modal stays PARTIAL. Interactive simulation is never replaced by a diagram, negotiation by an article, Funnel Autopsy by a quiz. | P0 | all | NOT_STARTED | §129, §130 |
+| EXR-024 | No stub / no static replacement: a requirement that logs to console, shows fake success, is a static placeholder, says "coming soon", works only for a screenshot, or opens a nonfunctional modal stays PARTIAL. Interactive simulation is never replaced by a diagram, negotiation by an article, Funnel Autopsy by a quiz. | P0 | all | PARTIAL | §129, §130 |
 
 ## SIM — Simulator Core
 

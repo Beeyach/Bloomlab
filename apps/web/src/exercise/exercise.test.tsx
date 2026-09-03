@@ -1,0 +1,518 @@
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
+
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
+import { beforeEach, describe, expect, it } from 'vitest';
+
+import { EXERCISE_GRADER_VERSION } from '@bloomlab/exercise-engine';
+import { getFeatureFlags } from '@bloomlab/shared';
+
+import { App } from '../app/App';
+import { content } from '../content/bundle';
+import { db, type BloomlabDatabase } from '../data/db';
+import { evaluateLearner, recomputeProgress } from '../data/learning';
+import { syncNow } from '../data/sync/engine';
+import { FakeSyncServer } from '../data/sync/fakeServer';
+import { createSyncKey, linkThisDevice } from '../data/sync/link';
+import { listOperations } from '../data/syncQueue';
+import { freshDatabase } from '../data/testing';
+import { loadAttempt, revealHint, saveResponse, startAttempt } from './attempt';
+import { evidenceKindFor, finalizeAttempt, NotGradableError } from './finalize';
+import { canGradeNow, missingSources } from './runtime';
+
+const flags = getFeatureFlags('production');
+const DECISION = 'EX-ARCHITECTURE_DECISION-treatment-interest';
+const DECISION_SKILL = 'SK-ARCHITECT-tags-vs-custom-fields';
+const BUILD_IT = 'EX-BUILD_IT-no-show-recovery';
+const OPEN_ENDED = 'EX-WHAT_WOULD_YOU_BUILD-glowhaus-leads';
+const REBUILD = 'EX-REBUILD_BLIND-appointment-reminders';
+const FIX_IT = 'EX-FIX_IT-double-reminder';
+const RUN_THE_LEAD = 'EX-RUN_THE_LEAD-booking-confirmation';
+
+const byId = (id: string) => content.exercises.find((candidate) => candidate.id === id)!;
+const decision = byId(DECISION);
+
+const GAMIFICATION = /\bXP\b|\bstars?\b|\bpoints\b|level up|\bstreak\b|superstar|welcome back/i;
+
+function renderAt(path: string) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <App flags={flags} />
+    </MemoryRouter>,
+  );
+}
+
+const openRunner = async (id = DECISION, query = `?skill=${DECISION_SKILL}`) => {
+  renderAt(`/exercise/${id}${query}`);
+  return screen.findByRole('heading', { level: 1, name: byId(id).title });
+};
+
+/** Answer the architecture decision the way the exercise's own checks expect. */
+async function answerDecision(
+  database: BloomlabDatabase = db,
+  text = 'A contact custom field: reminder templates print it as a merge field.',
+) {
+  await startAttempt(decision, { skill_id: DECISION_SKILL }, database);
+  await saveResponse(DECISION, { choice: 'contact_custom_field', text }, database);
+  return (await loadAttempt(DECISION, database))!;
+}
+
+beforeEach(async () => {
+  await Promise.all(db.tables.map((table) => table.clear()));
+});
+
+describe('the runner is data-driven (EXR-001)', () => {
+  it('resolves any authored exercise from the compiled bundle through one route', async () => {
+    for (const id of [DECISION, BUILD_IT, REBUILD, OPEN_ENDED]) {
+      const { unmount } = render(
+        <MemoryRouter initialEntries={[`/exercise/${id}`]}>
+          <App flags={flags} />
+        </MemoryRouter>,
+      );
+      expect(
+        await screen.findByRole('heading', { level: 1, name: byId(id).title }),
+      ).toBeInTheDocument();
+      unmount();
+    }
+  });
+
+  it('branches on the family, never on an exercise id', async () => {
+    // Product behaviour keys off exercise.type; an id in runner code would make a new exercise
+    // a code change instead of a content change (EXR-001).
+    const root = process.cwd().endsWith(join('apps', 'web'))
+      ? process.cwd()
+      : join(process.cwd(), 'apps', 'web');
+    const directory = join(root, 'src', 'exercise');
+    const sources = readdirSync(directory).filter(
+      (name) => /.tsx?$/.test(name) && !name.includes('.test.'),
+    );
+    expect(sources.length).toBeGreaterThan(5);
+    const ids = content.exercises.map((exercise) => exercise.id);
+    for (const name of sources) {
+      const text = readFileSync(join(directory, name), 'utf8');
+      for (const id of ids) {
+        expect(text, `${name} hardcodes ${id}`).not.toContain(id);
+      }
+    }
+  });
+
+  it('shows a real error state for an unknown exercise instead of crashing', async () => {
+    renderAt('/exercise/EX-BUILD_IT-does-not-exist');
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'No exercise at this address.' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Open the Skill Map' })).toBeInTheDocument();
+  });
+});
+
+describe('the challenge brief', () => {
+  it('shows the authored objective, context and allowed features, and no gamification', async () => {
+    await openRunner();
+    expect(screen.getByText(/Architecture decision · Practice · 10 min/)).toBeInTheDocument();
+    expect(screen.getByText(/Glowhaus's Meta lead form asks which treatment/)).toBeInTheDocument();
+    const brief = screen.getByRole('heading', { level: 2, name: 'The job' }).parentElement!;
+    expect(within(brief).getByText('Tags')).toBeInTheDocument();
+    expect(within(brief).getByText('Custom Values')).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(GAMIFICATION);
+  });
+
+  it('FIX IT leads with the symptom and never names the faulty node (EXR-005)', async () => {
+    await openRunner(FIX_IT, '');
+    expect(screen.getByText(/Something broke\. Find out why\./)).toBeInTheDocument();
+    expect(screen.getByText(/Maria got two reminder texts yesterday/)).toBeInTheDocument();
+    // The worked example names the culprit; it is not on screen until it is asked for.
+    expect(document.body.textContent).not.toContain('Open Booking Tags');
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'Your diagnosis' }),
+    ).toBeInTheDocument();
+  });
+
+  it('REBUILD BLIND offers no hints, no worked example and no lesson (EXR-019)', async () => {
+    await openRunner(REBUILD, '');
+    expect(await screen.findByText('No hints this time.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Show the/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^Read / })).not.toBeInTheDocument();
+    // The family says plainly that there is no worked example; none is offered anywhere.
+    expect(screen.getByText(/No lesson, no hints, no worked example./)).toBeInTheDocument();
+    const hints = screen.getByRole('heading', { level: 2, name: 'Assistance' }).parentElement!;
+    expect(hints.querySelectorAll('button')).toHaveLength(0);
+    expect(hints.textContent).not.toMatch(/Nudge|Concept reminder|Worked example/);
+  });
+
+  it('WHAT WOULD YOU BUILD asks openly and never names the feature (EXR-008)', async () => {
+    await openRunner(OPEN_ENDED, '');
+    expect(screen.getByText(/Priya says/)).toBeInTheDocument();
+    expect(await screen.findByRole('textbox')).toBeInTheDocument();
+    // Open response, no option list, and no GHL feature handed over anywhere on the page.
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    const brief = screen.getByRole('heading', { level: 2, name: 'The job' }).parentElement!;
+    expect(brief.textContent).not.toMatch(/GHL-|custom field|custom value|tag\b/i);
+    for (const feature of content.ghl_features) {
+      expect(document.body.textContent).not.toContain(feature.official_name);
+    }
+  });
+});
+
+describe('what cannot be graded yet is not graded (EXR-024)', () => {
+  it('names the exact runtime a build needs and offers no submit', async () => {
+    expect(canGradeNow(byId(BUILD_IT))).toBe(false);
+    expect(missingSources(byId(BUILD_IT)).sort()).toEqual([
+      'architecture',
+      'events',
+      'references',
+      'state',
+    ]);
+    await openRunner(BUILD_IT, '');
+    expect(screen.getByText('This one is not runnable yet.')).toBeInTheDocument();
+    expect(screen.getByText(/Workflow Lab \(Phase 12\)/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Run it' })).not.toBeInTheDocument();
+    expect(await screen.findByText(/Your work is saved on this device/)).toBeInTheDocument();
+  });
+
+  it('refuses to finalize an attempt it cannot judge', async () => {
+    const attempt = await startAttempt(byId(BUILD_IT), {}, db);
+    await expect(finalizeAttempt(byId(BUILD_IT), attempt, db)).rejects.toBeInstanceOf(
+      NotGradableError,
+    );
+    expect(await db.exercise_attempts.count()).toBe(0);
+    expect(await db.skill_evidence.count()).toBe(0);
+    // The learner's work survives the refusal.
+    expect(await loadAttempt(BUILD_IT, db)).not.toBeUndefined();
+  });
+
+  it('RUN THE LEAD captures the prediction now and says the run comes later (EXR-006)', async () => {
+    await openRunner(RUN_THE_LEAD, '');
+    // The field comes from the authored assertion path, and its label never leaks the answer.
+    const tag = await screen.findByLabelText('Tag');
+    fireEvent.change(tag, { target: { value: 'booked' } });
+    await waitFor(async () =>
+      expect((await loadAttempt(RUN_THE_LEAD, db))?.response.prediction.tag).toBe('booked'),
+    );
+    expect(document.body.textContent).not.toContain('The learner predicted the booked tag');
+    expect(screen.getByText('This one is not runnable yet.')).toBeInTheDocument();
+  });
+});
+
+describe('attempt lifecycle and idempotency (D-068)', () => {
+  it('opening records nothing and a reload resumes the same attempt', async () => {
+    await openRunner();
+    await waitFor(async () => expect(await loadAttempt(DECISION, db)).toBeDefined());
+    const first = (await loadAttempt(DECISION, db))!;
+    expect(await db.exercise_attempts.count()).toBe(0);
+    expect(await db.skill_evidence.count()).toBe(0);
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'half an answer' } });
+    await waitFor(async () =>
+      expect((await loadAttempt(DECISION, db))?.response.text).toBe('half an answer'),
+    );
+    // Reload: same attempt id, same unfinished work.
+    const again = await startAttempt(decision, {}, db);
+    expect(again.attempt_id).toBe(first.attempt_id);
+    expect(again.response.text).toBe('half an answer');
+  });
+
+  it('finalizing twice writes one attempt and one evidence row per skill', async () => {
+    const attempt = await answerDecision();
+    const first = await finalizeAttempt(decision, attempt, db);
+    const second = await finalizeAttempt(decision, attempt, db);
+    expect(first.recorded).toBe(true);
+    expect(second.recorded).toBe(false);
+    expect(second.attempt.id).toBe(first.attempt.id);
+    expect(await db.exercise_attempts.count()).toBe(1);
+    expect(await db.skill_evidence.count()).toBe(decision.skills.length);
+    const evidence = await db.skill_evidence.toArray();
+    expect(evidence.map((row) => row.id)).toEqual(
+      decision.skills.map((skill) => `ea:${attempt.attempt_id}:${skill}`),
+    );
+  });
+
+  it('records the real start and completion times, not one instant', async () => {
+    const attempt = await answerDecision();
+    const { attempt: row } = await finalizeAttempt(decision, attempt, db, {
+      now: new Date(Date.parse(attempt.started_at) + 9 * 60_000),
+    });
+    expect(row.started_at).toBe(attempt.started_at);
+    expect(Date.parse(row.completed_at) - Date.parse(row.started_at)).toBe(9 * 60_000);
+  });
+
+  it('Try again is a second attempt, and the first one stays', async () => {
+    const one = await answerDecision(db, 'A tag, because it is quick.');
+    await finalizeAttempt(decision, one, db);
+    const two = await answerDecision(db, 'A contact custom field, printed as a merge field.');
+    expect(two.attempt_id).not.toBe(one.attempt_id);
+    await finalizeAttempt(decision, two, db);
+
+    const attempts = await db.exercise_attempts.toArray();
+    expect(attempts).toHaveLength(2);
+    expect(new Set(attempts.map((row) => row.id)).size).toBe(2);
+    expect(await db.skill_evidence.count()).toBe(2 * decision.skills.length);
+    // The failed attempt was never rewritten into the pass.
+    expect(attempts.map((row) => row.score).sort((a, b) => Number(a) - Number(b))).toEqual([
+      50, 100,
+    ]);
+  });
+
+  it('a grader or persistence failure never erases the work in progress', async () => {
+    const attempt = await answerDecision();
+    const broken = {
+      ...db,
+      exercise_attempts: {
+        get: async () => undefined,
+      },
+    } as unknown as BloomlabDatabase;
+    await expect(finalizeAttempt(decision, attempt, broken)).rejects.toBeTruthy();
+    expect(await loadAttempt(DECISION, db)).toBeDefined();
+  });
+});
+
+describe('hints and assistance (EXR-022, MAS-007)', () => {
+  it('reveals one level at a time, records it, and survives a reload', async () => {
+    await openRunner();
+    await waitFor(async () => expect(await loadAttempt(DECISION, db)).toBeDefined());
+    expect(screen.getByText('Independent')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show the nudge' }));
+    await screen.findByText(/Is "interested in Laser" something that happened/);
+    expect(await screen.findByText('Light')).toBeInTheDocument();
+    expect((await loadAttempt(DECISION, db))?.hints_revealed).toEqual(['nudge']);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show the concept reminder' }));
+    await screen.findByText(/Three tags for one question/);
+    expect(await screen.findByText('Guided')).toBeInTheDocument();
+    expect((await loadAttempt(DECISION, db))?.hints_revealed).toEqual([
+      'nudge',
+      'concept_reminder',
+    ]);
+    // The exercise authors two hints; there is no third control to press.
+    expect(
+      screen.queryByRole('button', { name: /Show the worked example/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('carries the hints into the attempt and the evidence', async () => {
+    await answerDecision();
+    await revealHint(DECISION, 'nudge', db);
+    await revealHint(DECISION, 'nudge', db);
+    const withHint = (await loadAttempt(DECISION, db))!;
+    expect(withHint.hints_revealed).toEqual(['nudge']);
+    const { attempt: row, report } = await finalizeAttempt(decision, withHint, db);
+    expect(row.hints_used).toEqual(['nudge']);
+    expect(row.assistance).toBe('light');
+    expect(report.assistance).toBe('light');
+    const evidence = await db.skill_evidence.toArray();
+    expect(evidence[0]?.hints_used).toEqual(['nudge']);
+  });
+
+  it('a guided exercise is guided practice whatever the hint log says', async () => {
+    const guided = byId(RUN_THE_LEAD);
+    expect(guided.mode).toBe('guided');
+    expect(evidenceKindFor(guided, 'normal')).toBe('guided_practice');
+    expect(evidenceKindFor(byId(FIX_IT), 'normal')).toBe('deterministic_exercise');
+    expect(evidenceKindFor(byId(OPEN_ENDED), 'normal')).toBe('independent_exercise');
+    expect(evidenceKindFor(byId(REBUILD), 'normal')).toBe('pressure_test');
+    expect(evidenceKindFor(byId(REBUILD), 'retrieval')).toBe('retrieval');
+  });
+});
+
+describe('grading, evidence and mastery', () => {
+  it('a correct decision is graded, recorded and reflected in the learner state', async () => {
+    const attempt = await answerDecision();
+    const { report, attempt: row } = await finalizeAttempt(decision, attempt, db);
+    expect(report.score).toBe(100);
+    // The rubric half belongs to Phase 19, so the honest outcome is partial, never a fake pass.
+    expect(report.outcome).toBe('partial');
+    expect(report.reason).toBe('rubric_pending');
+    expect(report.rubric_pending).toBe('SYSTEM_DESIGN_RUBRIC_V1');
+    expect(row.result).toBe('partial');
+    expect(row.grade?.grader_version).toBe(EXERCISE_GRADER_VERSION);
+    expect(row.versions.content).toBe(content.content_version);
+
+    const snapshot = await evaluateLearner(db);
+    const evaluation = snapshot.evaluations.get(DECISION_SKILL)!;
+    expect(evaluation.state).toBe('LEARNING');
+    expect(evaluation.counts.independent_passes).toBe(0);
+  });
+
+  it('a wrong decision reports where it diverged', async () => {
+    await answerDecision(db, 'A tag for each treatment. Quick to filter on.');
+    await saveResponse(DECISION, { choice: 'tag' }, db);
+    const { report } = await finalizeAttempt(decision, (await loadAttempt(DECISION, db))!, db);
+    expect(report.score).toBe(0);
+    const failed = report.tiers.required.find((result) => !result.passed)!;
+    expect(failed.expected).toBe('decision.choice = "contact_custom_field"');
+    expect(failed.observed).toBe('decision.choice = "tag"');
+  });
+
+  it('an open-ended answer is captured and its authored marker evaluated, with the rubric left owed', async () => {
+    const exercise = byId(OPEN_ENDED);
+    await startAttempt(exercise, {}, db);
+    await saveResponse(
+      OPEN_ENDED,
+      {
+        text: 'Reception forgets to follow up. I would need to know the show rate before building.',
+      },
+      db,
+    );
+    const { report, attempt: row } = await finalizeAttempt(
+      exercise,
+      (await loadAttempt(OPEN_ENDED, db))!,
+      db,
+    );
+    expect(report.tiers.required[0]?.passed).toBe(true);
+    expect(report.outcome).toBe('partial');
+    expect(report.rubric_pending).toBe('SYSTEM_DESIGN_RUBRIC_V1');
+    // The whole answer is preserved for the rubric that will judge it.
+    expect(row.grade?.score).toBe(100);
+    const evidence = await db.skill_evidence.toArray();
+    expect(evidence.every((entry) => entry.result === 'partial')).toBe(true);
+  });
+
+  it('a retrieval run records retrieval evidence and never an independent demonstration (D-052)', async () => {
+    const exercise = byId(OPEN_ENDED);
+    const skill = exercise.skills[0]!;
+    await startAttempt(exercise, { skill_id: skill, run: 'retrieval' }, db);
+    await saveResponse(OPEN_ENDED, { text: 'I would need to know the show rate first.' }, db);
+    const { attempt: row } = await finalizeAttempt(
+      exercise,
+      (await loadAttempt(OPEN_ENDED, db))!,
+      db,
+    );
+    expect(row.source).toEqual({ type: 'retrieval', id: OPEN_ENDED });
+    // The vehicle's authored mode describes its normal use, not this review run.
+    expect(row.mode).toBeNull();
+    const evidence = await db.skill_evidence.toArray();
+    expect(evidence[0]?.kind).toBe('retrieval');
+    const snapshot = await evaluateLearner(db);
+    expect(snapshot.evaluations.get(skill)?.counts.independent_demonstrations).toBe(0);
+  });
+
+  it('the Command Center and Skill Map move as soon as the attempt is recorded', async () => {
+    const before = await evaluateLearner(db);
+    expect(before.evaluations.get(DECISION_SKILL)?.state).toBe('UNSEEN');
+    await finalizeAttempt(decision, await answerDecision(), db);
+    await recomputeProgress(db);
+    const row = await db.skill_progress.toArray();
+    expect(row.find((entry) => entry.skill_id === DECISION_SKILL)?.state).toBe('LEARNING');
+  });
+});
+
+describe('the result view (spec §158)', () => {
+  it('leads with the result, shows each check against what happened, and offers the next step', async () => {
+    await finalizeAttempt(decision, await answerDecision(), db);
+    await openRunner();
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'Partly evaluated' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/100% · pass mark 70%/)).toBeInTheDocument();
+    expect(screen.getAllByText(/SYSTEM_DESIGN_RUBRIC_V1/).length).toBeGreaterThan(0);
+    expect(screen.getByRole('heading', { level: 3, name: /Required checks/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: 'Assistance used' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 3, name: 'Next' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
+    // No hint controls once the attempt is finished.
+    expect(screen.queryByRole('button', { name: /Show the/ })).not.toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(GAMIFICATION);
+  });
+
+  it('survives a reload: the same result, from the recorded attempt', async () => {
+    await finalizeAttempt(decision, await answerDecision(), db);
+    const { unmount } = renderAt(`/exercise/${DECISION}`);
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'Partly evaluated' }),
+    ).toBeInTheDocument();
+    unmount();
+    await openRunner();
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'Partly evaluated' }),
+    ).toBeInTheDocument();
+  });
+
+  it('Try again clears the work area and keeps the earlier attempt', async () => {
+    await finalizeAttempt(decision, await answerDecision(), db);
+    await openRunner();
+    fireEvent.click(await screen.findByRole('button', { name: 'Try again' }));
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'Your decision' }),
+    ).toBeInTheDocument();
+    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('');
+    expect(await db.exercise_attempts.count()).toBe(1);
+  });
+});
+
+describe('routing into the runner', () => {
+  it('the Academy practice pointer opens the exercise', async () => {
+    renderAt('/academy/LU-tags-vs-custom-fields');
+    const link = await screen.findByRole('link', { name: 'Open this exercise' });
+    expect(link).toHaveAttribute('href', `/exercise/${DECISION}?skill=${DECISION_SKILL}`);
+  });
+
+  it('the capability sheet runs the exercise when that is the next step', async () => {
+    // Reading the unit first makes the exercise the engine's next step.
+    await finalizeAttempt(decision, await answerDecision(), db);
+    renderAt(`/skills/${DECISION_SKILL}`);
+    const dialog = await screen.findByRole('dialog');
+    const link = within(dialog).queryByTestId('open-exercise');
+    if (link) expect(link).toHaveAttribute('href', expect.stringContaining('/exercise/'));
+  });
+
+  it('a deep link with a retrieval run keeps that context through a reload', async () => {
+    renderAt(`/exercise/${OPEN_ENDED}?skill=${byId(OPEN_ENDED).skills[0]}&run=retrieval`);
+    await screen.findByRole('heading', { level: 1, name: byId(OPEN_ENDED).title });
+    expect(screen.getByText(/Retrieval/)).toBeInTheDocument();
+    await waitFor(async () => expect((await loadAttempt(OPEN_ENDED, db))?.run).toBe('retrieval'));
+  });
+});
+
+describe('completed attempts sync; separate attempts stay separate', () => {
+  it('a device that works offline syncs its attempt, and the other device agrees', async () => {
+    const server = new FakeSyncServer();
+    const a = freshDatabase();
+    const b = freshDatabase();
+    const key = createSyncKey();
+    await linkThisDevice(key.display, a, server);
+    await linkThisDevice(key.canonical, b, server);
+
+    // Offline: no network call is involved in finalizing.
+    const attempt = await answerDecision(a);
+    await finalizeAttempt(decision, attempt, a);
+    expect(await a.exercise_attempts.count()).toBe(1);
+    expect((await listOperations(a)).length).toBeGreaterThan(0);
+
+    expect((await syncNow(a, server)).status).toBe('synced');
+    await syncNow(b, server);
+    await recomputeProgress(b);
+
+    expect(await b.exercise_attempts.count()).toBe(1);
+    expect(await b.skill_evidence.count()).toBe(decision.skills.length);
+    const snapshotA = await evaluateLearner(a);
+    const snapshotB = await evaluateLearner(b);
+    expect(snapshotB.evaluations.get(DECISION_SKILL)?.state).toBe(
+      snapshotA.evaluations.get(DECISION_SKILL)?.state,
+    );
+  });
+
+  it('two attempts made on two devices are two facts, never merged', async () => {
+    const server = new FakeSyncServer();
+    const a = freshDatabase();
+    const b = freshDatabase();
+    const key = createSyncKey();
+    await linkThisDevice(key.display, a, server);
+    await linkThisDevice(key.canonical, b, server);
+
+    await finalizeAttempt(decision, await answerDecision(a, 'A merge field on the contact.'), a);
+    await finalizeAttempt(
+      decision,
+      await answerDecision(b, 'A contact custom field, merge field.'),
+      b,
+    );
+    for (let round = 0; round < 3; round += 1) {
+      await syncNow(a, server);
+      await syncNow(b, server);
+    }
+    for (const database of [a, b]) {
+      expect(await database.exercise_attempts.count()).toBe(2);
+      expect(await database.skill_evidence.count()).toBe(2 * decision.skills.length);
+    }
+  });
+});

@@ -78,7 +78,8 @@ export function assistanceFromHints(hints: readonly HintLevel[]): AssistanceLeve
   return 'independent';
 }
 
-const maxAssistance = (a: AssistanceLevel, b: AssistanceLevel): AssistanceLevel =>
+/** The higher of two assistance levels: assistance only ever rises within one attempt. */
+export const maxAssistance = (a: AssistanceLevel, b: AssistanceLevel): AssistanceLevel =>
   assistanceRank(a) >= assistanceRank(b) ? a : b;
 
 /**

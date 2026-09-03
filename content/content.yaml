@@ -1,5 +1,5 @@
 # Release stamp of the curriculum (spec §101, CNT-007). Bump content_version whenever any file
 # under content/ changes, then run `npm run content:lock`. Git = what Bloomlab teaches.
-content_version: '2026.09.03'
+content_version: '2026.09.04'
 schema_version: 1
 notes: Phase 5 seed — one representative record set proving every content type and relationship.
