@@ -17,7 +17,7 @@ import { createSyncableStore } from '../data/stores';
 import type { SimEventRecord, SimProjectRecord, SimSnapshotRecord } from '../data/types';
 
 /**
- * Persistence for simulator runs (SIM-013, DATA-001).
+ * Persistence for simulator runs (SIM-013, SIM-018, DATA-001).
  *
  * The engine knows nothing about storage; this adapter is the only place that does. It writes
  * through the same syncable store every other local-first entity uses, so a run reaches the
@@ -29,11 +29,49 @@ import type { SimEventRecord, SimProjectRecord, SimSnapshotRecord } from '../dat
  *
  * The queue is saved with the header and the log is saved as processed events, so a reload
  * restores exactly what had *not* happened yet. Nothing fires twice because the page reloaded.
+ *
+ * ## Reset identity (D-087)
+ *
+ * `sim_events` and `sim_snapshots` are `append` entities: a row is written once, is addressed by
+ * its id, and is never rewritten — two devices' rows merge to the union, and the server answers
+ * `superseded` for an id it already holds. A reset returns the run to the scenario's beginning
+ * and the engine's sequence to zero, so without a further rule the run's second life would ask
+ * for the same ids its first life already used, and those rows would be dropped as duplicates of
+ * facts that are no longer true.
+ *
+ * So a run carries a **generation**: a token this module mints when the run starts and mints
+ * again, freshly random, at every reset. It is part of every append id — `se:<run>:<gen>:<seq>`
+ * and `ss:<run>:<gen>:<log length>` — and it is a column on every append row, so a generation's
+ * history is exactly the rows carrying its token. Because a generation token is never reused, a
+ * reset can never mint an id an earlier generation already used.
+ *
+ * Reset therefore touches no history row at all. The old events and checkpoints stay exactly as
+ * written: immutable facts that other devices may already hold, and that any device can still
+ * replay. What changes is the run's header (`sim_projects`, a `snapshot` entity, one row per run,
+ * patched and never recreated), which names the generation that is current. A load reads that
+ * generation and takes only the rows carrying it, so the old lives are inert rather than erased.
  */
 
-/** Deterministic within a run, so saving the same log twice writes the same rows. */
-const eventRowId = (runId: string, sequence: number) => `se:${runId}:${sequence}`;
-const snapshotRowId = (runId: string, logLength: number) => `ss:${runId}:${logLength}`;
+/**
+ * A reset generation. Minted when a run starts and again at every reset, and never reused, which
+ * is what keeps two lives of one run from competing for a single append-only id.
+ */
+export const newGeneration = () => `g-${randomId()}`;
+
+/**
+ * Rows written before generations existed carry none, and read as the run's first generation, so
+ * a run saved by the earlier build still loads and still resumes. Nothing new is ever written
+ * without a generation.
+ */
+const FIRST_GENERATION = '0';
+
+const generationOf = (row: { generation?: string }): string => row.generation ?? FIRST_GENERATION;
+
+/** Deterministic within a generation, so saving the same log twice writes the same rows. */
+const eventRowId = (runId: string, generation: string, sequence: number) =>
+  `se:${runId}:${generation}:${sequence}`;
+const snapshotRowId = (runId: string, generation: string, logLength: number) =>
+  `ss:${runId}:${generation}:${logLength}`;
 
 /**
  * A new run's identity. The engine forbids randomness, so the app mints this: a run is a session
@@ -45,14 +83,24 @@ export const newRunId = () => `sr-${randomId()}`;
 export interface StoredRun {
   state: SimulatorState;
   checkpoints: Checkpoint[];
+  /** Which life of this run the history rows belong to (D-087). */
+  generation: string;
+}
+
+/** The live rows of one generation: what the run's current life has actually written. */
+async function historyOf(runId: string, generation: string, database: BloomlabDatabase) {
+  const [events, snapshots] = await Promise.all([
+    database.sim_events.where('run_id').equals(runId).toArray(),
+    database.sim_snapshots.where('run_id').equals(runId).toArray(),
+  ]);
+  const mine = <T extends { generation?: string; deleted_at: string | null }>(rows: T[]) =>
+    rows.filter((row) => generationOf(row) === generation && row.deleted_at === null);
+  return { events: mine(events), snapshots: mine(snapshots) };
 }
 
 /** Saves whatever is new: the header every time, events and checkpoints only once each. */
-export async function saveRun(
-  state: SimulatorState,
-  checkpoints: readonly Checkpoint[],
-  database: BloomlabDatabase = db,
-): Promise<void> {
+export async function saveRun(run: StoredRun, database: BloomlabDatabase = db): Promise<void> {
+  const { state, checkpoints, generation } = run;
   const projectStore = createSyncableStore<SimProjectRecord>('sim_projects', database);
   const eventStore = createSyncableStore<SimEventRecord>('sim_events', database);
   const snapshotStore = createSyncableStore<SimSnapshotRecord>('sim_snapshots', database);
@@ -60,6 +108,7 @@ export async function saveRun(
   const header = {
     scenario_id: state.scenario_id,
     run_id: state.run_id,
+    generation,
     simulator_version: state.version,
     clock_now: state.clock.now,
     timezone: state.clock.timezone,
@@ -76,23 +125,31 @@ export async function saveRun(
   if (existing) await projectStore.patch(state.run_id, header);
   else await projectStore.create(header, state.run_id);
 
-  const savedEvents = await database.sim_events.where('run_id').equals(state.run_id).primaryKeys();
-  const known = new Set(savedEvents as string[]);
+  // What this generation has already written, by position rather than by primary key: a row from
+  // an earlier generation is a different fact with a different id and must not stand in for one
+  // this generation still owes.
+  const saved = await historyOf(state.run_id, generation, database);
+  const savedEvents = new Set(saved.events.map((row) => row.sequence));
   for (const event of state.log) {
-    const id = eventRowId(state.run_id, event.sequence);
-    if (known.has(id)) continue;
-    await eventStore.create({ run_id: state.run_id, sequence: event.sequence, event }, id);
+    if (savedEvents.has(event.sequence)) continue;
+    await eventStore.create(
+      { run_id: state.run_id, generation, sequence: event.sequence, event },
+      eventRowId(state.run_id, generation, event.sequence),
+    );
   }
 
-  const savedSnapshots = new Set(
-    (await database.sim_snapshots.where('run_id').equals(state.run_id).primaryKeys()) as string[],
-  );
+  const savedSnapshots = new Set(saved.snapshots.map((row) => row.log_length));
   for (const point of checkpoints) {
-    const id = snapshotRowId(state.run_id, point.log_length);
-    if (savedSnapshots.has(id)) continue;
+    if (savedSnapshots.has(point.log_length)) continue;
     await snapshotStore.create(
-      { run_id: state.run_id, log_length: point.log_length, label: point.label, checkpoint: point },
-      id,
+      {
+        run_id: state.run_id,
+        generation,
+        log_length: point.log_length,
+        label: point.label,
+        checkpoint: point,
+      },
+      snapshotRowId(state.run_id, generation, point.log_length),
     );
   }
 }
@@ -105,15 +162,14 @@ export async function loadRun(
   const project = await createSyncableStore<SimProjectRecord>('sim_projects', database).get(runId);
   if (!project || project.deleted_at !== null) return null;
 
-  const rows = await database.sim_events.where('run_id').equals(runId).toArray();
-  const log = rows
-    .filter((row) => row.deleted_at === null)
+  const generation = generationOf(project);
+  const history = await historyOf(runId, generation, database);
+  const log = history.events
     .map((row) => row.event as SimulatorEvent)
     .sort((a, b) => a.sequence - b.sequence);
 
-  const points = await database.sim_snapshots.where('run_id').equals(runId).toArray();
-
   return {
+    generation,
     state: {
       version: project.simulator_version,
       run_id: project.run_id,
@@ -128,8 +184,7 @@ export async function loadRun(
       queue_sequence: project.queue_sequence,
       diagnostics: project.diagnostics as SimulatorState['diagnostics'],
     },
-    checkpoints: points
-      .filter((row) => row.deleted_at === null)
+    checkpoints: history.snapshots
       .map((row) => row.checkpoint as Checkpoint)
       .sort((a, b) => a.log_length - b.log_length),
   };
@@ -146,10 +201,13 @@ export async function startRun(
   database: BloomlabDatabase = db,
   runId: string = newRunId(),
 ): Promise<StoredRun> {
-  const state = createRun(scenario, { run_id: runId });
-  const stored: StoredRun = { state, checkpoints: [] };
-  await saveRun(state, [], database);
-  return stored;
+  const run: StoredRun = {
+    state: createRun(scenario, { run_id: runId }),
+    checkpoints: [],
+    generation: newGeneration(),
+  };
+  await saveRun(run, database);
+  return run;
 }
 
 /**
@@ -160,34 +218,32 @@ export async function commitRun(
   run: StoredRun,
   database: BloomlabDatabase = db,
 ): Promise<StoredRun> {
-  const checkpoints = maybeCheckpoint(run.checkpoints, run.state);
-  await saveRun(run.state, checkpoints, database);
-  return { state: run.state, checkpoints };
+  const next: StoredRun = { ...run, checkpoints: maybeCheckpoint(run.checkpoints, run.state) };
+  await saveRun(next, database);
+  return next;
 }
 
 /**
- * Resets a run to the scenario's authored beginning and persists that. The history rows are
- * soft-deleted rather than erased, because they are append-only records that other devices may
- * already hold; the reset run starts a clean log from sequence zero.
+ * Resets a run to the scenario's authored beginning and persists that (SIM-018).
+ *
+ * The run keeps its identity — it is the same run the learner is sitting in front of, and the
+ * header is patched rather than replaced, so no second run appears in the list. What it takes is
+ * a new generation, and every row the reset run writes is addressed under that token. The old
+ * generation's events and checkpoints are left exactly as they are: append-only history is a
+ * record of what happened, and it did happen. Nothing is deleted, rewritten or resurrected.
  */
 export async function resetStoredRun(
   scenario: SimulatorScenario,
   runId: string,
   database: BloomlabDatabase = db,
 ): Promise<StoredRun> {
-  const eventStore = createSyncableStore<SimEventRecord>('sim_events', database);
-  const snapshotStore = createSyncableStore<SimSnapshotRecord>('sim_snapshots', database);
-  const existingEvents = await database.sim_events.where('run_id').equals(runId).toArray();
-  for (const row of existingEvents) {
-    if (row.deleted_at === null) await eventStore.remove(row.id);
-  }
-  const existingSnapshots = await database.sim_snapshots.where('run_id').equals(runId).toArray();
-  for (const row of existingSnapshots) {
-    if (row.deleted_at === null) await snapshotStore.remove(row.id);
-  }
-  const state = resetRun(scenario, runId);
-  await saveRun(state, [], database);
-  return { state, checkpoints: [] };
+  const run: StoredRun = {
+    state: resetRun(scenario, runId),
+    checkpoints: [],
+    generation: newGeneration(),
+  };
+  await saveRun(run, database);
+  return run;
 }
 
 /** Takes a checkpoint the learner asked for, rather than one the policy produced. */
@@ -196,9 +252,12 @@ export async function markCheckpoint(
   label: string,
   database: BloomlabDatabase = db,
 ): Promise<StoredRun> {
-  const checkpoints = [...run.checkpoints, makeCheckpoint(run.state, label)];
-  await saveRun(run.state, checkpoints, database);
-  return { state: run.state, checkpoints };
+  const next: StoredRun = {
+    ...run,
+    checkpoints: [...run.checkpoints, makeCheckpoint(run.state, label)],
+  };
+  await saveRun(next, database);
+  return next;
 }
 
 /** The engine a saved run was produced by, for the harness and for evidence (SIM-019). */

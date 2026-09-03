@@ -228,6 +228,11 @@ export interface WorkspaceRecord {
 export interface SimProjectRecord extends SyncEnvelope {
   scenario_id: string;
   run_id: string;
+  /**
+   * The run's current reset generation (D-087). Every reset mints a fresh one, so the append-only
+   * history of one generation can never collide with another's.
+   */
+  generation: string;
   /** The engine that produced this run (SIM-019). */
   simulator_version: string;
   clock_now: string;
@@ -246,6 +251,8 @@ export interface SimProjectRecord extends SyncEnvelope {
 /** One processed event, append-only, exactly as the engine logged it. */
 export interface SimEventRecord extends SyncEnvelope {
   run_id: string;
+  /** Which reset generation of the run this event belongs to (D-087). */
+  generation: string;
   sequence: number;
   event: unknown;
 }
@@ -253,6 +260,8 @@ export interface SimEventRecord extends SyncEnvelope {
 /** One checkpoint, append-only (SIM-013). */
 export interface SimSnapshotRecord extends SyncEnvelope {
   run_id: string;
+  /** Which reset generation of the run this checkpoint belongs to (D-087). */
+  generation: string;
   log_length: number;
   label: string;
   checkpoint: unknown;

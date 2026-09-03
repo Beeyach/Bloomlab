@@ -16,9 +16,23 @@ import {
 
 import { content } from '../content/bundle';
 import type { BloomlabDatabase } from '../data/db';
+import { createSyncableStore } from '../data/stores';
+import { syncNow } from '../data/sync/engine';
+import { FakeSyncServer } from '../data/sync/fakeServer';
+import { createSyncKey, linkThisDevice } from '../data/sync/link';
 import { freshDatabase } from '../data/testing';
+import type { SimEventRecord, SimSnapshotRecord } from '../data/types';
 import { gradingContextFrom, gradingReferences } from './grading';
-import { commitRun, loadRun, resetStoredRun, startRun } from './store';
+import {
+  commitRun,
+  listRuns,
+  loadRun,
+  markCheckpoint,
+  resetStoredRun,
+  saveRun,
+  startRun,
+  type StoredRun,
+} from './store';
 
 /**
  * The simulator inside the app: the bridge to Phase 9's grader, and persistence across a reload.
@@ -313,5 +327,239 @@ describe('persistence across a reload (DATA-002, SIM-013)', () => {
     const entities = new Set(queued.map((operation) => operation.entity));
     expect(entities.has('sim_projects')).toBe(true);
     expect(entities.has('sim_events')).toBe(true);
+  });
+});
+
+describe('reset identity for append-only history (SIM-018, D-087)', () => {
+  const tag = (state: SimulatorState, value: string) =>
+    processEvent(state, {
+      type: 'TAG_ADDED',
+      at: state.clock.now,
+      payload: { contact_id: 'maria', tag: value },
+      origin: 'injected',
+    });
+
+  /** Everything the run has ever written, in whatever generation, tombstoned or not. */
+  const allHistory = async (runId: string) => ({
+    events: await database.sim_events.where('run_id').equals(runId).toArray(),
+    snapshots: await database.sim_snapshots.where('run_id').equals(runId).toArray(),
+  });
+
+  /** A run with a history, a checkpoint and everything persisted: steps 1–4. */
+  async function runWithHistory() {
+    const started = await startRun(scenario, database);
+    let state = started.state;
+    for (const value of ['booked', 'reminded', 'called']) state = tag(state, value);
+    state = advanceTo(state, '2026-09-04T16:00:00-05:00');
+    const saved = await markCheckpoint({ ...started, state }, 'before the reset', database);
+    return saved;
+  }
+
+  it('never reuses an append id, and leaves the old history exactly as it was', async () => {
+    const before = await runWithHistory();
+    const runId = before.state.run_id;
+    expect(before.state.log.length).toBeGreaterThan(3);
+    expect(before.checkpoints).toHaveLength(1);
+
+    const old = await allHistory(runId);
+    expect(old.events).toHaveLength(before.state.log.length);
+    expect(old.snapshots).toHaveLength(1);
+    const oldIds = new Set([...old.events, ...old.snapshots].map((row) => row.id));
+    // A byte-for-byte record of the old rows, to prove nothing mutated them later.
+    const oldRows = [...old.events, ...old.snapshots].map((row) => JSON.stringify(row)).sort();
+
+    // 5. Reset lands on the authored beginning under a new generation.
+    const reset = await resetStoredRun(scenario, runId, database);
+    expect(reset.state.log).toEqual([]);
+    expect(reset.state.run_id).toBe(runId);
+    expect(reset.generation).not.toBe(before.generation);
+    expect(reset.state.clock.now).toBe(scenario.simulation_time);
+    expect(reset.state.account.appointments['appt-maria']?.status).toBe('booked');
+
+    // 6–8. New activity, a new checkpoint, persisted.
+    let state = tag(reset.state, 'after-the-reset');
+    state = advanceTo(state, '2026-09-04T16:00:00-05:00');
+    const after = await markCheckpoint({ ...reset, state }, 'after the reset', database);
+
+    // 9–11. A reload reproduces the *new* run, its log and its checkpoint.
+    const reloaded = await loadRun(runId, database);
+    expect(reloaded).not.toBeNull();
+    expect(reloaded?.generation).toBe(after.generation);
+    expect(reloaded?.state.log.map((row) => row.id)).toEqual(state.log.map((row) => row.id));
+    expect(stateHash(reloaded?.state as SimulatorState)).toBe(stateHash(after.state));
+    expect(reloaded?.checkpoints).toHaveLength(1);
+    expect(reloaded?.checkpoints[0]?.label).toBe('after the reset');
+    expect(reloaded?.state.log.some((row) => row.type === 'TAG_ADDED')).toBe(true);
+
+    // 12. Not one id from the first life was reused, and not one of its rows was touched.
+    const now = await allHistory(runId);
+    const fresh = [...now.events, ...now.snapshots].filter(
+      (row) => row.generation === after.generation,
+    );
+    expect(fresh.length).toBeGreaterThan(0);
+    expect(fresh.filter((row) => oldIds.has(row.id))).toEqual([]);
+    const survivors = [...now.events, ...now.snapshots].filter((row) => oldIds.has(row.id));
+    expect(survivors.map((row) => JSON.stringify(row)).sort()).toEqual(oldRows);
+    expect(survivors.every((row) => row.deleted_at === null)).toBe(true);
+    expect(survivors.every((row) => row.revision === 1)).toBe(true);
+
+    // 13. The new rows are in the outbox as appends, waiting for sync.
+    const queued = await database.sync_queue.toArray();
+    for (const row of fresh) {
+      expect(
+        queued.some(
+          (operation) =>
+            operation.entity_id === row.id &&
+            operation.op === 'upsert' &&
+            (operation.entity === 'sim_events' || operation.entity === 'sim_snapshots'),
+        ),
+      ).toBe(true);
+    }
+
+    // 14. Saving again writes no history row and queues no further append.
+    const appendsBefore = queued.filter((operation) => operation.entity !== 'sim_projects').length;
+    await saveRun(after, database);
+    const settled = await allHistory(runId);
+    expect(settled.events).toHaveLength(now.events.length);
+    expect(settled.snapshots).toHaveLength(now.snapshots.length);
+    const appendsAfter = (await database.sync_queue.toArray()).filter(
+      (operation) => operation.entity !== 'sim_projects',
+    ).length;
+    expect(appendsAfter).toBe(appendsBefore);
+
+    // 15. The post-reset log replays to the post-reset run, and to nothing else.
+    const replayed = replay(scenario, (reloaded as StoredRun).state.log, { run_id: runId });
+    expect(historyHash(replayed)).toBe(historyHash(state));
+    expect(historyHash(replayed)).not.toBe(historyHash(before.state));
+  });
+
+  it('mints fresh ids even where an earlier build tombstoned the first life', async () => {
+    // The shipped build soft-deleted the history on reset. Those tombstones are facts too: a
+    // reset must step over them, never ask for their ids back.
+    const before = await runWithHistory();
+    const runId = before.state.run_id;
+    const eventStore = createSyncableStore<SimEventRecord>('sim_events', database);
+    const snapshotStore = createSyncableStore<SimSnapshotRecord>('sim_snapshots', database);
+    for (const row of (await allHistory(runId)).events) await eventStore.remove(row.id);
+    for (const row of (await allHistory(runId)).snapshots) await snapshotStore.remove(row.id);
+    const tombstones = await allHistory(runId);
+    expect(tombstones.events.every((row) => row.deleted_at !== null)).toBe(true);
+    const tombstoned = new Set([...tombstones.events, ...tombstones.snapshots].map((r) => r.id));
+
+    const reset = await resetStoredRun(scenario, runId, database);
+    let state = tag(reset.state, 'after-the-reset');
+    state = advanceTo(state, '2026-09-04T16:00:00-05:00');
+    const after = await markCheckpoint({ ...reset, state }, 'after the reset', database);
+
+    const now = await allHistory(runId);
+    const fresh = [...now.events, ...now.snapshots].filter(
+      (row) => row.generation === after.generation,
+    );
+    expect(fresh.length).toBe(state.log.length + 1);
+    expect(fresh.filter((row) => tombstoned.has(row.id))).toEqual([]);
+    expect(fresh.every((row) => row.deleted_at === null)).toBe(true);
+
+    // The tombstones stay tombstones, and the reload ignores both them and their generation.
+    const reloaded = await loadRun(runId, database);
+    expect(reloaded?.state.log.map((row) => row.id)).toEqual(state.log.map((row) => row.id));
+    expect(reloaded?.checkpoints).toHaveLength(1);
+  });
+
+  it('resets in place: one run in the list, not two', async () => {
+    const before = await runWithHistory();
+    await resetStoredRun(scenario, before.state.run_id, database);
+    const runs = await listRuns(database);
+    expect(runs.filter((row) => row.scenario_id === scenario.id)).toHaveLength(1);
+    expect(runs[0]?.run_id).toBe(before.state.run_id);
+    expect(runs[0]?.log_length).toBe(0);
+  });
+
+  it('reads a run saved before generations existed, and resets it forward', async () => {
+    // Rows the shipped build wrote carry no generation and the older three-segment id.
+    const started = await startRun(scenario, database);
+    const runId = started.state.run_id;
+    const state = advanceTo(started.state, '2026-09-04T16:00:00-05:00');
+    await commitRun({ ...started, state }, database);
+    for (const row of (await allHistory(runId)).events) {
+      await database.sim_events.delete(row.id);
+      await database.sim_events.add({
+        ...row,
+        id: `se:${runId}:${row.sequence}`,
+        generation: undefined as unknown as string,
+      });
+    }
+    await database.sim_projects.update(runId, { generation: undefined });
+
+    const legacy = await loadRun(runId, database);
+    expect(legacy?.generation).toBe('0');
+    expect(legacy?.state.log.map((row) => row.id)).toEqual(state.log.map((row) => row.id));
+
+    const reset = await resetStoredRun(scenario, runId, database);
+    expect(reset.generation).not.toBe('0');
+    const next = tag(reset.state, 'after-the-reset');
+    await commitRun({ ...reset, state: next }, database);
+    const reloaded = await loadRun(runId, database);
+    expect(reloaded?.state.log.map((row) => row.id)).toEqual(next.log.map((row) => row.id));
+  });
+});
+
+describe('a reset across two devices (SYNC-008, D-087)', () => {
+  it('gives the second device the new life and leaves the first one on the server', async () => {
+    const server = new FakeSyncServer();
+    const a = freshDatabase();
+    const b = freshDatabase();
+    try {
+      const key = createSyncKey();
+      await linkThisDevice(key.display, a, server);
+      await linkThisDevice(key.canonical, b, server);
+
+      // Device A runs, and device B picks the run up.
+      const started = await startRun(scenario, a);
+      const runId = started.state.run_id;
+      const first = advanceTo(started.state, '2026-09-04T16:00:00-05:00');
+      await commitRun({ ...started, state: first }, a);
+      await syncNow(a, server);
+      await syncNow(b, server);
+      const onB = await loadRun(runId, b);
+      expect(onB?.state.log.map((row) => row.id)).toEqual(first.log.map((row) => row.id));
+
+      const firstIds = (await a.sim_events.where('run_id').equals(runId).toArray()).map(
+        (row) => row.id,
+      );
+      expect(firstIds.length).toBeGreaterThan(0);
+
+      // A resets and runs again.
+      const reset = await resetStoredRun(scenario, runId, a);
+      const second = advanceTo(reset.state, '2026-09-04T16:00:00-05:00');
+      await commitRun({ ...reset, state: second }, a);
+      await syncNow(a, server);
+
+      // Every append row A wrote after the reset was accepted — none was mistaken for a row the
+      // server already held, which is what an id collision with the first life would have caused.
+      const held = [...server.records.values()].flatMap((byId) => [...byId.entries()]);
+      const events = held.filter(([slug]) => slug.startsWith('sim_events:'));
+      expect(events).toHaveLength(firstIds.length + second.log.length);
+      for (const id of firstIds) {
+        const row = events.find(([slug]) => slug === `sim_events:${id}`)?.[1];
+        // The first life is still on the server exactly as written: never deleted, never rewritten.
+        expect(row).toBeDefined();
+        expect(row?.deleted_at).toBeNull();
+        expect(row?.revision).toBe(1);
+      }
+
+      // B pulls and lands in the new life, with the old one inert rather than mixed in.
+      await syncNow(b, server);
+      const afterReset = await loadRun(runId, b);
+      expect(afterReset?.generation).toBe(reset.generation);
+      expect(afterReset?.state.log.map((row) => row.id)).toEqual(second.log.map((row) => row.id));
+      expect(stateHash(afterReset?.state as SimulatorState)).toBe(stateHash(second));
+      expect(await b.sim_events.where('run_id').equals(runId).count()).toBe(
+        firstIds.length + second.log.length,
+      );
+      expect(await listRuns(b)).toHaveLength(1);
+    } finally {
+      a.close();
+      b.close();
+    }
   });
 });
