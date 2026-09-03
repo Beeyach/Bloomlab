@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { freshDatabase } from './db.test';
+import { freshDatabase } from './testing';
 import { ensureDevice } from './device';
 import { createNotesStore } from './notes';
 import { listOperations, takeOperations } from './syncQueue';
@@ -85,7 +85,9 @@ describe('syncable store (DATA-001 write path)', () => {
     expect((await notes.list({ includeDeleted: true })).map((n) => n.id)).toContain(gone.id);
 
     const op = (await listOperations(database)).find((row) => row.entity_id === gone.id);
-    expect(op).toMatchObject({ op: 'delete', revision: 2, payload: null, status: 'pending' });
+    expect(op).toMatchObject({ op: 'delete', revision: 2, status: 'pending' });
+    // The tombstone travels with the operation so the deletion can sync (SYNC-007 deleted_at).
+    expect(op?.payload).toMatchObject({ id: gone.id, deleted_at: deleted.deleted_at });
   });
 
   it('lists newest first and rejects patches to unknown ids', async () => {

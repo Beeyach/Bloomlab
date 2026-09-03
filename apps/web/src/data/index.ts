@@ -32,6 +32,7 @@ export {
 } from './syncStatus';
 export type {
   DeviceRecord,
+  LocalSyncEntity,
   NoteRecord,
   NoteTargetKind,
   SyncEntity,
@@ -42,4 +43,6 @@ export type {
   SyncStateRecord,
   WorkspaceRecord,
 } from './types';
-export { SYNC_ENTITIES } from './types';
+export { LOCAL_SYNC_ENTITIES } from './types';
+export type { SyncConflictRecord, SyncShadowRecord } from './types';
+export * from './sync';

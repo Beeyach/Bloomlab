@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { freshDatabase } from './db.test';
+import { freshDatabase } from './testing';
 import { enqueueOperation, takeOperations } from './syncQueue';
 import { SYNC_STATUS_LABELS, deriveSyncStatus, useSyncStatus } from './syncStatus';
 

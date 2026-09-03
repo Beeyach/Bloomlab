@@ -1,21 +1,33 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 
-import { Button, Cluster, Surface } from '@bloomlab/design-system';
+import { Button, Cluster, Field, Surface, Textarea } from '@bloomlab/design-system';
 
 import {
   DB_NAME,
   DB_VERSION,
+  SYNC_STATE_KEY,
   db,
+  isLinked,
   listOperations,
   notes,
   resetOperations,
+  syncNow,
   useDevice,
+  useNotes,
   useSyncStatus,
 } from '../data';
 import styles from './SystemDiagnostics.module.css';
 
-const TABLES = ['device', 'notes', 'workspace', 'sync_queue', 'sync_state'] as const;
+const TABLES = [
+  'device',
+  'notes',
+  'workspace',
+  'sync_queue',
+  'sync_state',
+  'sync_shadow',
+  'sync_conflicts',
+] as const;
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -24,10 +36,45 @@ function formatBytes(bytes: number): string {
   return `${(bytes / 1024 ** 3).toFixed(1)} GB`;
 }
 
+/** Edits the newest note in place: the driver for two-device sync and conflict checks. */
+function NewestNoteEditor() {
+  const list = useNotes();
+  const newest = list?.[0];
+  const [draft, setDraft] = useState<string | null>(null);
+
+  async function save(event: FormEvent) {
+    event.preventDefault();
+    if (!newest || draft === null) return;
+    await notes.patch(newest.id, { body: draft });
+    setDraft(null);
+  }
+
+  if (!newest) return <p className={styles.muted}>No notes yet.</p>;
+  return (
+    <form className={styles.noteForm} onSubmit={save}>
+      <Field label="Newest note" hint={`id ${newest.id.slice(0, 8)} · revision ${newest.revision}`}>
+        <Textarea
+          rows={3}
+          value={draft ?? newest.body}
+          onChange={(event) => setDraft(event.target.value)}
+        />
+      </Field>
+      <Cluster gap={2}>
+        <Button type="submit" size="sm" variant="primary" disabled={draft === null}>
+          Save note
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setDraft(null)} disabled={draft === null}>
+          Discard
+        </Button>
+      </Cluster>
+    </form>
+  );
+}
+
 /**
- * Developer view of the local-first layer (DATA-001, DATA-002): what IndexedDB holds, whether
- * the browser will keep it, and what waits in the sync queue. The two note actions exercise
- * the syncable write path end to end without a product screen.
+ * Developer view of the local-first layer (DATA-001, DATA-002, SYNC-010): what IndexedDB holds,
+ * whether the browser will keep it, what waits in the sync queue, and the link state. The note
+ * actions exercise the syncable write path end to end without a product screen.
  */
 export function LocalDataDiagnostics() {
   const device = useDevice();
@@ -39,8 +86,10 @@ export function LocalDataDiagnostics() {
     [],
   );
   const operations = useLiveQuery(() => listOperations(), []);
+  const state = useLiveQuery(() => db.sync_state.get(SYNC_STATE_KEY), []);
   const { label, pending } = useSyncStatus();
   const [estimate, setEstimate] = useState<StorageEstimate | null>(null);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -62,6 +111,12 @@ export function LocalDataDiagnostics() {
         ? 'yes'
         : 'no';
 
+  async function sync() {
+    setSyncing(true);
+    await syncNow();
+    setSyncing(false);
+  }
+
   return (
     <>
       <Surface as="dl" padding="sm" className={styles.list}>
@@ -81,9 +136,16 @@ export function LocalDataDiagnostics() {
         <dd>
           {counts ? TABLES.map((name) => `${name} ${counts[name]}`).join(' · ') : 'counting…'}
         </dd>
+        <dt>Link</dt>
+        <dd>
+          {device && isLinked(device)
+            ? `linked · learner ${device.learner_id.slice(0, 8)} · device ${device.device_id.slice(0, 8)}`
+            : 'not linked'}
+        </dd>
         <dt>Sync</dt>
         <dd>
-          {label} · {pending} pending
+          {label} · {pending} pending · cursor {state?.server_cursor ?? 0}
+          {state?.last_error ? ` · last error: ${state.last_error}` : ''}
         </dd>
       </Surface>
 
@@ -94,6 +156,7 @@ export function LocalDataDiagnostics() {
             {operations.map((op) => (
               <li key={op.seq}>
                 #{op.seq} {op.entity}/{op.entity_id.slice(0, 8)} {op.op} r{op.revision} {op.status}
+                {op.force ? ' force' : ''}
                 {op.last_error ? ` · ${op.last_error}` : ''}
               </li>
             ))}
@@ -102,6 +165,9 @@ export function LocalDataDiagnostics() {
           <p className={styles.muted}>Nothing waiting.</p>
         )}
         <Cluster gap={2}>
+          <Button size="sm" variant="primary" loading={syncing} onClick={() => void sync()}>
+            Sync now
+          </Button>
           <Button
             size="sm"
             onClick={() =>
@@ -126,6 +192,7 @@ export function LocalDataDiagnostics() {
             Reset stuck operations
           </Button>
         </Cluster>
+        <NewestNoteEditor />
       </Surface>
     </>
   );

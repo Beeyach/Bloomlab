@@ -5,23 +5,13 @@
  * strings so they sort, diff and travel to D1 unchanged.
  */
 
-/** The fields every syncable entity carries (SYNC-007). */
-export interface SyncEnvelope {
-  id: string;
-  learner_id: string;
-  created_at: string;
-  updated_at: string;
-  /** Starts at 1 and grows by one per local write; Phase 4 merges on it. */
-  revision: number;
-  /** The device that made the last write. */
-  device_id: string;
-  /** Soft delete: set instead of removing the row, so the deletion can sync. */
-  deleted_at: string | null;
-}
+import type { SyncEntity, SyncEnvelope } from '@bloomlab/shared';
 
-/** Syncable entities the local database knows about. Grows phase by phase. */
-export const SYNC_ENTITIES = ['notes'] as const;
-export type SyncEntity = (typeof SYNC_ENTITIES)[number];
+export type { SyncEntity, SyncEnvelope };
+
+/** Syncable entities that have a local table today. Grows phase by phase. */
+export const LOCAL_SYNC_ENTITIES = ['notes'] as const satisfies readonly SyncEntity[];
+export type LocalSyncEntity = (typeof LOCAL_SYNC_ENTITIES)[number];
 
 export type NoteTargetKind = 'general' | 'skill' | 'topic' | 'scenario' | 'client';
 
@@ -32,16 +22,38 @@ export interface NoteRecord extends SyncEnvelope {
   target_ref: string | null;
 }
 
-/** This browser's identity. Local-only until Phase 4 registers it as a device session. */
+/** This browser's identity, and its device session once linked with a sync key (spec §89). */
 export interface DeviceRecord {
   device_id: string;
-  /** `local:<uuid>` until the Bloomlab Sync Key exists (Phase 4). */
+  /** `local:<uuid>` until the device is linked; then the server's learner id. */
   learner_id: string;
   label: string;
   created_at: string;
   last_seen_at: string;
   /** Result of `navigator.storage.persist()`; null when the API is unavailable. */
   storage_persisted: boolean | null;
+  /** Revocable session token from `/api/sync/link`; never the sync key (SYNC-004). */
+  session_token?: string | null;
+  /** The canonical sync key, kept so the learner can show, copy or re-download it. */
+  sync_key?: string | null;
+  linked_at?: string | null;
+}
+
+/** The last server-confirmed state of a record: what a push declares as its base (TA§14). */
+export interface SyncShadowRecord {
+  entity: SyncEntity;
+  entity_id: string;
+  revision: number;
+  updated_at: string;
+}
+
+/** A divergence the server refused to merge silently (SYNC-009): both versions, until chosen. */
+export interface SyncConflictRecord {
+  entity: SyncEntity;
+  entity_id: string;
+  local: SyncEnvelope & Record<string, unknown>;
+  server: SyncEnvelope & Record<string, unknown>;
+  detected_at: string;
 }
 
 export type SyncOperationKind = 'upsert' | 'delete';
@@ -54,20 +66,23 @@ export interface SyncOperation {
   entity_id: string;
   op: SyncOperationKind;
   revision: number;
-  /** The full record for upserts, null for deletes. */
+  /** The full record as written, including the tombstone of a soft delete. */
   payload: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
   status: SyncOperationStatus;
   attempts: number;
   last_error: string | null;
+  /** Set when the learner chose the local version of a conflict: apply regardless (SYNC-009). */
+  force?: boolean;
 }
 
-/** Per-entity sync bookkeeping (cursor + last successful sync). */
+/** Sync bookkeeping. One row, keyed `all`: the learner's change log is a single sequence. */
 export interface SyncStateRecord {
-  entity: SyncEntity;
+  entity: string;
   last_synced_at: string | null;
-  server_cursor: string | null;
+  server_cursor: number | null;
+  last_error?: string | null;
 }
 
 /** Local-only checkpoint of in-progress work (TA§7: simulator session, unfinished exercise…). */

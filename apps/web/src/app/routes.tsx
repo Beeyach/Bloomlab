@@ -18,6 +18,11 @@ export const APP_ROUTES: readonly AppRoute[] = [
     Component: lazy(() => import('../screens/FoundationHome')),
   },
   {
+    id: 'sync',
+    path: '/sync',
+    Component: lazy(() => import('../screens/SyncScreen')),
+  },
+  {
     id: 'system',
     path: '/system',
     flag: 'system_diagnostics',

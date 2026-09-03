@@ -6,7 +6,7 @@ Last updated: 2026-09-02
 
 ## CURRENT PHASE
 
-Phase 3 — Local-First Data: **complete for its scope** — the Dexie database, the syncable-store write path (record + outbox in one transaction), device identity, workspace checkpoints, sync-status indicator and the installable PWA are built, unit-tested and verified on the production bundle with the DevTools driver (`npm run review:offline`): the app shell loads with both the page and the service worker offline, the API is never served from cache, and a device rename survives an offline reload. DATA-001 stays PARTIAL until Phase 4 drains the queue to the Worker. Phase 2 (design system) is complete; its review is in `docs/reviews/phase-2-visual-review.md`. Phase 4 — D1 + Sync is waiting for the go-ahead.
+Phase 4 — D1 + Sync: **complete** — D1 schema and databases (`bloomlab-dev`, `bloomlab-prod`), the Worker sync API (link with a Bloomlab Sync Key, hashed key and session storage, device sessions with revoke, push with the shared merge rules, pull from the change log), the client engine (link, background sync, shadows, conflict chooser) and the `/sync` screen are built, unit-tested (Worker tests run inside workerd against the real migration) and verified across two browser contexts with `npm run review:sync`: a key created on device A links device B, a note written on A appears on B, divergent offline edits raise "Two versions were changed" on B, the choice converges both devices, a deleted note disappears on the other device, a lost-response retry is idempotent, and a revoked device is refused on its next request. DATA-001 and SYNC-007 stay PARTIAL only because two of their acceptance interactions (workflow-node drag, deterministic exercise) belong to later phases. Phases 2 and 3 are complete (`docs/reviews/`). Phase 5 — Content Engine is waiting for the go-ahead.
 
 ## VERSIONS
 
@@ -60,13 +60,30 @@ Phase 3:
 - DATA-002 — evidence: `apps/web/src/data/db.ts` opens IndexedDB `bloomlab` through Dexie 4 with five tables (`device`, `notes`, `workspace`, `sync_queue`, `sync_state`) and no layer on top; every read and write goes through Dexie tables or `liveQuery`; the production-bundle probe shows the database open (`bloomlab@10` in `indexedDB.databases()`) and `localStorage` empty after a full session; unit tests assert the schema and that localStorage stays untouched.
 - DATA-003 — evidence: `vite-plugin-pwa` (Workbox `generateSW`) precaches the shell, scripts, styles, icons and fonts (45 entries, 993 KiB); `/api/*` is `NetworkOnly` and excluded from the navigation fallback; `/content/*` (Phase 5) is stale-while-revalidate; manifest with 192 / 512 / maskable icons. Production-bundle probe: service worker controlling the page, `Page.getAppManifest` without errors, `Page.getInstallabilityErrors` empty (Chrome's install criteria met), and with offline emulated on the page *and* the worker the shell renders from the precache while `fetch('/api/health')` fails instead of being served from cache.
 
+Phase 4:
+
+- DATA-004 — evidence: `migrations/0001_init.sql` contains only learner-data, identity, AI and system tables; the Worker schema test asserts no `skills`, `units`, `exercises`, `ghl_features` or `registry` table exists; curriculum stays in Git (`content/`, Phase 5).
+- DATA-005 — evidence: the migration creates the six §93 domains (learners, devices, sync_sessions · skill_progress, skill_evidence, campaign_progress, exercise_attempts, review_queue, fieldwork · sim_projects, sim_snapshots, sim_events, client_progress · portfolio_projects, portfolio_assets · ai_usage, ai_feedback, rubric_runs · content_versions, sync_operations, feature_flags) plus `notes` (D-029); the Worker test lists `sqlite_master` and matches exactly.
+- DATA-010 — evidence: `worker/wrangler.jsonc` binds `bloomlab-dev` (local, preview) and `bloomlab-prod` (production); the migration was applied to dev first by hand and CI applies dev on every PR and prod only on `main`, before each deploy (D-033).
+- SYNC-001 — evidence: two headless browser contexts linked by one key show the same note and the same conflict resolution with no login screen anywhere (`docs/reviews/phase-4-d1-sync.md`).
+- SYNC-002 — evidence: `generateSyncKey` draws 32 bytes from `crypto.getRandomValues` (256 bits; `decodeSyncKey` round-trips them in the test) and displays `BLM-` plus thirteen groups of four Crockford base32 characters; normalisation accepts case, spacing, dashes and look-alikes.
+- SYNC-003 — evidence: the Worker test reads the `learners` row after linking and finds only `key_hash = SHA-256(secret + SYNC_KEY_PEPPER)`; the pepper is read from the secret binding and never stored; `link` answers 503 when it is missing.
+- SYNC-004 — evidence: after linking, every request carries `Authorization: Bearer <session token>`; D1 `devices` has exactly the seven fields; revoking a device clears its token hash and the Worker test shows its next `devices` and `pull` calls answered 401; the client unlinks itself on that 401.
+- SYNC-005 — evidence: `/sync` lists connected devices with label, last seen and a current-device tag; Revoke (other devices) and Unlink (this device) call `/api/sync/devices/revoke`; verified in the Worker test and in the two-device probe.
+- SYNC-006 — evidence: the key screen states the recovery limitation (no account, no reset, loss of every device plus the key means no server recovery), offers Copy, Download recovery file (`bloomlab-sync-key.json`), Show QR and an "I saved my sync key" confirmation gating the link; no account is ever required.
+- SYNC-008 — evidence: `decideMerge` (shared, unit-tested) implements simple = fast-forward else newest `updated_at`, append = id-addressed union, snapshot = conflict on divergence from another device; Worker tests exercise fast-forward, conflict and forced resolution against D1.
+- SYNC-009 — evidence: divergent offline edits of the same note on two devices produce a `conflict` outcome; the second device stores both versions and shows "Two versions were changed. Choose which version to keep."; the local text is untouched until the learner chooses; choosing either side converges both devices (engine tests and the two-device probe).
+- SYNC-010 — evidence: offline edits show "Offline · saved on this device" / "Saved on this device"; reconnecting syncs in the background and the indicator reads "Synced"; there is no modal anywhere in the flow (the conflict chooser appears only for a genuine divergence).
+- SYNC-011 — evidence: `docs/reviews/phase-4-d1-sync.md` records the two-context run (create key → link → note sync → offline edits → chooser → convergence → revoke) with captures.
+- SYNC-012 — evidence: 126 tests overall; sync-specific: shared merge rules and key (10), Worker link/push/pull/devices/schema in workerd (16), client engine link/push/pull/conflict/offline/unauthorised (10), queue primitives (2), plus the Phase 3 store and queue tests.
+- SEC-004 — evidence: same as SYNC-003.
+
 Deployment:
 
 - RSP-005 — evidence: PR #1 triggered CI run 33659265707; the Preview deploy job ran (not skipped), built with `CLOUDFLARE_ENV: preview` and deployed `bloomlab-preview` to https://bloomlab-preview.cool-sunset-2169.workers.dev. `/api/health` returned `{"environment":"preview","versions":{"app":"0.1.0","content":null,"simulator":"0.0.0"}}`; `/`, `/design`, `/system` and an unknown path all served the SPA shell (200 text/html); `/api/nope` returned JSON 404; hashed assets served as text/javascript. Opened in a 390 px viewport: foundation home and the holo gallery section rendered with no horizontal overflow and no console errors.
 
 ## IN PROGRESS
 
-- SYNC-007 — groundwork: every syncable record carries `id, learner_id, created_at, updated_at, revision, device_id, deleted_at` (`SyncEnvelope`), stamped by `createSyncableStore`; the outbox coalesces repeated pending changes to one row per record (so drags and keystrokes never replay) and leaves in-flight rows alone; `takeOperations / completeOperation / failOperation / resetOperations` are the primitives Phase 4's transport will use. Unit tests cover stamping, coalescing, in-flight isolation and soft deletes.
 - INF-013 — versions exported and surfaced by `/api/health` and `/system`; attempt records that persist them arrive with the learning engine (Phase 6) and exercise runner (Phase 9).
 - DES-006 — cross-cutting: Phase 2 gallery reviewed against the §70 list (no gradient heroes, gradient text, glassmorphism, blobs, icon-per-heading, card-everything, fake stats, emoji nav, trophies, huge shadows, confetti); re-checked every phase.
 - DES-008 — density mechanism (`data-density`, `--bl-density-row`) implemented in ToolPanel and rows; per-environment assignment happens with the screens (Phase 7+).
@@ -80,10 +97,11 @@ Deployment:
 
 ## PARTIAL
 
-- DATA-001 — the local chain is in place and verified: a UI action writes local state and IndexedDB immediately and the change's outbox row commits in the same transaction (`createSyncableStore`), nothing waits on the network, and the production-bundle probe renames the device with the page and the service worker offline, reloads offline, and finds the new name in IndexedDB. The last hop, `sync queue → server`, arrives with the Phase 4 transport, and the three acceptance interactions (note, workflow node, deterministic exercise) re-verify the flow when their features exist.
-- INF-001 — React + TypeScript + Vite + Cloudflare Workers/Static Assets + Dexie (IndexedDB) are in place and building; D1/R2 (Phase 4) and Claude / ElevenLabs / Google Speech-to-Text (Phases 19–21) are not yet wired.
-- INF-004 — local / preview / production are defined in `worker/wrangler.jsonc` with distinct Worker names and `BLOOMLAB_ENV` vars, and the client maps Vite modes in `apps/web/src/app/runtime.ts`. Preview and production deploys are now live and verified: `bloomlab-preview` (https://bloomlab-preview.cool-sunset-2169.workers.dev, health reports `preview`) and `bloomlab` (https://bloomlab.cool-sunset-2169.workers.dev, health reports `production`; deployed by run 33658838902). Remaining: D1 bindings per environment (Phase 4) and, where practical, separate R2 buckets.
-- INF-005 — `.github/workflows/ci.yml` runs typecheck, lint, format check, unit tests, docs validation and build on pull requests and `main`; the preview deploy job (PR #1, run 33659265707) and the production deploy job (run 33658838902) both ran only after the checks passed. Remaining: the simulator regression (Phase 10) and content validation (Phase 5) steps do not exist yet.
+- DATA-001 — the whole chain `UI → local state → IndexedDB → sync queue → server` runs end to end and is verified across two browser contexts on the local and deployed preview (`npm run review:sync`): a note written on device A lands in Dexie and the outbox in one transaction, the UI never waits on the network, the outbox drains to the Worker and D1, and device B receives it after linking with the sync key; offline writes, reconnect, lost-response retries (idempotent), soft deletes and a divergent edit all behave as specified. What keeps it PARTIAL: two of the three acceptance interactions — moving a workflow node (Phase 12) and completing a deterministic exercise (Phase 9) — do not exist yet, so they cannot be exercised; the note interaction passes.
+- SYNC-007 — every synced record carries `id, learner_id, updated_at, revision, device_id, deleted_at` (plus `created_at`), the outbox coalesces repeated pending changes per record so a keystroke stream becomes one operation, the Worker rejects writes for another device, and `sync_operations` logs only accepted changes. What keeps it PARTIAL: the acceptance criteria "dragging a node produces no sync operation" and "completing an exercise produces one" need the Workflow Lab (Phase 12) and the exercise runner (Phase 9); the coalescing rule is unit-tested but not yet demonstrated with a real drag.
+- INF-001 — React + TypeScript + Vite + Cloudflare Workers/Static Assets + Dexie (IndexedDB) + D1 (dev and prod, bound and migrated) are in place and building; R2 (Phase 20) and Claude / ElevenLabs / Google Speech-to-Text (Phases 19–21) are not yet wired.
+- INF-004 — local / preview / production are defined in `worker/wrangler.jsonc` with distinct Worker names and `BLOOMLAB_ENV` vars, and the client maps Vite modes in `apps/web/src/app/runtime.ts`. Preview and production deploys are now live and verified: `bloomlab-preview` (https://bloomlab-preview.cool-sunset-2169.workers.dev, health reports `preview`) and `bloomlab` (https://bloomlab.cool-sunset-2169.workers.dev, health reports `production`; deployed by run 33658838902). D1: `bloomlab-dev` (local + preview) and `bloomlab-prod` (production) are bound as `DB` and migrated dev-first (Phase 4). Remaining: separate R2 buckets where practical (Phase 20).
+- INF-005 — `.github/workflows/ci.yml` runs typecheck, lint, format check, unit tests, docs validation and build on pull requests and `main`; the preview deploy job (PR #1, run 33659265707) and the production deploy job (run 33658838902) both ran only after the checks passed; since Phase 4 each deploy job applies D1 migrations (dev on PRs, prod on `main`) before deploying, and the Worker tests run inside workerd. Remaining: the simulator regression (Phase 10) and content validation (Phase 5) steps do not exist yet.
 
 ## BLOCKED
 
@@ -100,7 +118,7 @@ None
 
 ## NEXT
 
-Phase 4 — D1 + Sync targets: SYNC-001 … SYNC-012, DATA-004, DATA-005, DATA-010; completes DATA-001 (queue → server) and SYNC-007.
+Phase 5 — Content Engine targets: CNT-001 … CNT-007, DATA-011, CUR-001, CUR-016, CUR-033 (schemas, YAML/MDX loading, validation, compilation, IDs, prerequisite resolution, feature registry).
 
 ## PHASE CHECKLIST (§163)
 
@@ -108,7 +126,7 @@ Phase 4 — D1 + Sync targets: SYNC-001 … SYNC-012, DATA-004, DATA-005, DATA-0
 - [x] Phase 1 — Repository Foundation: React, TypeScript, Vite, Worker, routing, design tokens, lint, tests, CI, environments
 - [x] Phase 2 — Design System: typography, palette, surfaces, buttons, forms, holo system, motion, responsive primitives, focus states, reduced motion (visually verified)
 - [x] Phase 3 — Local-First Data: IndexedDB, data services, local state persistence, sync queue primitives (DATA-001 completes with the Phase 4 transport)
-- [ ] Phase 4 — D1 + Sync: learner, sync key, hashing, device sessions, sync, conflicts, offline recovery (verified across two device contexts)
+- [x] Phase 4 — D1 + Sync: learner, sync key, hashing, device sessions, sync, conflicts, offline recovery (verified across two browser contexts with `npm run review:sync`)
 - [ ] Phase 5 — Content Engine: schemas, YAML/MDX loading, validation, compilation, IDs, prerequisite resolution, feature registry
 - [ ] Phase 6 — Learning Engine: skills, campaigns, mastery, evidence, review queue, session builder
 - [ ] Phase 7 — Command Center + Skill Map: premium UI, real progress state, no fake metrics

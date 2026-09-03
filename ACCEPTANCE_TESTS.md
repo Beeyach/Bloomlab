@@ -89,7 +89,7 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **SYNC-011** Manual test log across two browser contexts (or devices) for SYNC-001/009/010 attached.
 - **SYNC-012** Unit tests cover merge, revision, conflict detection and queue replay.
 - **DATA-004** No D1 table stores skills, units, exercises or registry content.
-- **DATA-005** Migrations create exactly the listed tables in the six domains.
+- **DATA-005** Migrations create the §93 tables in the six domains, plus `notes` (D-029), and nothing else.
 - **DATA-010** Wrangler config names `bloomlab-dev` and `bloomlab-prod`; migration workflow applies to dev first.
 - **SEC-004** Same evidence as SYNC-003.
 

@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from 'react';
+import { Link } from 'react-router';
 
 import { Button, Cluster, Field, Input, Surface } from '@bloomlab/design-system';
 
-import { DEVICE_LABEL_MAX, renameDevice, useDevice } from '../data';
+import { DEVICE_LABEL_MAX, isLinked, renameDevice, syncApi, useDevice } from '../data';
 import styles from './DeviceIdentity.module.css';
 
 /**
@@ -19,9 +20,13 @@ export function DeviceIdentity() {
     event.preventDefault();
     setSaving(true);
     try {
-      await renameDevice(draft ?? '');
+      const renamed = await renameDevice(draft ?? '');
       setDraft(null);
       setError(null);
+      // Linked devices carry the name to Connected devices; offline, the next link refreshes it.
+      if (isLinked(renamed)) {
+        syncApi.label(renamed.session_token as string, renamed.label).catch(() => undefined);
+      }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Could not save the name');
     } finally {
@@ -77,7 +82,10 @@ export function DeviceIdentity() {
         </form>
       )}
       <p className={styles.muted}>
-        Everything you do is saved on this device first and keeps working offline.
+        Everything you do is saved on this device first and keeps working offline.{' '}
+        <Link to="/sync">
+          {device && isLinked(device) ? 'Connected devices' : 'Sync across devices'}
+        </Link>
       </p>
     </Surface>
   );
