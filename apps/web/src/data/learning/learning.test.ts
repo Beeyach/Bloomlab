@@ -253,3 +253,74 @@ describe('two devices (SYNC-001, SYNC-008, DATA-001)', () => {
     ).toMatchObject({ state: 'INDEPENDENT' });
   });
 });
+
+describe('refresh round trip through the persisted rows', () => {
+  const REFRESH_SKILL = 'SK-ARCHITECT-custom-values'; // two demonstrations, no other requirement
+  const DAY = 24 * 3600 * 1000;
+  const pass = (
+    occurred_at: string,
+    kind: 'independent_exercise' | 'retrieval' = 'independent_exercise',
+  ) => ({
+    skill_ids: [REFRESH_SKILL],
+    kind,
+    result: 'passed' as const,
+    source: { type: kind === 'retrieval' ? ('retrieval' as const) : ('manual' as const), id: null },
+    occurred_at,
+  });
+
+  it('NEEDS_REFRESH → passed retrieval → MASTERED preserved, review_due and the queue advance, evidence untouched', async () => {
+    const database = freshDatabase();
+    const device = await ensureDevice(database);
+    const progressId = derivedId('sp', REFRESH_SKILL, device.learner_id);
+    const reviewId = derivedId('rq', REFRESH_SKILL, device.learner_id);
+
+    await recordEvidence(pass('2026-06-01T10:00:00Z'), database, {
+      now: new Date('2026-06-01T11:00:00Z'),
+    });
+    await recordEvidence(pass('2026-06-03T10:00:00Z'), database, {
+      now: new Date('2026-06-03T11:00:00Z'),
+    });
+    const mastered = await database.skill_progress.get(progressId);
+    const firstDue = new Date(Date.parse('2026-06-03T10:00:00Z') + 60 * DAY).toISOString();
+    expect(mastered).toMatchObject({
+      state: 'MASTERED',
+      ladder_state: 'MASTERED',
+      review_due: firstDue,
+    });
+    const originalEvidence = await database.skill_evidence.toArray();
+
+    // Time passes: overdue beyond the grace window.
+    await recomputeProgress(database, { now: new Date('2026-08-20T10:00:00Z') });
+    expect(await database.skill_progress.get(progressId)).toMatchObject({
+      state: 'NEEDS_REFRESH',
+      ladder_state: 'MASTERED',
+      refresh_from: 'MASTERED',
+      review_due: firstDue,
+    });
+    expect(await database.review_queue.get(reviewId)).toMatchObject({
+      status: 'due',
+      reason: 'needs_refresh',
+    });
+
+    // The learner passes an unassisted retrieval.
+    const retrievalAt = '2026-08-21T10:00:00Z';
+    await recordEvidence(pass(retrievalAt, 'retrieval'), database, { now: new Date(retrievalAt) });
+    const nextDue = new Date(Date.parse(retrievalAt) + 60 * DAY).toISOString();
+    expect(await database.skill_progress.get(progressId)).toMatchObject({
+      state: 'MASTERED',
+      ladder_state: 'MASTERED',
+      refresh_from: null,
+      last_demonstrated: retrievalAt,
+      review_due: nextDue,
+    });
+    expect(await database.review_queue.get(reviewId)).toMatchObject({
+      status: 'upcoming',
+      due_at: nextDue,
+    });
+
+    // Earlier evidence rows are byte-identical; the retrieval was appended.
+    const after = await database.skill_evidence.toArray();
+    expect(after).toHaveLength(3);
+    for (const row of originalEvidence) expect(after.find((r) => r.id === row.id)).toEqual(row);
+  });
+});

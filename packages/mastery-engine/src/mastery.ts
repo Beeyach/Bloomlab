@@ -127,7 +127,10 @@ export function evaluateSkill(
   const counts = countEvidence(history);
   const ladder = ladderStateFor(skill, counts);
   const attempts = history.filter(isAttempt);
-  const lastPass = [...history].reverse().find(isPass) ?? null;
+  // A demonstration that resets the review clock is a pass at the PRACTICED bar or better:
+  // an independent-capable kind with at most light help. A guided or worked-example pass
+  // neither restores a refresh nor postpones review (MAS-011).
+  const lastPass = [...history].reverse().find(isPracticedPass) ?? null;
   const lastAttempt = attempts.at(-1) ?? null;
   const importance = importanceOf(skill);
   const rate = failureRate(attempts);

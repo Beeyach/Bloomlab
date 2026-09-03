@@ -6,7 +6,7 @@
  * threshold: states are earned by kinds of evidence, assistance and repetition.
  */
 
-export const MASTERY_RULES_VERSION = '2026.09.02-r1';
+export const MASTERY_RULES_VERSION = '2026.09.02-r2';
 
 /** The eight states (spec §29). NEEDS_REFRESH is an overlay on an earned ladder state. */
 export const MASTERY_STATES = [
@@ -163,7 +163,8 @@ export const CONFIDENCE_RULES = {
  * Review scheduling (spec §32, TA§69; MAS-005, MAS-009). Evidence-based, not an Anki clone:
  * interval by earned state, shortened by importance and by recent failures; overdue past the
  * grace window (or a failed retrieval) means NEEDS_REFRESH. The earned state is never erased —
- * a passed retrieval restores it because the evidence history is what is evaluated.
+ * a retrieval passed with at most light assistance restores it because the evidence history is
+ * what is evaluated; a guided or worked-example pass does not (MAS-011).
  */
 export const REVIEW_RULES = {
   /** Days from the last demonstration to the next review, by earned state. */

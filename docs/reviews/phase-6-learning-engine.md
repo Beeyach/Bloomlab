@@ -8,7 +8,7 @@ The mastery engine is a domain package, not UI state and not a points system: pu
 
 | Layer | Where | What |
 |---|---|---|
-| Rules | `packages/mastery-engine/src/rules.ts` | `MASTERY_RULES_VERSION = 2026.09.02-r1`; states, ladder, assistance table, evidence kinds, ladder rules, confidence, review and session constants. Nothing else in the engine holds a number. |
+| Rules | `packages/mastery-engine/src/rules.ts` | `MASTERY_RULES_VERSION = 2026.09.02-r2`; states, ladder, assistance table, evidence kinds, ladder rules, confidence, review and session constants. Nothing else in the engine holds a number. |
 | Evidence | `src/evidence.ts` | `SkillEvidenceSchema` (spec §30, every field required), `assistanceFromHints`, `effectiveAssistance`, the pass / independent / pressure / fieldwork / sales predicates. |
 | Mastery | `src/mastery.ts` | `evaluateSkill` → state, ladder state, refresh overlay, confidence, missing requirements, review due and priority, counts. |
 | Review | `src/review.ts` | importance, failure rate, intervals, due dates, NEEDS_REFRESH overlay, priority, `scheduleReviews`. |
@@ -33,7 +33,7 @@ A skill's **earned ladder state** is the highest rung whose rule holds over its 
 | PRESSURE_TESTED | INDEPENDENT rule met by a pass whose kind is `pressure_test` or whose exercise mode is `pressure` |
 | MASTERED | unassisted passes ≥ max(2, skill `independent_evidence`), over ≥ 2 distinct demonstrations (different exercise or different day), **and** every declared requirement: pressure test if `pressure_test`, provided real-GHL fieldwork if `fieldwork_required`, a sales-use pass if `sales_use` |
 
-**NEEDS_REFRESH** is an overlay on any earned state ≥ PRACTICED (`refresh_from` keeps the rung): it applies when the review is overdue by more than 14 days, or the latest attempt is a failed retrieval. A passed retrieval clears it because the evaluation is recomputed from the whole history; nothing is deleted or rewritten.
+**NEEDS_REFRESH** is an overlay on any earned state ≥ PRACTICED (`refresh_from` keeps the rung): it applies when the review is overdue by more than 14 days, or the latest attempt is a failed retrieval. A retrieval passed with at most light assistance clears it and advances `review_due` from that pass, because the evaluation is recomputed from the whole history; a guided or worked-example retrieval pass neither clears it nor moves the review date (MAS-011). Nothing is deleted or rewritten.
 
 Evidence kinds: `exposure`, `quiz` (exposure-only); `guided_practice` (guided at least, never independent); `deterministic_exercise`, `independent_exercise`, `pressure_test`, `explanation`, `sales_use`, `fieldwork`, `real_ghl`, `retrieval` (independent-capable).
 
@@ -112,7 +112,7 @@ ok: true
 
 ## Version stamping
 
-`currentVersions()` = `{ app: 0.1.0 (@bloomlab/shared), content: 2026.09.02 and content_hash e15441abc7fc (compiled bundle), simulator: 0.0.0 (@bloomlab/simulator-core), rules: 2026.09.02-r1 }`, written on every attempt and evidence row at write time and never rewritten. Derived rows record the content version and rules version they were computed under. The Learning section shows the stamp on each recent evidence row; `/api/health` and `/system` show the triplet.
+`currentVersions()` = `{ app: 0.1.0 (@bloomlab/shared), content: 2026.09.02 and content_hash e15441abc7fc (compiled bundle), simulator: 0.0.0 (@bloomlab/simulator-core), rules: 2026.09.02-r2 }`, written on every attempt and evidence row at write time and never rewritten. Derived rows record the content version and rules version they were computed under. The Learning section shows the stamp on each recent evidence row; `/api/health` and `/system` show the triplet.
 
 ## Migrations
 
@@ -124,12 +124,12 @@ None. `skill_evidence`, `exercise_attempts`, `skill_progress`, `campaign_progres
 |---|---|---|
 | `packages/mastery-engine/test/evidence.test.ts` | 18 | the §30 field set (each field required, each version key required), unknown keys, the assistance table, worked example never independent, guided practice floor, nudge = practice, critical failure never a pass |
 | `test/mastery.test.ts` | 10 | scenarios 1–7, fieldwork and sales-use requirements, eight states only, rules version (16) |
-| `test/review.test.ts` | 6 | scenarios 12–14, interval arithmetic, failed retrieval, queue ordering |
+| `test/review.test.ts` | 9 | scenarios 12–14, interval arithmetic, failed retrieval, queue ordering, and the explicit refresh round trip: MASTERED → NEEDS_REFRESH → unassisted retrieval → MASTERED preserved with `review_due` advanced by the MASTERED interval; the INDEPENDENT variant with a requirement still missing; an assisted retrieval does not restore |
 | `test/campaign.test.ts` | 7 | scenarios 8–11, refresh never locks, completion |
 | `test/session.test.ts` | 7 | scenario 15, first-session behaviour, determinism, four lengths + Continue, focus and weak-prerequisite repair, pressure/fieldwork steps, assistance-dependence retries |
-| `apps/web/src/data/learning/learning.test.ts` | 9 | scenarios 16–18, incomplete record rejected, content-change safety (DATA-011), exposure = LEARNING, unlock + gate, session from real content, link-time re-key |
+| `apps/web/src/data/learning/learning.test.ts` | 10 | scenarios 16–18, incomplete record rejected, content-change safety (DATA-011), exposure = LEARNING, unlock + gate, session from real content, link-time re-key |
 
-Engine total 51; web total 48 (9 new); repository total 261 tests in 35 files. Typecheck (8 workspaces), lint, Prettier, docs validator, `content:check` and the production build are green (`npm run ci`).
+Engine total 54; web total 49 (10 new); repository total 265 tests in 35 files. Typecheck (8 workspaces), lint, Prettier, docs validator, `content:check` and the production build are green (`npm run ci`).
 
 ## Requirement statuses
 

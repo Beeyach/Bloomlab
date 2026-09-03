@@ -13,7 +13,7 @@ Phase 6 — Learning Engine: **complete** — `packages/mastery-engine` is a pur
 - app: 0.1.0
 - content: 2026.09.02 (`content/content.yaml`, locked by `content/content.lock.yaml`)
 - simulator: 0.0.0 (no engine yet)
-- mastery rules: 2026.09.02-r1 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
+- mastery rules: 2026.09.02-r2 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
 
 ## PASSED
 
