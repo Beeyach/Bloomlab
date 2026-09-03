@@ -61,7 +61,7 @@ Continue opens the capability's sheet on the Skill Map, which names the same nex
 | MASTERED | mastery holo | filled glyph | Demonstrated |
 | NEEDS_REFRESH | the earned material, Needs refresh badge | refresh glyph | Needs refresh · was <earned state> |
 
-Locked is the only lock, it names the prerequisites, and a locked capability still opens so the learner can read what it is and what unlocks it (D-056). Territory objects are collectible material and turn to the mastery material only when every authored capability is demonstrated (D-060).
+This is the reading of spec §75 recorded in D-061: every state distinguishable through material plus badge and word, material escalating into Independent / Pressure-tested / Mastered, Needs refresh distinct over the earned material, nothing by colour alone. Locked is the only lock, it names the prerequisites, and a locked capability still opens so the learner can read what it is and what unlocks it (D-056). Territory objects are collectible material and turn to the mastery material only when every authored capability is demonstrated (D-060).
 
 ## HoloMaterial: which elements, and how the pointer-following works
 
@@ -158,7 +158,12 @@ Whole suite: `npm run ci` — typecheck, lint, format, 313 tests in 39 files, do
 
 ## Requirement statuses
 
-PASSED: PRD-007, PRD-012, PRD-013, DES-011. PARTIAL: DES-009 (three of seven rail areas), DES-010 (no active-client block until Phase 24), PRD-014 (capability and territory unlocks only), INF-011 (shell-level boundary), PERF-001 (route-level splitting; simulators do not exist yet), RSP-004 (Skill Map recomposition only). Re-verified on product screens with new evidence: HOL-003, HOL-004, MOT-003, A11Y-001, A11Y-007, MAS-007. Cross-cutting DES-008, DES-017, DES-018, RSP-001 … RSP-003 gain Phase 7 evidence and stay IN_PROGRESS.
+PASSED: PRD-007, PRD-012, PRD-013, DES-011. PARTIAL: DES-009 (three of seven rail areas), DES-010 (no active-client block until Phase 24), PRD-014 (capability and territory unlocks only), INF-011 (shell-level boundary), PERF-001 (route-level splitting; simulators do not exist yet), RSP-004 (Skill Map recomposition only). Re-verified on product screens with new evidence: HOL-003, HOL-004, MOT-003, A11Y-007, MAS-007. Cross-cutting DES-008, DES-017, DES-018, RSP-001 … RSP-003 gain Phase 7 evidence and stay IN_PROGRESS.
+
+Two requirements-integrity corrections were made before merge:
+
+- **DES-011 acceptance wording** (D-061). The acceptance test said "each of the eight skill states renders a distinct material", which is stricter than spec §75 ("mastery changes visual material") and did not describe the intended design. It now requires every state to be clearly distinguishable through material plus badge, text or icon, material to change and escalate into Independent / Pressure-tested / Mastered, NEEDS_REFRESH to stay distinct while preserving the earned rung's material, and no status by colour alone — which is what the table above implements. No new holographic variants were added.
+- **A11Y-001 is PARTIAL, not PASSED.** The keyboard probe proves full keyboard operation of every flow that exists today (rail, Command Center, session builder, Campaign, Skill Map, capability sheet). The acceptance criterion also names starting a session, opening an exercise, submitting it and navigating the labs; those flows arrive with Phases 8–14, 17 and 21 and each must add its own keyboard evidence before the requirement can be PASSED globally.
 
 ## Not done / honest gaps
 

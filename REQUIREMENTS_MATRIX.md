@@ -339,7 +339,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| A11Y-001 | Full keyboard operability of core flows. | P0 | 2 | PASSED | §84 |
+| A11Y-001 | Full keyboard operability of core flows. | P0 | 2 | PARTIAL | §84 |
 | A11Y-002 | Visible focus states. | P0 | 2 | PASSED | §84 |
 | A11Y-003 | Accessible labels on controls and inputs. | P0 | 2 | PASSED | §84 |
 | A11Y-004 | Sufficient contrast, including text over holographic surfaces. | P0 | 2 | PASSED | §84 |
