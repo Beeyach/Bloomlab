@@ -10,7 +10,13 @@ import {
 import { db, type BloomlabDatabase } from '../data/db';
 import { recordEvidence } from '../data/learning';
 import type { ExerciseAttemptRecord } from '../data/types';
-import { discardAttempt, type ActiveAttempt } from './attempt';
+import {
+  contextOf,
+  discardAttempt,
+  isValidRetrievalTarget,
+  type ActiveAttempt,
+  type AttemptContext,
+} from './attempt';
 import { learnerState } from './response';
 import { availableSources, canGradeNow } from './runtime';
 
@@ -34,6 +40,35 @@ export const EVIDENCE_KIND_BY_MODE: Record<Exercise['mode'], EvidenceKind> = {
 
 export function evidenceKindFor(exercise: Exercise, run: ActiveAttempt['run']): EvidenceKind {
   return run === 'retrieval' ? 'retrieval' : EVIDENCE_KIND_BY_MODE[exercise.mode];
+}
+
+export class RetrievalTargetError extends Error {
+  constructor(exerciseId: string, skillId: string | null) {
+    super(
+      `A retrieval of ${exerciseId} must review a capability the exercise teaches, not ${skillId ?? 'none'}`,
+    );
+    this.name = 'RetrievalTargetError';
+  }
+}
+
+/**
+ * Which capabilities this attempt is evidence for (D-072).
+ *
+ * A normal run credits every skill the exercise teaches. A retrieval run is a review of **one**
+ * capability — the exercise is only the vehicle — so it writes evidence for that capability
+ * alone. Reviewing one skill must never move another's review clock or refresh state merely
+ * because the same exercise happens to teach it, so an unnamed or untaught target is refused
+ * rather than widened to every skill.
+ */
+export function skillsForAttempt(
+  exercise: Exercise,
+  attempt: Pick<ActiveAttempt, 'run' | 'skill_id'>,
+): string[] {
+  if (attempt.run !== 'retrieval') return [...exercise.skills];
+  if (!isValidRetrievalTarget(exercise, attempt.skill_id)) {
+    throw new RetrievalTargetError(exercise.id, attempt.skill_id);
+  }
+  return [attempt.skill_id];
 }
 
 const RESULT_BY_OUTCOME: Record<GradeReport['outcome'], EvidenceResult> = {
@@ -97,7 +132,7 @@ export async function finalizeAttempt(
 ): Promise<FinalizedAttempt> {
   const existing = await database.exercise_attempts.get(attempt.attempt_id);
   if (existing) {
-    await discardAttempt(exercise.id, database);
+    await discardAttempt(exercise.id, contextOf(attempt), database);
     return {
       attempt: existing,
       report: existing.grade ?? gradeAttempt(exercise, attempt),
@@ -105,12 +140,14 @@ export async function finalizeAttempt(
     };
   }
   if (!canGradeNow(exercise)) throw new NotGradableError(exercise.id);
+  // Refused before anything is written, so a malformed retrieval can never reach the record.
+  const skillIds = skillsForAttempt(exercise, attempt);
 
   const report = gradeAttempt(exercise, attempt);
   const completedAt = (options.now ?? new Date()).toISOString();
   const { attempt: row } = await recordEvidence(
     {
-      skill_ids: exercise.skills,
+      skill_ids: skillIds,
       kind: evidenceKindFor(exercise, attempt.run),
       result: RESULT_BY_OUTCOME[report.outcome],
       source: {
@@ -129,18 +166,18 @@ export async function finalizeAttempt(
       started_at: attempt.started_at,
       attempt_id: attempt.attempt_id,
       evidence_ids: Object.fromEntries(
-        exercise.skills.map((skillId) => [skillId, `ea:${attempt.attempt_id}:${skillId}`]),
+        skillIds.map((skillId) => [skillId, `ea:${attempt.attempt_id}:${skillId}`]),
       ),
       grade: report,
     },
     database,
   );
-  await discardAttempt(exercise.id, database);
+  await discardAttempt(exercise.id, contextOf(attempt), database);
   if (!row) throw new Error('An exercise attempt must produce an attempt row');
   return { attempt: row, report, recorded: true };
 }
 
-/** Every finalized attempt at this exercise, newest first, for the result view and history. */
+/** Every finalized attempt at this exercise, newest first — the complete history, unfiltered. */
 export async function attemptHistory(
   exerciseId: string,
   database: BloomlabDatabase = db,
@@ -149,4 +186,28 @@ export async function attemptHistory(
     .filter((row) => row.deleted_at === null && row.exercise_id === exerciseId)
     .toArray();
   return rows.sort((a, b) => b.completed_at.localeCompare(a.completed_at));
+}
+
+/**
+ * True when a finalized attempt belongs to this run context. A normal run's result is any
+ * ordinary attempt at the exercise; a review's result is a retrieval of that one capability. The
+ * two never stand in for each other on screen, and neither is deleted or hidden from
+ * `attemptHistory` (D-072).
+ */
+export const attemptMatchesContext = (
+  row: ExerciseAttemptRecord,
+  context: AttemptContext,
+): boolean =>
+  context.run === 'retrieval'
+    ? row.source.type === 'retrieval' && row.skill_ids.includes(context.skill_id ?? '')
+    : row.source.type !== 'retrieval';
+
+/** The finalized attempts for one run context, newest first: what the runner shows as the result. */
+export async function attemptsInContext(
+  exerciseId: string,
+  context: AttemptContext,
+  database: BloomlabDatabase = db,
+): Promise<ExerciseAttemptRecord[]> {
+  const rows = await attemptHistory(exerciseId, database);
+  return rows.filter((row) => attemptMatchesContext(row, context));
 }

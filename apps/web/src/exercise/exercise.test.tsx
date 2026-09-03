@@ -17,7 +17,7 @@ import { FakeSyncServer } from '../data/sync/fakeServer';
 import { createSyncKey, linkThisDevice } from '../data/sync/link';
 import { listOperations } from '../data/syncQueue';
 import { freshDatabase } from '../data/testing';
-import { loadAttempt, revealHint, saveResponse, startAttempt } from './attempt';
+import { NORMAL_RUN, loadAttempt, revealHint, saveResponse, startAttempt } from './attempt';
 import { evidenceKindFor, finalizeAttempt, NotGradableError } from './finalize';
 import { canGradeNow, missingSources } from './runtime';
 
@@ -53,9 +53,9 @@ async function answerDecision(
   database: BloomlabDatabase = db,
   text = 'A contact custom field: reminder templates print it as a merge field.',
 ) {
-  await startAttempt(decision, { skill_id: DECISION_SKILL }, database);
-  await saveResponse(DECISION, { choice: 'contact_custom_field', text }, database);
-  return (await loadAttempt(DECISION, database))!;
+  await startAttempt(decision, { run: 'normal', skill_id: DECISION_SKILL }, {}, database);
+  await saveResponse(DECISION, NORMAL_RUN, { choice: 'contact_custom_field', text }, database);
+  return (await loadAttempt(DECISION, NORMAL_RUN, database))!;
 }
 
 beforeEach(async () => {
@@ -171,14 +171,14 @@ describe('what cannot be graded yet is not graded (EXR-024)', () => {
   });
 
   it('refuses to finalize an attempt it cannot judge', async () => {
-    const attempt = await startAttempt(byId(BUILD_IT), {}, db);
+    const attempt = await startAttempt(byId(BUILD_IT), NORMAL_RUN, {}, db);
     await expect(finalizeAttempt(byId(BUILD_IT), attempt, db)).rejects.toBeInstanceOf(
       NotGradableError,
     );
     expect(await db.exercise_attempts.count()).toBe(0);
     expect(await db.skill_evidence.count()).toBe(0);
     // The learner's work survives the refusal.
-    expect(await loadAttempt(BUILD_IT, db)).not.toBeUndefined();
+    expect(await loadAttempt(BUILD_IT, NORMAL_RUN, db)).not.toBeUndefined();
   });
 
   it('RUN THE LEAD captures the prediction now and says the run comes later (EXR-006)', async () => {
@@ -187,7 +187,9 @@ describe('what cannot be graded yet is not graded (EXR-024)', () => {
     const tag = await screen.findByLabelText('Tag');
     fireEvent.change(tag, { target: { value: 'booked' } });
     await waitFor(async () =>
-      expect((await loadAttempt(RUN_THE_LEAD, db))?.response.prediction.tag).toBe('booked'),
+      expect((await loadAttempt(RUN_THE_LEAD, NORMAL_RUN, db))?.response.prediction.tag).toBe(
+        'booked',
+      ),
     );
     expect(document.body.textContent).not.toContain('The learner predicted the booked tag');
     expect(screen.getByText('This one is not runnable yet.')).toBeInTheDocument();
@@ -197,17 +199,17 @@ describe('what cannot be graded yet is not graded (EXR-024)', () => {
 describe('attempt lifecycle and idempotency (D-068)', () => {
   it('opening records nothing and a reload resumes the same attempt', async () => {
     await openRunner();
-    await waitFor(async () => expect(await loadAttempt(DECISION, db)).toBeDefined());
-    const first = (await loadAttempt(DECISION, db))!;
+    await waitFor(async () => expect(await loadAttempt(DECISION, NORMAL_RUN, db)).toBeDefined());
+    const first = (await loadAttempt(DECISION, NORMAL_RUN, db))!;
     expect(await db.exercise_attempts.count()).toBe(0);
     expect(await db.skill_evidence.count()).toBe(0);
 
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'half an answer' } });
     await waitFor(async () =>
-      expect((await loadAttempt(DECISION, db))?.response.text).toBe('half an answer'),
+      expect((await loadAttempt(DECISION, NORMAL_RUN, db))?.response.text).toBe('half an answer'),
     );
     // Reload: same attempt id, same unfinished work.
-    const again = await startAttempt(decision, {}, db);
+    const again = await startAttempt(decision, NORMAL_RUN, {}, db);
     expect(again.attempt_id).toBe(first.attempt_id);
     expect(again.response.text).toBe('half an answer');
   });
@@ -262,25 +264,25 @@ describe('attempt lifecycle and idempotency (D-068)', () => {
       },
     } as unknown as BloomlabDatabase;
     await expect(finalizeAttempt(decision, attempt, broken)).rejects.toBeTruthy();
-    expect(await loadAttempt(DECISION, db)).toBeDefined();
+    expect(await loadAttempt(DECISION, NORMAL_RUN, db)).toBeDefined();
   });
 });
 
 describe('hints and assistance (EXR-022, MAS-007)', () => {
   it('reveals one level at a time, records it, and survives a reload', async () => {
     await openRunner();
-    await waitFor(async () => expect(await loadAttempt(DECISION, db)).toBeDefined());
+    await waitFor(async () => expect(await loadAttempt(DECISION, NORMAL_RUN, db)).toBeDefined());
     expect(screen.getByText('Independent')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Show the nudge' }));
     await screen.findByText(/Is "interested in Laser" something that happened/);
     expect(await screen.findByText('Light')).toBeInTheDocument();
-    expect((await loadAttempt(DECISION, db))?.hints_revealed).toEqual(['nudge']);
+    expect((await loadAttempt(DECISION, NORMAL_RUN, db))?.hints_revealed).toEqual(['nudge']);
 
     fireEvent.click(screen.getByRole('button', { name: 'Show the concept reminder' }));
     await screen.findByText(/Three tags for one question/);
     expect(await screen.findByText('Guided')).toBeInTheDocument();
-    expect((await loadAttempt(DECISION, db))?.hints_revealed).toEqual([
+    expect((await loadAttempt(DECISION, NORMAL_RUN, db))?.hints_revealed).toEqual([
       'nudge',
       'concept_reminder',
     ]);
@@ -292,9 +294,9 @@ describe('hints and assistance (EXR-022, MAS-007)', () => {
 
   it('carries the hints into the attempt and the evidence', async () => {
     await answerDecision();
-    await revealHint(DECISION, 'nudge', db);
-    await revealHint(DECISION, 'nudge', db);
-    const withHint = (await loadAttempt(DECISION, db))!;
+    await revealHint(DECISION, NORMAL_RUN, 'nudge', db);
+    await revealHint(DECISION, NORMAL_RUN, 'nudge', db);
+    const withHint = (await loadAttempt(DECISION, NORMAL_RUN, db))!;
     expect(withHint.hints_revealed).toEqual(['nudge']);
     const { attempt: row, report } = await finalizeAttempt(decision, withHint, db);
     expect(row.hints_used).toEqual(['nudge']);
@@ -336,8 +338,12 @@ describe('grading, evidence and mastery', () => {
 
   it('a wrong decision reports where it diverged', async () => {
     await answerDecision(db, 'A tag for each treatment. Quick to filter on.');
-    await saveResponse(DECISION, { choice: 'tag' }, db);
-    const { report } = await finalizeAttempt(decision, (await loadAttempt(DECISION, db))!, db);
+    await saveResponse(DECISION, NORMAL_RUN, { choice: 'tag' }, db);
+    const { report } = await finalizeAttempt(
+      decision,
+      (await loadAttempt(DECISION, NORMAL_RUN, db))!,
+      db,
+    );
     expect(report.score).toBe(0);
     const failed = report.tiers.required.find((result) => !result.passed)!;
     expect(failed.expected).toBe('decision.choice = "contact_custom_field"');
@@ -346,9 +352,10 @@ describe('grading, evidence and mastery', () => {
 
   it('an open-ended answer is captured and its authored marker evaluated, with the rubric left owed', async () => {
     const exercise = byId(OPEN_ENDED);
-    await startAttempt(exercise, {}, db);
+    await startAttempt(exercise, NORMAL_RUN, {}, db);
     await saveResponse(
       OPEN_ENDED,
+      NORMAL_RUN,
       {
         text: 'Reception forgets to follow up. I would need to know the show rate before building.',
       },
@@ -356,7 +363,7 @@ describe('grading, evidence and mastery', () => {
     );
     const { report, attempt: row } = await finalizeAttempt(
       exercise,
-      (await loadAttempt(OPEN_ENDED, db))!,
+      (await loadAttempt(OPEN_ENDED, NORMAL_RUN, db))!,
       db,
     );
     expect(report.tiers.required[0]?.passed).toBe(true);
@@ -371,11 +378,17 @@ describe('grading, evidence and mastery', () => {
   it('a retrieval run records retrieval evidence and never an independent demonstration (D-052)', async () => {
     const exercise = byId(OPEN_ENDED);
     const skill = exercise.skills[0]!;
-    await startAttempt(exercise, { skill_id: skill, run: 'retrieval' }, db);
-    await saveResponse(OPEN_ENDED, { text: 'I would need to know the show rate first.' }, db);
+    const review = { run: 'retrieval' as const, skill_id: skill };
+    await startAttempt(exercise, review, {}, db);
+    await saveResponse(
+      OPEN_ENDED,
+      review,
+      { text: 'I would need to know the show rate first.' },
+      db,
+    );
     const { attempt: row } = await finalizeAttempt(
       exercise,
-      (await loadAttempt(OPEN_ENDED, db))!,
+      (await loadAttempt(OPEN_ENDED, review, db))!,
       db,
     );
     expect(row.source).toEqual({ type: 'retrieval', id: OPEN_ENDED });
@@ -460,7 +473,17 @@ describe('routing into the runner', () => {
     renderAt(`/exercise/${OPEN_ENDED}?skill=${byId(OPEN_ENDED).skills[0]}&run=retrieval`);
     await screen.findByRole('heading', { level: 1, name: byId(OPEN_ENDED).title });
     expect(screen.getByText(/Retrieval/)).toBeInTheDocument();
-    await waitFor(async () => expect((await loadAttempt(OPEN_ENDED, db))?.run).toBe('retrieval'));
+    await waitFor(async () =>
+      expect(
+        (
+          await loadAttempt(
+            OPEN_ENDED,
+            { run: 'retrieval', skill_id: byId(OPEN_ENDED).skills[0]! },
+            db,
+          )
+        )?.run,
+      ).toBe('retrieval'),
+    );
   });
 });
 

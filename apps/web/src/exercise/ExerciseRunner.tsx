@@ -11,12 +11,13 @@ import { useLearnerSnapshot } from '../data/learning';
 import { joinWords, skillTitle } from '../screens/learningCopy';
 import {
   discardAttempt,
+  resolveRunContext,
   revealHint,
   saveResponse,
   startAttempt,
   useActiveAttempt,
   type ActiveAttempt,
-  type RunMode,
+  type AttemptContext,
 } from './attempt';
 import { finalizeAttempt, gradeAttempt } from './finalize';
 import { HintDrawer } from './HintDrawer';
@@ -27,9 +28,6 @@ import { canGradeNow, missingSources, SOURCE_DEPENDENCY, SOURCE_PHASE } from './
 import { MODE_WORDS, treatmentFor } from './runnerCopy';
 import styles from './ExerciseRunner.module.css';
 import { useAttemptHistory } from './useAttemptHistory';
-
-const runModeOf = (value: string | null): RunMode =>
-  value === 'retrieval' ? 'retrieval' : 'normal';
 
 /** What the exercise needs that nothing can supply yet, in the learner's words (EXR-024). */
 function RuntimeRequired({ exercise }: { exercise: Exercise }) {
@@ -85,10 +83,12 @@ function Brief({ exercise }: { exercise: Exercise }) {
 function WorkSurface({
   exercise,
   attempt,
+  context,
   disabled,
 }: {
   exercise: Exercise;
   attempt: ActiveAttempt;
+  context: AttemptContext;
   disabled: boolean;
 }) {
   const treatment = treatmentFor(exercise);
@@ -99,7 +99,7 @@ function WorkSurface({
   const update = (change: Partial<typeof draft>) => {
     const next = { ...draft, ...change };
     setDraft(next);
-    void saveResponse(exercise.id, change);
+    void saveResponse(exercise.id, context, change);
   };
 
   return (
@@ -171,15 +171,17 @@ export default function ExerciseRunner() {
   const { exerciseId = '' } = useParams();
   const [search] = useSearchParams();
   const exercise = content.exercises.find((candidate) => candidate.id === exerciseId) ?? null;
-  const run = runModeOf(search.get('run'));
-  const requestedSkill = search.get('skill');
-  const skillId =
-    exercise && requestedSkill && exercise.skills.includes(requestedSkill)
-      ? requestedSkill
-      : (exercise?.skills[0] ?? null);
+  // A retrieval is honoured only when it names a capability the exercise teaches; the context
+  // then keeps this run's draft and result apart from an ordinary run of the same exercise.
+  const context = resolveRunContext(exercise ?? { skills: [] }, {
+    run: search.get('run'),
+    skill: search.get('skill'),
+  });
+  const run = context.run;
+  const skillId = context.skill_id;
 
-  const attempt = useActiveAttempt(exerciseId);
-  const history = useAttemptHistory(exerciseId);
+  const attempt = useActiveAttempt(exerciseId, context);
+  const history = useAttemptHistory(exerciseId, context);
   const snapshot = useLearnerSnapshot();
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
@@ -192,9 +194,9 @@ export default function ExerciseRunner() {
   useEffect(() => {
     if (!exercise || attempt === undefined || history === undefined) return;
     if (attempt === null && history.length === 0) {
-      void startAttempt(exercise, { skill_id: skillId, run });
+      void startAttempt(exercise, context);
     }
-  }, [exercise, attempt, history, skillId, run]);
+  }, [exercise, attempt, history, context.run, context.skill_id]);
 
   if (!exercise) {
     return (
@@ -228,8 +230,9 @@ export default function ExerciseRunner() {
 
   async function tryAgain() {
     if (!exercise) return;
-    await discardAttempt(exercise.id, db);
-    await startAttempt(exercise, { skill_id: skillId, run });
+    // A new attempt in the same context: the finished one keeps its place in the history.
+    await discardAttempt(exercise.id, context, db);
+    await startAttempt(exercise, context);
   }
 
   return (
@@ -250,7 +253,7 @@ export default function ExerciseRunner() {
         <p className={styles.stance}>{treatment.stance}</p>
         {skillId && (
           <p className={styles.for}>
-            For{' '}
+            {run === 'retrieval' ? 'Reviewing ' : 'For '}
             <Link to={`/skills/${skillId}`} className={styles.inlineLink}>
               {skillTitle(skillId)}
             </Link>
@@ -269,6 +272,7 @@ export default function ExerciseRunner() {
               key={attempt.attempt_id}
               exercise={exercise}
               attempt={attempt}
+              context={context}
               disabled={busy}
             />
           )}
@@ -276,7 +280,7 @@ export default function ExerciseRunner() {
             <HintDrawer
               exercise={exercise}
               revealed={attempt.hints_revealed}
-              onReveal={(level: HintLevel) => void revealHint(exercise.id, level)}
+              onReveal={(level: HintLevel) => void revealHint(exercise.id, context, level)}
             />
           )}
           {attempt && (

@@ -27,6 +27,8 @@ Last updated: 2026-09-04 (end of Phase 9)
 - **The prediction fields are derived from assertion paths.** Run the Lead shows a field for `prediction.tag` because an assertion reads it; its label comes from the path so the expected value never leaks. An exercise that asks for a prediction its assertions do not read captures it as prose only.
 - **Touch, offline and reduced motion were verified by Chrome emulation**, not on a physical phone.
 - **The retrieval integration has no vehicle in the seed content for most skills.** The session builder picks an authored practice or independent exercise; where a due skill has none, no retrieval is offered and no evidence is invented.
+- **A retrieval through the runner can only end `partial` today.** Both runnable families name a rubric, and a partial result is not a demonstration, so a review cannot yet clear a NEEDS_REFRESH from the product. The scoping — one evidence row for the reviewed capability — and its mastery consequences are proven directly against the engine.
+- **A review and a normal run of the same exercise are separate contexts** (D-072): separate drafts, separate current results, and evidence for the reviewed capability only. The exercise's complete history stays queryable; only what the runner calls "the current result" is scoped.
 - **`EX-EDGE_CASE-late-booking-reminder`'s critical check reads an event field named `after`.** The grader matches `where` as exact field equality, so the simulator must label events with the reference they follow for that check to be judged. It is recorded here rather than rewritten, because changing authored content to suit the grader would be the wrong direction.
 
 ## Phase 8 — academy

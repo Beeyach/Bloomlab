@@ -106,6 +106,21 @@ none → active (draft in the local workspace) → finalized (exercise_attempts 
                         └──────────── new attempt id ───────┘
 ```
 
+### Run context: the exercise is the vehicle, the skill is the capability (D-072)
+
+A retrieval names two things, and both are part of the run's identity.
+
+| | Normal run | Retrieval run |
+|---|---|---|
+| Draft key | `exercise.attempt.<exercise>` — the same key whatever capability the learner arrived from | `exercise.attempt.<exercise>:retrieval:<skill>` |
+| Current result | attempts whose `source.type` is `exercise` | retrieval attempts whose `skill_ids` contains the reviewed capability |
+| Evidence written for | every skill the exercise teaches | the reviewed capability, only |
+| An invalid target | — | refused: `startAttempt` and `skillsForAttempt` throw, and the runner treats such a link as an ordinary run rather than reviewing everything |
+
+So an unfinished normal attempt is never resumed as a review, a finished normal attempt is never shown as a review's result, and the inverse holds. `attemptHistory` still returns the exercise's complete history; only the *current* result is scoped. Try again stays inside its own context.
+
+Scoping matters because retrieval evidence moves the review clock: reviewing one capability must never reset another's clock, clear its NEEDS_REFRESH, or force one, merely because the same exercise teaches both.
+
 - The id is minted when the learner starts and lives in `workspace["exercise.attempt.<id>"]` with the start time, revealed hints and unfinished response.
 - A reload resumes the same attempt: the probe shows the same `attempt_id`, the same hints and the same text after a reload.
 - Finalizing passes the id to `recordEvidence` as `attempt_id`, with evidence ids `ea:<attempt id>:<skill id>`.
@@ -141,7 +156,9 @@ The outcome maps straight through: `passed` → passed, `failed` → failed, `pa
 
 ## Retrieval behaviour
 
-A retrieval session item opens the authored exercise with `?run=retrieval`. The evidence is `retrieval` from source `retrieval` and carries no authored mode, so assistance comes only from hints actually taken: an unassisted pass clears NEEDS_REFRESH and advances the review clock, a guided or worked-example one does not, and none of it counts toward an independent demonstration (D-050 … D-052 unchanged). Where a due skill has no authored exercise, nothing is offered and no evidence is invented.
+A retrieval session item opens the authored exercise with `?run=retrieval&skill=<capability>`. The evidence is `retrieval` from source `retrieval`, is written **for the reviewed capability only**, and carries no authored mode, so assistance comes only from hints actually taken: an unassisted pass clears NEEDS_REFRESH for that capability and advances its review clock, a guided or worked-example one does not, and none of it counts toward an independent demonstration (D-050 … D-052 unchanged). Reviewing one capability leaves every other capability the exercise teaches untouched — no evidence, no clock change, no state change. Where a due skill has no authored exercise, nothing is offered and no evidence is invented.
+
+A retrieval that names no capability, or one the exercise does not teach, is never widened to every taught skill: `startAttempt` and `skillsForAttempt` refuse it, and the runner treats such a link as an ordinary run of that exercise.
 
 ## Phase 7 and 8 integration
 
@@ -177,10 +194,12 @@ A retrieval session item opens the authored exercise with `?run=retrieval`. The 
 |---|---|---|
 | `packages/exercise-engine/test/assertions.test.ts` | 32 | Path resolution and prototype safety; every state operator including missing paths and nulls; event counts, `where` narrowing, zero events, multiple contacts, wrong purpose; timing exact, inside, exactly on and just outside tolerance, multiple candidates, positive offsets, missing reference, no event; architecture trigger/action/branch/feature/limit/re-entry and node order not mattering; negative present, absent and narrowed; sequence correct, reversed, missing, repeated and equal timestamps; source requirements and the unevaluated path. |
 | `packages/exercise-engine/test/grade.test.ts` | 20 | Scoring and threshold including exactly on it; tier grouping and bonus exclusion; critical override at 95% and 100%; all failed critical ids; refusal to judge a missing source; rubric pending; deterministic failure beating a pending rubric; assistance roll-up and floors; grader version; byte-equal reports across repeats, a five-year clock jump and reordered assertions. |
+| `apps/web/src/exercise/retrievalContext.test.tsx` | 20 | Run-context identity: the draft key per context; a retrieval honoured only for a capability the exercise teaches and refused otherwise; a normal draft not resumed as a review and the inverse; two reviews of two capabilities as two attempts; a review resuming across a deep-link reload; a finished normal attempt not becoming a review's result and the inverse; the complete history still queryable; Try again inside its own context; the skill scoping of `skillsForAttempt`; one retrieval row for the reviewed capability and none for the other; the other capability's state, clock, last demonstration and counts untouched; a normal run still crediting both; a failed review forcing NEEDS_REFRESH for one capability alone; a qualifying review clearing it for one alone; an assisted review not resetting the clock; and two devices keeping a scoped review and a normal run as separate facts. Ten of the twenty fail if either fix is reverted. |
+| `packages/design-system/src/holo/HoloMaterial.test.ts` | 2 | The card flattens its transform style so `overflow: hidden` still clips, declares no `preserve-3d`, keeps its tilt, and gives every layer the card's radius (D-074). |
 | `apps/web/src/exercise/exercise.test.tsx` | 31 | Data-driven resolution of four families through one route and a scan proving no exercise id appears in runner code; the unknown-id error state; brief content per family; FIX IT hiding the culprit; REBUILD BLIND with no hints or lesson; WHAT WOULD YOU BUILD naming no feature; the runtime refusal and `NotGradableError`; opening recording nothing; reload resuming; double finalize; real start and completion times; Try again as a second attempt; a persistence failure preserving the work; the hint ladder and its assistance; evidence-kind mapping; grading, evidence and mastery; divergence reporting; retrieval semantics; the result view and its reload; and routing from the Academy, the sheet and a retrieval deep link. |
 | `apps/web/src/exercise/authoredGrading.test.ts` | 9 | The authored no-show recovery build graded against fixture runs: a full pass, the DND critical failure at 100%, the cancelled enrolment, a double text, a late text, the wrong trigger; the critical ids reaching the attempt and evidence; and the authored prose parsing. |
 | `packages/content-schema/test/exerciseRuntime.test.ts` | 9 | A new BUILD IT file compiling into the bundle with assertions, tiers, grading and indexes; and the compiler rejecting seven classes of grading rule the runtime could not judge. |
-| **Phase 9 total** | **101** | Whole suite: **431 tests in 45 files**. |
+| **Phase 9 total** | **123** | Whole suite: **453 tests in 47 files**. |
 
 ## Screen coverage (DES-018)
 
@@ -234,3 +253,4 @@ Decisions D-067 … D-073.
 - The Markdown subset covers what the content uses; a heading or table in exercise instructions would render as plain text.
 - Touch, offline and reduced motion were verified by Chrome emulation, not on a physical phone.
 - `EX-EDGE_CASE-late-booking-reminder`'s critical check reads an event field named `after`, which the Phase 10 runtime will have to supply for that check to be judged; the content was left as authored.
+- A retrieval through the runner can only end `partial` today, because both runnable families name a rubric, and a `partial` result is not a demonstration — so it cannot yet clear a NEEDS_REFRESH through the product. The scoping and the mastery consequences are proven with evidence written exactly as `finalizeAttempt` scopes it; a retrieval that can pass needs either a deterministic multi-skill exercise (content) or the rubric (Phase 19).
