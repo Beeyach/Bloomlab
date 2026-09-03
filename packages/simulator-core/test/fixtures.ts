@@ -32,8 +32,18 @@ export function scenario(overrides: Partial<SimulatorScenario> = {}): SimulatorS
       ],
       tags: ['meta-lead', 'booked', 'no-show'],
       custom_fields: [
-        { key: 'treatment_interest', label: 'Treatment interest', type: 'dropdown' },
-        { key: 'consult_outcome', label: 'Consult outcome', type: 'dropdown' },
+        {
+          key: 'treatment_interest',
+          label: 'Treatment interest',
+          type: 'dropdown',
+          options: ['Signature Facial', 'Membership', 'Laser'],
+        },
+        {
+          key: 'consult_outcome',
+          label: 'Consult outcome',
+          type: 'dropdown',
+          options: ['Booked', 'Thinking about it', 'Not a fit'],
+        },
       ],
       custom_values: [{ key: 'front_desk_phone', value: '+15125550100' }],
       pipelines: [

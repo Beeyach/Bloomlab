@@ -38,6 +38,12 @@ export const FAILURE_MODES = [
 ] as const;
 export type FailureMode = (typeof FAILURE_MODES)[number];
 
+const user = z.strictObject({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  role: z.enum(['admin', 'user']).default('user'),
+});
+
 const contact = z.strictObject({
   id: z.string().min(1),
   first_name: z.string().min(1),
@@ -49,14 +55,58 @@ const contact = z.strictObject({
   dnd: z.boolean().default(false),
   timezone: timeZone.optional(),
   source: z.string().optional(),
+  /** A user in this scenario's own `users` list (D-089). */
+  owner_id: z.string().min(1).optional(),
 });
 
-const customField = z.strictObject({
-  key: z.string().regex(/^[a-z][a-z0-9_]*$/),
-  label: z.string().min(1),
-  type: z.enum(['text', 'number', 'date', 'checkbox', 'dropdown', 'phone', 'email']),
-  object: z.enum(['contact', 'opportunity']).default('contact'),
+/** Internal context the account already carries (D-091). At least one target, checked below. */
+const note = z.strictObject({
+  id: z.string().min(1),
+  body: z.string().trim().min(1),
+  contact_id: z.string().min(1).optional(),
+  opportunity_id: z.string().min(1).optional(),
+  author_id: z.string().min(1).optional(),
+  at: isoDateTime.optional(),
 });
+
+/** Work already owed on a record (D-091). */
+const task = z.strictObject({
+  id: z.string().min(1),
+  title: z.string().trim().min(1),
+  contact_id: z.string().min(1).optional(),
+  opportunity_id: z.string().min(1).optional(),
+  description: z.string().optional(),
+  due_at: isoDateTime.optional(),
+  completed: z.boolean().default(false),
+  assigned_to: z.string().min(1).optional(),
+});
+
+const customField = z
+  .strictObject({
+    key: z.string().regex(/^[a-z][a-z0-9_]*$/),
+    label: z.string().min(1),
+    type: z.enum(['text', 'number', 'date', 'checkbox', 'dropdown', 'phone', 'email']),
+    object: z.enum(['contact', 'opportunity']).default('contact'),
+    /** Required for `dropdown`, refused for every other type (D-090). */
+    options: stringList.optional(),
+  })
+  .superRefine((field, ctx) => {
+    // A dropdown with no options is a field nobody can fill in; options on any other type are a
+    // promise no screen keeps. The engine refuses both, so authoring refuses them here.
+    if (field.type === 'dropdown' && (field.options ?? []).length === 0) {
+      ctx.addIssue({ code: 'custom', path: ['options'], message: 'A dropdown needs its options' });
+    }
+    if (field.type !== 'dropdown' && field.options) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['options'],
+        message: `Only a dropdown has options; ${field.key} is ${field.type}`,
+      });
+    }
+    if (field.options && new Set(field.options).size !== field.options.length) {
+      ctx.addIssue({ code: 'custom', path: ['options'], message: 'Duplicate option' });
+    }
+  });
 
 const pipeline = z.strictObject({
   id: z.string().min(1),
@@ -91,11 +141,20 @@ const opportunity = z.strictObject({
   pipeline_id: z.string().min(1),
   stage: z.string().min(1),
   value: z.number().min(0).default(0),
+  /** GoHighLevel names a deal; without one every card reads as its contact. */
+  name: z.string().trim().min(1).optional(),
+  /** The four fixed statuses; HighLevel does not allow renaming or adding to them. */
+  status: z.enum(['open', 'won', 'lost', 'abandoned']).optional(),
+  owner_id: z.string().min(1).optional(),
+  custom_fields: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional(),
 });
 
 export const AccountStateSchema = z
   .strictObject({
+    users: z.array(user).default([]),
     contacts: z.array(contact).default([]),
+    notes: z.array(note).default([]),
+    tasks: z.array(task).default([]),
     tags: stringList.default([]),
     custom_fields: z.array(customField).default([]),
     custom_values: z
