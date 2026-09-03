@@ -138,8 +138,12 @@
   }
 }
 
-/* Narrowest phones: the developer links keep their names for assistive tech but show icons only,
-   so five items fit in 320 px without overflow. */
+/*
+ * Narrowest phones: every item keeps its name for assistive tech but shows an icon only, so the
+ * bar fits 320 px without overflow. The developer links dropped their labels here first; CRM made
+ * the main list a sixth item, and six labelled items do not fit, so the same treatment now covers
+ * both lists rather than letting the rail scroll or clip.
+ */
 @media (max-width: 359px) {
   .rail {
     padding: 0 var(--bl-space-1);
@@ -150,7 +154,7 @@
     padding-left: var(--bl-space-1);
   }
 
-  .developer .label {
+  .label {
     position: absolute;
     width: 1px;
     height: 1px;

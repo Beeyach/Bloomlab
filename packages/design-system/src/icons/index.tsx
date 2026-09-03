@@ -160,6 +160,14 @@ export const IconCampaign = (p: IconProps) => (
     <path d="M5 4h12l-2 4 2 4H5" />
   </Icon>
 );
+/** Records in a list: the CRM's own glyph, not a person and not a generic card. */
+export const IconRecords = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="4" width="18" height="16" rx="2" />
+    <path d="M3 9h18M8 4v16" />
+  </Icon>
+);
+
 export const IconMap = (p: IconProps) => (
   <Icon {...p}>
     <path d="M4 6l5-2 6 2 5-2v14l-5 2-6-2-5 2z" />
