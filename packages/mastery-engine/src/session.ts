@@ -361,3 +361,39 @@ export function buildSession(input: SessionInput): SessionPlan {
     notes,
   };
 }
+
+export interface NextStepInput {
+  skill: SkillDefinition;
+  evaluation: SkillEvaluation;
+  content: SessionInput['content'];
+  /** Passed exercises are avoided when an alternative exists. */
+  recent_evidence?: SessionInput['recent_evidence'];
+}
+
+/** The next useful step for one skill on its own (screens use it outside a full session). */
+export function nextStepForSkill(input: NextStepInput): SessionItem | null {
+  const recent = input.recent_evidence ?? [];
+  const ctx: Context = {
+    input: {
+      length: '30m',
+      now: new Date(0),
+      skills: [input.skill],
+      evaluations: [input.evaluation],
+      campaign: null,
+      path_order: [],
+      review: { due: [], upcoming: [] },
+      recent_evidence: recent,
+      content: input.content,
+    },
+    skills: new Map([[input.skill.id, input.skill]]),
+    evaluations: new Map([[input.skill.id, input.evaluation]]),
+    order: new Map(),
+    used: new Set(),
+    passedExercises: new Set(
+      recent.filter((e) => isPass(e) && e.exercise_id).map((e) => e.exercise_id as string),
+    ),
+    budget: 0,
+    planned: 0,
+  };
+  return nextStepFor(ctx, input.skill.id);
+}

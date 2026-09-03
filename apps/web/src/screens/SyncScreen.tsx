@@ -30,6 +30,7 @@ import {
   type SyncStatus,
 } from '../data';
 import { reopenConflictPrompt } from '../app/conflictPrompt';
+import { DeviceIdentity } from './DeviceIdentity';
 import styles from './SyncScreen.module.css';
 
 const RECOVERY_WARNING =
@@ -408,6 +409,7 @@ export default function SyncScreen() {
       )}
       {device && !isLinked(device) && <NotLinked onLinked={() => rerender((n) => n + 1)} />}
       {device && isLinked(device) && <Linked device={device} />}
+      <DeviceIdentity />
     </Stack>
   );
 }

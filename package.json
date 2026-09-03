@@ -31,7 +31,9 @@
     "content:build": "node scripts/content.mjs build",
     "content:check": "node scripts/content.mjs check",
     "content:lock": "node scripts/content.mjs lock",
-    "review:learning": "node scripts/review/learning-probe.mjs"
+    "review:learning": "node scripts/review/learning-probe.mjs",
+    "review:keyboard": "node scripts/review/keyboard-probe.mjs",
+    "review:touch": "node scripts/review/touch-probe.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

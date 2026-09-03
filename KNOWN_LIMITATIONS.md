@@ -2,19 +2,32 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-02 (end of Phase 6)
+Last updated: 2026-09-03 (end of Phase 7)
 
 ## Current state
 
-- The product has curriculum content compiled in (Phase 5) and a working learning engine over it (Phase 6: evidence, mastery states, gates, review, session builder), but no learner-facing screens and no simulator yet: evidence today enters through the diagnostic form on `/system`; the Command Center, Skill Map, Academy and exercise runner are Phases 7–9.
-- The home route is a Phase 1 foundation screen showing the version triplet and environment. It is not the Command Center (DES-010, Phase 7) and makes no claim to be.
+- The product has curriculum content compiled in (Phase 5), a working learning engine over it (Phase 6) and its first learner-facing screens (Phase 7: the Command Center at `/`, the Campaign and the Skill Map), but no runtime that produces evidence and no simulator yet: units are not rendered (Phase 8) and exercises are not run (Phase 9), so evidence still enters through the diagnostic form on `/system`.
 - `/system` (diagnostics) and `/design` (gallery) exist only in local and preview environments; both are off in production by flag.
-- The semantic components are presentational: they take typed props and will be wired to real engines from Phase 6 onward. Their prop shapes may change when the data models land; they share tokens, so the visual language will not.
+- The semantic components are presentational: Phase 7 wires SkillCard, HoloTerritory, MasteryBadge and StatusPill to the learning engine; the simulator components are wired by their phases. Prop shapes may still change when those data models land; they share tokens, so the visual language will not.
 - Deployment is live: every push to `main` deploys the `bloomlab` Worker (https://bloomlab.cool-sunset-2169.workers.dev) and every pull request redeploys the single shared `bloomlab-preview` Worker (D-020). Both hosts are public `workers.dev` URLs serving the foundation app with no learner data. D1 databases and R2 buckets do not exist yet (Phase 4).
 - The dev machine runs Node 22.18 while `engines.node` is `>=22.22.0` (react-router 8's floor). Everything works locally with npm engine warnings; CI uses the latest 22.x.
 - GHL feature names are verified only for the 34 registry records (Phase 5); the gallery samples in `/design` still use illustrative labels and are not wired to the registry (GHL-005 / GHL-010 apply from the screens onward).
 - The ~128k ElevenLabs credits have an expiry window; voice asset generation (VOI-005) is scheduled for Phase 20. Risk: credits expire before Phase 20. By design this is not a functional dependency.
 - Prettier does not format Markdown (`*.md` is ignored) so the control documents keep their hand-laid tables.
+
+## Phase 7 — command center + skill map
+
+- **Continue opens the capability, not an exercise.** Units are not rendered (Phase 8) and exercises are not run (Phase 9), so "Continue" and every plan item open the capability's sheet on the Skill Map, which names the next step and shows its text. Evidence still enters through the diagnostic form on `/system`.
+- **Some capabilities have no suitable next step yet.** The builder asks for a guided or practice exercise before an independent one; where the seed content authors only an independent-mode exercise (or none), the screens say "No suitable next exercise is authored for this capability yet." rather than pointing at the wrong thing. This is a content gap (`SKILL_NO_PRACTICE`, `SKILL_NO_UNIT` warnings), closed by Phase 24.
+- **The rail has three of seven areas** (D-053). Simulator, Clients, Portfolio and Playground appear with their phases.
+- **No active-client block on the Command Center.** The persistent-client system and its "active client" state are Phase 24; DES-010 stays PARTIAL until then.
+- **The learner's focus is device-local.** It is a workspace record, not synced (D-057); a second device does not see it.
+- **"Now" refreshes on data change, not on a timer** (D-058). A retrieval that becomes due while the app stays open and untouched shows on the next evidence write, sync pull or reload.
+- **Recent evidence shows the last five rows; due retrieval, repairs and work-ahead show four each.** There is no full evidence history screen yet (portfolio and analytics, Phase 23 and INF-018).
+- **Two Field Ready gates have no authored capabilities** (CUR-002), so the campaign screen says "The capabilities for this gate are authored in a later content phase." for them.
+- **Touch was verified by emulation.** The holographic press → drag → release and the bottom sheet were driven with DevTools touch events at 390 px, not on a physical phone.
+- **Versus the Doodlemon reference** the material is procedural (pearl, spectral bands, grain, glare, tinted rim) rather than a photographed foil, there is no idle float, and the territory objects are typographic rather than illustrated; see the Phase 7 review for the exact differences.
+- **The developer rail links show icons only at 320 px** (their names stay for assistive technology) so five items fit; production has three items and shows every label at every width.
 
 ## Phase 6 — learning engine
 
@@ -23,7 +36,7 @@ Last updated: 2026-09-02 (end of Phase 6)
 - **Confidence is a heuristic reading, not a measurement.** It is a documented formula over state, extra independent passes, recent failure rate and overdue review; it exists so screens can order and soften, never to gate.
 - **Review intervals are not calibrated.** 10 / 21 / 35 / 60 days by state, divided by importance and shortened by failure rate, with a 14-day grace before NEEDS_REFRESH, are explicit starting values (D-046). Calibration needs real learner history (Phase 24+).
 - **The session builder cannot see time actually spent.** It plans against content `estimated_minutes`; sessions are not yet timed or recorded (that arrives with the exercise runner and analytics, INF-018).
-- **Assistance dependence is computed, not shown as a meter.** The value is on every session plan and derived from the last 14 days of evidence; the quiet meter itself is a Phase 7 screen (MAS-007's UI half).
+- **Assistance dependence is shown in words, not as a gauge.** The value is on every session plan and derived from the last 14 days of evidence; Phase 7 surfaces it as "Passed with help" rows and a one-line note on the plan, by design without a meter graphic.
 - **CUR-002 stays partial.** Field Ready's thirteen gates are competency gates in data and in the engine, but gates 6 (Conversion and Copy) and 12 (Capstone) have no authored skills, so their competencies are not mapped yet (Phase 24).
 - **INF-018 (learning-event analytics, P2) is not started.** The evidence and attempt records already carry the events it lists; the aggregation is deferred.
 - **Cross-device convergence relies on both devices recomputing.** Derived rows sync as simple state with deterministic ids, and each device recomputes from evidence after a pull; a device that never pulls the other device's evidence shows its own, older derived rows until it does. Nothing is lost: evidence is append-only.

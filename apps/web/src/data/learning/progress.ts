@@ -54,7 +54,8 @@ export async function evaluateLearner(
 ): Promise<LearnerSnapshot> {
   const bundle = options.bundle ?? compiledContent;
   const now = options.now ?? new Date();
-  const device = await ensureDevice(database);
+  // Read-only when the device exists, so live queries can evaluate without writing.
+  const device = (await database.device.toCollection().first()) ?? (await ensureDevice(database));
   const evidence = await loadEvidence(database, device.learner_id);
   const evaluations = evaluateSkills(bundle.skills, evidence, now);
   const skills = new Map(bundle.skills.map((skill) => [skill.id, skill]));

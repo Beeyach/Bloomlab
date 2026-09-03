@@ -137,7 +137,7 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **DES-008** Density review: Academy low-medium, Workflow Lab medium-high, CRM high, Call Room very low, Pricing Arena medium, Skill Map high-visual/low-text.
 - **DES-009** Left rail measures 68–80 px on desktop with the seven areas; no expanded sidebar exists.
 - **DES-010** Home shows Continue with campaign/gate/topic/progress, plus active client, due retrieval, recent mastery, Build My Session; no vanity metrics.
-- **DES-011** Skill Map renders ten territory objects with HoloMaterial; each of the eight skill states renders a distinct material.
+- **DES-011** Skill Map renders ten territory objects with HoloMaterial. Every skill state is clearly distinguishable through its material plus a state badge, text or icon; progression into Independent, Pressure-tested and Mastered changes and escalates the material (§75); NEEDS_REFRESH stays visually distinct while preserving the earned rung's material; no status relies on colour alone (A11Y-005). Corrected from "each of the eight skill states renders a distinct material" (D-061).
 - **INF-011** Throwing inside Call Room, Workflow Lab and the AI client each leaves the other environments functional (tests); local data survives a simulated sync failure.
 - **PERF-001** Bundle analysis shows lab chunks split by route; opening an Academy unit does not load the Workflow Lab chunk (network panel evidence).
 

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -33,10 +33,24 @@ afterEach(() => {
 });
 
 describe('App routing', () => {
-  it('renders the foundation home at /', async () => {
+  it('renders the Command Center at / inside the rail', async () => {
     renderAt('/', productionFlags);
-    expect(await screen.findByRole('heading', { level: 1, name: 'Bloomlab' })).toBeInTheDocument();
-    expect(screen.getByText('0.1.0')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'What should I do next?' }),
+    ).toBeInTheDocument();
+    const rail = screen.getByRole('navigation', { name: 'Primary' });
+    expect(within(rail).getByRole('link', { name: 'Home' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(within(rail).getByRole('link', { name: 'Campaign' })).toHaveAttribute(
+      'href',
+      '/campaign',
+    );
+    expect(within(rail).getByRole('link', { name: 'Skill Map' })).toHaveAttribute(
+      'href',
+      '/skills',
+    );
   });
 
   it('shows not-found for unknown paths', async () => {
@@ -54,10 +68,18 @@ describe('App routing', () => {
     expect(screen.queryByRole('heading', { name: /system diagnostics/i })).not.toBeInTheDocument();
   });
 
-  it('hides the /system link on home when the flag is off', async () => {
+  it('hides the developer rail links when the flags are off', async () => {
     renderAt('/', productionFlags);
-    await screen.findByRole('heading', { level: 1, name: 'Bloomlab' });
-    expect(screen.queryByRole('link', { name: /system diagnostics/i })).not.toBeInTheDocument();
+    await screen.findByRole('heading', { level: 1, name: 'What should I do next?' });
+    expect(screen.queryByRole('link', { name: 'System' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Design' })).not.toBeInTheDocument();
+  });
+
+  it('shows the developer rail links locally', async () => {
+    renderAt('/', localFlags);
+    await screen.findByRole('heading', { level: 1, name: 'What should I do next?' });
+    expect(screen.getByRole('link', { name: 'System' })).toHaveAttribute('href', '/system');
+    expect(screen.getByRole('link', { name: 'Design' })).toHaveAttribute('href', '/design');
   });
 
   it('renders /system with API health when the flag is on', async () => {

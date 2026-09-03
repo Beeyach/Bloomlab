@@ -1,0 +1,161 @@
+/* Compact rail (spec §73): 72 px column on tablet and desktop, a bottom bar on phones. */
+.rail {
+  position: fixed;
+  z-index: var(--bl-z-sticky);
+  display: flex;
+  background: var(--bl-color-snow);
+  border-color: var(--bl-color-border);
+}
+
+.brand {
+  display: none;
+}
+
+.list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: var(--bl-space-1);
+  border-radius: var(--bl-radius-md);
+  color: var(--bl-color-text-soft);
+  text-decoration: none;
+  transition:
+    color var(--bl-motion-fast) var(--bl-motion-ease-standard),
+    background var(--bl-motion-fast) var(--bl-motion-ease-standard);
+}
+
+.item:hover {
+  color: var(--bl-color-text);
+  background: var(--bl-color-mist);
+}
+
+.item:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}
+
+.glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 28px;
+  border-radius: var(--bl-radius-full);
+  transition: background var(--bl-motion-fast) var(--bl-motion-ease-standard);
+}
+
+.active {
+  color: var(--bl-color-text);
+}
+
+.active .glyph {
+  background: var(--bl-color-ink);
+  color: var(--bl-color-text-inverse);
+}
+
+.label {
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Phones: bottom bar, thumb reach, every area still present. */
+@media (max-width: 767px) {
+  .rail {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 64px;
+    padding: 0 var(--bl-space-2);
+    border-top: 1px solid;
+    justify-content: center;
+  }
+
+  .list {
+    flex: 1;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .developer {
+    flex: 0 0 auto;
+    gap: var(--bl-space-1);
+    padding-left: var(--bl-space-2);
+    border-left: 1px solid var(--bl-color-border);
+  }
+}
+
+/* Tablet and desktop: 72 px left column (spec: 68–80 px). */
+@media (min-width: 768px) {
+  .rail {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 72px;
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--bl-space-4) var(--bl-space-2);
+    border-right: 1px solid;
+  }
+
+  .brand {
+    display: block;
+    margin: 0 0 var(--bl-space-5);
+    font-family: var(--bl-font-display);
+    font-size: var(--bl-font-size-xs);
+    font-weight: var(--bl-font-weight-bold);
+    letter-spacing: var(--bl-font-tracking-display);
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .list {
+    flex-direction: column;
+    gap: var(--bl-space-2);
+  }
+
+  .item {
+    min-height: 56px;
+  }
+
+  .developer {
+    margin-top: auto;
+    padding-top: var(--bl-space-3);
+    border-top: 1px solid var(--bl-color-border);
+  }
+}
+
+/* Narrowest phones: the developer links keep their names for assistive tech but show icons only,
+   so five items fit in 320 px without overflow. */
+@media (max-width: 359px) {
+  .rail {
+    padding: 0 var(--bl-space-1);
+  }
+
+  .developer {
+    gap: 0;
+    padding-left: var(--bl-space-1);
+  }
+
+  .developer .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}

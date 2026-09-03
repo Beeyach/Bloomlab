@@ -7,6 +7,7 @@ import { NotFound } from '../screens/NotFound';
 import { FeatureFlagsProvider } from './FeatureFlagsProvider';
 import { RootLayout } from './RootLayout';
 import { RouteLoading } from './RouteLoading';
+import { ScreenErrorBoundary } from './ScreenErrorBoundary';
 import { enabledRoutes } from './routes';
 import { getRuntimeEnvironment } from './runtime';
 
@@ -24,9 +25,11 @@ export function App({
               key={id}
               path={path}
               element={
-                <Suspense fallback={<RouteLoading />}>
-                  <Component />
-                </Suspense>
+                <ScreenErrorBoundary resetKey={path}>
+                  <Suspense fallback={<RouteLoading />}>
+                    <Component />
+                  </Suspense>
+                </ScreenErrorBoundary>
               }
             />
           ))}

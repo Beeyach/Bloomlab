@@ -44,6 +44,9 @@ const sections = [
 const defaultPages = [
   ...sections.map((s) => [s, `/design?section=${s}`]),
   ['home', '/'],
+  ['campaign', '/campaign'],
+  ['skills', '/skills'],
+  ['skill-detail', '/skills/SK-STRATEGIZE-funnel-math'],
   ['sync', '/sync'],
   ['system', '/system'],
   ['notfound', '/nope'],
@@ -61,6 +64,10 @@ try {
     for (const [name, path] of pages) {
       await setViewport(page, w, 900);
       await openPage(page, `${BASE}${path}`);
+      // Let entrance animations (e.g. a sheet sliding in) finish before measuring positions.
+      await page.evaluate(
+        'Promise.all(document.getAnimations().map((a) => a.finished.catch(() => null)))',
+      );
       const audit = await page.evaluate(AUDIT);
       const height = await page.evaluate('document.documentElement.scrollHeight');
       await page.send('Emulation.setDeviceMetricsOverride', {

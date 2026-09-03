@@ -9,12 +9,13 @@ import {
   startSyncScheduler,
   syncApi,
 } from '../data';
+import { AppRail } from './AppRail';
 import { ConflictChooser } from './ConflictChooser';
 import styles from './RootLayout.module.css';
 import { SyncStatusIndicator } from './SyncStatusIndicator';
 
 /**
- * Phase 1 frame: skip link + main region. The compact left rail (DES-009) is Phase 7.
+ * The app frame: skip link, the compact rail (spec §73, DES-009), the main region.
  * Phase 3 adds the device record on first run and the quiet sync indicator; Phase 4 the
  * background sync scheduler and the conflict chooser; Phase 6 recomputes the learner's
  * progress from evidence on start and after every sync that brought something in.
@@ -38,6 +39,7 @@ export function RootLayout() {
       <a className={styles.skipLink} href="#main">
         Skip to content
       </a>
+      <AppRail />
       <SyncStatusIndicator className={styles.status} />
       <main id="main" className={styles.main} tabIndex={-1}>
         <Outlet />
