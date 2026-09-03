@@ -219,7 +219,7 @@ try {
   await openPage(page, `${BASE}${DECISION}`);
   for (
     let i = 0;
-    i < 50 && !(await page.evaluate('Boolean(navigator.serviceWorker.controller)'));
+    i < 150 && !(await page.evaluate('Boolean(navigator.serviceWorker.controller)'));
     i++
   ) {
     await sleep(100);
@@ -232,6 +232,14 @@ try {
   await page.send('Page.reload', { ignoreCache: false });
   await sleep(1200);
   const openedOffline = await waitFor(page, "document.querySelector('input[type=radio]')");
+  // Recorded before any interaction, so a failure here still says what the page looked like.
+  report.offline = {
+    navigatorOnLine: await page.evaluate('navigator.onLine'),
+    openedOffline,
+    heading: await text(page, 'h1'),
+    serviceWorkerControlled: await page.evaluate('Boolean(navigator.serviceWorker.controller)'),
+  };
+  if (!openedOffline) throw new Error('the runner did not render offline');
 
   await page.evaluate(
     "[...document.querySelectorAll('label')].find((x) => x.textContent.includes('Contact custom field')).click()",
@@ -246,9 +254,7 @@ try {
     "[...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Run it').click()",
   );
   await waitFor(page, "document.querySelector('[class*=resultTitle]')");
-  report.offline = {
-    navigatorOnLine: await page.evaluate('navigator.onLine'),
-    openedOffline,
+  Object.assign(report.offline, {
     result: await text(page, '[class*=resultTitle]'),
     apiFetch: await page.evaluate(
       `fetch('/api/health').then((r) => 'served ' + r.status).catch((e) => 'failed: ' + e.message)`,
@@ -256,7 +262,7 @@ try {
     attempts: await rows(page, 'exercise_attempts'),
     evidence: await rows(page, 'skill_evidence'),
     queued: await rows(page, 'sync_queue'),
-  };
+  });
   await page.send('Page.reload', { ignoreCache: false });
   await sleep(1000);
   await waitFor(page, "document.querySelector('[class*=resultTitle]')");
