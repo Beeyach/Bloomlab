@@ -30,6 +30,19 @@ The Academy turns the authored learning units into the reading experience: the M
 - Opening, scrolling, reloading and re-opening a unit write nothing: the tests and the probe check `skill_evidence` is empty after a render.
 - "Finish this unit" calls `completeUnit(unit)` → `findUnitCompletion` (an exposure row with source `learning_unit` and this unit's id on this learner's record); if one exists nothing is written and the panel shows the recorded date. Otherwise `recordEvidence({ skill_ids: unit.skills, kind: 'exposure', result: 'exposed', source: { type: 'learning_unit', id } })` writes one evidence row per skill (no attempt row, `score: null`, no assistance), stamped with app, content (`2026.09.03`), content hash, simulator and rules versions, and recomputes the derived rows. The live snapshot updates the finish panel, which shows `nextStepForSkill` for the requested (or first) skill.
 - Engine effect: UNSEEN → LEARNING; `counts.independent_passes` stays 0; repeated exposures and passed quizzes leave the skill at LEARNING with `missing_requirements` still including practice (test "exposure and quizzes can never produce independent or mastered state").
+### Completion identity across devices (D-062)
+
+A unit completion is the one evidence row Bloomlab does not give a random id. It is `ue:<unit id>:<skill id>:<fnv1a(learner id)>` (`unitCompletionId` in `apps/web/src/data/learning/ids.ts`), passed to the single write path as `recordEvidence({ …, evidence_ids })` → `stores.evidence.create(draft, id)`.
+
+| Situation | What happens |
+|---|---|
+| Finish twice on one device | `findUnitCompletion` sees the row and nothing is written; a race that slips past the check collides on the id, and `completeUnit` reports the completion that stands instead of adding a row. |
+| Two linked devices both finish the unit offline, then reconnect | Both mint the same id. The first push applies at revision 1; the second arrives with a stale base revision, and `decideMerge('append', …)` answers `superseded`, so that device adopts the standing row. One row per taught skill on both devices, and no conflict for the learner to resolve. |
+| A device finishes before it is linked to a Sync Key | The id carries the provisional `local:<uuid>` learner. `adoptLearner` re-keys it in the same transaction that re-keys `learner_id`: the row moves to the id the real learner's devices mint and its queued write is repointed to the new id (nothing was pushed before linking, so the provisional id only ever existed on that device). A row already held under the new id is the same fact, so the provisional one and its queued write are dropped. |
+| Any other evidence (exercise, retrieval, fieldwork, quiz) | Unchanged: a random UUID and an append union, because two attempts are two facts. |
+
+Why the learner hash is part of the id: D1 keys every learner-data table by `id` alone (`INSERT … ON CONFLICT(id) DO UPDATE`), so a learner-free id would let two learners collide on one primary key. That is the same reason `derivedId` hashes the learner, and it is what makes link-time re-keying necessary.
+
 - Offline: the write is local and queues outbox operations; the probe finished a second unit with the page and the service worker offline, reloaded offline and still saw "You finished this unit today" with two evidence rows (one per skill) and five queued operations; back online `/api/health` answered. The two-device test with the fake sync server shows the other device receiving the exposure and evaluating LEARNING.
 
 ## Phase 7 navigation changes (D-064)
@@ -51,7 +64,13 @@ The Academy turns the authored learning units into the reading experience: the M
 
 ## Verification
 
-**Tests** — `npm run ci`: typecheck, lint, format, **327 tests in 40 files**, docs validator, content check, production build. New: 14 in `academy.test.tsx` — compiled sections and contents list; diagram with accessible description, depth and callout; opening records nothing; pure arithmetic; deterministic change and reset; focusable slider / disclosure / finish with Enter; exposure through `recordEvidence` and UNSEEN → LEARNING only; reload and no duplicate; exposure and quizzes never independent or mastered; offline write on one device syncs and the other converges; Continue opens the unit; plan item opens the Academy; the sheet offers the unit; completing updates the next step.
+**Tests** — `npm run ci`: typecheck, lint, format, **330 tests in 40 files**, docs validator, content check, production build. New: 17 in `academy.test.tsx` — compiled sections and contents list; diagram with accessible description, depth and callout; opening records nothing; pure arithmetic; deterministic change and reset; focusable slider / disclosure / finish with Enter; exposure through `recordEvidence` and UNSEEN → LEARNING only; reload and no duplicate; exposure and quizzes never independent or mastered; offline write on one device syncs and the other converges; Continue opens the unit; plan item opens the Academy; the sheet offers the unit; completing updates the next step. Three of them are the cross-device idempotency regression; the first two fail if the deterministic id is removed, and the third must keep passing:
+
+| Test | Proves |
+|---|---|
+| two devices that finish the same unit offline converge on one completion per taught skill | Both devices end with exactly two rows for the two-skill unit (not four), the same ids on both, empty outboxes, no conflict records, and both evaluate each skill LEARNING with one evidence row and zero independent passes or demonstrations |
+| a completion recorded before linking is re-keyed by the sync key and still converges | A finishes on a provisional `local:` learner, B finishes already linked; after A links, A's rows carry the real learner's ids and learner id, no queued write still points at a provisional id, and after syncing both devices hold one row per skill with settled queues |
+| ordinary evidence is still append-only: two exercise attempts stay two rows | Two independent-exercise attempts recorded on different devices survive the union as two evidence rows and two attempt rows with distinct random ids, and the skill counts two independent passes |
 
 **Academy probe** (`node scripts/review/academy-probe.mjs`, production build, Chrome):
 

@@ -38,6 +38,12 @@ export interface RecordEvidenceInput {
   mode?: ExerciseMode | null;
   /** Exposure and quizzes have no attempt; everything else gets one (spec §30 "exercise"). */
   with_attempt?: boolean;
+  /**
+   * Stable evidence ids, keyed by skill, for a fact that must exist once per learner however
+   * many devices record it (unit completion, D-062). Everything else omits this and keeps the
+   * random id append-only sync expects.
+   */
+  evidence_ids?: Record<string, string>;
 }
 
 export interface RecordEvidenceOptions extends RecomputeOptions {
@@ -96,24 +102,27 @@ export async function recordEvidence(
       }
       const evidence: SkillEvidenceRecord[] = [];
       for (const skillId of input.skill_ids) {
-        const record = await stores.evidence.create({
-          skill_id: skillId,
-          kind: input.kind,
-          source: input.source,
-          exercise_id: input.exercise_id ?? null,
-          exercise_type: input.exercise_type ?? null,
-          attempt_id: attempt?.id ?? null,
-          result: input.result,
-          score: input.score ?? null,
-          assistance,
-          hints_used: hints,
-          difficulty: input.difficulty ?? 3,
-          critical_failures: input.critical_failures ?? [],
-          occurred_at: occurredAt,
-          versions,
-          real_ghl: input.real_ghl ?? null,
-          mode: input.mode ?? null,
-        });
+        const record = await stores.evidence.create(
+          {
+            skill_id: skillId,
+            kind: input.kind,
+            source: input.source,
+            exercise_id: input.exercise_id ?? null,
+            exercise_type: input.exercise_type ?? null,
+            attempt_id: attempt?.id ?? null,
+            result: input.result,
+            score: input.score ?? null,
+            assistance,
+            hints_used: hints,
+            difficulty: input.difficulty ?? 3,
+            critical_failures: input.critical_failures ?? [],
+            occurred_at: occurredAt,
+            versions,
+            real_ghl: input.real_ghl ?? null,
+            mode: input.mode ?? null,
+          },
+          input.evidence_ids?.[skillId],
+        );
         const issues = validateEvidence(stripEnvelope(record));
         if (issues.length > 0) {
           throw new Error(

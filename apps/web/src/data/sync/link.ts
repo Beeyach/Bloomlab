@@ -3,7 +3,7 @@ import { formatSyncKey, generateSyncKey, normalizeSyncKey } from '@bloomlab/shar
 import { db, type BloomlabDatabase } from '../db';
 import { ensureDevice } from '../device';
 import { nowIso } from '../envelope';
-import { derivedIdBelongsTo } from '../learning/ids';
+import { derivedIdBelongsTo, isUnitCompletionId, unitCompletionId } from '../learning/ids';
 import {
   DERIVED_SYNC_ENTITIES,
   LOCAL_SYNC_ENTITIES,
@@ -89,6 +89,39 @@ export async function adoptLearner(
           op.payload = { ...op.payload, learner_id: identity.learner_id };
         }
       });
+      // Unit completions are the one evidence row with a deterministic, learner-scoped id
+      // (D-062). Evidence is never dropped, so each one moves to the id the real learner's
+      // other devices will mint, and its queued write follows it. Nothing was pushed before
+      // linking, so the provisional id only ever existed on this device.
+      const completions = await database.skill_evidence
+        .filter((row) => isUnitCompletionId(row.id))
+        .toArray();
+      for (const row of completions) {
+        if (row.source.type !== 'learning_unit' || !row.source.id) continue;
+        const wanted = unitCompletionId(row.source.id, row.skill_id, identity.learner_id);
+        if (wanted === row.id) continue;
+        const held = await database.skill_evidence.get(wanted);
+        await database.skill_evidence.delete(row.id);
+        const queued = database.sync_queue
+          .where('[entity+entity_id]')
+          .equals(['skill_evidence', row.id]);
+        if (held) {
+          // The real learner already has this completion: the provisional row is the same fact.
+          await queued.delete();
+        } else {
+          await database.skill_evidence.add({ ...row, id: wanted });
+          await queued.modify((operation) => {
+            operation.entity_id = wanted;
+            if (operation.payload) {
+              operation.payload = {
+                ...operation.payload,
+                id: wanted,
+                learner_id: identity.learner_id,
+              };
+            }
+          });
+        }
+      }
       // Derived rows carry the learner in their id; they are recomputed from evidence after
       // linking, so the provisional ones (and their queued writes) are dropped here.
       for (const entity of DERIVED_SYNC_ENTITIES) {

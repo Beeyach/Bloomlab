@@ -1,4 +1,4 @@
-import { configure, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -62,9 +62,6 @@ const fail = (skill: string, occurred_at: string) =>
   });
 
 const recently = (daysAgo: number) => new Date(Date.now() - daysAgo * 86_400_000).toISOString();
-
-// Every screen evaluates the whole curriculum from IndexedDB under jsdom; give it room.
-configure({ asyncUtilTimeout: 5000 });
 
 beforeEach(async () => {
   await Promise.all(db.tables.map((table) => table.clear()));

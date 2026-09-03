@@ -16,6 +16,8 @@ export default defineConfig({
   test: {
     name: 'web',
     environment: 'jsdom',
+    // Above the 8 s async timeout in vitest.setup.ts, so a stuck query fails with its own message.
+    testTimeout: 15000,
     setupFiles: ['./vitest.setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
   },

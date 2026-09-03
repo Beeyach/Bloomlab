@@ -1,4 +1,4 @@
-import { configure, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -7,8 +7,11 @@ import { getFeatureFlags } from '@bloomlab/shared';
 
 import { App } from '../app/App';
 import { content, CONTENT_VERSION } from '../content/bundle';
-import { db } from '../data/db';
-import { evaluateLearner, recordEvidence } from '../data/learning';
+import { db, type BloomlabDatabase } from '../data/db';
+import { ensureDevice } from '../data/device';
+import { evaluateLearner, recomputeProgress, recordEvidence } from '../data/learning';
+import { unitCompletionId } from '../data/learning/ids';
+import { listOperations } from '../data/syncQueue';
 import { syncNow } from '../data/sync/engine';
 import { FakeSyncServer } from '../data/sync/fakeServer';
 import { createSyncKey, linkThisDevice } from '../data/sync/link';
@@ -20,8 +23,57 @@ const flags = getFeatureFlags('production');
 const UNIT = 'LU-funnel-math-basics';
 const SKILL = 'SK-STRATEGIZE-funnel-math';
 const unit = content.learning_units.find((candidate) => candidate.id === UNIT)!;
+// Two taught skills, so "one completion per taught skill" is a real assertion.
+const TAGS_UNIT = 'LU-tags-vs-custom-fields';
+const tagsUnit = content.learning_units.find((candidate) => candidate.id === TAGS_UNIT)!;
+const EXERCISE_SKILL = 'SK-STRATEGIZE-funnel-math';
+const EXERCISE = 'EX-WHAT_WOULD_YOU_BUILD-glowhaus-leads';
 
-configure({ asyncUtilTimeout: 8000 });
+const completionRows = async (database: BloomlabDatabase, unitId = TAGS_UNIT) =>
+  (await database.skill_evidence.toArray()).filter(
+    (row) =>
+      row.deleted_at === null && row.source.type === 'learning_unit' && row.source.id === unitId,
+  );
+
+const attempt = (database: BloomlabDatabase, occurred_at: string) =>
+  recordEvidence(
+    {
+      skill_ids: [EXERCISE_SKILL],
+      kind: 'independent_exercise',
+      result: 'passed',
+      source: { type: 'exercise', id: EXERCISE },
+      exercise_id: EXERCISE,
+      exercise_type: 'WHAT_WOULD_YOU_BUILD',
+      mode: 'independent',
+      occurred_at,
+    },
+    database,
+  );
+
+/** Two devices on one sync key, both caught up: the state before either goes offline. */
+async function pairedDevices() {
+  const server = new FakeSyncServer();
+  const a = freshDatabase();
+  const b = freshDatabase();
+  const key = createSyncKey();
+  await linkThisDevice(key.display, a, server);
+  await linkThisDevice(key.canonical, b, server);
+  await syncNow(a, server);
+  await syncNow(b, server);
+  return { server, a, b };
+}
+
+/** Push, pull and recompute both devices until nothing is left in either outbox. */
+async function settle(server: FakeSyncServer, a: BloomlabDatabase, b: BloomlabDatabase) {
+  for (let round = 0; round < 3; round += 1) {
+    await syncNow(a, server);
+    await syncNow(b, server);
+    await recomputeProgress(a);
+    await recomputeProgress(b);
+  }
+  await syncNow(a, server);
+  await syncNow(b, server);
+}
 
 function renderAt(path: string) {
   return render(
@@ -220,6 +272,10 @@ describe('Unit completion is exposure evidence (PRD-003, MAS-003)', () => {
     expect(again.recorded).toBe(false);
     expect(again.occurred_at).toBe(first.occurred_at);
     expect(await db.skill_evidence.count()).toBe(1);
+    // The completion's id is derived from unit, skill and learner, not random (D-062).
+    const device = await ensureDevice(db);
+    const row = (await db.skill_evidence.toArray())[0]!;
+    expect(row.id).toBe(unitCompletionId(UNIT, SKILL, device.learner_id));
 
     await openUnit();
     expect(await screen.findByText(/You finished this unit today/)).toBeInTheDocument();
@@ -272,6 +328,118 @@ describe('Unit completion is exposure evidence (PRD-003, MAS-003)', () => {
     expect(await findUnitCompletion(UNIT, b)).not.toBeNull();
     const snapshot = await evaluateLearner(b);
     expect(snapshot.evaluations.get(SKILL)?.state).toBe('LEARNING');
+  });
+});
+
+describe('Unit completion is idempotent across devices (D-062, SYNC-008)', () => {
+  it('two devices that finish the same unit offline converge on one completion per taught skill', async () => {
+    const { server, a, b } = await pairedDevices();
+    expect(await completionRows(a)).toHaveLength(0);
+    expect(await completionRows(b)).toHaveLength(0);
+
+    // Both offline: neither device can see the other's completion when it writes its own.
+    await completeUnit(tagsUnit, a);
+    await completeUnit(tagsUnit, b);
+    expect(await completionRows(a)).toHaveLength(2);
+    expect(await completionRows(b)).toHaveLength(2);
+
+    await settle(server, a, b);
+
+    for (const database of [a, b]) {
+      const rows = await completionRows(database);
+      // Two rows, one per taught skill — not four, and not two per skill.
+      expect(rows).toHaveLength(2);
+      expect(rows.map((row) => row.skill_id).sort()).toEqual([...tagsUnit.skills].sort());
+      expect(new Set(rows.map((row) => row.id)).size).toBe(2);
+      expect(await listOperations(database)).toHaveLength(0);
+
+      const snapshot = await evaluateLearner(database);
+      for (const skillId of tagsUnit.skills) {
+        const evaluation = snapshot.evaluations.get(skillId)!;
+        expect(evaluation.state).toBe('LEARNING');
+        expect(evaluation.counts.evidence).toBe(1);
+        expect(evaluation.counts.independent_passes).toBe(0);
+        expect(evaluation.counts.independent_demonstrations).toBe(0);
+      }
+    }
+
+    // Both devices hold the same rows, and no conflict was raised for the learner to resolve.
+    const idsA = (await completionRows(a)).map((row) => row.id).sort();
+    const idsB = (await completionRows(b)).map((row) => row.id).sort();
+    expect(idsA).toEqual(idsB);
+    expect(await a.sync_conflicts.count()).toBe(0);
+    expect(await b.sync_conflicts.count()).toBe(0);
+  });
+
+  it('a completion recorded before linking is re-keyed by the sync key and still converges', async () => {
+    const server = new FakeSyncServer();
+    const a = freshDatabase();
+    const b = freshDatabase();
+
+    // A finishes the unit while it still holds a provisional local learner (D-027).
+    const provisionalDevice = await ensureDevice(a);
+    expect(provisionalDevice.learner_id.startsWith('local:')).toBe(true);
+    await completeUnit(tagsUnit, a);
+    const provisionalIds = (await completionRows(a)).map((row) => row.id).sort();
+    expect(provisionalIds).toEqual(
+      tagsUnit.skills
+        .map((skillId) => unitCompletionId(TAGS_UNIT, skillId, provisionalDevice.learner_id))
+        .sort(),
+    );
+
+    // B is already linked and finishes the same unit offline.
+    const key = createSyncKey();
+    await linkThisDevice(key.display, b, server);
+    await completeUnit(tagsUnit, b);
+
+    // A links: the completion moves onto the real learner's id, and its queued write follows.
+    await linkThisDevice(key.canonical, a, server);
+    const linked = await ensureDevice(a);
+    expect(linked.learner_id).toBe((await ensureDevice(b)).learner_id);
+    expect(linked.learner_id.startsWith('local:')).toBe(false);
+
+    const rekeyed = await completionRows(a);
+    expect(rekeyed).toHaveLength(2);
+    for (const row of rekeyed) {
+      expect(row.id).toBe(unitCompletionId(TAGS_UNIT, row.skill_id, linked.learner_id));
+      expect(row.learner_id).toBe(linked.learner_id);
+    }
+    const queued = await listOperations(a);
+    expect(queued.some((operation) => provisionalIds.includes(operation.entity_id))).toBe(false);
+    expect(rekeyed.every((row) => queued.some((operation) => operation.entity_id === row.id))).toBe(
+      true,
+    );
+
+    await settle(server, a, b);
+
+    for (const database of [a, b]) {
+      expect(await completionRows(database)).toHaveLength(2);
+      expect(await listOperations(database)).toHaveLength(0);
+      const snapshot = await evaluateLearner(database);
+      for (const skillId of tagsUnit.skills) {
+        expect(snapshot.evaluations.get(skillId)?.state).toBe('LEARNING');
+      }
+    }
+  });
+
+  it('ordinary evidence is still append-only: two exercise attempts stay two rows', async () => {
+    const { server, a, b } = await pairedDevices();
+    await attempt(a, '2026-09-01T10:00:00Z');
+    await attempt(b, '2026-09-02T10:00:00Z');
+    await settle(server, a, b);
+
+    for (const database of [a, b]) {
+      const rows = (await database.skill_evidence.toArray()).filter(
+        (row) => row.source.type === 'exercise',
+      );
+      // Two attempts at the same exercise are two facts; the union keeps both.
+      expect(rows).toHaveLength(2);
+      expect(new Set(rows.map((row) => row.id)).size).toBe(2);
+      expect(rows.every((row) => !row.id.startsWith('ue:'))).toBe(true);
+      expect(await database.exercise_attempts.count()).toBe(2);
+      const snapshot = await evaluateLearner(database);
+      expect(snapshot.evaluations.get(EXERCISE_SKILL)?.counts.independent_passes).toBe(2);
+    }
   });
 });
 
