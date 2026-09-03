@@ -6,6 +6,9 @@ import type {
   ExerciseAttemptRecord,
   NoteRecord,
   ReviewQueueRecord,
+  SimEventRecord,
+  SimProjectRecord,
+  SimSnapshotRecord,
   SkillEvidenceRecord,
   SkillProgressRecord,
   SyncConflictRecord,
@@ -16,7 +19,7 @@ import type {
 } from './types';
 
 export const DB_NAME = 'bloomlab';
-export const DB_VERSION = 3;
+export const DB_VERSION = 4;
 
 /**
  * The IndexedDB database behind every local-first flow (DATA-002). Dexie is the whole data
@@ -40,6 +43,10 @@ export class BloomlabDatabase extends Dexie {
   declare skill_progress: EntityTable<SkillProgressRecord, 'id'>;
   declare campaign_progress: EntityTable<CampaignProgressRecord, 'id'>;
   declare review_queue: EntityTable<ReviewQueueRecord, 'id'>;
+  // Phase 10: simulator saves (spec §93 Simulation domain).
+  declare sim_projects: EntityTable<SimProjectRecord, 'id'>;
+  declare sim_events: EntityTable<SimEventRecord, 'id'>;
+  declare sim_snapshots: EntityTable<SimSnapshotRecord, 'id'>;
 
   constructor(name: string = DB_NAME) {
     super(name);
@@ -57,12 +64,18 @@ export class BloomlabDatabase extends Dexie {
       sync_conflicts: '&[entity+entity_id], detected_at',
     });
     // v3 (Phase 6): evidence and attempts (append-only) and the derived progress rows.
-    this.version(DB_VERSION).stores({
+    this.version(3).stores({
       skill_evidence: '&id, skill_id, occurred_at, updated_at',
       exercise_attempts: '&id, exercise_id, updated_at',
       skill_progress: '&id, skill_id, updated_at',
       campaign_progress: '&id, campaign_id, updated_at',
       review_queue: '&id, skill_id, due_at, updated_at',
+    });
+    // v4 (Phase 10): one row per simulator run, plus its append-only history and checkpoints.
+    this.version(DB_VERSION).stores({
+      sim_projects: '&id, run_id, scenario_id, updated_at',
+      sim_events: '&id, run_id, sequence, updated_at',
+      sim_snapshots: '&id, run_id, log_length, updated_at',
     });
   }
 }

@@ -54,6 +54,12 @@ export const APP_ROUTES: readonly AppRoute[] = [
     Component: lazy(() => import('../screens/SystemDiagnostics')),
   },
   {
+    id: 'simulator',
+    path: '/system/simulator',
+    flag: 'system_diagnostics',
+    Component: lazy(() => import('../screens/SimulatorHarness')),
+  },
+  {
     id: 'design',
     path: '/design',
     flag: 'design_gallery',
