@@ -315,3 +315,18 @@
   outline-offset: 2px;
   border-radius: var(--bl-radius-sm);
 }
+
+.nextLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: var(--bl-space-1);
+  font-weight: var(--bl-font-weight-semibold);
+  color: var(--bl-color-text);
+}
+
+.nextLink:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--bl-radius-sm);
+}

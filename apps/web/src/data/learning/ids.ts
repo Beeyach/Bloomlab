@@ -19,3 +19,21 @@ export const derivedId = (prefix: 'sp' | 'cp' | 'rq', key: string, learnerId: st
 /** True when a derived id belongs to `learnerId` (used to purge rows after re-keying). */
 export const derivedIdBelongsTo = (id: string, learnerId: string): boolean =>
   id.endsWith(`:${fnv1a(learnerId)}`);
+
+/** Prefix of the one evidence row whose id is not random: an Academy unit completion. */
+const UNIT_COMPLETION_PREFIX = 'ue';
+
+/**
+ * The id of the exposure row that records "this learner finished this unit, for this skill"
+ * (D-062). Deterministic, so two devices that finish the same unit while offline mint the same
+ * id: the append merge treats one id as one row (`superseded`, no conflict dialog) and they
+ * converge on a single completion instead of a union of two. The learner hash keeps two
+ * learners off one D1 primary key exactly as `derivedId` does — and is why linking re-keys
+ * these rows (`adoptLearner`). Every other evidence row keeps its random id: two attempts are
+ * two facts.
+ */
+export const unitCompletionId = (unitId: string, skillId: string, learnerId: string): string =>
+  `${UNIT_COMPLETION_PREFIX}:${unitId}:${skillId}:${fnv1a(learnerId)}`;
+
+export const isUnitCompletionId = (id: string): boolean =>
+  id.startsWith(`${UNIT_COMPLETION_PREFIX}:`);

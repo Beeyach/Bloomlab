@@ -47,6 +47,9 @@ const defaultPages = [
   ['campaign', '/campaign'],
   ['skills', '/skills'],
   ['skill-detail', '/skills/SK-STRATEGIZE-funnel-math'],
+  ['academy', '/academy/LU-funnel-math-basics?skill=SK-STRATEGIZE-funnel-math'],
+  ['academy-workflow', '/academy/LU-workflow-foundations'],
+  ['academy-tags', '/academy/LU-tags-vs-custom-fields'],
   ['sync', '/sync'],
   ['system', '/system'],
   ['notfound', '/nope'],
@@ -64,6 +67,15 @@ try {
     for (const [name, path] of pages) {
       await setViewport(page, w, 900);
       await openPage(page, `${BASE}${path}`);
+      // Lazy screen bodies (an Academy unit's chunk) must be in before measuring, especially on a
+      // remote host: wait until no route or unit is still announcing that it is loading.
+      for (let i = 0; i < 60; i += 1) {
+        const loading = await page.evaluate(
+          "[...document.querySelectorAll('[role=status]')].some((el) => /Opening the unit|Loading/.test(el.textContent))",
+        );
+        if (!loading) break;
+        await sleep(150);
+      }
       // Let entrance animations (e.g. a sheet sliding in) finish before measuring positions.
       await page.evaluate(
         'Promise.all(document.getAnimations().map((a) => a.finished.catch(() => null)))',

@@ -29,6 +29,13 @@ import {
   type WorkflowDefinition,
 } from '../schemas/index.ts';
 import { buildSkillGraph, transitivePrerequisites, type GraphResult } from './graph.ts';
+import {
+  DIAGRAM_KINDS,
+  EMBED_KIND_ATTRIBUTES,
+  INTERACTIVE_KINDS,
+  type DiagramKind,
+  type InteractiveKind,
+} from '../schemas/learningUnit.ts';
 import { isKnownEmbed, parseMdxBody, parseYamlObject, splitFrontMatter } from './parse.ts';
 import type { SourceFile } from './sources.ts';
 
@@ -546,11 +553,67 @@ export function crossValidate(parsed: ParsedContent, issues: IssueList): GraphRe
           break;
         case 'Callout':
           break;
+        case 'Diagram':
+        case 'Interactive': {
+          const kinds: readonly string[] =
+            embed.component === 'Diagram' ? DIAGRAM_KINDS : INTERACTIVE_KINDS;
+          const kind = need('kind');
+          if (kind && !kinds.includes(kind)) {
+            issues.error(
+              'UNKNOWN_EMBED',
+              fileOf(unit.id),
+              `${unit.id}: <${embed.component} kind="${kind}"> is not a kind Bloomlab renders (${kinds.join(', ')})`,
+              { id: unit.id, path: where },
+            );
+            break;
+          }
+          if (kind) {
+            for (const attribute of EMBED_KIND_ATTRIBUTES[kind as DiagramKind | InteractiveKind]) {
+              const value = need(attribute);
+              if (
+                value &&
+                attribute !== 'scenario' &&
+                attribute !== 'workflow' &&
+                Number.isNaN(Number(value))
+              ) {
+                issues.error(
+                  'EMBED_MISSING_ATTRIBUTE',
+                  fileOf(unit.id),
+                  `${unit.id}: <${embed.component}> ${attribute}="${value}" must be a number`,
+                  { id: unit.id, path: where },
+                );
+              }
+            }
+            if (kind === 'workflow') {
+              const scenario = embed.attributes.scenario;
+              if (
+                scenario &&
+                requireRef('MISSING_SCENARIO', look.scenarios, scenario, unit, where, 'scenario')
+              ) {
+                const workflow = embed.attributes.workflow;
+                const known = look.scenarios
+                  .get(scenario)
+                  ?.initial_account_state.workflows.some((w) => w.id === workflow);
+                if (!known)
+                  issues.error(
+                    'MISSING_WORKFLOW',
+                    fileOf(unit.id),
+                    `${unit.id}: scenario ${scenario} has no workflow ${workflow}`,
+                    { id: unit.id, path: where },
+                  );
+              }
+            }
+          }
+          break;
+        }
       }
     });
     if (
       !unit.embeds.some(
-        (embed) => embed.component === 'Simulation' || embed.component === 'Exercise',
+        (embed) =>
+          embed.component === 'Simulation' ||
+          embed.component === 'Exercise' ||
+          embed.component === 'Interactive',
       )
     ) {
       issues.warning(

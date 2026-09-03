@@ -216,6 +216,21 @@ function SkillDetail({
             {stepExercise && (
               <p className={styles.nextText}>{excerpt(stepExercise.instructions)}</p>
             )}
+            {step.kind === 'unit' ? (
+              <Link
+                to={`/academy/${step.content_id}?skill=${skill.id}`}
+                className={styles.nextLink}
+                data-testid="open-unit"
+              >
+                Read this unit
+              </Link>
+            ) : (
+              <p className={styles.detailMeta}>
+                {step.kind === 'exercise'
+                  ? 'Exercises run in the exercise runner, which arrives with Phase 9.'
+                  : 'Retrieval challenges run with the exercise runner, which arrives with Phase 9.'}
+              </p>
+            )}
           </Surface>
         )}
         {!step && evaluation.state !== 'MASTERED' && (

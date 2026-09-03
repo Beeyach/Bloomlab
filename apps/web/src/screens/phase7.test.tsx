@@ -1,4 +1,4 @@
-import { configure, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -63,9 +63,6 @@ const fail = (skill: string, occurred_at: string) =>
 
 const recently = (daysAgo: number) => new Date(Date.now() - daysAgo * 86_400_000).toISOString();
 
-// Every screen evaluates the whole curriculum from IndexedDB under jsdom; give it room.
-configure({ asyncUtilTimeout: 5000 });
-
 beforeEach(async () => {
   await Promise.all(db.tables.map((table) => table.clear()));
 });
@@ -93,11 +90,13 @@ describe('Command Center (DES-010, PRD-012)', () => {
     expect(document.body.textContent).not.toMatch(/welcome back/i);
   });
 
-  it('opens the continuation skill on the map', async () => {
+  it('opens the next step directly: the unit when the engine says read, the capability otherwise', async () => {
     renderAt('/');
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
-    const dialog = await screen.findByRole('dialog', { name: 'Funnel math' });
-    expect(within(dialog).getByRole('button', { name: 'Set as focus' })).toBeInTheDocument();
+    // A new learner's next step for Funnel math is its unit (Phase 8), not the capability sheet.
+    expect(
+      await screen.findByRole('heading', { level: 1, name: "Funnel math, in the owner's numbers" }),
+    ).toBeInTheDocument();
   });
 
   it('moves on after evidence and lists recent evidence and repairs', async () => {
@@ -152,7 +151,10 @@ describe('Build my session (MAS-006 on the Command Center)', () => {
     const items = within(plan).getAllByRole('link');
     expect(items.length).toBeGreaterThan(0);
     const first = items[0]?.textContent;
-    expect(items[0]).toHaveAttribute('href', expect.stringMatching(/^\/skills\/SK-/));
+    expect(items[0]).toHaveAttribute(
+      'href',
+      expect.stringMatching(/^\/(skills\/SK-|academy\/LU-)/),
+    );
 
     const continueButtons = screen.getAllByRole('button', { name: 'Continue' });
     fireEvent.click(continueButtons[continueButtons.length - 1] as HTMLElement);
