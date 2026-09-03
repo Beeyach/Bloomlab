@@ -453,5 +453,9 @@ report.measured = Object.entries(report.widths).flatMap(([width, cards]) =>
 // PASS here has never meant the tablet is clean; this is the baseline the tablet reads against.
 report.diagnostic = diagnostic;
 report.verdict = failures.length === 0 ? 'PASS' : 'FAIL';
-report.realTabletCheck = 'FAILED — awaiting the user on a real tablet at /system/holo (D-086)';
+// The real device is the authority on this one, and it has answered: the user checked cases A to I
+// on their own tablet and reported all nine clean (D-086). A desktop PASS below is a regression
+// guard, not a substitute for that.
+report.realTabletCheck =
+  'PASS — confirmed by the user on a real tablet, cases A–I all clean (D-086)';
 console.log(JSON.stringify(report, null, 2));

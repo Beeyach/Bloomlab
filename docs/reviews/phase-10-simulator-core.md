@@ -535,76 +535,127 @@ local backdrop during the gesture, no radius collapses, no opaque offset outline
 holographic card, no native tap highlight is live on an element that could receive one, and every
 focused card still shows a visible ring.
 
-### REAL TABLET USER CHECK: FAILED on current Phase 10 build
+### REAL TABLET USER CHECK: PASS
 
-The user tested the deployed preview on a real tablet after D-075 and **still sees the sharp
-rectangular flash when tapping a rounded holographic card.** That observation is authoritative.
-D-075 is therefore not a confirmed fix, the automated PASS above is not evidence against the
-report, and Phase 10 does not merge on it.
+The user tested cards A to I on the actual tablet and reported all nine clean: no rectangular
+flash, no pointed-corner flash, and touch-down, hold and release all correct. The Skill Map's own
+holographic interaction is clean on the same device.
 
-The three causes D-075 found were real, are fixed, and stay fixed. They were not this one.
+**The D-075 tablet interaction issue is confirmed fixed by the user.**
 
-### Why the third attempt is an instrument, not a fourth fix
+### What the PASS says about the cause
 
-Three fixes in a row have now been made from a desktop against a symptom only a real device
-shows. A probe reads what the page says it painted; what is in dispute is what the device's
-compositor put on the glass, and desktop Chromium under touch emulation has never once reproduced
-it. Another CSS change chosen from the same evidence would be a fourth guess.
+Case A is the card exactly as it ships. It flashed on this tablet before and does not now, so
+whatever fixed it is in the two changes made between those two builds — and both are WebKit
+version gaps, not the material:
 
-So this round ships `/system/holo` (behind the diagnostics flag, unreachable in production): nine
-copies of the real interactive card — a `button` wrapping `HoloMaterial`, same radius, same ring —
-each with exactly one thing changed, labelled in plain words so the answer comes back as a letter.
+1. **`button { -webkit-appearance: none }`.** This is the likely one. Without the prefixed
+   property, WebKit before Safari 15.4 keeps the native button chrome, which it paints on
+   `:active` as a **square fill over the button's box** — a sharp rectangle under the finger on a
+   rounded card, appearing and disappearing with the touch. That is the reported symptom exactly.
+   D-075 believed it had suppressed this; it had only suppressed it on newer engines.
+2. **`.rim` gaining `-webkit-mask` and `-webkit-mask-composite: xor`.** On the same engines the
+   conic gradient was never cut back to a 1.5 px rim and washed the whole surface while touched.
+   That is a wrong appearance rather than a rectangle, so it is the weaker candidate, but it was
+   also visible only under a finger and only on those engines.
 
-| | Card | What is changed | What it would prove |
+The two shipped together, so this is a reasoned attribution rather than an isolated one. What the
+diagnostic settled is the more important half: **the material was never at fault.** Every case
+that removes a piece of it — the tilt, the shadow, the oversized layers, the blending, the forced
+compositor layer — came back identical to the card that keeps them. Nothing about the holographic
+interaction had to be weakened, and nothing was.
+
+### What the nine cases were
+
+`/system/holo`, behind the diagnostics flag and unreachable in production, renders nine copies of
+the real interactive card — a `button` wrapping `HoloMaterial`, same radius, same ring — each with
+exactly one thing changed:
+
+| | Card | What is changed | Verdict on the tablet |
 |---|---|---|---|
-| **A** | As it ships | Nothing | The control. If A does not flash, the fault is not in the material and we look at the screen the card sits on. |
-| **B** | No tilt | `transform: none` on the material | A changing transform is what promotes the card to its own compositor surface. |
-| **C** | No shadow | `box-shadow: none` on the material | A shadow is painted around the card, outside the rounded clip. |
-| **D** | No glare and no grain | The two oversized layers not painted | They are `inset: -50%` and `inset: -8%`, larger than the card, and are the only things here that can paint a square where a corner should be. |
-| **E** | Rounded `clip-path` | `clip-path: inset(0 round 24px)` added | A path is a different clipping mechanism from rounded overflow, and is not the one suspected of being dropped. |
-| **F** | Tilt outside, clip inside | `surface="split"`: the root keeps the transform and the shadow, an inner element takes the rounded clip and the blending group | Nothing then asks the device to apply a rounded clip to a surface whose transform is changing. |
-| **G** | No forced compositor layer | `will-change: auto` | The promotion is currently unconditional, including at rest. |
-| **H** | Layers kept inside the card | Glare and grain still move, by gradient position rather than by overhanging the box | If nothing hangs outside, losing the clip cannot draw a rectangle. This is D with the light kept, and is the version that could ship. |
-| **I** | No blending | `mix-blend-mode: normal`, `isolation: auto` | Blending forces the card to be flattened into one image before compositing. |
+| **A** | As it ships | Nothing | Clean |
+| **B** | No tilt | `transform: none` on the material | Clean |
+| **C** | No shadow | `box-shadow: none` on the material | Clean |
+| **D** | No glare and no grain | The two oversized layers not painted | Clean |
+| **E** | Rounded `clip-path` | `clip-path: inset(0 round 24px)` added | Clean |
+| **F** | Tilt outside, clip inside | `surface="split"`: the root keeps the transform and the shadow, an inner element takes the rounded clip and the blending group | Clean |
+| **G** | No forced compositor layer | `will-change: auto` | Clean |
+| **H** | Layers kept inside the card | Glare and grain move by gradient position rather than by overhanging the box | Clean |
+| **I** | No blending | `mix-blend-mode: normal`, `isolation: auto` | Clean |
 
-F is a real structure, not a mock: `HoloMaterial` gained a `surface` prop, `single` (unchanged,
-what every product surface renders) and `split`. A comparison against a fake would prove nothing.
+A tap counts itself and changes nothing else; selection is a separate control under each card, so
+the ring a selected card wears never rides along on a tap being observed. F is a real structure,
+not a mock: `HoloMaterial` has a `surface` prop, `single` (unchanged, what every product surface
+renders) and `split`.
 
-A tap on a diagnostic card counts itself and changes nothing else. Selection is a separate control
-under each card, so the ring a selected card wears never rides along on a tap being observed.
+### Method, kept for the record
 
-### Two defects fixed on their own terms
+Three fixes in a row had been chosen from desktop evidence against a symptom only a real device
+showed, and each automated PASS had been mistaken for an answer. A probe reads what the page says
+it painted; what was in dispute was what the device's compositor put on the glass. Desktop
+Chromium under touch emulation never reproduced it once, at any width, in any case. The thing that
+resolved this was a real device looking at isolated variants, and that is the method to reach for
+the next time a device disagrees with automation.
 
-Found while mapping the stack, fixed because they are wrong regardless, and **not** claimed to be
-the reported symptom:
+The holographic touch probe drives all nine cases and reports their measurements **outside** its
+verdict: the cases deliberately remove parts of the material, so judging them by the product's
+pass rules would be a category error. On Chromium 141 at 1024 px and 768 px every case holds a
+24 px radius through the whole gesture with steady corners, and the product cards pass with zero
+failures.
 
-- `button { appearance: none }` had no `-webkit-appearance: none`. WebKit only honours the
-  unprefixed property from Safari 15.4, so D-075's stated suppression of the native `:active`
-  chrome — a square fill over the button's box — never happened on an older iPad, which is exactly
-  the device it was written for.
-- `.rim` used `mask` and `mask-composite: exclude` with no prefixed pair. On those same engines
-  the conic gradient is never cut back to a 1.5 px rim and washes the whole card under a finger.
-
-### What the probe now records
-
-`holo-touch-probe.mjs` drives all nine cases at both widths and reports their measurements
-**outside the verdict**. The cases deliberately remove parts of the material, so judging them by
-the product's pass rules would be a category error; their value is as the desktop baseline the
-tablet's answer is read against. On Chromium 141 at 1024 px and 768 px every case holds a 24 px
-radius through the whole gesture and every corner is steady, except case B on keyboard focus,
-where a card with no tilt seats its focus ring differently. The product cards still pass.
-
-That a desktop engine finds nothing wrong with any of the nine is the point: it is why the answer
-has to come from the tablet.
+`/system/holo` is kept rather than deleted. It cost little, it is behind a flag, and this symptom
+has now been misdiagnosed twice from a desktop; if it ever returns, the instrument that named it
+should already exist.
 
 ### Status
 
-**REAL TABLET USER CHECK: FAILED on current Phase 10 build.** It may only change to PASS after the
-user personally confirms the new preview. **Phase 10 does not merge while this is unresolved.**
+**REAL TABLET USER CHECK: PASS**, confirmed by the user on their own device.
 
 D-074 is left in the ledger as written. D-075 records the three causes it found and fixed. D-086
 records that D-075 was also incomplete, the change of method, the diagnostic, and the two
-WebKit-version defects.
+WebKit-version defects — one of which is now the likely cause. D-088 records the selected-territory
+treatment that replaced the dark ring.
+
+## 28b. The selected territory (D-088)
+
+The tablet PASS came with one visual correction. On the Skill Map the selected territory wore a
+2 px ink ring, which read as a black-bordered form control sitting among nine soft holographic
+cards — the screenshot showed STRATEGIZE fenced in while everything around it glowed.
+
+Selection is now drawn the way the rest of the material is drawn:
+
+- a **2 px spectral edge** in `--bl-color-lavender`, one of the material's own foil colours, in
+  place of the ink;
+- a **soft lilac pool** beneath the card (`0 8px 24px rgb(169 155 255 / 0.38)`), the same lavender
+  the mastery material glows with;
+- the **material wakes up with it** — its rim goes to full white and its own glow turns lavender —
+  through `--holo-ring`, `--holo-glow` and `--holo-glow-ambient`, which are the material's own
+  properties. Nothing about selection touches the radius, the clip, the tilt or the layer
+  promotion, so the holographic interaction is byte-for-byte what the tablet just passed;
+- the word **"Showing"** on the selected card, so selection is never carried by colour alone
+  (A11Y-005). It names what selection does: that territory's capabilities are open below.
+
+Both shadows are spread shadows on the untransformed button, so they follow its 24 px radius on
+every engine. No offset outline was introduced and none was removed: the transparent
+`outline: 3px solid transparent` on `:focus-visible` stays, because it is what forced-colours mode
+paints, and it is part of the build the tablet just passed.
+
+**Selection and focus stay distinguishable.** Focus is the blue `--bl-color-focus` ring. Selected
+and focused compose: the lavender edge hugs the card at 2 px, the blue focus ring sits outside it
+at 5 px, and the pool sits under both. Measured in the browser at 1024, 768 and 390 px:
+`rgb(169,155,255) 0 0 0 2px, rgb(59,105,189) 0 0 0 5px, rgba(...) 0 8px 24px`.
+
+The Skill Map no longer draws a ring of its own. `HoloTerritory` owns selected, focused and
+both-at-once in one place — two owners of one state is how selection and focus came to disagree
+about the shape in the first place — and a design-rule test now fails if the screen adds one back.
+
+Five design-rule tests lock it: no `--bl-color-ink` in any `[aria-pressed]` rule on the territory,
+the spectral edge and the pool are both present, selection changes only material properties and
+never the shape, the Skill Map draws no second ring, and the card says "Showing". Putting the ink
+ring back turns two of them red.
+
+The touch probe re-run after the change: **PASS, zero failures**, radius 24 px at every pointer
+stage, with the composed selected-and-focused shadow measured at release and focus.
 
 ## 29. Eyebrow removal audit
 

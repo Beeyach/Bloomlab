@@ -56,22 +56,23 @@ Last updated: 2026-09-05 (end of Phase 10)
   `Intl.DateTimeFormat` with an explicit `timeZone`. That is deterministic and never reads the
   device's zone, but it does mean the engine relies on the runtime's IANA database being present
   and current. A runtime without full ICU would resolve zones differently.
-- **The tablet holographic rectangle is not fixed. REAL TABLET USER CHECK: FAILED on the current
-  Phase 10 build.** The user tested the deployed preview on a real tablet after D-075 and still
-  sees the sharp rectangular flash when tapping a rounded holographic card. That report is
-  authoritative; the automated 1024 px and 768 px touch checks passing on decoded pixels at every
-  pointer stage is not evidence against it, because a probe reads what the page says it painted and
-  what is in dispute is what the device's compositor put on the glass. Desktop Chromium under touch
-  emulation has never reproduced it. Rather than a fourth CSS change chosen from the same evidence,
-  this round ships `/system/holo` behind the diagnostics flag: nine copies of the real interactive
-  card, each with exactly one property changed, labelled A to I so the answer comes back as a
-  letter (D-086, Phase 10 review §28). Until the user reports which letters stop flashing, the root
-  cause is unknown and **Phase 10 does not merge**.
-- **Two tablet-engine defects found alongside it are fixed, and neither is claimed to be that
-  symptom.** `button { appearance: none }` had no `-webkit-appearance: none`, so D-075's stated
-  suppression of the native `:active` chrome never happened on WebKit before Safari 15.4; and
-  `.rim` used `mask` / `mask-composite` with no prefixed pair, so on those same engines the conic
-  rim gradient washes the whole card under a finger instead of being cut back to 1.5 px.
+- **The tablet holographic interaction is confirmed fixed by the user. REAL TABLET USER CHECK:
+  PASS.** The user tested diagnostic cards A to I on the actual tablet and reported all nine clean:
+  no rectangular flash, no pointed-corner flash, touch-down, hold and release all correct, and the
+  Skill Map's own holographic interaction clean on the same device. Case A is the card exactly as
+  it ships, so what fixed it is one of the two WebKit version gaps closed alongside the diagnostic
+  — most likely `button { -webkit-appearance: none }`, without which WebKit before Safari 15.4
+  keeps the native button chrome and paints it on `:active` as a square fill over the button's box,
+  which is the reported symptom exactly. The two shipped together, so this is a reasoned
+  attribution rather than an isolated one. What the diagnostic settled is that **the material was
+  never at fault**: every case that removed a piece of it came back identical to the card that
+  keeps them, so nothing about the holographic interaction had to be weakened and nothing was
+  (D-086, Phase 10 review §28).
+- **`/system/holo` and the `surface="split"` prop are kept though the investigation is closed.**
+  The diagnostic route stays behind the diagnostics flag, unreachable in production, and
+  `HoloMaterial.surface` keeps its `split` value, whose only consumer is that route. This symptom
+  was misdiagnosed twice from a desktop; if it returns, the instrument that named it should already
+  exist. Both can be deleted in one commit if they are ever judged not to be worth their keep.
 - **A second checkpoint at a log position already checkpointed keeps the first one's label.**
   Snapshot rows are addressed by `(run, generation, log length)`, which is content-addressed on
   purpose: two devices that checkpoint at the same position have checkpointed the same state, and

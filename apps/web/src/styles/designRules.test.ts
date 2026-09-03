@@ -183,17 +183,79 @@ describe('interaction rings follow the shape they surround (D-075)', () => {
       (rule) => rule.selector === ".territory[aria-pressed='true']:focus-visible",
     );
     expect(both, 'selection and focus must compose rather than replace each other').toBeDefined();
+    // The spectral selection edge, then the focus ring outside it. The third shadow is the soft
+    // lilac pool, which has a blur and is not a ring.
     expect(both?.body.match(/0 0 0 \d+px/g) ?? []).toHaveLength(2);
+    expect(both?.body).toMatch(/var\(--bl-color-focus\)/);
   });
 
   it('uses no offset outline on the holographic cards themselves', () => {
     // An offset outline around a transformed element is painted square by older WebKit.
-    const skillMap = read(join(ROOT, 'apps', 'web', 'src', 'screens', 'SkillMap.module.css'));
-    const selected = rules(skillMap).find((rule) =>
-      rule.selector.includes("[aria-pressed='true']"),
+    const css = read(
+      join(ROOT, 'packages', 'design-system', 'src', 'semantic', 'HoloTerritory.module.css'),
     );
+    const selected = rules(css).find((rule) => rule.selector === ".territory[aria-pressed='true']");
     expect(selected?.body).toMatch(/box-shadow/);
     expect(selected?.body).not.toMatch(/outline/);
+  });
+});
+
+describe('a selected holographic card is lit, not fenced in (D-088)', () => {
+  const territoryCss = () =>
+    read(join(ROOT, 'packages', 'design-system', 'src', 'semantic', 'HoloTerritory.module.css'));
+
+  it('draws no dark ring around a selected territory', () => {
+    // The tablet screenshot showed a black-bordered form control sitting among soft holo cards.
+    const selected = rules(territoryCss()).find(
+      (rule) => rule.selector === ".territory[aria-pressed='true']",
+    );
+    expect(selected, 'a selected territory must still be drawn').toBeDefined();
+    for (const rule of rules(territoryCss())) {
+      if (!rule.selector.includes("[aria-pressed='true']")) continue;
+      expect(rule.body, `${rule.selector} must not ring the card in ink`).not.toMatch(
+        /--bl-color-ink\b|--bl-color-ink-deep/,
+      );
+    }
+  });
+
+  it('draws selection with the material’s own spectral colour and a soft pool', () => {
+    const selected = rules(territoryCss()).find(
+      (rule) => rule.selector === ".territory[aria-pressed='true']",
+    );
+    expect(selected?.body).toMatch(/0 0 0 2px var\(--bl-color-lavender\)/);
+    // A blurred, offset shadow: the pool under the card, not another hard edge.
+    expect(selected?.body).toMatch(/0 8px 24px/);
+  });
+
+  it('wakes the material through its own properties, leaving the shape alone', () => {
+    const material = rules(territoryCss()).find(
+      (rule) => rule.selector === ".territory[aria-pressed='true'] .material",
+    );
+    expect(material?.body).toMatch(/--holo-ring:/);
+    expect(material?.body).toMatch(/--holo-glow:/);
+    // Nothing about selection may touch the clip, the radius or the tilt.
+    for (const property of ['border-radius', 'overflow', 'clip-path', 'transform', 'will-change']) {
+      expect(material?.body, `selection must not set ${property}`).not.toContain(property);
+    }
+  });
+
+  it('does not leave the Skill Map drawing a second selection ring', () => {
+    // Two owners of one state is how selection and focus came to disagree about the shape.
+    const skillMap = read(join(ROOT, 'apps', 'web', 'src', 'screens', 'SkillMap.module.css'));
+    const rings = rules(skillMap).filter(
+      (rule) =>
+        rule.selector.includes("[aria-pressed='true']") && /box-shadow|outline/.test(rule.body),
+    );
+    expect(rings).toEqual([]);
+  });
+
+  it('says which territory is showing, so selection is never colour alone', () => {
+    const source = read(
+      join(ROOT, 'packages', 'design-system', 'src', 'semantic', 'HoloTerritory.tsx'),
+    );
+    expect(source).toMatch(/Showing/);
+    expect(source).toMatch(/aria-pressed/);
+    expect(rules(territoryCss()).some((rule) => rule.selector === '.showing')).toBe(true);
   });
 });
 
