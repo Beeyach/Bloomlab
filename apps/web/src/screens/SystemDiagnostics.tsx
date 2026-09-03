@@ -65,6 +65,18 @@ export default function SystemDiagnostics() {
         System diagnostics
       </h1>
 
+      <h2 className={styles.heading}>Harnesses</h2>
+      <Surface as="ul" padding="sm" className={styles.list}>
+        <li>
+          <Link to="/system/simulator">Simulator</Link> — drive the engine: clock, queue, log,
+          checkpoints, replay and reset.
+        </li>
+        <li>
+          <Link to="/system/holo">Holographic corners</Link> — the same card nine ways, to find on a
+          real tablet which one stops the sharp corner appearing.
+        </li>
+      </Surface>
+
       <h2 className={styles.heading}>Client</h2>
       <Surface as="dl" padding="sm" className={styles.list}>
         <dt>App version</dt>

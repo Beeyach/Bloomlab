@@ -56,9 +56,29 @@ Last updated: 2026-09-05 (end of Phase 10)
   `Intl.DateTimeFormat` with an explicit `timeZone`. That is deterministic and never reads the
   device's zone, but it does mean the engine relies on the runtime's IANA database being present
   and current. A runtime without full ICU would resolve zones differently.
-- **The tablet holographic fix is verified by automation, not yet by the user.** See the Phase 10
-  review: the automated 1024 px and 768 px touch checks pass on decoded pixels at every pointer
-  stage, and the real-tablet check is still pending.
+- **The tablet holographic interaction is confirmed fixed by the user. REAL TABLET USER CHECK:
+  PASS.** The user tested diagnostic cards A to I on the actual tablet and reported all nine clean:
+  no rectangular flash, no pointed-corner flash, touch-down, hold and release all correct, and the
+  Skill Map's own holographic interaction clean on the same device. Case A is the card exactly as
+  it ships, so what fixed it is one of the two WebKit version gaps closed alongside the diagnostic
+  — most likely `button { -webkit-appearance: none }`, without which WebKit before Safari 15.4
+  keeps the native button chrome and paints it on `:active` as a square fill over the button's box,
+  which is the reported symptom exactly. The two shipped together, so this is a reasoned
+  attribution rather than an isolated one. What the diagnostic settled is that **the material was
+  never at fault**: every case that removed a piece of it came back identical to the card that
+  keeps them, so nothing about the holographic interaction had to be weakened and nothing was
+  (D-086, Phase 10 review §28).
+- **`/system/holo` and the `surface="split"` prop are kept though the investigation is closed.**
+  The diagnostic route stays behind the diagnostics flag, unreachable in production, and
+  `HoloMaterial.surface` keeps its `split` value, whose only consumer is that route. This symptom
+  was misdiagnosed twice from a desktop; if it returns, the instrument that named it should already
+  exist. Both can be deleted in one commit if they are ever judged not to be worth their keep.
+- **A second checkpoint at a log position already checkpointed keeps the first one's label.**
+  Snapshot rows are addressed by `(run, generation, log length)`, which is content-addressed on
+  purpose: two devices that checkpoint at the same position have checkpointed the same state, and
+  the append union should treat those as one row rather than two. The cost is that marking a second
+  checkpoint at the same position without advancing the run does not record the new label. No
+  learner-facing surface takes checkpoint labels yet; the harness is the only caller.
 
 ## Phase 9 — exercise runner
 

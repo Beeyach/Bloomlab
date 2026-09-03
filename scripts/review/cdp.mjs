@@ -15,6 +15,17 @@ const CHROME =
       ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
       : 'google-chrome');
 
+/*
+ * Extra flags for the environment the probe happens to be running in. A container that runs as
+ * root needs `--no-sandbox` or Chrome refuses to start at all, which reads as "the probe is
+ * broken" rather than "the probe cannot launch here". `CHROME_FLAGS` covers anything else a host
+ * needs, space separated.
+ */
+const EXTRA_FLAGS = [
+  ...(process.getuid?.() === 0 ? ['--no-sandbox', '--disable-dev-shm-usage'] : []),
+  ...(process.env.CHROME_FLAGS ? process.env.CHROME_FLAGS.split(/\s+/).filter(Boolean) : []),
+];
+
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export async function launchChrome() {
@@ -32,6 +43,7 @@ export async function launchChrome() {
       '--remote-debugging-port=0',
       `--user-data-dir=${profile}`,
       '--window-size=1280,900',
+      ...EXTRA_FLAGS,
       'about:blank',
     ],
     { stdio: 'ignore' },
@@ -51,7 +63,9 @@ export async function launchChrome() {
     await sleep(150);
   }
   proc.kill();
-  throw new Error(`Chrome did not expose the DevTools endpoint (CHROME=${CHROME})`);
+  throw new Error(
+    `Chrome did not expose the DevTools endpoint (CHROME=${CHROME}, flags=${EXTRA_FLAGS.join(' ') || 'none'})`,
+  );
 }
 
 export function connect(url) {

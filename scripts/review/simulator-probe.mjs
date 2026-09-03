@@ -1,7 +1,8 @@
 // Simulator harness review (Phase 10, SIM-006 … SIM-018). Drives the real engine through the
 // harness at /system/simulator: the clock moves, an injected event changes the account, the queue
-// drains, a checkpoint is taken, a replay is compared, a reload resumes the same run, and the run
-// keeps working with the network switched off.
+// drains, a checkpoint is taken, a replay is compared, a reload resumes the same run, the run keeps
+// working with the network switched off, and a run that has been reset still records and reloads
+// the activity of its new life.
 //
 //   BASE=http://localhost:4173 node scripts/review/simulator-probe.mjs
 import { openPage, session, serviceWorkerSessions, setViewport, sleep } from './cdp.mjs';
@@ -212,6 +213,49 @@ try {
     time: await page.evaluate(fact('Simulator time')),
     counts: await counts(page),
   };
+
+  // 8b. The reset run has to be usable, not just empty: new activity after a reset must persist
+  // across a reload the same way the first life's did (D-087). Before the reset generation existed
+  // these events asked for ids the deleted first life still occupied and were silently dropped, so
+  // the reload came back to an empty log.
+  await clickButton(page, '+1 day');
+  const afterResetAction = await page.evaluate(`(() => {
+    const heading = [...document.querySelectorAll('h2')].find((h) => h.textContent.trim() === 'Event injector');
+    const button = heading?.parentElement?.querySelector('button');
+    return button ? button.textContent.trim() : null;
+  })()`);
+  if (afterResetAction) await clickButton(page, afterResetAction);
+  await clickButton(page, 'Take a checkpoint');
+  const afterResetActivity = {
+    action: afterResetAction,
+    time: await page.evaluate(fact('Simulator time')),
+    counts: await counts(page),
+  };
+  await openPage(page, `${BASE}/system/simulator?scenario=SC-glowhaus-no-show`);
+  await waitFor(
+    page,
+    "[...document.querySelectorAll('h2')].some((h) => h.textContent === 'Time machine')",
+  );
+  const afterResetActivityReload = {
+    time: await page.evaluate(fact('Simulator time')),
+    counts: await counts(page),
+  };
+  report.steps.postResetActivity = {
+    before: afterResetActivity,
+    after: afterResetActivityReload,
+    logSurvived:
+      afterResetActivity.counts.log > 0 &&
+      afterResetActivityReload.counts.log === afterResetActivity.counts.log,
+    snapshotSurvived:
+      afterResetActivity.counts.snapshots > 0 &&
+      afterResetActivityReload.counts.snapshots === afterResetActivity.counts.snapshots,
+    timeSurvived: afterResetActivityReload.time === afterResetActivity.time,
+  };
+  // A replay of the reset run must still equal the run it replays, with none of the first life in it.
+  await clickButton(page, 'Replay this run');
+  report.steps.postResetReplay = await page.evaluate(
+    "document.querySelector('[data-testid=replay-result]')?.textContent.trim() ?? null",
+  );
 
   // 9. No monospace and no tiny uppercase label anywhere on the page (DES-024, DES-025).
   report.steps.typography = await page.evaluate(`(() => {

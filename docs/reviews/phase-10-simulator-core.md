@@ -203,6 +203,10 @@ state, not history, and is persisted with the run (D-079).
 clock, its queue as written, the seed at position zero, no history. The content object is never
 mutated — proved by JSON-comparing the scenario before and after a run plus a reset.
 
+What the engine does not decide is storage identity. A reset run is persisted under a new
+generation so its append-only history can never collide with the run's earlier lives; the rule is
+in §21 and D-087.
+
 ## 15. Simulator version
 
 `2026.09.05-r1`, the project's date-plus-revision convention. Carried on every run and every saved
@@ -295,9 +299,57 @@ this phase added the Dexie v4 tables, the record types and three entries to
 `LOCAL_SYNC_ENTITIES`. Push and pull are generic over `SyncEntity` and needed no change; **no D1
 migration was required**.
 
-Run ids are minted by the app (`sr-<uuid>`), not the engine. Event rows are `se:<run>:<sequence>`
-and snapshot rows `ss:<run>:<log length>`, so saving the same log twice writes the same rows —
-tested.
+Run ids are minted by the app (`sr-<uuid>`), not the engine.
+
+### Reset identity (D-087)
+
+**A reset starts a new generation of the run. An append-only id is never reused, and no history
+row is ever rewritten, resurrected or deleted.**
+
+The rule, exactly:
+
+- A run carries a **generation**, a token the app mints when the run starts and mints again,
+  freshly random, at every reset. It is never reused.
+- Append rows are `se:<run id>:<generation>:<sequence>` and
+  `ss:<run id>:<generation>:<log length>`, and carry the generation as a column. Saving the same
+  log twice still writes the same rows.
+- The generation lives on the run's `sim_projects` header, which is patched, never recreated, so a
+  reset leaves one run in the list rather than two.
+- **Reset touches no history row.** The earlier generations' events and checkpoints stay exactly
+  as written and stay replayable; they are simply no longer the run's current life.
+- A load reads the header's generation and takes only the rows carrying it.
+- Membership is decided by the `run_id` and `generation` fields, not by parsing an id. A row saved
+  before generations existed carries none and reads as generation `0`, so a run stored by the
+  earlier build still loads and still resumes.
+- Whether an event still needs writing is decided by its sequence **within the current
+  generation** — never by a primary key belonging to another one.
+
+The defect this replaces: `resetStoredRun` soft-deleted the run's history and reset the engine's
+sequence to zero, so the second life asked for the ids the first life had used. `saveRun` read
+every primary key for the run, tombstones included, as "already saved", and skipped them — a reset
+run recorded nothing, and a reload came back to an empty log. Filtering the tombstones out would
+not have been enough: `createSyncableStore.create()` uses `table.add()`, so a tombstoned row still
+occupies its key, and resurrecting or overwriting it would rewrite a fact another device holds.
+
+Why a random token rather than a counter: two devices that each reset the same run while offline
+would both mint generation 1, and the append union would silently drop one device's history as a
+duplicate of the other's.
+
+Covered by four unit tests and one two-device test, each of which fails when the colliding
+identity is put back:
+
+| Test | Proves |
+|---|---|
+| never reuses an append id, and leaves the old history exactly as it was | Run, several events, checkpoint, persist, reset, new events, new checkpoint, persist, reload. The reloaded log and state hash equal the post-reset run, the new checkpoint is there, no new id is one the first life used, every first-life row is byte-identical with `deleted_at` still null and `revision` still 1, the outbox holds the new appends, a second save writes no row and queues no further append, and the post-reset log replays to the post-reset run and not to the run before it. |
+| mints fresh ids even where an earlier build tombstoned the first life | The shipped build's tombstones are stepped over rather than asked for again. Post-reset rows are all new ids, all live; the tombstones stay tombstones; the reload returns the new life. |
+| resets in place: one run in the list, not two | `listRuns` returns one row for the scenario, still the same run id, with `log_length` back to 0. |
+| reads a run saved before generations existed, and resets it forward | A run whose rows carry no generation and use the old three-segment id loads as generation `0` with its log intact, then resets into a fresh generation and records normally. |
+| a reset across two devices | Device A runs, syncs; B pulls the run. A resets, runs again, syncs. Every post-reset append row is accepted by the server rather than mistaken for one it already held; every pre-reset row is still there, `deleted_at` null, `revision` 1. B pulls and lands in the new life with the matching state hash, holds both generations' rows, and still sees one run. |
+
+The browser probe adds the same journey on the built preview: run → reset → new activity → reload.
+After a reset the harness records two events, two execution records and a checkpoint, all three
+survive the reload at the same simulator time, and a replay of the reset run reproduces it
+exactly.
 
 Verified, in tests and again in the browser against the built preview: the run, its event log, its
 scheduled queue, its simulator time and its generator position all survive a reload; execution
@@ -483,12 +535,127 @@ local backdrop during the gesture, no radius collapses, no opaque offset outline
 holographic card, no native tap highlight is live on an element that could receive one, and every
 focused card still shows a visible ring.
 
-**REAL TABLET USER CHECK: PENDING.** This must be confirmed by the user on their own tablet
-against the deployed preview. Automation cannot reproduce an older iPadOS WebKit's outline
-behaviour, which is precisely why the fix does not rely on outlines following the radius.
+### REAL TABLET USER CHECK: PASS
 
-D-074 is left in the ledger as written. D-075 records that real-tablet testing proved it
-incomplete, and documents the three causes and the fix.
+The user tested cards A to I on the actual tablet and reported all nine clean: no rectangular
+flash, no pointed-corner flash, and touch-down, hold and release all correct. The Skill Map's own
+holographic interaction is clean on the same device.
+
+**The D-075 tablet interaction issue is confirmed fixed by the user.**
+
+### What the PASS says about the cause
+
+Case A is the card exactly as it ships. It flashed on this tablet before and does not now, so
+whatever fixed it is in the two changes made between those two builds — and both are WebKit
+version gaps, not the material:
+
+1. **`button { -webkit-appearance: none }`.** This is the likely one. Without the prefixed
+   property, WebKit before Safari 15.4 keeps the native button chrome, which it paints on
+   `:active` as a **square fill over the button's box** — a sharp rectangle under the finger on a
+   rounded card, appearing and disappearing with the touch. That is the reported symptom exactly.
+   D-075 believed it had suppressed this; it had only suppressed it on newer engines.
+2. **`.rim` gaining `-webkit-mask` and `-webkit-mask-composite: xor`.** On the same engines the
+   conic gradient was never cut back to a 1.5 px rim and washed the whole surface while touched.
+   That is a wrong appearance rather than a rectangle, so it is the weaker candidate, but it was
+   also visible only under a finger and only on those engines.
+
+The two shipped together, so this is a reasoned attribution rather than an isolated one. What the
+diagnostic settled is the more important half: **the material was never at fault.** Every case
+that removes a piece of it — the tilt, the shadow, the oversized layers, the blending, the forced
+compositor layer — came back identical to the card that keeps them. Nothing about the holographic
+interaction had to be weakened, and nothing was.
+
+### What the nine cases were
+
+`/system/holo`, behind the diagnostics flag and unreachable in production, renders nine copies of
+the real interactive card — a `button` wrapping `HoloMaterial`, same radius, same ring — each with
+exactly one thing changed:
+
+| | Card | What is changed | Verdict on the tablet |
+|---|---|---|---|
+| **A** | As it ships | Nothing | Clean |
+| **B** | No tilt | `transform: none` on the material | Clean |
+| **C** | No shadow | `box-shadow: none` on the material | Clean |
+| **D** | No glare and no grain | The two oversized layers not painted | Clean |
+| **E** | Rounded `clip-path` | `clip-path: inset(0 round 24px)` added | Clean |
+| **F** | Tilt outside, clip inside | `surface="split"`: the root keeps the transform and the shadow, an inner element takes the rounded clip and the blending group | Clean |
+| **G** | No forced compositor layer | `will-change: auto` | Clean |
+| **H** | Layers kept inside the card | Glare and grain move by gradient position rather than by overhanging the box | Clean |
+| **I** | No blending | `mix-blend-mode: normal`, `isolation: auto` | Clean |
+
+A tap counts itself and changes nothing else; selection is a separate control under each card, so
+the ring a selected card wears never rides along on a tap being observed. F is a real structure,
+not a mock: `HoloMaterial` has a `surface` prop, `single` (unchanged, what every product surface
+renders) and `split`.
+
+### Method, kept for the record
+
+Three fixes in a row had been chosen from desktop evidence against a symptom only a real device
+showed, and each automated PASS had been mistaken for an answer. A probe reads what the page says
+it painted; what was in dispute was what the device's compositor put on the glass. Desktop
+Chromium under touch emulation never reproduced it once, at any width, in any case. The thing that
+resolved this was a real device looking at isolated variants, and that is the method to reach for
+the next time a device disagrees with automation.
+
+The holographic touch probe drives all nine cases and reports their measurements **outside** its
+verdict: the cases deliberately remove parts of the material, so judging them by the product's
+pass rules would be a category error. On Chromium 141 at 1024 px and 768 px every case holds a
+24 px radius through the whole gesture with steady corners, and the product cards pass with zero
+failures.
+
+`/system/holo` is kept rather than deleted. It cost little, it is behind a flag, and this symptom
+has now been misdiagnosed twice from a desktop; if it ever returns, the instrument that named it
+should already exist.
+
+### Status
+
+**REAL TABLET USER CHECK: PASS**, confirmed by the user on their own device.
+
+D-074 is left in the ledger as written. D-075 records the three causes it found and fixed. D-086
+records that D-075 was also incomplete, the change of method, the diagnostic, and the two
+WebKit-version defects — one of which is now the likely cause. D-088 records the selected-territory
+treatment that replaced the dark ring.
+
+## 28b. The selected territory (D-088)
+
+The tablet PASS came with one visual correction. On the Skill Map the selected territory wore a
+2 px ink ring, which read as a black-bordered form control sitting among nine soft holographic
+cards — the screenshot showed STRATEGIZE fenced in while everything around it glowed.
+
+Selection is now drawn the way the rest of the material is drawn:
+
+- a **2 px spectral edge** in `--bl-color-lavender`, one of the material's own foil colours, in
+  place of the ink;
+- a **soft lilac pool** beneath the card (`0 8px 24px rgb(169 155 255 / 0.38)`), the same lavender
+  the mastery material glows with;
+- the **material wakes up with it** — its rim goes to full white and its own glow turns lavender —
+  through `--holo-ring`, `--holo-glow` and `--holo-glow-ambient`, which are the material's own
+  properties. Nothing about selection touches the radius, the clip, the tilt or the layer
+  promotion, so the holographic interaction is byte-for-byte what the tablet just passed;
+- the word **"Showing"** on the selected card, so selection is never carried by colour alone
+  (A11Y-005). It names what selection does: that territory's capabilities are open below.
+
+Both shadows are spread shadows on the untransformed button, so they follow its 24 px radius on
+every engine. No offset outline was introduced and none was removed: the transparent
+`outline: 3px solid transparent` on `:focus-visible` stays, because it is what forced-colours mode
+paints, and it is part of the build the tablet just passed.
+
+**Selection and focus stay distinguishable.** Focus is the blue `--bl-color-focus` ring. Selected
+and focused compose: the lavender edge hugs the card at 2 px, the blue focus ring sits outside it
+at 5 px, and the pool sits under both. Measured in the browser at 1024, 768 and 390 px:
+`rgb(169,155,255) 0 0 0 2px, rgb(59,105,189) 0 0 0 5px, rgba(...) 0 8px 24px`.
+
+The Skill Map no longer draws a ring of its own. `HoloTerritory` owns selected, focused and
+both-at-once in one place — two owners of one state is how selection and focus came to disagree
+about the shape in the first place — and a design-rule test now fails if the screen adds one back.
+
+Five design-rule tests lock it: no `--bl-color-ink` in any `[aria-pressed]` rule on the territory,
+the spectral edge and the pool are both present, selection changes only material properties and
+never the shape, the Skill Map draws no second ring, and the card says "Showing". Putting the ink
+ring back turns two of them red.
+
+The touch probe re-run after the change: **PASS, zero failures**, radius 24 px at every pointer
+stage, with the composed selected-and-focused shadow measured at release and focus.
 
 ## 29. Eyebrow removal audit
 

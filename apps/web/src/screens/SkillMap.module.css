@@ -42,14 +42,10 @@
 }
 
 /*
- * Selected territory. A spread shadow follows the card's 24 px radius on every engine, where an
- * offset outline is painted as a rectangle by older WebKit around the transformed material —
- * the square ring the tablet report described (D-075). The focus ring itself belongs to
- * `HoloTerritory`, so selection and focus can never disagree about the shape.
+ * Selection is drawn by `HoloTerritory` itself (D-088), so the component owns how selected,
+ * focused and both-at-once look and this screen only places the card. Nothing here may add a
+ * ring: two owners of one state is how selection and focus came to disagree about the shape.
  */
-.territory[aria-pressed='true'] {
-  box-shadow: 0 0 0 2px var(--bl-color-ink);
-}
 
 @media (min-width: 768px) {
   .map {

@@ -183,16 +183,120 @@ describe('interaction rings follow the shape they surround (D-075)', () => {
       (rule) => rule.selector === ".territory[aria-pressed='true']:focus-visible",
     );
     expect(both, 'selection and focus must compose rather than replace each other').toBeDefined();
+    // The spectral selection edge, then the focus ring outside it. The third shadow is the soft
+    // lilac pool, which has a blur and is not a ring.
     expect(both?.body.match(/0 0 0 \d+px/g) ?? []).toHaveLength(2);
+    expect(both?.body).toMatch(/var\(--bl-color-focus\)/);
   });
 
   it('uses no offset outline on the holographic cards themselves', () => {
     // An offset outline around a transformed element is painted square by older WebKit.
-    const skillMap = read(join(ROOT, 'apps', 'web', 'src', 'screens', 'SkillMap.module.css'));
-    const selected = rules(skillMap).find((rule) =>
-      rule.selector.includes("[aria-pressed='true']"),
+    const css = read(
+      join(ROOT, 'packages', 'design-system', 'src', 'semantic', 'HoloTerritory.module.css'),
     );
+    const selected = rules(css).find((rule) => rule.selector === ".territory[aria-pressed='true']");
     expect(selected?.body).toMatch(/box-shadow/);
     expect(selected?.body).not.toMatch(/outline/);
+  });
+});
+
+describe('a selected holographic card is lit, not fenced in (D-088)', () => {
+  const territoryCss = () =>
+    read(join(ROOT, 'packages', 'design-system', 'src', 'semantic', 'HoloTerritory.module.css'));
+
+  it('draws no dark ring around a selected territory', () => {
+    // The tablet screenshot showed a black-bordered form control sitting among soft holo cards.
+    const selected = rules(territoryCss()).find(
+      (rule) => rule.selector === ".territory[aria-pressed='true']",
+    );
+    expect(selected, 'a selected territory must still be drawn').toBeDefined();
+    for (const rule of rules(territoryCss())) {
+      if (!rule.selector.includes("[aria-pressed='true']")) continue;
+      expect(rule.body, `${rule.selector} must not ring the card in ink`).not.toMatch(
+        /--bl-color-ink\b|--bl-color-ink-deep/,
+      );
+    }
+  });
+
+  it('draws selection with the material’s own spectral colour and a soft pool', () => {
+    const selected = rules(territoryCss()).find(
+      (rule) => rule.selector === ".territory[aria-pressed='true']",
+    );
+    expect(selected?.body).toMatch(/0 0 0 2px var\(--bl-color-lavender\)/);
+    // A blurred, offset shadow: the pool under the card, not another hard edge.
+    expect(selected?.body).toMatch(/0 8px 24px/);
+  });
+
+  it('wakes the material through its own properties, leaving the shape alone', () => {
+    const material = rules(territoryCss()).find(
+      (rule) => rule.selector === ".territory[aria-pressed='true'] .material",
+    );
+    expect(material?.body).toMatch(/--holo-ring:/);
+    expect(material?.body).toMatch(/--holo-glow:/);
+    // Nothing about selection may touch the clip, the radius or the tilt.
+    for (const property of ['border-radius', 'overflow', 'clip-path', 'transform', 'will-change']) {
+      expect(material?.body, `selection must not set ${property}`).not.toContain(property);
+    }
+  });
+
+  it('does not leave the Skill Map drawing a second selection ring', () => {
+    // Two owners of one state is how selection and focus came to disagree about the shape.
+    const skillMap = read(join(ROOT, 'apps', 'web', 'src', 'screens', 'SkillMap.module.css'));
+    const rings = rules(skillMap).filter(
+      (rule) =>
+        rule.selector.includes("[aria-pressed='true']") && /box-shadow|outline/.test(rule.body),
+    );
+    expect(rings).toEqual([]);
+  });
+
+  it('says which territory is showing, so selection is never colour alone', () => {
+    const source = read(
+      join(ROOT, 'packages', 'design-system', 'src', 'semantic', 'HoloTerritory.tsx'),
+    );
+    expect(source).toMatch(/Showing/);
+    expect(source).toMatch(/aria-pressed/);
+    expect(rules(territoryCss()).some((rule) => rule.selector === '.showing')).toBe(true);
+  });
+});
+
+describe('the tablet engines the cards are actually read on (D-086)', () => {
+  it('suppresses the native button chrome on WebKit older than 15.4 as well', () => {
+    // D-075 said buttons lose the chrome WebKit paints on `:active`. Unprefixed `appearance` is
+    // only honoured from Safari 15.4, so on an older iPad that suppression never happened and the
+    // platform was still free to paint a square fill over the button's box under the finger.
+    const global = read(join(ROOT, 'apps', 'web', 'src', 'styles', 'global.css'));
+    const rule = rules(global).find((candidate) => candidate.selector.trim() === 'button');
+    expect(rule, 'global.css must still suppress the native button chrome').toBeDefined();
+    expect(rule?.body).toMatch(/-webkit-appearance:\s*none/);
+    expect(rule?.body).toMatch(/[^-]appearance:\s*none/);
+  });
+
+  it('cuts the rim light back to a rim on those engines too', () => {
+    // Unprefixed `mask` and `mask-composite` are also 15.4. Without the prefixed pair the conic
+    // gradient is never excluded down to 1.5 px and washes the whole card while it is touched.
+    const css = read(
+      join(ROOT, 'packages', 'design-system', 'src', 'holo', 'HoloMaterial.module.css'),
+    );
+    const rim = rules(css).find((rule) => rule.selector === '.rim');
+    expect(rim?.body).toMatch(/-webkit-mask:/);
+    expect(rim?.body).toMatch(/-webkit-mask-composite:\s*xor/);
+    expect(rim?.body).toMatch(/mask-composite:\s*exclude/);
+  });
+
+  it('offers a surface whose rounded clip is not on the element that transforms', () => {
+    // The diagnostic's case F. Until a real tablet says otherwise it is not the default, but it
+    // has to be a real alternative rather than a mock, or the comparison proves nothing.
+    const css = read(
+      join(ROOT, 'packages', 'design-system', 'src', 'holo', 'HoloMaterial.module.css'),
+    );
+    const split = rules(css).find((rule) => rule.selector === '.split');
+    const surface = rules(css).find((rule) => rule.selector === '.surface');
+    expect(split?.body).toMatch(/overflow:\s*visible/);
+    expect(surface?.body).toMatch(/overflow:\s*hidden/);
+    expect(surface?.body).toMatch(/border-radius:\s*inherit/);
+    // The transform stays where it was: only the clipping moved.
+    const holo = rules(css).find((rule) => rule.selector === '.holo');
+    expect(holo?.body).toMatch(/transform:\s*perspective/);
+    expect(split?.body).not.toMatch(/transform:/);
   });
 });
