@@ -1,6 +1,6 @@
 # Release stamp of the curriculum (spec §101, CNT-007). Bump content_version whenever any file
 # under content/ changes, then run `npm run content:lock`. Git = what Bloomlab teaches.
-content_version: '2026.09.05'
+content_version: '2026.09.06'
 schema_version: 1
 notes: >-
   Phase 11 — the CRM Lab's training account, the Notes, Tasks and owner registry records, and

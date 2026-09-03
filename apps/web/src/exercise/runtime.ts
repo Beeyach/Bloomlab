@@ -1,4 +1,9 @@
-import { isFullyGradable, requiredSources, type ContextSource } from '@bloomlab/exercise-engine';
+import {
+  isFullyGradable,
+  requiredSources,
+  type ContextSource,
+  type GradingContext,
+} from '@bloomlab/exercise-engine';
 import type { Exercise } from '@bloomlab/content-schema';
 
 /**
@@ -16,10 +21,40 @@ export interface ExerciseRuntime {
   provides: readonly ContextSource[];
   /** Which exercises it can run. */
   handles(exercise: Exercise): boolean;
+  /**
+   * The real context, read out of whatever the runtime owns. Async because a run lives in
+   * IndexedDB. A runtime that returns null could not produce one after all — the attempt is then
+   * refused rather than graded against nothing.
+   */
+  context(exercise: Exercise, learner: Record<string, unknown>): Promise<GradingContext | null>;
 }
 
-/** Phase 10 pushes the simulator runtime here; Phase 9 ships the registry empty on purpose. */
+/**
+ * Phase 9 shipped this empty on purpose. Phase 11 puts the first entry in it: the CRM Lab, which
+ * owns one real account and can therefore supply state, events and references for an exercise
+ * authored against that account. Registration is by id, so a hot reload replaces rather than
+ * duplicates.
+ */
 export const EXERCISE_RUNTIMES: ExerciseRuntime[] = [];
+
+export function registerRuntime(runtime: ExerciseRuntime): void {
+  const at = EXERCISE_RUNTIMES.findIndex((entry) => entry.id === runtime.id);
+  if (at === -1) EXERCISE_RUNTIMES.push(runtime);
+  else EXERCISE_RUNTIMES[at] = runtime;
+}
+
+/** The runtime that owns this exercise, or none. Two claiming the same exercise is a build fault. */
+export function runtimeFor(exercise: Exercise): ExerciseRuntime | null {
+  const claimants = EXERCISE_RUNTIMES.filter((runtime) => runtime.handles(exercise));
+  if (claimants.length > 1) {
+    throw new Error(
+      `Exercise ${exercise.id} is claimed by more than one runtime: ${claimants
+        .map((runtime) => runtime.id)
+        .join(', ')}`,
+    );
+  }
+  return claimants[0] ?? null;
+}
 
 /** The sources available for one exercise: the learner's own work plus any registered runtime. */
 export function availableSources(exercise: Exercise): ContextSource[] {

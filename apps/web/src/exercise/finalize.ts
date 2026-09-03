@@ -18,7 +18,7 @@ import {
   type AttemptContext,
 } from './attempt';
 import { learnerState } from './response';
-import { availableSources, canGradeNow } from './runtime';
+import { availableSources, canGradeNow, runtimeFor } from './runtime';
 
 /**
  * Finalizing an attempt: grade what the learner did, then write it once through the Phase 6
@@ -88,7 +88,17 @@ export function learnerContext(exercise: Exercise, attempt: ActiveAttempt): Grad
   };
 }
 
-export function gradeAttempt(exercise: Exercise, attempt: ActiveAttempt): GradeReport {
+/**
+ * Grades the attempt. `context` is what a registered runtime produced — the CRM Lab's real
+ * account, for an exercise authored against it. Without one the runner can still judge what the
+ * learner chose and wrote, and an assertion needing a source nothing supplied is reported
+ * unevaluated rather than failed (EXR-024).
+ */
+export function gradeAttempt(
+  exercise: Exercise,
+  attempt: ActiveAttempt,
+  context?: GradingContext | null,
+): GradeReport {
   // A guided exercise is guided practice whatever the hint log says; the mastery engine applies
   // the same floor to the evidence, so the report and the record agree (D-045).
   const fromHints = assistanceFromHints(attempt.hints_revealed);
@@ -98,7 +108,7 @@ export function gradeAttempt(exercise: Exercise, attempt: ActiveAttempt): GradeR
       : fromHints;
   return gradeExercise({
     exercise,
-    context: learnerContext(exercise, attempt),
+    context: context ?? learnerContext(exercise, attempt),
     hints_used: attempt.hints_revealed,
     assistance,
   });
@@ -115,6 +125,22 @@ export class NotGradableError extends Error {
   constructor(public readonly exerciseId: string) {
     super(`${exerciseId} cannot be graded yet: its checks need a runtime that does not exist`);
     this.name = 'NotGradableError';
+  }
+}
+
+/**
+ * The runtime that owns this exercise exists but could not produce a context right now — the CRM
+ * Lab has no account on this device yet, say. Refusing is the only honest answer: falling back to
+ * the learner-only context would claim `state` and `events` the run never supplied and fail the
+ * learner for work they were never able to do (EXR-024).
+ */
+export class RuntimeUnavailableError extends Error {
+  constructor(
+    public readonly exerciseId: string,
+    public readonly runtimeId: string,
+  ) {
+    super(`${exerciseId} needs the ${runtimeId} runtime, which has nothing to grade yet`);
+    this.name = 'RuntimeUnavailableError';
   }
 }
 
@@ -143,7 +169,14 @@ export async function finalizeAttempt(
   // Refused before anything is written, so a malformed retrieval can never reach the record.
   const skillIds = skillsForAttempt(exercise, attempt);
 
-  const report = gradeAttempt(exercise, attempt);
+  // Read the runtime's own state now, once, so the report is of the account as it stood at
+  // submission and cannot drift while the evidence is being written.
+  const runtime = runtimeFor(exercise);
+  const context = runtime
+    ? await runtime.context(exercise, learnerState(exercise, attempt.response))
+    : null;
+  if (runtime && !context) throw new RuntimeUnavailableError(exercise.id, runtime.id);
+  const report = gradeAttempt(exercise, attempt, context);
   const completedAt = (options.now ?? new Date()).toISOString();
   const { attempt: row } = await recordEvidence(
     {

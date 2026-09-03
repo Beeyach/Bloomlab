@@ -19,7 +19,7 @@ import {
   type ActiveAttempt,
   type AttemptContext,
 } from './attempt';
-import { finalizeAttempt, gradeAttempt } from './finalize';
+import { finalizeAttempt, gradeAttempt, RuntimeUnavailableError } from './finalize';
 import { HintDrawer } from './HintDrawer';
 import { Markdown } from './markdown';
 import { predictionFields } from './response';
@@ -220,9 +220,13 @@ export default function ExerciseRunner() {
     setFailure(null);
     try {
       await finalizeAttempt(exercise, attempt, db);
-    } catch {
+    } catch (error) {
       // The learner's work is untouched: the draft is only cleared once the attempt is recorded.
-      setFailure('This attempt could not be saved on this device. Your work is still here.');
+      setFailure(
+        error instanceof RuntimeUnavailableError
+          ? 'This one is graded from your CRM account, and there is no account on this device yet. Open the CRM, do the work there, then come back.'
+          : 'This attempt could not be saved on this device. Your work is still here.',
+      );
     } finally {
       setBusy(false);
     }

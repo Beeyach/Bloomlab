@@ -1,0 +1,95 @@
+# FIX IT (spec §27) — the CRM-003 consequence.
+#
+# The learner is allowed to record a changing value as tags. Nothing in the CRM Lab warns them and
+# nothing blocks it. This is where that choice comes back: a question the account cannot answer,
+# in an account where the same fact is already held both ways, so the cost is visible rather than
+# explained. Graded from the CRM run's own state and history — no rubric, no self-report.
+id: EX-FIX_IT-jordan-treatment-interest
+type: FIX_IT
+title: Nobody can tell what Jordan wants
+mode: practice
+difficulty: 2
+estimated_minutes: 15
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+scenario: SC-glowhaus-crm
+instructions: |
+  Priya wants one number before Friday: how many leads are asking about Laser right now.
+
+  Maria's record answers in one read. Jordan's does not. Somebody recorded his interest as tags,
+  and every time it changed a new tag went on and the old one stayed. He now has three, so he
+  counts three times and the number is wrong.
+
+  Fix Jordan's record so the question has one answer. Do not guess what he wants — the account
+  already says it. Leave the tags that record something that happened.
+allowed_features:
+  - GHL-CRM-TAGS
+  - GHL-CRM-CUSTOM-FIELDS
+  - GHL-CRM-NOTES
+starting_state:
+  notes: Nothing is broken. The account is exactly as the front desk left it.
+expected_outcomes:
+  - id: a1
+    type: state
+    path: contacts.jordan.custom_fields.treatment_interest
+    operator: equals
+    value: Signature Facial
+    description: Jordan's current interest is on the field the report reads, and it is the one his record says.
+  - id: a2
+    type: state
+    path: contacts.jordan.tags
+    operator: not_contains
+    value: wants-laser
+    description: The July answer no longer counts toward the Laser number.
+  - id: a3
+    type: state
+    path: contacts.jordan.tags
+    operator: not_contains
+    value: wants-membership
+    description: The answer after that is gone too.
+  - id: a4
+    type: state
+    path: contacts.jordan.tags
+    operator: contains
+    value: meta-lead
+    tier: quality
+    description: The tag that records where Jordan came from stays — that one is an event, not a value.
+  - id: a5
+    type: event
+    event: contact.updated
+    count: { min: 1 }
+    where: { contact_id: jordan }
+    tier: quality
+    description: The field was set in the account rather than assumed.
+  - id: a6
+    type: state
+    path: contacts.maria.custom_fields.treatment_interest
+    operator: equals
+    value: Signature Facial
+    tier: quality
+    description: Maria's record, which was already right, was left alone.
+critical_failures:
+  - id: c1
+    type: state
+    path: contacts.jordan.tags
+    operator: not_contains
+    value: wants-facial
+    description: A tag saying what the field now says is the same fault again, one record further on.
+grading:
+  mode: deterministic
+  weights:
+    correctness: 50
+    edge_cases: 10
+    architecture: 25
+    maintainability: 10
+    explanation: 5
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: Count the Laser leads by hand first. Which record makes you stop and think?
+  - level: concept_reminder
+    text: A tag answers "did this happen". A value that replaces its own previous answer needs somewhere that holds one answer at a time.
+  - level: worked_example
+    text: Open Jordan, read the note on his deal, set Treatment interest to what it says, then remove all three wants- tags.
+fieldwork: null
+portfolio: null

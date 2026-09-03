@@ -228,7 +228,9 @@ describe('the activity history is derived, never assembled (CRM-001)', () => {
       activityFor(run.state, { contact_id: 'maria' }).some((e) => e.kind === 'stage_changed'),
     ).toBe(true);
     expect(
-      activityFor(run.state, { opportunity_id: 'opp-maria' }).some((e) => e.kind === 'stage_changed'),
+      activityFor(run.state, { opportunity_id: 'opp-maria' }).some(
+        (e) => e.kind === 'stage_changed',
+      ),
     ).toBe(true);
   });
 
@@ -321,7 +323,9 @@ describe('poor architecture is allowed (CRM-003)', () => {
     const jordan = run.state.account.contacts.jordan;
     // This is the consequence a later exercise reads: the field is empty and the tags disagree.
     expect(jordan?.custom_fields.treatment_interest).toBeUndefined();
-    expect((jordan?.tags ?? []).filter((tag) => tag.startsWith('wants-')).length).toBeGreaterThan(1);
+    expect((jordan?.tags ?? []).filter((tag) => tag.startsWith('wants-')).length).toBeGreaterThan(
+      1,
+    );
   });
 });
 
@@ -335,7 +339,7 @@ describe('the UI mutates only through the command layer (CRM-001)', () => {
   const uiFiles = () => {
     const dir = join(process.cwd(), 'apps', 'web', 'src', 'crm');
     return readdirSync(dir)
-      .filter((name) => name.endsWith('.tsx'))
+      .filter((name) => name.endsWith('.tsx') && !name.endsWith('.test.tsx'))
       .map((name) => ({ name, source: readFileSync(join(dir, name), 'utf8') }));
   };
 
@@ -350,7 +354,9 @@ describe('the UI mutates only through the command layer (CRM-001)', () => {
 
   it('no CRM screen writes to the simulator tables', () => {
     for (const { name, source } of uiFiles()) {
-      expect(source, `${name} must not touch persistence`).not.toMatch(/sim_(projects|events|snapshots)/);
+      expect(source, `${name} must not touch persistence`).not.toMatch(
+        /sim_(projects|events|snapshots)/,
+      );
       expect(source, `${name} must not import the database`).not.toMatch(/from '\.\.\/data\/db'/);
     }
   });

@@ -128,9 +128,7 @@ describe('editing goes through the event path (CRM-001)', () => {
       expect(screen.getByRole('button', { name: 'Remove tag from-the-lab' })).toBeInTheDocument(),
     );
     const events = await db.sim_events.toArray();
-    expect(
-      events.some((row) => (row.event as { type: string }).type === 'TAG_ADDED'),
-    ).toBe(true);
+    expect(events.some((row) => (row.event as { type: string }).type === 'TAG_ADDED')).toBe(true);
   });
 
   it('sets do-not-disturb and records it', async () => {
@@ -138,9 +136,7 @@ describe('editing goes through the event path (CRM-001)', () => {
     fireEvent.click(contactRow('maria') as HTMLElement);
     await screen.findByText('Off');
     fireEvent.click(screen.getByRole('button', { name: 'Turn on' }));
-    await waitFor(() =>
-      expect(screen.getByText('On — no outbound messages')).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText('On — no outbound messages')).toBeInTheDocument());
   });
 
   it('assigns an owner from the account’s own users', async () => {
@@ -214,8 +210,10 @@ describe('the pipeline moves without a drag (CRM-001, A11Y-004)', () => {
     fireEvent.change(owner, { target: { value: 'dana' } });
     await waitFor(() => expect((owner as HTMLSelectElement).value).toBe('dana'));
     const contact = await db.sim_projects.toArray();
-    expect((contact[0]?.account as { contacts: Record<string, { owner_id: string }> })
-      .contacts.maria?.owner_id).toBe('priya');
+    expect(
+      (contact[0]?.account as { contacts: Record<string, { owner_id: string }> }).contacts.maria
+        ?.owner_id,
+    ).toBe('priya');
   });
 });
 
