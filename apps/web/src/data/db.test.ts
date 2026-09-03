@@ -1,23 +1,25 @@
 import { describe, expect, it } from 'vitest';
 
-import { BloomlabDatabase, DB_VERSION } from './db';
-
-export const freshDatabase = () => new BloomlabDatabase(`test-${crypto.randomUUID()}`);
+import { DB_VERSION } from './db';
+import { freshDatabase } from './testing';
 
 describe('BloomlabDatabase', () => {
-  it('opens IndexedDB with the Phase 3 tables and no ORM in between (DATA-002)', async () => {
+  it('opens IndexedDB with the local-first and sync tables and no ORM in between (DATA-002)', async () => {
     const database = freshDatabase();
     await database.open();
     expect(database.tables.map((table) => table.name).sort()).toEqual([
       'device',
       'notes',
+      'sync_conflicts',
       'sync_queue',
+      'sync_shadow',
       'sync_state',
       'workspace',
     ]);
     expect(database.verno).toBe(DB_VERSION);
     expect(database.notes.schema.primKey.name).toBe('id');
     expect(database.sync_queue.schema.primKey.auto).toBe(true);
+    expect(database.sync_shadow.schema.primKey.keyPath).toEqual(['entity', 'entity_id']);
     database.close();
   });
 

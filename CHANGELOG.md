@@ -4,6 +4,15 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 4 · D1 + Sync
+
+- D1 schema `migrations/0001_init.sql`: the §93 tables in six domains plus `notes` (D-029); databases `bloomlab-dev` (local, preview) and `bloomlab-prod` (production) bound as `DB`; CI applies migrations to dev on pull requests and to prod on `main` before each deploy (D-033).
+- Worker `/api/sync/*`: link with a Bloomlab Sync Key (server keeps `SHA-256(secret + pepper)`, pepper in a Worker secret), per-device revocable session tokens (stored hashed), push with the shared merge rules (simple / append / snapshot, `base_revision`, `force`), pull from the learner's change log, connected-devices list, revoke and rename. Tests run inside workerd against the real migration (D-032).
+- Shared sync contract in `@bloomlab/shared`: entity kinds, envelope, API types, `decideMerge`, and the sync key (256-bit, Crockford base32 `BLM-XXXX-…` display, tolerant normalisation).
+- Client sync engine: `linkThisDevice` (re-keys local records to the real learner), `syncNow` (push → pull, shadows, conflicts), `resolveConflict`, background scheduler; Dexie schema v2 adds `sync_shadow` and `sync_conflicts`.
+- Screens: `/sync` (create or enter a key, recovery warning, copy / download recovery file / QR / "I saved it", connected devices with revoke, show key), the "Two versions were changed" chooser in the app frame, the indicator now links to sync; the device rename reaches the server; diagnostics show link state, cursor, last error and a newest-note editor.
+- Verification: `npm run review:sync` drives two headless browsers through create-key → link → note sync → offline divergent edits → conflict chooser → convergence → revoke.
+
 ### Added — Phase 3 · Local-First Data
 
 - `apps/web/src/data`: Dexie database `bloomlab` (v1: `device`, `notes`, `workspace`, `sync_queue`, `sync_state`), the SYNC-007 envelope and stamping helpers, `createSyncableStore` (record + outbox in one transaction, soft deletes, coalesced queue rows), the sync-queue primitives, device identity with a provisional learner id, workspace checkpoints, `useSyncStatus`, `useDevice`, `useNotes`, `useWorkspace` (D-025 … D-027).

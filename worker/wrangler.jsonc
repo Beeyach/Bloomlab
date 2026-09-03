@@ -2,7 +2,8 @@
   "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "bloomlab",
   "main": "src/index.ts",
-  "compatibility_date": "2026-08-28",
+  // The newest date the test runtime (vitest-pool-workers' workerd) supports; nothing newer is used.
+  "compatibility_date": "2026-08-22",
   "observability": { "enabled": true },
   // Static assets come from the Vite build (apps/web). Client-side routes fall back to
   // index.html; only /api/* reaches the Worker (spec §85, TA§5).
@@ -11,17 +12,45 @@
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"],
   },
-  // Environments (spec §104, INF-004). D1/R2 bindings are added in Phase 4 with separate
-  // bloomlab-dev / bloomlab-prod databases. Secrets are never declared here (SEC-001).
+  // D1 (spec §92–§93, DATA-010): local and preview use bloomlab-dev, production uses
+  // bloomlab-prod; migrations live in the root migrations/ folder and are applied to dev first.
+  // `wrangler dev` / `vite preview` run against a local copy, never the remote database.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bloomlab-dev",
+      "database_id": "07a147a6-8793-4479-ab24-acb78d6023b2",
+      "migrations_dir": "../migrations",
+    },
+  ],
+  // Environments (spec §104, INF-004). Secrets are never declared here (SEC-001): SYNC_KEY_PEPPER
+  // is a Worker secret per environment (`wrangler secret put SYNC_KEY_PEPPER --env …`) and
+  // worker/.dev.vars locally.
   "vars": { "BLOOMLAB_ENV": "local" },
   "env": {
     "preview": {
       "name": "bloomlab-preview",
       "vars": { "BLOOMLAB_ENV": "preview" },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "bloomlab-dev",
+          "database_id": "07a147a6-8793-4479-ab24-acb78d6023b2",
+          "migrations_dir": "../migrations",
+        },
+      ],
     },
     "production": {
       "name": "bloomlab",
       "vars": { "BLOOMLAB_ENV": "production" },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "bloomlab-prod",
+          "database_id": "3b511b55-2ed3-48e4-8acf-3b823ce20644",
+          "migrations_dir": "../migrations",
+        },
+      ],
     },
   },
 }

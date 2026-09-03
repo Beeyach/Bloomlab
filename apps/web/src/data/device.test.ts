@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { freshDatabase } from './db.test';
+import { freshDatabase } from './testing';
 import {
   DEVICE_LABEL_MAX,
   defaultDeviceLabel,

@@ -135,10 +135,15 @@ export async function setViewport(page, width, height, { mobile = width < 768 } 
   });
 }
 
-export async function screenshot(page, file, clip) {
+/**
+ * Captures the page (or a clip). `beyondViewport` lays the whole document out for the capture,
+ * which moves `position: fixed` elements (sheets, dialogs) to the document's bottom; pass
+ * `false` to capture the viewport exactly as a user sees it.
+ */
+export async function screenshot(page, file, clip, beyondViewport = true) {
   const { data } = await page.send('Page.captureScreenshot', {
     format: 'png',
-    captureBeyondViewport: true,
+    captureBeyondViewport: beyondViewport,
     ...(clip ? { clip: { ...clip, scale: 1 } } : {}),
   });
   writeFileSync(file, Buffer.from(data, 'base64'));

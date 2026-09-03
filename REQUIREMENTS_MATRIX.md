@@ -354,33 +354,33 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| SYNC-001 | Cross-device sync with no normal auth in v1. | P0 | 4 | NOT_STARTED | §88, §146 |
-| SYNC-002 | Bloomlab Sync Key: ≥ 256 bits of cryptographically secure random data generated on the first device; friendly display encoding (e.g. `BLM-K8XR-3PVQ-…`). | P0 | 4 | NOT_STARTED | §88, TA§10 |
-| SYNC-003 | Server stores only derived material `SHA-256(secret + server-side pepper)`; pepper lives only in a Worker secret; raw master secret is never stored in D1. | P0 | 4 | NOT_STARTED | §88, TA§11 |
-| SYNC-004 | Device sessions: after key verification each device receives its own revocable session token; master key is not sent with every request. D1 stores device_id, learner_id, token_hash, created_at, last_seen_at, revoked_at, device_label. | P0 | 4 | NOT_STARTED | §89, TA§12 |
-| SYNC-005 | Connected-devices list with Revoke. | P2 | 4 | NOT_STARTED | §89, TA§12 |
-| SYNC-006 | Recovery: clear statement that losing all devices and the key means server recovery is impossible; offer copy key, download recovery file, QR, confirm-saved. Account creation never forced. | P1 | 4 | NOT_STARTED | §90, TA§13 |
-| SYNC-007 | Only meaningful state syncs (not every drag coordinate); syncable entities carry id, learner_id, updated_at, revision, device_id, deleted_at. | P0 | 4 | IN_PROGRESS | §91, TA§14 |
-| SYNC-008 | Merge rules: append-only evidence merges; simple progress uses latest valid revision; complex simulator work uses explicit project snapshots. | P0 | 4 | NOT_STARTED | §91, TA§14 |
-| SYNC-009 | No silent destructive conflict resolution; on conflicting complex edits show "Two versions were changed. Choose which version to keep." | P0 | 4 | NOT_STARTED | §91, §146 |
-| SYNC-010 | Offline use with quiet reconnect sync; indicator "Saved on this device" → "Synced"; no modal interruption. | P0 | 4 | NOT_STARTED | §86, TA§8 |
-| SYNC-011 | Sync verified across at least two browser/device contexts. | P0 | 4 | NOT_STARTED | PHASE 4 |
-| SYNC-012 | Synchronisation logic covered by unit tests. | P1 | 4 | NOT_STARTED | §132 |
+| SYNC-001 | Cross-device sync with no normal auth in v1. | P0 | 4 | PASSED | §88, §146 |
+| SYNC-002 | Bloomlab Sync Key: ≥ 256 bits of cryptographically secure random data generated on the first device; friendly display encoding (e.g. `BLM-K8XR-3PVQ-…`). | P0 | 4 | PASSED | §88, TA§10 |
+| SYNC-003 | Server stores only derived material `SHA-256(secret + server-side pepper)`; pepper lives only in a Worker secret; raw master secret is never stored in D1. | P0 | 4 | PASSED | §88, TA§11 |
+| SYNC-004 | Device sessions: after key verification each device receives its own revocable session token; master key is not sent with every request. D1 stores device_id, learner_id, token_hash, created_at, last_seen_at, revoked_at, device_label. | P0 | 4 | PASSED | §89, TA§12 |
+| SYNC-005 | Connected-devices list with Revoke. | P2 | 4 | PASSED | §89, TA§12 |
+| SYNC-006 | Recovery: clear statement that losing all devices and the key means server recovery is impossible; offer copy key, download recovery file, QR, confirm-saved. Account creation never forced. | P1 | 4 | PASSED | §90, TA§13 |
+| SYNC-007 | Only meaningful state syncs (not every drag coordinate); syncable entities carry id, learner_id, updated_at, revision, device_id, deleted_at. | P0 | 4 | PASSED | §91, TA§14 |
+| SYNC-008 | Merge rules: append-only evidence merges; simple progress uses latest valid revision; complex simulator work uses explicit project snapshots. | P0 | 4 | PASSED | §91, TA§14 |
+| SYNC-009 | No silent destructive conflict resolution; on conflicting complex edits show "Two versions were changed. Choose which version to keep." | P0 | 4 | PASSED | §91, §146 |
+| SYNC-010 | Offline use with quiet reconnect sync; indicator "Saved on this device" → "Synced"; no modal interruption. | P0 | 4 | PASSED | §86, TA§8 |
+| SYNC-011 | Sync verified across at least two browser/device contexts. | P0 | 4 | PASSED | PHASE 4 |
+| SYNC-012 | Synchronisation logic covered by unit tests. | P1 | 4 | PASSED | §132 |
 
 ## DATA — Data and Persistence
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| DATA-001 | Local-first flow `UI → local state → IndexedDB → sync queue → server`; normal interaction never waits on the server. | P0 | 3 | PARTIAL | §86 |
+| DATA-001 | Local-first flow `UI → local state → IndexedDB → sync queue → server`; normal interaction never waits on the server. | P0 | 3 | PASSED | §86 |
 | DATA-002 | IndexedDB via Dexie (or similarly small wrapper) for active application data; localStorage is never the main datastore; no custom IndexedDB ORM. | P0 | 3 | PASSED | §87, TA§7 |
 | DATA-003 | Installable PWA caching app shell, stable curriculum and stable assets via service worker; API responses not cached blindly; progress lives in IndexedDB. | P1 | 3 | PASSED | §87, TA§9 |
-| DATA-004 | Git = what Bloomlab teaches; D1 = what the learner has done. Static curriculum is not mirrored into D1. | P0 | 4 | NOT_STARTED | §92, TA§66 |
-| DATA-005 | D1 domains: Identity (learners, devices, sync_sessions); Learning (skill_progress, skill_evidence, campaign_progress, exercise_attempts, review_queue, fieldwork); Simulation (sim_projects, sim_snapshots, sim_events, client_progress); Portfolio (portfolio_projects, portfolio_assets); AI (ai_usage, ai_feedback, rubric_runs); System (content_versions, sync_operations, feature_flags). | P0 | 4 | NOT_STARTED | §93, TA§65 |
+| DATA-004 | Git = what Bloomlab teaches; D1 = what the learner has done. Static curriculum is not mirrored into D1. | P0 | 4 | PASSED | §92, TA§66 |
+| DATA-005 | D1 domains: Identity (learners, devices, sync_sessions); Learning (skill_progress, skill_evidence, campaign_progress, exercise_attempts, review_queue, fieldwork); Simulation (sim_projects, sim_snapshots, sim_events, client_progress); Portfolio (portfolio_projects, portfolio_assets); AI (ai_usage, ai_feedback, rubric_runs); System (content_versions, sync_operations, feature_flags). | P0 | 4 | PASSED | §93, TA§65 |
 | DATA-006 | R2 holds generated audio, voice assets, screenshots, portfolio media, fieldwork media, recovery backups, scenario attachments; D1 holds metadata; no huge binaries or giant JSON blobs in D1. | P1 | 20 | NOT_STARTED | §94, TA§15 |
 | DATA-007 | Private learner assets are never public; access through Worker authorisation, short-lived signed access, or controlled routes. | P0 | 20 | NOT_STARTED | §94, TA§16 |
 | DATA-008 | Export Bloomlab Data: versioned backup containing progress, evidence, projects, notes, simulator saves, portfolio metadata. | P1 | 23 | NOT_STARTED | §150, TA§80 |
 | DATA-009 | Restore Backup validates version and schema, requires confirmation, never silently overwrites. | P2 | 26 | NOT_STARTED | §150, TA§81 |
-| DATA-010 | Separate development and production D1 (`bloomlab-dev`, `bloomlab-prod`); migrations never tested against production first. | P0 | 4 | NOT_STARTED | §104, TA§61 |
+| DATA-010 | Separate development and production D1 (`bloomlab-dev`, `bloomlab-prod`); migrations never tested against production first. | P0 | 4 | PASSED | §104, TA§61 |
 | DATA-011 | Content update safety: completed historical attempts are never mutated when GHL features or content change. | P0 | 5 | NOT_STARTED | TA§82 |
 
 ## AI — Runtime AI
@@ -451,7 +451,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | SEC-001 | Secrets (ANTHROPIC_API_KEY, ELEVENLABS_API_KEY, GOOGLE_CLOUD_CREDENTIAL, SYNC_KEY_PEPPER, future GHL credentials) live only in platform secret storage; never in the browser bundle, Vite client variables, commits, curriculum files, or D1. | P0 | all | NOT_STARTED | §105, §152, TA§62 |
 | SEC-002 | Production data is never used casually for development. | P0 | all | NOT_STARTED | §152 |
 | SEC-003 | Learner screenshots and fieldwork media are never published. | P0 | all | NOT_STARTED | §152 |
-| SEC-004 | Raw sync secret is never stored server-side (see SYNC-003). | P0 | 4 | NOT_STARTED | §152 |
+| SEC-004 | Raw sync secret is never stored server-side (see SYNC-003). | P0 | 4 | PASSED | §152 |
 | SEC-005 | Private recordings are never silently sent to unrelated services. | P0 | 21 | NOT_STARTED | §152 |
 | SEC-006 | Recording consent/privacy product-legal pass before any commercial launch. | P3 | — | DEFERRED | TA§49 |
 

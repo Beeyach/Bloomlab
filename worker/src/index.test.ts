@@ -1,3 +1,4 @@
+import { env as testEnv } from 'cloudflare:test';
 import { describe, expect, it, vi } from 'vitest';
 
 import worker, { type Env, type HealthResponse } from './index';
@@ -6,6 +7,7 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
   return {
     BLOOMLAB_ENV: 'local',
     ASSETS: { fetch: vi.fn(async () => new Response('asset')) } as unknown as Fetcher,
+    DB: testEnv.DB,
     ...overrides,
   };
 }

@@ -1,0 +1,12 @@
+.link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  border-radius: var(--bl-radius-full);
+  text-decoration: none;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}

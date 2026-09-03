@@ -4,7 +4,7 @@ import { db, type BloomlabDatabase } from './db';
 import { ensureDevice } from './device';
 import { randomId, stampCreate, stampDelete, stampUpdate } from './envelope';
 import { enqueueOperation } from './syncQueue';
-import type { SyncEntity, SyncEnvelope } from './types';
+import type { LocalSyncEntity, SyncEnvelope } from './types';
 
 /** The record minus its envelope: what callers supply and are allowed to change. */
 export type Draft<T extends SyncEnvelope> = Omit<T, keyof SyncEnvelope>;
@@ -24,7 +24,7 @@ export interface SyncableStore<T extends SyncEnvelope> {
  * returns immediately. Nothing here talks to the network.
  */
 export function createSyncableStore<T extends SyncEnvelope>(
-  entity: SyncEntity,
+  entity: LocalSyncEntity,
   database: BloomlabDatabase = db,
 ): SyncableStore<T> {
   const table = database[entity] as unknown as Table<T, string>;

@@ -44,6 +44,7 @@ const sections = [
 const defaultPages = [
   ...sections.map((s) => [s, `/design?section=${s}`]),
   ['home', '/'],
+  ['sync', '/sync'],
   ['system', '/system'],
   ['notfound', '/nope'],
 ];

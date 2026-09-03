@@ -108,6 +108,8 @@ No conventional login in v1.
 
 Every syncable entity: `id, learner_id, updated_at, revision, device_id, deleted_at`. Optimistic sync of meaningful state only (not every drag coordinate). Simple progress records: latest valid revision wins. Append-only evidence: merge. Complex simulator work: explicit project snapshots. Conflicting simultaneous edits of the same active project are never silently resolved — show "Two versions were changed. Choose which version to keep."
 
+Implementation (Phase 4, D-029 … D-034). Worker `worker/src/sync/`: `POST /api/sync/link` (key → `SHA-256(secret + pepper)` → learner found or created → device row + session token, returned once), `POST /api/sync/push` (per-operation merge by `SYNC_ENTITY_KINDS`, `base_revision` and `force`; outcomes `applied | superseded | conflict | rejected`), `POST /api/sync/pull` (the learner's `sync_operations` log from a cursor), `GET /api/sync/devices`, `POST /api/sync/devices/revoke`, `POST /api/sync/devices/label`; every request after link carries `Authorization: Bearer <session token>`, matched by hash and refused once revoked. Client `apps/web/src/data/sync/`: `createSyncKey` / `linkThisDevice` (re-keys local records from the provisional learner, D-027), `syncNow` (push pending outbox rows with their shadow base revision, apply outcomes, pull and adopt server changes unless a local edit or an unresolved conflict is waiting), `resolveConflict`, `startSyncScheduler` (on start, on reconnect, 1.5 s after a local write, on visibility, every minute). Screens: `/sync` (create or enter a key, recovery warning, copy / download / QR / confirm, connected devices with revoke, show key), the conflict chooser in the app frame, the indicator. Verification: `npm run review:sync` (two headless browsers).
+
 ## 8. D1 (DATA-004, DATA-005, DATA-010, DATA-011)
 
 Rule: **Git = what Bloomlab teaches. D1 = what the learner has done.** Static curriculum is not mirrored into D1. D1 does not receive a write when a node moves three pixels.
@@ -120,6 +122,8 @@ Rule: **Git = what Bloomlab teaches. D1 = what the learner has done.** Static cu
 | Portfolio | portfolio_projects · portfolio_assets |
 | AI | ai_usage · ai_feedback · rubric_runs |
 | System | content_versions · sync_operations · feature_flags |
+
+Implementation (Phase 4): `migrations/0001_init.sql` creates the tables above plus `notes` (D-029). Learner-data tables share the envelope columns (`id, learner_id, created_at, updated_at, revision, device_id, deleted_at`) and keep the entity's own fields in a small `payload` JSON column until a query needs real columns. `sync_operations` is the per-learner change log that `pull` reads; `devices` holds `token_hash`; `sync_sessions` records each issued session. Databases: `bloomlab-dev` (local + preview) and `bloomlab-prod` (production), bound as `DB` in `worker/wrangler.jsonc`; CI applies migrations to dev on every PR and to prod on `main` before deploying (D-033).
 
 Separate `bloomlab-dev` and `bloomlab-prod`. Migrations are never tested against production first. Completed historical attempts are never mutated when content or GHL features change.
 

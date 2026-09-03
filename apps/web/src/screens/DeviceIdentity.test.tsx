@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { db, ensureDevice, renameDevice } from '../data';
@@ -11,7 +12,11 @@ beforeEach(async () => {
 
 describe('DeviceIdentity (DATA-001 first interaction)', () => {
   it('shows the device once it exists and renames it through IndexedDB', async () => {
-    render(<DeviceIdentity />);
+    render(
+      <MemoryRouter>
+        <DeviceIdentity />
+      </MemoryRouter>,
+    );
     expect(screen.getByRole('status')).toHaveTextContent(/preparing this device/i);
 
     await ensureDevice();
@@ -32,7 +37,11 @@ describe('DeviceIdentity (DATA-001 first interaction)', () => {
 
   it('refuses an empty name without losing the current one', async () => {
     const device = await renameDevice('Bench device');
-    render(<DeviceIdentity />);
+    render(
+      <MemoryRouter>
+        <DeviceIdentity />
+      </MemoryRouter>,
+    );
     await screen.findByText(device.label);
 
     const user = userEvent.setup();
