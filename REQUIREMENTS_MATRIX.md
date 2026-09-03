@@ -20,8 +20,8 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
 | PRD-001 | Personal-first: built for one learner (Ary). No billing, subscriptions, instructor dashboards, student management, teams, public profiles, marketplace, classroom management, or social feed unless explicitly requested. | P0 | all | NOT_STARTED | §2, §3, §143 |
-| PRD-002 | Fully asynchronous progression. No calendar locks. Never show "Come back tomorrow" or date-locked curriculum. Learner continues immediately when competency gates pass. | P0 | 6 | NOT_STARTED | §7, §143 |
-| PRD-003 | Mastery-gated progression: advancement depends on competency gates and evidence, never on dates and never on quizzes alone. | P0 | 6 | NOT_STARTED | §11, §29, §143 |
+| PRD-002 | Fully asynchronous progression. No calendar locks. Never show "Come back tomorrow" or date-locked curriculum. Learner continues immediately when competency gates pass. | P0 | 6 | PASSED | §7, §143 |
+| PRD-003 | Mastery-gated progression: advancement depends on competency gates and evidence, never on dates and never on quizzes alone. | P0 | 6 | PASSED | §11, §29, §143 |
 | PRD-004 | Substantially usable without runtime AI: curriculum, simulator, progression, exercises, deterministic grading, CRM/Workflow/Funnel Labs, pricing drills, portfolio and saved progress all work with AI Off. | P0 | all | NOT_STARTED | §106, §107, §143, TA§1 |
 | PRD-005 | Real skill transfer: learner can independently diagnose, architect, build, troubleshoot, explain, price, pitch, negotiate and deliver real funnel and GoHighLevel systems. | P0 | 24 | NOT_STARTED | §4, §143, §168 |
 | PRD-006 | Placement assessment (Gate 0) discovers what the learner can skip. Learner is never treated as a GHL novice. | P1 | 24 | NOT_STARTED | §2, §11 |
@@ -43,7 +43,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
 | CUR-001 | One master skill graph. Campaigns are curated paths that reference skill IDs; skills are never duplicated inside campaigns. | P0 | 5 | PASSED | §10, §144 |
-| CUR-002 | `FIELD_READY` campaign expressed as competency Gates 0–12, not days. | P0 | 6 | NOT_STARTED | §11 |
+| CUR-002 | `FIELD_READY` campaign expressed as competency Gates 0–12, not days. | P0 | 6 | PARTIAL | §11 |
 | CUR-003 | Gate 0 Placement assesses funnel reasoning, lead capture, workflow basics, fields vs values, pipeline basics, basic pricing, written prospect response, short spoken discovery; strong basics clear early requirements. | P1 | 24 | NOT_STARTED | §11 |
 | CUR-004 | Gate 1 Funnel Thinking: customer journey, funnel purpose, traffic intent, offers, friction, CTA, conversion, funnel math, bottleneck thinking. | P1 | 24 | NOT_STARTED | §11 |
 | CUR-005 | Gate 2 Lead Systems: lead capture, forms, confirmation, follow-up, CRM capture, pipeline, next action. | P1 | 24 | NOT_STARTED | §11 |
@@ -83,17 +83,17 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| MAS-001 | Mastery states: UNSEEN, LEARNING, GUIDED, PRACTICED, INDEPENDENT, PRESSURE_TESTED, MASTERED, NEEDS_REFRESH. | P0 | 6 | NOT_STARTED | §29 |
-| MAS-002 | Mastery is never awarded from quizzes alone. | P0 | 6 | NOT_STARTED | §29 |
-| MAS-003 | Evidence record stores skill, exercise, result, score, assistance, difficulty, critical failures, date, simulator version, content version, real-GHL evidence where required. | P0 | 6 | NOT_STARTED | §30 |
+| MAS-001 | Mastery states: UNSEEN, LEARNING, GUIDED, PRACTICED, INDEPENDENT, PRESSURE_TESTED, MASTERED, NEEDS_REFRESH. | P0 | 6 | PASSED | §29 |
+| MAS-002 | Mastery is never awarded from quizzes alone. | P0 | 6 | PASSED | §29 |
+| MAS-003 | Evidence record stores skill, exercise, result, score, assistance, difficulty, critical failures, date, simulator version, content version, real-GHL evidence where required. | P0 | 6 | PASSED | §30 |
 | MAS-004 | Critical failure system: a dangerous failure (e.g. cancelled appointment receives reminder) fails the attempt regardless of numeric score. | P0 | 9 | NOT_STARTED | §31 |
-| MAS-005 | Review system: old skills reappear as short retrieval challenges inside later sessions; review-due never blocks forward progress; failed retrieval re-queues the skill. | P1 | 6 | NOT_STARTED | §32 |
-| MAS-006 | Session Builder offers 30 min / 1 hour / 2 hours / Deep Session; inputs: active campaign, current gate, weak skills, review due, failures, active boss client, fieldwork, assistance dependence; assembled algorithmically with no AI; "Continue" available after session ends. | P1 | 6 | NOT_STARTED | §33, TA§70 |
-| MAS-007 | Assistance meter tracks Independent / Light Assistance / Guided / Heavy Assistance quietly, without shaming; mastery requires sufficient independent evidence. | P1 | 6 | NOT_STARTED | §34 |
-| MAS-008 | Mastery engine is its own TypeScript package (`packages/mastery-engine`): inputs skill definition, evidence history, assistance, difficulty, recency, critical failures, fieldwork requirement; outputs state, confidence, missing_requirements, review_priority. No AI. | P0 | 6 | NOT_STARTED | §102, TA§68 |
-| MAS-009 | Review scheduler is evidence-based (last_demonstrated, failure_rate, mastery_level, importance, review_due), not an Anki clone. | P1 | 6 | NOT_STARTED | TA§69 |
+| MAS-005 | Review system: old skills reappear as short retrieval challenges inside later sessions; review-due never blocks forward progress; failed retrieval re-queues the skill. | P1 | 6 | PASSED | §32 |
+| MAS-006 | Session Builder offers 30 min / 1 hour / 2 hours / Deep Session; inputs: active campaign, current gate, weak skills, review due, failures, active boss client, fieldwork, assistance dependence; assembled algorithmically with no AI; "Continue" available after session ends. | P1 | 6 | PASSED | §33, TA§70 |
+| MAS-007 | Assistance meter tracks Independent / Light Assistance / Guided / Heavy Assistance quietly, without shaming; mastery requires sufficient independent evidence. | P1 | 6 | PASSED | §34 |
+| MAS-008 | Mastery engine is its own TypeScript package (`packages/mastery-engine`): inputs skill definition, evidence history, assistance, difficulty, recency, critical failures, fieldwork requirement; outputs state, confidence, missing_requirements, review_priority. No AI. | P0 | 6 | PASSED | §102, TA§68 |
+| MAS-009 | Review scheduler is evidence-based (last_demonstrated, failure_rate, mastery_level, importance, review_due), not an Anki clone. | P1 | 6 | PASSED | TA§69 |
 | MAS-010 | Field Ready pass requires sufficient evidence across funnel strategy, GHL implementation, automation, CRM architecture, troubleshooting, sales, pricing, negotiation, fieldwork, client explanation — never one overall percentage. | P0 | 24 | NOT_STARTED | §156 |
-| MAS-011 | A heavily assisted pass is not independent mastery evidence. | P0 | 6 | NOT_STARTED | §28, §34 |
+| MAS-011 | A heavily assisted pass is not independent mastery evidence. | P0 | 6 | PASSED | §28, §34 |
 
 ## EXR — Exercise Engine
 
@@ -381,7 +381,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DATA-008 | Export Bloomlab Data: versioned backup containing progress, evidence, projects, notes, simulator saves, portfolio metadata. | P1 | 23 | NOT_STARTED | §150, TA§80 |
 | DATA-009 | Restore Backup validates version and schema, requires confirmation, never silently overwrites. | P2 | 26 | NOT_STARTED | §150, TA§81 |
 | DATA-010 | Separate development and production D1 (`bloomlab-dev`, `bloomlab-prod`); migrations never tested against production first. | P0 | 4 | PASSED | §104, TA§61 |
-| DATA-011 | Content update safety: completed historical attempts are never mutated when GHL features or content change. | P0 | 5 | PARTIAL | TA§82 |
+| DATA-011 | Content update safety: completed historical attempts are never mutated when GHL features or content change. | P0 | 5 | PASSED | TA§82 |
 
 ## AI — Runtime AI
 
@@ -429,7 +429,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | INF-010 | Simple feature flags (e.g. voice_calls, workflow_lab_v2, ai_negotiation, custom_objects, ghl_verification) so half-finished interfaces are not exposed. | P1 | 1 | PASSED | TA§72 |
 | INF-011 | Error boundaries per major environment: Claude failure never breaks Workflow Lab, Call Room failure never breaks CRM, sync failure never destroys local state. No external service can destroy study progress. | P0 | 7 | NOT_STARTED | §149, TA§79 |
 | INF-012 | Substantial work maps to a requirement ID or GitHub issue; commits reference the ID. | P2 | 1 | PASSED | TA§60 |
-| INF-013 | Every release carries `app_version`, `content_version`, `simulator_version`; saved attempts record all three. | P0 | 5 | IN_PROGRESS | §101, TA§56 |
+| INF-013 | Every release carries `app_version`, `content_version`, `simulator_version`; saved attempts record all three. | P0 | 5 | PASSED | §101, TA§56 |
 | INF-014 | Project-control documents maintained: REQUIREMENTS_MATRIX, IMPLEMENTATION_STATUS (§139 format), KNOWN_LIMITATIONS, CHANGELOG, ACCEPTANCE_TESTS, plus the Phase 0 spec package. | P0 | 0 | PASSED | §139, §140, §163 |
 | INF-015 | Independent audit at major milestones (no coding) producing `AUDIT_REPORT.md` covering missing requirements, partial features, stubs, TODOs, fake data, responsive gaps, missing tests, stale GHL mapping, design violations, inaccessible interactions. | P1 | all | NOT_STARTED | §141 |
 | INF-016 | Adversarial audit cases: offline mid-exercise, refresh mid-simulation, duplicate events, missing phone/email, cancelled appointment during wait, timezone change, AI timeout, AI budget exhausted, ElevenLabs failure, transcription failure, sync conflict, second device, extreme values, malformed scenario data. | P1 | 26 | NOT_STARTED | §142 |
@@ -465,7 +465,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | CNT-004 | Zod (or equivalent) schemas for every content type: SkillSchema, ExerciseSchema, ScenarioSchema, ClientSchema, GHLFeatureSchema, RubricSchema, CampaignSchema, LearningUnitSchema, ProjectSchema, GlossarySchema. | P0 | 5 | PASSED | §99, TA§54 |
 | CNT-005 | Validation enforces unique IDs and valid prerequisites, skill refs, GHL feature refs, client refs, scenario refs, campaign refs, exercise refs. Build fails on any broken reference. | P0 | 5 | PASSED | §99 |
 | CNT-006 | Build-time compilation `source → validate → resolve → compile → optimized bundle`; the giant content folder is never parsed at runtime. | P0 | 5 | PASSED | §100, TA§55 |
-| CNT-007 | Content version recorded on every release; attempts preserve version metadata so old evidence stays historically valid. | P0 | 5 | PARTIAL | §101 |
+| CNT-007 | Content version recorded on every release; attempts preserve version metadata so old evidence stays historically valid. | P0 | 5 | PASSED | §101 |
 | CNT-008 | Client schema: id, business_name, industry, locations, team, offers, lead_sources, current_systems, metrics, problems, relationship_state, assets, hidden_facts, voice, history. | P0 | 5 | PASSED | §38 |
 | CNT-009 | Persistent fictional clients with persistent state across the §37 industries (med spa, coach, consultant, therapist, photographer, realtor, gym, pet service, HVAC, roofing, cleaning, remodeling, dentist, chiropractor, law firm, accounting, recruiting, course creator, wedding vendor, B2B service). | P1 | 24 | NOT_STARTED | §37 |
 | CNT-010 | Glossary content type and search integration. | P2 | 24 | NOT_STARTED | §98, TA§71 |

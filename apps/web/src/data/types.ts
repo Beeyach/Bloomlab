@@ -5,13 +5,128 @@
  * strings so they sort, diff and travel to D1 unchanged.
  */
 
+import type {
+  AssistanceLevel,
+  EvidenceCounts,
+  EvidenceKind,
+  EvidenceResult,
+  EvidenceSource,
+  EvidenceVersions,
+  ExerciseMode,
+  GateStatus,
+  HintLevel,
+  LadderState,
+  MasteryState,
+  MissingRequirement,
+  RealGhlEvidence,
+} from '@bloomlab/mastery-engine';
 import type { SyncEntity, SyncEnvelope } from '@bloomlab/shared';
 
 export type { SyncEntity, SyncEnvelope };
 
 /** Syncable entities that have a local table today. Grows phase by phase. */
-export const LOCAL_SYNC_ENTITIES = ['notes'] as const satisfies readonly SyncEntity[];
+export const LOCAL_SYNC_ENTITIES = [
+  'notes',
+  'skill_evidence',
+  'exercise_attempts',
+  'skill_progress',
+  'campaign_progress',
+  'review_queue',
+] as const satisfies readonly SyncEntity[];
 export type LocalSyncEntity = (typeof LOCAL_SYNC_ENTITIES)[number];
+
+/** Derived rows: recomputed from evidence on every device, never authored (Phase 6). */
+export const DERIVED_SYNC_ENTITIES = [
+  'skill_progress',
+  'campaign_progress',
+  'review_queue',
+] as const satisfies readonly LocalSyncEntity[];
+
+/**
+ * One piece of mastery evidence (spec §30, MAS-003), append-only. Same shape as the engine's
+ * `SkillEvidence` plus the sync envelope; `versions` is the release triplet it was written under.
+ */
+export interface SkillEvidenceRecord extends SyncEnvelope {
+  skill_id: string;
+  kind: EvidenceKind;
+  source: EvidenceSource;
+  exercise_id: string | null;
+  exercise_type: string | null;
+  attempt_id: string | null;
+  result: EvidenceResult;
+  score: number | null;
+  assistance: AssistanceLevel;
+  hints_used: HintLevel[];
+  difficulty: number;
+  critical_failures: string[];
+  occurred_at: string;
+  versions: EvidenceVersions;
+  real_ghl: RealGhlEvidence | null;
+  mode: ExerciseMode | null;
+}
+
+/** One attempt at an exercise (or retrieval, fieldwork, placement); parent of its evidence rows. */
+export interface ExerciseAttemptRecord extends SyncEnvelope {
+  exercise_id: string | null;
+  exercise_type: string | null;
+  skill_ids: string[];
+  source: EvidenceSource;
+  started_at: string;
+  completed_at: string;
+  result: EvidenceResult;
+  score: number | null;
+  assistance: AssistanceLevel;
+  hints_used: HintLevel[];
+  difficulty: number;
+  critical_failures: string[];
+  mode: ExerciseMode | null;
+  versions: EvidenceVersions;
+}
+
+/** Derived: the engine's evaluation of one skill, materialised for screens and sync. */
+export interface SkillProgressRecord extends SyncEnvelope {
+  skill_id: string;
+  state: MasteryState;
+  ladder_state: LadderState;
+  refresh_from: LadderState | null;
+  refresh_reason: 'overdue' | 'failed_retrieval' | null;
+  confidence: number;
+  missing_requirements: MissingRequirement[];
+  review_priority: number;
+  review_due: string | null;
+  last_demonstrated: string | null;
+  counts: EvidenceCounts;
+  rules_version: string;
+  content_version: string;
+  computed_at: string;
+}
+
+/** Derived: where the learner stands in a campaign's gates. */
+export interface CampaignProgressRecord extends SyncEnvelope {
+  campaign_id: string;
+  current_gate: string | null;
+  gates: { gate: string; status: GateStatus; passed_count: number; total: number }[];
+  passed_gates: string[];
+  next_required: string[];
+  work_ahead: string[];
+  complete: boolean;
+  rules_version: string;
+  content_version: string;
+  computed_at: string;
+}
+
+/** Derived: one row per skill that has ever been scheduled for review. */
+export interface ReviewQueueRecord extends SyncEnvelope {
+  skill_id: string;
+  due_at: string;
+  priority: number;
+  reason: 'due' | 'overdue' | 'needs_refresh';
+  status: 'due' | 'upcoming' | 'none';
+  last_demonstrated: string | null;
+  state: MasteryState;
+  rules_version: string;
+  computed_at: string;
+}
 
 export type NoteTargetKind = 'general' | 'skill' | 'topic' | 'scenario' | 'client';
 

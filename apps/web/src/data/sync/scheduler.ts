@@ -2,10 +2,15 @@ import { liveQuery } from 'dexie';
 
 import { db, type BloomlabDatabase } from '../db';
 import { syncApi, type SyncApi } from './api';
-import { syncNow } from './engine';
+import { syncNow, type SyncRunResult } from './engine';
 
 const DEBOUNCE_MS = 1500;
 const INTERVAL_MS = 60_000;
+
+export interface SyncSchedulerOptions {
+  /** Runs after every completed sync round trip (e.g. recompute derived progress from pulled evidence). */
+  afterSync?: (result: SyncRunResult) => void;
+}
 
 /**
  * Quiet background sync (spec §86, SYNC-010): on start, when the connection returns, shortly
@@ -16,9 +21,10 @@ const INTERVAL_MS = 60_000;
 export function startSyncScheduler(
   database: BloomlabDatabase = db,
   api: SyncApi = syncApi,
+  options: SyncSchedulerOptions = {},
 ): () => void {
   let debounce: ReturnType<typeof setTimeout> | null = null;
-  const kick = () => void syncNow(database, api);
+  const kick = () => void syncNow(database, api).then((result) => options.afterSync?.(result));
   const soon = () => {
     if (debounce) clearTimeout(debounce);
     debounce = setTimeout(kick, DEBOUNCE_MS);

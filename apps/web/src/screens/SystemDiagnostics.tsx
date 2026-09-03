@@ -9,6 +9,7 @@ import { useFeatureFlags } from '../app/featureFlagsContext';
 import { getRuntimeEnvironment } from '../app/runtime';
 import { CONTENT_VERSION } from '../content/bundle';
 import { ContentDiagnostics } from './ContentDiagnostics';
+import { LearningDiagnostics } from './LearningDiagnostics';
 import { LocalDataDiagnostics } from './LocalDataDiagnostics';
 import styles from './SystemDiagnostics.module.css';
 
@@ -134,6 +135,9 @@ export default function SystemDiagnostics() {
 
       <h2 className={styles.heading}>Content</h2>
       <ContentDiagnostics />
+
+      <h2 className={styles.heading}>Learning</h2>
+      <LearningDiagnostics />
 
       <h2 className={styles.heading}>Local data</h2>
       <LocalDataDiagnostics />

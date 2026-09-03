@@ -11,6 +11,7 @@ import {
   isLinked,
   listOperations,
   notes,
+  recomputeProgress,
   resetOperations,
   syncNow,
   useDevice,
@@ -113,7 +114,9 @@ export function LocalDataDiagnostics() {
 
   async function sync() {
     setSyncing(true);
-    await syncNow();
+    const result = await syncNow();
+    // What the other device demonstrated changes this device's derived progress (Phase 6).
+    if (result.status === 'synced' && result.pulled + result.adopted > 0) await recomputeProgress();
     setSyncing(false);
   }
 

@@ -3,7 +3,13 @@ import { formatSyncKey, generateSyncKey, normalizeSyncKey } from '@bloomlab/shar
 import { db, type BloomlabDatabase } from '../db';
 import { ensureDevice } from '../device';
 import { nowIso } from '../envelope';
-import { LOCAL_SYNC_ENTITIES, type DeviceRecord } from '../types';
+import { derivedIdBelongsTo } from '../learning/ids';
+import {
+  DERIVED_SYNC_ENTITIES,
+  LOCAL_SYNC_ENTITIES,
+  type DeviceRecord,
+  type SyncEnvelope,
+} from '../types';
 import { syncApi, type SyncApi } from './api';
 
 export interface LinkResult {
@@ -73,8 +79,9 @@ export async function adoptLearner(
     await database.device.put(linked);
     if (previous !== identity.learner_id) {
       for (const entity of LOCAL_SYNC_ENTITIES) {
-        await database[entity]
-          .filter((row) => row.learner_id === previous)
+        await database
+          .table(entity)
+          .filter((row: SyncEnvelope) => row.learner_id === previous)
           .modify({ learner_id: identity.learner_id });
       }
       await database.sync_queue.toCollection().modify((op) => {
@@ -82,6 +89,17 @@ export async function adoptLearner(
           op.payload = { ...op.payload, learner_id: identity.learner_id };
         }
       });
+      // Derived rows carry the learner in their id; they are recomputed from evidence after
+      // linking, so the provisional ones (and their queued writes) are dropped here.
+      for (const entity of DERIVED_SYNC_ENTITIES) {
+        await database
+          .table(entity)
+          .filter((row: SyncEnvelope) => !derivedIdBelongsTo(row.id, identity.learner_id))
+          .delete();
+      }
+      await database.sync_queue
+        .filter((op) => (DERIVED_SYNC_ENTITIES as readonly string[]).includes(op.entity))
+        .delete();
     }
     return linked;
   });

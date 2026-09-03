@@ -37,7 +37,7 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **INF-005** GitHub Actions workflow runs typecheck, lint, unit, simulator, content validation and build on PR and push to `main`; a failing step blocks deploy.
 - **INF-009** `tsconfig` has `strict: true`; no `.js`/`.jsx` files under `apps`, `worker`, `packages`; lint forbids `any` without justification.
 - **INF-010** A `feature_flags` module gates at least one route; a flagged-off route is unreachable in UI and by URL.
-- **INF-013** `app_version`, `content_version`, `simulator_version` are exported from `packages/shared` and written to every exercise attempt record.
+- **INF-013** `app_version` (`packages/shared`), `content_version` + content hash (the compiled bundle, D-037) and `simulator_version` (`packages/simulator-core`) are written to every exercise attempt and evidence record at write time and never rewritten.
 - **DES-014** `packages/design-system` exports tokens for color, spacing, radius, shadow, motion, typography, holographic material, density, z-index, breakpoints as CSS variables.
 
 ## Phase 2 — Design system

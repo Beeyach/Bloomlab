@@ -2,11 +2,11 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-02 (end of Phase 5)
+Last updated: 2026-09-02 (end of Phase 6)
 
 ## Current state
 
-- The product has curriculum content compiled in (Phase 5) but no learning engine, simulator or mastery engine yet: nothing teaches from the bundle until Phase 6+. Phases 1–4 delivered the repository foundation, the design system, local-first data and sync.
+- The product has curriculum content compiled in (Phase 5) and a working learning engine over it (Phase 6: evidence, mastery states, gates, review, session builder), but no learner-facing screens and no simulator yet: evidence today enters through the diagnostic form on `/system`; the Command Center, Skill Map, Academy and exercise runner are Phases 7–9.
 - The home route is a Phase 1 foundation screen showing the version triplet and environment. It is not the Command Center (DES-010, Phase 7) and makes no claim to be.
 - `/system` (diagnostics) and `/design` (gallery) exist only in local and preview environments; both are off in production by flag.
 - The semantic components are presentational: they take typed props and will be wired to real engines from Phase 6 onward. Their prop shapes may change when the data models land; they share tokens, so the visual language will not.
@@ -15,6 +15,19 @@ Last updated: 2026-09-02 (end of Phase 5)
 - GHL feature names are verified only for the 34 registry records (Phase 5); the gallery samples in `/design` still use illustrative labels and are not wired to the registry (GHL-005 / GHL-010 apply from the screens onward).
 - The ~128k ElevenLabs credits have an expiry window; voice asset generation (VOI-005) is scheduled for Phase 20. Risk: credits expire before Phase 20. By design this is not a functional dependency.
 - Prettier does not format Markdown (`*.md` is ignored) so the control documents keep their hand-laid tables.
+
+## Phase 6 — learning engine
+
+- **Evidence enters through a diagnostic form.** Nothing produces evidence automatically yet: units are not rendered (Phase 8) and exercises are not run (Phase 9), so exposure and attempts are recorded by hand on `/system`. The write path they will use (`recordEvidence`) is the one verified here.
+- **Mastery rules are v1 and deliberately strict.** One or two nudges make a pass *light* assistance, which counts toward PRACTICED but not INDEPENDENT; only a pass with no hints counts as independent. MASTERED needs at least two unassisted demonstrations on different days or exercises even when a skill declares one. The numbers live in `packages/mastery-engine/src/rules.ts` under `MASTERY_RULES_VERSION = 2026.09.02-r1`; changing them is a rules version bump and a recompute, and stored evaluations keep the version they were computed under.
+- **Confidence is a heuristic reading, not a measurement.** It is a documented formula over state, extra independent passes, recent failure rate and overdue review; it exists so screens can order and soften, never to gate.
+- **Review intervals are not calibrated.** 10 / 21 / 35 / 60 days by state, divided by importance and shortened by failure rate, with a 14-day grace before NEEDS_REFRESH, are explicit starting values (D-046). Calibration needs real learner history (Phase 24+).
+- **The session builder cannot see time actually spent.** It plans against content `estimated_minutes`; sessions are not yet timed or recorded (that arrives with the exercise runner and analytics, INF-018).
+- **Assistance dependence is computed, not shown as a meter.** The value is on every session plan and derived from the last 14 days of evidence; the quiet meter itself is a Phase 7 screen (MAS-007's UI half).
+- **CUR-002 stays partial.** Field Ready's thirteen gates are competency gates in data and in the engine, but gates 6 (Conversion and Copy) and 12 (Capstone) have no authored skills, so their competencies are not mapped yet (Phase 24).
+- **INF-018 (learning-event analytics, P2) is not started.** The evidence and attempt records already carry the events it lists; the aggregation is deferred.
+- **Cross-device convergence relies on both devices recomputing.** Derived rows sync as simple state with deterministic ids, and each device recomputes from evidence after a pull; a device that never pulls the other device's evidence shows its own, older derived rows until it does. Nothing is lost: evidence is append-only.
+- **No new D1 migration.** The five learning tables already existed from Phase 4's schema; the Worker stores them as JSON payloads by entity, so no production schema change was needed or made.
 
 ## Phase 5 — content engine
 
