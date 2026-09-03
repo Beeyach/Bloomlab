@@ -8,7 +8,20 @@ import { session, openPage, setViewport, screenshot, sleep } from './cdp.mjs';
 
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review');
 const BASE = process.env.BASE ?? 'http://localhost:4173';
-const CARD = "document.querySelectorAll('[data-variant]')[1]"; // the gallery's collectible card
+// Default: the gallery's collectible card. HOLO_PAGE / HOLO_CARD point the probe at a product
+// screen, e.g. HOLO_PAGE=/skills HOLO_CARD="document.querySelector('[data-territory=JUDGMENT] [data-variant]')".
+// Given without a leading slash (Git Bash rewrites '/x' into a Windows path): HOLO_PAGE=skills
+const rawPage = process.env.HOLO_PAGE ?? 'design?section=holo';
+const PAGE = rawPage.startsWith('/') ? rawPage : `/${rawPage}`;
+
+async function waitForCard(page) {
+  for (let i = 0; i < 60; i += 1) {
+    if (await page.evaluate(`Boolean(${CARD})`)) return;
+    await sleep(250);
+  }
+  throw new Error(`holo card never appeared: ${CARD}`);
+}
+const CARD = process.env.HOLO_CARD ?? "document.querySelectorAll('[data-variant]')[1]";
 
 const rectOf = (page) =>
   page.evaluate(
@@ -58,7 +71,8 @@ const report = { base: BASE };
 try {
   // ---------- desktop mouse ----------
   await setViewport(page, 1280, 900, { mobile: false });
-  await openPage(page, `${BASE}/design?section=holo`);
+  await openPage(page, `${BASE}${PAGE}`);
+  await waitForCard(page);
   report.build = await page.evaluate(
     "[...document.styleSheets].map(s => (s.href || '').split('/').pop()).filter(Boolean)",
   );
@@ -103,7 +117,8 @@ try {
   await page.send('Emulation.setEmulatedMedia', {
     features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
   });
-  await openPage(page, `${BASE}/design?section=holo`);
+  await openPage(page, `${BASE}${PAGE}`);
+  await waitForCard(page);
   r = await rectOf(page);
   await mouse(page, r.x - 60, r.y + r.h / 2);
   await sleep(100);
@@ -130,7 +145,11 @@ try {
 
   // ---------- touch at 390 (mobile, coarse pointer) ----------
   await setViewport(page, 390, 900, { mobile: true });
-  await openPage(page, `${BASE}/design?section=holo`);
+  await openPage(page, `${BASE}${PAGE}`);
+  await waitForCard(page);
+  // Product screens can place the card below the fold on a phone; touches must land in view.
+  await page.evaluate(`${CARD}.scrollIntoView({ block: 'center' })`);
+  await sleep(300);
   await page.evaluate(
     "window.__types = []; for (const t of ['pointerdown','pointermove','pointerup','pointercancel']) document.addEventListener(t, (e) => { if (window.__types.length < 20) window.__types.push(t + ':' + e.pointerType); }, true); 'ok'",
   );

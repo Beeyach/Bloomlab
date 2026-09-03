@@ -25,14 +25,14 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | PRD-004 | Substantially usable without runtime AI: curriculum, simulator, progression, exercises, deterministic grading, CRM/Workflow/Funnel Labs, pricing drills, portfolio and saved progress all work with AI Off. | P0 | all | NOT_STARTED | §106, §107, §143, TA§1 |
 | PRD-005 | Real skill transfer: learner can independently diagnose, architect, build, troubleshoot, explain, price, pitch, negotiate and deliver real funnel and GoHighLevel systems. | P0 | 24 | NOT_STARTED | §4, §143, §168 |
 | PRD-006 | Placement assessment (Gate 0) discovers what the learner can skip. Learner is never treated as a GHL novice. | P1 | 24 | NOT_STARTED | §2, §11 |
-| PRD-007 | "30-Day Field Ready" is a suggested pace (~90–120 h at 3–5 h/day), displayed as "FIELD READY CAMPAIGN — Suggested pace: ~30 days at 3–5 hours/day", never as day locks. Learner may finish faster or slower. | P1 | 7 | NOT_STARTED | §8 |
+| PRD-007 | "30-Day Field Ready" is a suggested pace (~90–120 h at 3–5 h/day), displayed as "FIELD READY CAMPAIGN — Suggested pace: ~30 days at 3–5 hours/day", never as day locks. Learner may finish faster or slower. | P1 | 7 | PASSED | §8 |
 | PRD-008 | Field Ready means capable-not-expert: diagnose common Bloomwired-sized problems, implement core systems, troubleshoot common failures, speak with prospects, write sales communication, scope and price common work, negotiate basic objections, complete selected work in real GHL, recognise when something exceeds competency. | P1 | 24 | NOT_STARTED | §9 |
 | PRD-009 | Architecture avoids dead ends that would force a rewrite of the learning engine for later commercialisation, without building commercial infrastructure now. | P1 | all | NOT_STARTED | §3, TA§1 |
 | PRD-010 | Curriculum develops four identities at once: Funnel Strategist, GHL Systems Builder, Conversion & Sales Operator, Technical GHL Specialist (last comes later). Learner can start earning before completing. | P1 | 24 | NOT_STARTED | §5 |
 | PRD-011 | Long-term time ratio ≈ 20% instruction / 60% practical work / 20% retrieval, explanation, selling, review; advanced levels more practical. | P1 | 24 | NOT_STARTED | §6 |
-| PRD-012 | App copy is short, smart, direct, professional, occasionally playful ("Run it.", "Something broke. Find out why.", "Deal lost. Good decision."). No childish gamification, no "Amazing job, superstar!". | P1 | 7 | NOT_STARTED | §158 |
-| PRD-013 | Progress language uses capabilities demonstrated and the states Passed / Needs another run / Demonstrated / Independent / Mastered / Field Ready. No XP, no star ratings. | P1 | 7 | IN_PROGRESS | §159 |
-| PRD-014 | Rewards are new capabilities, simulator tools, clients, scenarios, Playground features, portfolio projects, skill mastery and territory access — never meaningless points. | P1 | 7 | NOT_STARTED | §160 |
+| PRD-012 | App copy is short, smart, direct, professional, occasionally playful ("Run it.", "Something broke. Find out why.", "Deal lost. Good decision."). No childish gamification, no "Amazing job, superstar!". | P1 | 7 | PASSED | §158 |
+| PRD-013 | Progress language uses capabilities demonstrated and the states Passed / Needs another run / Demonstrated / Independent / Mastered / Field Ready. No XP, no star ratings. | P1 | 7 | PASSED | §159 |
+| PRD-014 | Rewards are new capabilities, simulator tools, clients, scenarios, Playground features, portfolio projects, skill mastery and territory access — never meaningless points. | P1 | 7 | PARTIAL | §160 |
 | PRD-015 | Signature moments heavily polished: Holo Skill Interaction, First Workflow Execution, Client Case Reveal, Failed Test reveal, Independent Pass recognition, Field Ready (restrained cinematic). | P2 | 26 | NOT_STARTED | §161 |
 | PRD-016 | Sound is optional and subtle (snap, connect, execution, selection, completion), always mutable, never constant. | P3 | 26 | NOT_STARTED | §162 |
 | PRD-017 | Training continually applies to Bloomwired: ICP, offer structure, positioning, pricing, audits, outreach, discovery, proposals, portfolio, client experience, reusable systems, care plans, recurring support. No generic agency-guru scripts as doctrine. | P1 | 24 | NOT_STARTED | §123 |
@@ -293,9 +293,9 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DES-006 | No AI-slop patterns: giant gradient hero, purple SaaS gradient, gradient text, glassmorphism everywhere, random blobs, icon beside every heading, endless three-column cards, every section in a card, giant useless stats, fake analytics, emoji navigation, trophy spam, rocket graphics, stock SaaS art, generic AI avatar, huge shadows, random confetti, excessive pills, identical layouts everywhere, generic "Welcome back" dashboard. | P0 | all | IN_PROGRESS | §70 |
 | DES-007 | Semantic components (SkillCard, ClientCaseCover, WorkflowNode, ExercisePrompt, MasteryBadge, ContactRow, PipelineCard, HoloTerritory, CallParticipant, PricingScopeItem, ExecutionEvent) sharing tokens; no single universal Card component. | P0 | 2 | PASSED | §71, TA§3 |
 | DES-008 | Information density varies by environment: Academy low-medium, Workflow Lab medium-high, CRM high, Call Room very low, Pricing Arena medium, Skill Map high visual / low text. | P1 | 7 | IN_PROGRESS | §72 |
-| DES-009 | App shell: compact left rail ~68–80 px with Home, Campaign, Skill Map, Simulator, Clients, Portfolio, Playground; minimal top context; no giant sidebar. | P1 | 7 | NOT_STARTED | §73 |
-| DES-010 | Command Center answers "What should I do next?"; main object is Continue (campaign, gate, current topic, progress); supporting: active client, due retrieval, recent mastery, Build My Session. No meaningless metrics. | P1 | 7 | NOT_STARTED | §74 |
-| DES-011 | Skill Map signature screen: nine territories plus Judgment as holographic regions / collectible objects, not tiny LMS nodes; skill states unseen → needs refresh change the visual material. | P1 | 7 | NOT_STARTED | §75 |
+| DES-009 | App shell: compact left rail ~68–80 px with Home, Campaign, Skill Map, Simulator, Clients, Portfolio, Playground; minimal top context; no giant sidebar. | P1 | 7 | PARTIAL | §73 |
+| DES-010 | Command Center answers "What should I do next?"; main object is Continue (campaign, gate, current topic, progress); supporting: active client, due retrieval, recent mastery, Build My Session. No meaningless metrics. | P1 | 7 | PARTIAL | §74 |
+| DES-011 | Skill Map signature screen: nine territories plus Judgment as holographic regions / collectible objects, not tiny LMS nodes; skill states unseen → needs refresh change the visual material. | P1 | 7 | PASSED | §75 |
 | DES-012 | Client case covers feel collectible and premium using abstract identity/material treatment; no mandatory stock photos. | P2 | 24 | IN_PROGRESS | §78 |
 | DES-013 | Broken Build Mode uses an understated INCIDENT state with symptom, logs, client complaint, system state. No cartoon alarms. | P1 | 15 | NOT_STARTED | §81 |
 | DES-014 | Explicit design tokens: color, spacing, radius, shadow, motion, typography, holographic material, density, z-index, breakpoints. | P0 | 1 | PASSED | TA§3 |
@@ -332,7 +332,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | RSP-001 | Required review widths: 1440, 1024, 768, 390, 320. | P0 | all | IN_PROGRESS | §82 |
 | RSP-002 | Tablet is first class; mobile is recomposed, not shrunk. | P0 | all | IN_PROGRESS | §82 |
 | RSP-003 | No critical desktop feature disappears on mobile because responsive work is difficult; recompose instead. | P0 | all | IN_PROGRESS | §82, §131 |
-| RSP-004 | Mobile recompositions: Workflow → vertical step editor; CRM → stage view / local horizontal scroller; Academy → editorial reading; Call Room → mobile-first voice; Inbox → natural conversation flow; Skill Map → territory-first. | P1 | 12 | NOT_STARTED | §83 |
+| RSP-004 | Mobile recompositions: Workflow → vertical step editor; CRM → stage view / local horizontal scroller; Academy → editorial reading; Call Room → mobile-first voice; Inbox → natural conversation flow; Skill Map → territory-first. | P1 | 12 | PARTIAL | §83 |
 | RSP-005 | Preview deployments for substantial branches/PRs inspectable on a phone before merge. | P2 | 1 | PASSED | TA§76 |
 
 ## A11Y — Accessibility
@@ -427,7 +427,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | INF-008 | No Redis, Supabase, Firebase, separate Node server, Kubernetes, microservices, or vector database unless a real feature proves necessity. | P0 | all | NOT_STARTED | TA§85 |
 | INF-009 | TypeScript everywhere; no untyped JavaScript for application logic. | P0 | 1 | PASSED | TA§2 |
 | INF-010 | Simple feature flags (e.g. voice_calls, workflow_lab_v2, ai_negotiation, custom_objects, ghl_verification) so half-finished interfaces are not exposed. | P1 | 1 | PASSED | TA§72 |
-| INF-011 | Error boundaries per major environment: Claude failure never breaks Workflow Lab, Call Room failure never breaks CRM, sync failure never destroys local state. No external service can destroy study progress. | P0 | 7 | NOT_STARTED | §149, TA§79 |
+| INF-011 | Error boundaries per major environment: Claude failure never breaks Workflow Lab, Call Room failure never breaks CRM, sync failure never destroys local state. No external service can destroy study progress. | P0 | 7 | PARTIAL | §149, TA§79 |
 | INF-012 | Substantial work maps to a requirement ID or GitHub issue; commits reference the ID. | P2 | 1 | PASSED | TA§60 |
 | INF-013 | Every release carries `app_version`, `content_version`, `simulator_version`; saved attempts record all three. | P0 | 5 | PASSED | §101, TA§56 |
 | INF-014 | Project-control documents maintained: REQUIREMENTS_MATRIX, IMPLEMENTATION_STATUS (§139 format), KNOWN_LIMITATIONS, CHANGELOG, ACCEPTANCE_TESTS, plus the Phase 0 spec package. | P0 | 0 | PASSED | §139, §140, §163 |
@@ -440,7 +440,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| PERF-001 | Fast app shell; route-level code splitting; heavy simulators lazy-loaded; only likely next content preloaded; Workflow Lab does not load while reading Academy. | P0 | 7 | NOT_STARTED | §148, TA§78 |
+| PERF-001 | Fast app shell; route-level code splitting; heavy simulators lazy-loaded; only likely next content preloaded; Workflow Lab does not load while reading Academy. | P0 | 7 | PARTIAL | §148, TA§78 |
 | PERF-002 | Simulator interaction ≈ 60 fps where feasible using CSS transforms and composited layers. | P1 | 12 | NOT_STARTED | §148 |
 | PERF-003 | Off-screen animations pause; holographic richness never harms usability. | P1 | 2 | PASSED | §148 |
 

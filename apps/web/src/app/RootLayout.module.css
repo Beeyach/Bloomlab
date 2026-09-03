@@ -9,7 +9,8 @@
   width: 100%;
   max-width: 72rem;
   margin: 0 auto;
-  padding: var(--bl-space-8) var(--bl-space-5) var(--bl-space-16);
+  /* Top: clear of the sync status pill. Bottom: room for the bottom rail on phones. */
+  padding: calc(var(--bl-space-8) + 44px) var(--bl-space-5) calc(var(--bl-space-16) + 64px);
   outline: none;
 }
 
@@ -40,7 +41,19 @@
 }
 
 @media (min-width: 768px) {
+  .frame {
+    /* The rail is a fixed 72 px column; the page flows beside it. */
+    padding-left: 72px;
+  }
+
   .main {
-    padding: var(--bl-space-12) var(--bl-space-8) var(--bl-space-16);
+    padding: calc(var(--bl-space-8) + 44px) var(--bl-space-8) var(--bl-space-16);
+  }
+}
+
+@media (min-width: 1024px) {
+  .main {
+    /* Wide enough that the status pill sits beside the page, not above it. */
+    padding-top: var(--bl-space-12);
   }
 }

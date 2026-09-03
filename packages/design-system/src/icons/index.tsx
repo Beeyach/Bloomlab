@@ -149,3 +149,20 @@ export const IconSkip = (p: IconProps) => (
     <path d="M5 5l10 7-10 7zM19 5v14" />
   </Icon>
 );
+export const IconHome = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 11l8-7 8 7v9a1 1 0 01-1 1h-4v-6h-6v6H5a1 1 0 01-1-1z" />
+  </Icon>
+);
+export const IconCampaign = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5 21V4" />
+    <path d="M5 4h12l-2 4 2 4H5" />
+  </Icon>
+);
+export const IconMap = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 6l5-2 6 2 5-2v14l-5 2-6-2-5 2z" />
+    <path d="M9 4v14M15 6v14" />
+  </Icon>
+);

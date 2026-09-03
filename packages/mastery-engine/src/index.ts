@@ -95,4 +95,10 @@ export {
   scheduleReviews,
 } from './review.ts';
 export { evaluateCampaign, skillPassesGate, unsatisfiedPrerequisites } from './campaign.ts';
-export { assistanceDependence, buildSession, nextStepFor } from './session.ts';
+export {
+  assistanceDependence,
+  buildSession,
+  nextStepFor,
+  nextStepForSkill,
+  type NextStepInput,
+} from './session.ts';

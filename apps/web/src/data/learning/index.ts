@@ -22,3 +22,11 @@ export { useCampaignProgress, useRecentEvidence, useReviewQueue, useSkillProgres
 export { currentVersions } from './versions';
 export { derivedId, derivedIdBelongsTo } from './ids';
 export { stripEnvelope } from './shape';
+export {
+  FOCUS_KEY,
+  clearFocus,
+  setFocus,
+  useFocus,
+  useLearnerSnapshot,
+  type LearnerFocus,
+} from './useLearner';

@@ -1,0 +1,317 @@
+.screen {
+  --bl-density: var(--bl-density-content);
+}
+
+.header {
+  display: grid;
+  gap: var(--bl-space-2);
+  max-width: 44rem;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bl-color-text-soft);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-3xl);
+  font-weight: var(--bl-font-weight-bold);
+  letter-spacing: var(--bl-font-tracking-display);
+  line-height: var(--bl-font-leading-tight);
+}
+
+.lead,
+.muted {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+}
+
+/* The map: a single column on phones (JUDGMENT fifth of ten), two columns on tablet with
+   JUDGMENT spanning, three columns on desktop with JUDGMENT at the centre. */
+.map {
+  display: grid;
+  gap: var(--bl-space-3);
+}
+
+.territory {
+  min-width: 0;
+}
+
+.territory[aria-pressed='true'] {
+  outline: 2px solid var(--bl-color-ink);
+  outline-offset: 3px;
+}
+
+.territory:focus-visible {
+  outline: 3px solid var(--bl-color-focus);
+  outline-offset: 3px;
+}
+
+@media (min-width: 768px) {
+  .map {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'strategize build'
+      'judgment judgment'
+      'automate architect'
+      'diagnose connect'
+      'sell deliver'
+      'scale scale';
+  }
+
+  .strategize {
+    grid-area: strategize;
+  }
+  .build {
+    grid-area: build;
+  }
+  .automate {
+    grid-area: automate;
+  }
+  .architect {
+    grid-area: architect;
+  }
+  .judgment {
+    grid-area: judgment;
+  }
+  .diagnose {
+    grid-area: diagnose;
+  }
+  .connect {
+    grid-area: connect;
+  }
+  .sell {
+    grid-area: sell;
+  }
+  .deliver {
+    grid-area: deliver;
+  }
+  .scale {
+    grid-area: scale;
+  }
+}
+
+@media (min-width: 1024px) {
+  .map {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      'strategize build automate'
+      'architect judgment diagnose'
+      'connect sell deliver'
+      '. scale .';
+    gap: var(--bl-space-4);
+  }
+}
+
+/* The selected territory's capabilities. */
+.panel {
+  display: grid;
+  gap: var(--bl-space-4);
+  padding-top: var(--bl-space-4);
+  border-top: 1px solid var(--bl-color-border);
+}
+
+.panelHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--bl-space-2) var(--bl-space-4);
+}
+
+.panelTitle {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-xl);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: var(--bl-font-tracking-display);
+}
+
+.panelCount {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+.skills {
+  display: grid;
+  gap: var(--bl-space-4);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skill {
+  display: grid;
+  gap: var(--bl-space-2);
+  align-content: start;
+}
+
+.card {
+  width: 100%;
+}
+
+.card[data-locked='true'] {
+  opacity: 0.85;
+}
+
+.availability {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2);
+  padding: 0 var(--bl-space-1);
+}
+
+.after {
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+/* Skill detail sheet. */
+.sheet {
+  --bl-density: var(--bl-density-content);
+}
+
+.detail {
+  display: grid;
+  gap: var(--bl-space-4);
+}
+
+.detailState {
+  display: flex;
+  align-items: center;
+  gap: var(--bl-space-3);
+}
+
+.detailState > div {
+  display: grid;
+  gap: var(--bl-space-1);
+}
+
+.detailTerritory {
+  margin: 0;
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bl-color-text-soft);
+}
+
+.detailSummary {
+  margin: 0;
+}
+
+.detailSentence {
+  margin: 0;
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.detailMeta {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+.next {
+  display: grid;
+  gap: var(--bl-space-1);
+}
+
+.nextEyebrow {
+  margin: 0;
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bl-color-text-soft);
+}
+
+.nextTitle {
+  margin: 0;
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.nextText {
+  margin: var(--bl-space-1) 0 0;
+  font-size: var(--bl-font-size-sm);
+}
+
+.detailSection {
+  display: grid;
+  gap: var(--bl-space-2);
+}
+
+.detailHeading {
+  margin: 0;
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bl-color-text-soft);
+}
+
+.detailList {
+  display: grid;
+  gap: var(--bl-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.detailList > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2) var(--bl-space-3);
+  min-height: 44px;
+}
+
+.detailLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bl-space-2);
+  min-height: 44px;
+  color: var(--bl-color-text);
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.detailLink:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--bl-radius-sm);
+}
+
+.evidenceRow {
+  justify-content: space-between;
+}
+
+.evidenceWord {
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.sheetActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-2);
+}
+
+.detailBack {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--bl-color-text);
+}
+
+.detailBack:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--bl-radius-sm);
+}

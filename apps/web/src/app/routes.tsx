@@ -15,7 +15,22 @@ export const APP_ROUTES: readonly AppRoute[] = [
   {
     id: 'home',
     path: '/',
-    Component: lazy(() => import('../screens/FoundationHome')),
+    Component: lazy(() => import('../screens/CommandCenter')),
+  },
+  {
+    id: 'campaign',
+    path: '/campaign',
+    Component: lazy(() => import('../screens/CampaignScreen')),
+  },
+  {
+    id: 'skills',
+    path: '/skills',
+    Component: lazy(() => import('../screens/SkillMap')),
+  },
+  {
+    id: 'skill',
+    path: '/skills/:skillId',
+    Component: lazy(() => import('../screens/SkillMap')),
   },
   {
     id: 'sync',
