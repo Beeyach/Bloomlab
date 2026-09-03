@@ -56,9 +56,16 @@ summary,
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Buttons the design system paints itself never want the platform's button chrome, which is
-   drawn as a rectangle on `:active` in WebKit. Semantics are untouched. */
+/*
+ * Buttons the design system paints itself never want the platform's button chrome, which is drawn
+ * as a rectangle on `:active` in WebKit. Semantics are untouched.
+ *
+ * The prefixed property is required, not decorative: WebKit only started honouring the unprefixed
+ * `appearance` in Safari 15.4, and an iPad on an older release is exactly the device this rule is
+ * for. D-075 claimed this suppression and only had it on newer engines (D-086).
+ */
 button {
+  -webkit-appearance: none;
   appearance: none;
 }
 

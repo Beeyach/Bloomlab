@@ -22,6 +22,17 @@ export interface HoloMaterialProps extends HTMLAttributes<HTMLElement> {
   radius?: 'md' | 'lg' | 'xl';
   /** Turn pointer physics off (static material, e.g. inside a list of many cards). */
   interactive?: boolean;
+  /**
+   * Where the rounded clip lives relative to the tilt (D-086).
+   *
+   * `single` — one element carries the transform, the radius and `overflow: hidden`, which is the
+   * shipped material. `split` — the transform and the drop shadow stay outside and an inner
+   * element does the clipping, so a compositor is never asked to apply a rounded clip to a surface
+   * whose transform is changing. Only the holographic diagnostic renders `split` today; it exists
+   * to be told apart from `single` on a real tablet, and nothing else may depend on it until that
+   * comparison has an answer.
+   */
+  surface?: 'single' | 'split';
   ref?: Ref<HTMLElement>;
   children?: ReactNode;
 }
@@ -53,6 +64,7 @@ export function HoloMaterial({
   variant = 'collectible',
   radius = 'xl',
   interactive = true,
+  surface = 'single',
   ref: externalRef,
   className,
   children,
@@ -175,17 +187,29 @@ export function HoloMaterial({
     [],
   );
 
+  const stack = (
+    <>
+      <span className={cx(styles.layer, styles.pearl)} data-layer="pearl" aria-hidden="true" />
+      <span className={cx(styles.layer, styles.bands)} data-layer="bands" aria-hidden="true" />
+      <span className={cx(styles.layer, styles.grain)} data-layer="grain" aria-hidden="true" />
+      <span className={cx(styles.layer, styles.glare)} data-layer="glare" aria-hidden="true" />
+      <span className={cx(styles.layer, styles.rim)} data-layer="rim" aria-hidden="true" />
+    </>
+  );
+
   return (
     <Tag
       ref={setRef}
       className={cx(
         styles.holo,
+        surface === 'split' && styles.split,
         styles[variant],
         radius === 'md' && styles.radiusMd,
         radius === 'lg' && styles.radiusLg,
         className,
       )}
       data-variant={variant}
+      data-surface={surface}
       onPointerEnter={(event: ReactPointerEvent<HTMLElement>) => {
         onPointerEnter?.(event);
         if (event.pointerType === 'mouse') track(event);
@@ -213,12 +237,21 @@ export function HoloMaterial({
       }}
       {...rest}
     >
-      <span className={cx(styles.layer, styles.pearl)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.bands)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.grain)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.glare)} aria-hidden="true" />
-      <span className={cx(styles.layer, styles.rim)} aria-hidden="true" />
-      <span className={styles.content}>{children}</span>
+      {surface === 'split' ? (
+        <span className={styles.surface} data-layer="surface">
+          {stack}
+          <span className={styles.content} data-layer="content">
+            {children}
+          </span>
+        </span>
+      ) : (
+        <>
+          {stack}
+          <span className={styles.content} data-layer="content">
+            {children}
+          </span>
+        </>
+      )}
     </Tag>
   );
 }

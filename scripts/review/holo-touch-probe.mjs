@@ -317,6 +317,28 @@ try {
       viewport,
     });
 
+    // The diagnostic: the same card with one property changed per case (D-086). Desktop touch
+    // emulation has never reproduced the tablet's corner, so a clean run here proves nothing about
+    // the device — what it gives is a per-case baseline, so a case that *does* differ on this
+    // engine is not mistaken for the one the tablet is reporting.
+    await openPage(page, `${BASE}/system/holo`);
+    if (await waitFor(page, "document.querySelector('[data-holo-case]')", 20)) {
+      await sleep(400);
+      const cases = await page.evaluate(
+        "[...document.querySelectorAll('[data-holo-case]')].map((el) => el.dataset.holoCase)",
+      );
+      // Flattened into the same shape as every other card, so the corner, radius, outline and
+      // tap-highlight rules below judge each case exactly as they judge a product card.
+      for (const letter of cases) {
+        perWidth[`case-${letter}`] = await gesture(page, {
+          width,
+          label: `case-${letter}`,
+          selector: `[data-holo-case="${letter}"]`,
+          viewport,
+        });
+      }
+    }
+
     report.widths[width] = perWidth;
   }
 } finally {
@@ -331,11 +353,43 @@ try {
 // is the layout behind the card, not a flash, so idle is the baseline rather than an absolute.
 const failures = [];
 const occluded = [];
+// The diagnostic's cases deliberately remove or move parts of the material, and its cards carry a
+// selection ring the product cards do not, so the product's pass rules do not apply to them: they
+// are the instrument, not a surface being judged. Their measurements are reported instead, as the
+// desktop baseline a real tablet's answer is read against (D-086).
+const diagnostic = [];
+const isCase = (card) => card.startsWith('case-');
 const OPAQUE_OUTLINE = /^(?!0px)(?!.*rgba\([^)]*,\s*0\)).*solid/;
 for (const [width, cards] of Object.entries(report.widths)) {
   for (const [card, stages] of Object.entries(cards)) {
     const idle = stages.idle;
     if (!idle) continue;
+    if (isCase(card)) {
+      const moved = Object.entries(stages)
+        .filter(([stage, data]) => stage !== 'idle' && data && !data.occluded)
+        .flatMap(([stage, data]) =>
+          Object.entries(data.deltas ?? {})
+            .filter(([corner, delta]) => {
+              const before = idle.deltas?.[corner];
+              return (
+                delta !== null &&
+                before !== null &&
+                before !== undefined &&
+                Math.abs(delta - before) > CORNER_TOLERANCE
+              );
+            })
+            .map(([corner, delta]) => `${stage}:${corner} ${idle.deltas[corner]}->${delta}`),
+        );
+      const collapsed = Object.entries(stages)
+        .filter(([, data]) => data && data.radiusPx + 0.5 < idle.radiusPx)
+        .map(([stage, data]) => `${stage} radius ${idle.radiusPx}->${data.radiusPx}`);
+      diagnostic.push(
+        `${width} ${card}: radius ${idle.radiusPx}px, corners ${moved.length === 0 ? 'steady' : moved.join(' ')}${
+          collapsed.length > 0 ? `, ${collapsed.join(' ')}` : ''
+        }`,
+      );
+      continue;
+    }
     for (const [stage, data] of Object.entries(stages)) {
       if (!data || stage === 'idle') continue;
       if (data.occluded || idle.occluded) {
@@ -395,5 +449,9 @@ report.measured = Object.entries(report.widths).flatMap(([width, cards]) =>
     return `${width} ${card}: ${total - covered}/${total} stages measurable`;
   }),
 );
+// The diagnostic's own measurements, kept out of the verdict on purpose (see above). A desktop
+// PASS here has never meant the tablet is clean; this is the baseline the tablet reads against.
+report.diagnostic = diagnostic;
 report.verdict = failures.length === 0 ? 'PASS' : 'FAIL';
+report.realTabletCheck = 'FAILED — awaiting the user on a real tablet at /system/holo (D-086)';
 console.log(JSON.stringify(report, null, 2));

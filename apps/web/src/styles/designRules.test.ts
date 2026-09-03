@@ -196,3 +196,45 @@ describe('interaction rings follow the shape they surround (D-075)', () => {
     expect(selected?.body).not.toMatch(/outline/);
   });
 });
+
+describe('the tablet engines the cards are actually read on (D-086)', () => {
+  it('suppresses the native button chrome on WebKit older than 15.4 as well', () => {
+    // D-075 said buttons lose the chrome WebKit paints on `:active`. Unprefixed `appearance` is
+    // only honoured from Safari 15.4, so on an older iPad that suppression never happened and the
+    // platform was still free to paint a square fill over the button's box under the finger.
+    const global = read(join(ROOT, 'apps', 'web', 'src', 'styles', 'global.css'));
+    const rule = rules(global).find((candidate) => candidate.selector.trim() === 'button');
+    expect(rule, 'global.css must still suppress the native button chrome').toBeDefined();
+    expect(rule?.body).toMatch(/-webkit-appearance:\s*none/);
+    expect(rule?.body).toMatch(/[^-]appearance:\s*none/);
+  });
+
+  it('cuts the rim light back to a rim on those engines too', () => {
+    // Unprefixed `mask` and `mask-composite` are also 15.4. Without the prefixed pair the conic
+    // gradient is never excluded down to 1.5 px and washes the whole card while it is touched.
+    const css = read(
+      join(ROOT, 'packages', 'design-system', 'src', 'holo', 'HoloMaterial.module.css'),
+    );
+    const rim = rules(css).find((rule) => rule.selector === '.rim');
+    expect(rim?.body).toMatch(/-webkit-mask:/);
+    expect(rim?.body).toMatch(/-webkit-mask-composite:\s*xor/);
+    expect(rim?.body).toMatch(/mask-composite:\s*exclude/);
+  });
+
+  it('offers a surface whose rounded clip is not on the element that transforms', () => {
+    // The diagnostic's case F. Until a real tablet says otherwise it is not the default, but it
+    // has to be a real alternative rather than a mock, or the comparison proves nothing.
+    const css = read(
+      join(ROOT, 'packages', 'design-system', 'src', 'holo', 'HoloMaterial.module.css'),
+    );
+    const split = rules(css).find((rule) => rule.selector === '.split');
+    const surface = rules(css).find((rule) => rule.selector === '.surface');
+    expect(split?.body).toMatch(/overflow:\s*visible/);
+    expect(surface?.body).toMatch(/overflow:\s*hidden/);
+    expect(surface?.body).toMatch(/border-radius:\s*inherit/);
+    // The transform stays where it was: only the clipping moved.
+    const holo = rules(css).find((rule) => rule.selector === '.holo');
+    expect(holo?.body).toMatch(/transform:\s*perspective/);
+    expect(split?.body).not.toMatch(/transform:/);
+  });
+});

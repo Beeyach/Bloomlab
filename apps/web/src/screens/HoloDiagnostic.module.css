@@ -1,0 +1,183 @@
+/*
+ * The holographic corner diagnostic (D-086). Each case changes exactly one property of the
+ * shipped material, addressed through the hooks the material already exposes: `[data-variant]`
+ * is its root and `[data-layer]` names each painted layer. Nothing here is a design; every rule
+ * exists to be told apart from case A on a real tablet.
+ */
+
+.screen {
+  padding: var(--bl-space-4);
+  max-width: 68ch;
+  margin: 0 auto;
+}
+
+.lede {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+  max-width: 60ch;
+}
+
+.cases {
+  display: grid;
+  gap: var(--bl-space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case {
+  margin: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--bl-font-size-lg);
+}
+
+.what,
+.why {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+}
+
+.why {
+  color: var(--bl-color-text-faint);
+}
+
+.footnote {
+  padding-top: var(--bl-space-4);
+  border-top: 1px solid var(--bl-color-border);
+}
+
+/* The card: the same interactive wrapper the product uses, ring and all. */
+.card {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--bl-radius-xl);
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.card:focus-visible {
+  outline: 3px solid transparent;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--bl-color-focus);
+}
+
+.card[aria-pressed='true'] {
+  box-shadow: 0 0 0 2px var(--bl-color-ink);
+}
+
+.card[aria-pressed='true']:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--bl-color-ink),
+    0 0 0 5px var(--bl-color-focus);
+}
+
+.material {
+  width: 100%;
+}
+
+/* Selection is deliberate here, never a side effect of a tap. */
+.toggle {
+  align-self: start;
+  min-height: 44px;
+  padding: 0 var(--bl-space-3);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface);
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.toggle[aria-pressed='true'] {
+  border-color: var(--bl-color-ink);
+}
+
+.face {
+  display: grid;
+  gap: var(--bl-space-1);
+  min-height: 132px;
+  padding: var(--bl-space-4);
+  align-content: center;
+}
+
+.letter {
+  font-size: var(--bl-font-size-xl);
+  font-weight: 600;
+}
+
+.faceTitle {
+  font-size: var(--bl-font-size-md);
+}
+
+.faceState {
+  color: var(--bl-color-text-soft);
+}
+
+/* ---- B. no tilt ---------------------------------------------------------- */
+.card[data-case='no-transform'] [data-variant] {
+  transform: none;
+}
+
+/* ---- C. no shadow -------------------------------------------------------- */
+.card[data-case='no-shadow'] [data-variant] {
+  box-shadow: none;
+}
+
+/* ---- D. no glare and no grain -------------------------------------------- */
+.card[data-case='no-overlays'] [data-layer='glare'],
+.card[data-case='no-overlays'] [data-layer='grain'] {
+  display: none;
+}
+
+/* ---- E. rounded clip-path ------------------------------------------------ */
+.card[data-case='clip-path'] [data-variant] {
+  clip-path: inset(0 round var(--bl-radius-xl));
+}
+
+/* F is structural: the material renders `surface="split"`, so there is no rule here. */
+
+/* ---- G. no forced compositor layer --------------------------------------- */
+.card[data-case='no-will-change'] [data-variant] {
+  will-change: auto;
+}
+
+/* ---- H. layers kept inside the card -------------------------------------- */
+/*
+ * The light still travels, but by moving its own gradient rather than by hanging a bigger box
+ * outside the card. Nothing then extends past the edge, so losing the clip cannot draw a square.
+ */
+.card[data-case='contained-layers'] [data-layer='glare'] {
+  inset: 0;
+  transform: none;
+  background: radial-gradient(
+    circle at calc(var(--holo-px) * 1%) calc(var(--holo-py) * 1%),
+    rgb(255 255 255 / 0.95) 0%,
+    rgb(255 255 255 / 0.55) 7%,
+    rgb(255 255 255 / 0.12) 15%,
+    rgb(255 255 255 / 0) 23%
+  );
+}
+
+.card[data-case='contained-layers'] [data-layer='grain'] {
+  inset: 0;
+  transform: none;
+  background-position: calc(var(--holo-nx) * -6px) calc(var(--holo-ny) * -6px);
+}
+
+/* ---- I. no blending ------------------------------------------------------ */
+.card[data-case='no-blending'] [data-variant] {
+  isolation: auto;
+}
+
+.card[data-case='no-blending'] [data-layer='glare'],
+.card[data-case='no-blending'] [data-layer='grain'] {
+  mix-blend-mode: normal;
+}
