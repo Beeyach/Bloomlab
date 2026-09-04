@@ -29,7 +29,10 @@ const STATUS_COUNTER = {
 } as const;
 
 export function appointmentBooked(account: AccountState, event: SimulatorEvent): ReducerResult {
-  const id = requireString(event.payload, 'appointment_id', event.type);
+  // A booking that names no id gets one from the event, which is deterministic and unique within
+  // the run — so an authored injectable like "Jordan books 40 minutes from now" can be replayed
+  // without the scenario having to invent an id for a record that does not exist yet.
+  const id = optionalString(event.payload, 'appointment_id') ?? `appt-${event.id}`;
   if (account.appointments[id]) {
     fail('DUPLICATE_ENTITY', `An appointment ${id} already exists`, { appointment_id: id });
   }
