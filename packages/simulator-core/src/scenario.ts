@@ -641,6 +641,7 @@ export function validateScenario(
     workflow_id: new Set(collections.workflows.map((row) => row.id)),
     pipeline_id: new Set(pipelines.keys()),
     product_id: new Set(collections.products.map((row) => row.id)),
+    funnel_id: new Set(collections.funnels.map((row) => row.id)),
     user_id: userIds,
     owner_id: userIds,
     assigned_to: userIds,
@@ -649,13 +650,40 @@ export function validateScenario(
     note_id: new Set(collections.notes.map((row) => row.id)),
   };
 
+  /**
+   * A scenario may build its own history rather than start with it (D-144). Three weeks of a
+   * business's life is a run of events, and the ones later in that run legitimately name records
+   * the earlier ones created — an opportunity for a contact who filled in a form on day four is
+   * not a dangling reference, it is a Tuesday.
+   *
+   * So references are checked against the account **as it stands when the event fires**: the
+   * initial state, plus everything the events before it created. An event that names something
+   * nothing has created yet is still a content bug and still reported.
+   */
+  const known = Object.fromEntries(
+    Object.entries(entities).map(([field, ids]) => [field, new Set(ids)]),
+  ) as Record<string, Set<string>>;
+
+  const remember = (type: SimulatorEventType, payload: EventPayload | undefined) => {
+    for (const field of CREATES[type] ?? []) {
+      const value = payload?.[field];
+      if (typeof value === 'string') known[field]?.add(value);
+    }
+    // A submission by somebody the account has never met creates them, which is what makes an
+    // authored intake cohort possible at all.
+    if (type === 'FORM_SUBMITTED' || type === 'SURVEY_SUBMITTED') {
+      const value = payload?.contact_id;
+      if (typeof value === 'string') known.contact_id?.add(value);
+    }
+  };
+
   const checkEvent = (event: ScenarioScheduledEvent | ScenarioInjectableEvent, path: string) => {
     const type = resolveEventType(event.type);
     if (!type) {
       issues.push(issue('UNKNOWN_EVENT_TYPE', path, `${event.type} is not a simulator event`));
-      return;
+      return null;
     }
-    for (const [field, known] of Object.entries(entities)) {
+    for (const [field, ids] of Object.entries(known)) {
       const value = event.payload?.[field];
       // A form submission legitimately names a contact that does not exist yet: that is what
       // creates it. Every other reference must already resolve.
@@ -663,22 +691,31 @@ export function validateScenario(
         continue;
       }
       // An event that creates the entity it names must not find it already there.
-      if (typeof value === 'string' && !known.has(value) && !CREATES[type]?.includes(field)) {
+      if (typeof value === 'string' && !ids.has(value) && !CREATES[type]?.includes(field)) {
         issues.push(issue('DANGLING_REF', `${path}.payload.${field}`, `Unknown ${field} ${value}`));
       }
     }
+    return type;
   };
 
-  (scenario.scheduled_events ?? []).forEach((event, index) => {
-    const path = `scheduled_events.${index}`;
-    try {
-      instant(event.at);
-    } catch {
-      issues.push(issue('INVALID_TIME', path, `Not an instant: ${event.at}`));
-    }
-    checkEvent(event, path);
-  });
+  // In the order the queue will run them, so "created by an earlier event" means what it says.
+  [...(scenario.scheduled_events ?? []).entries()]
+    .sort(([leftIndex, left], [rightIndex, right]) =>
+      left.at === right.at ? leftIndex - rightIndex : left.at < right.at ? -1 : 1,
+    )
+    .forEach(([index, event]) => {
+      const path = `scheduled_events.${index}`;
+      try {
+        instant(event.at);
+      } catch {
+        issues.push(issue('INVALID_TIME', path, `Not an instant: ${event.at}`));
+      }
+      const type = checkEvent(event, path);
+      if (type) remember(type, event.payload);
+    });
 
+  // An injectable can be used at any point in the run, so it is checked against the account the
+  // scheduled history leaves behind rather than against the account before any of it happened.
   (scenario.injectable_events ?? []).forEach((event, index) => {
     checkEvent(event, `injectable_events.${index}`);
   });
@@ -699,6 +736,9 @@ const CREATES: Partial<Record<SimulatorEventType, string[]>> = {
   PIPELINE_CREATED: ['pipeline_id'],
   NOTE_ADDED: ['note_id'],
   TASK_CREATED: ['task_id'],
+  WORKFLOW_CREATED: ['workflow_id'],
+  FUNNEL_CREATED: ['funnel_id'],
+  CALENDAR_CREATED: ['calendar_id'],
 };
 
 /** Accepts either the authored dotted name or the catalogue type itself. */
