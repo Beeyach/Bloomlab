@@ -20,7 +20,7 @@ import {
   submitSurvey,
   type Visitor,
 } from './commands';
-import { visitorEventsSince, visitorLogWatermark } from './VisitorRun';
+import { visitorEventsSince, visitorLogWatermark } from './session';
 
 /**
  * FUN-003: submitting a form in the Funnel Lab creates real CRM data and fires the workflow,
@@ -342,7 +342,11 @@ describe('the visitor chain starts at the real event sequence', () => {
     let current = run;
     let funnel = consultFunnel();
 
-    for (const name of ['Consultation funnel', 'Consultation funnel v2', 'Consultation funnel v3']) {
+    for (const name of [
+      'Consultation funnel',
+      'Consultation funnel v2',
+      'Consultation funnel v3',
+    ]) {
       funnel = { ...funnel, name };
       const saved = await saveFunnel(current, scenario(), funnel, options());
       expect(saved.ok).toBe(true);

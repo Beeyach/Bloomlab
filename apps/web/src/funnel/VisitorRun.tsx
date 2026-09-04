@@ -26,6 +26,7 @@ import {
   type Visitor,
 } from './commands';
 import { FunnelPage } from './FunnelPage';
+import { visitorEventsSince, visitorLogWatermark } from './session';
 import { money } from './edit';
 import { fieldLabel, simulatorTime } from './words';
 import styles from './funnel.module.css';
@@ -56,19 +57,6 @@ export interface VisitorRunProps {
     command: (current: StoredRun) => Promise<ExecutionResult>,
   ) => Promise<ExecutionResult | null>;
 }
-
-/**
- * The exact event-sequence boundary for a visitor session.
- *
- * Event sequence is not the same thing as log length: execution records consume sequence numbers
- * too. Using log length here can make old account events appear under "What the account did" after
- * a funnel has been saved several times. A session starts after the last event actually in the log.
- */
-export const visitorLogWatermark = (run: StoredRun): number =>
-  run.state.log.at(-1)?.sequence ?? -1;
-
-export const visitorEventsSince = (run: StoredRun, afterSequence: number) =>
-  run.state.log.filter((event) => event.sequence > afterSequence);
 
 /** One thing the account did because of the visitor, read out of the run's own history. */
 interface ChainEntry {
@@ -165,13 +153,13 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
   const chain: ChainEntry[] = useMemo(
     () =>
       visitorEventsSince(run, from).map((event) => ({
-          sequence: event.sequence,
-          type: contentEventName(event.type),
-          at: event.at,
-          origin: event.origin,
-          detail: describe(event.payload, account),
-        })),
-    [run.state.log, from, account],
+        sequence: event.sequence,
+        type: contentEventName(event.type),
+        at: event.at,
+        origin: event.origin,
+        detail: describe(event.payload, account),
+      })),
+    [run, from, account],
   );
 
   if (errors.length > 0) {

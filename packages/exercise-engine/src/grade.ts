@@ -200,8 +200,7 @@ function strongerFunnelReport(candidate: GradeReport, current: GradeReport): Gra
   const rank = OUTCOME_RANK[candidate.outcome] - OUTCOME_RANK[current.outcome];
   if (rank !== 0) return rank > 0 ? candidate : current;
 
-  const critical =
-    current.failed_critical.length - candidate.failed_critical.length;
+  const critical = current.failed_critical.length - candidate.failed_critical.length;
   if (critical !== 0) return critical > 0 ? candidate : current;
 
   const candidateScore = candidate.score ?? -1;
@@ -211,8 +210,7 @@ function strongerFunnelReport(candidate: GradeReport, current: GradeReport): Gra
 
 export function gradeExercise(input: GradeInput): GradeReport {
   const architecture = input.context.architecture;
-  const funnels =
-    input.exercise.type === 'FUNNEL_ASSEMBLY' ? (architecture?.funnels ?? []) : [];
+  const funnels = input.exercise.type === 'FUNNEL_ASSEMBLY' ? (architecture?.funnels ?? []) : [];
 
   if (!architecture || funnels.length <= 1) return gradeOne(input);
 

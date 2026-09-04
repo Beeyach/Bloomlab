@@ -125,6 +125,8 @@ export function reasonSentence(report: GradeReport): string {
   switch (report.reason) {
     case 'critical_failure':
       return 'A critical check failed, so the attempt does not pass whatever the score says.';
+    case 'required_failure':
+      return 'A required part of the brief is missing. The rest of the work cannot make up for it.';
     case 'below_threshold':
       return `Below the pass mark of ${report.pass_threshold}%.`;
     case 'threshold_met':
