@@ -525,3 +525,26 @@
     margin-bottom: var(--bl-space-2);
   }
 }
+
+/* The weighted dimensions of a workflow build (EXR-023). */
+.dimensions {
+  display: grid;
+  gap: var(--bl-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dimension {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--bl-space-2);
+  padding: var(--bl-space-1) 0;
+  border-bottom: 1px solid var(--bl-color-border);
+  font-size: var(--bl-font-size-sm);
+}
+
+.dimension:last-child {
+  border-bottom: 0;
+}

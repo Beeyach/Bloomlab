@@ -86,18 +86,14 @@ export const SOURCE_DEPENDENCY: Record<ContextSource, string> = {
 };
 
 /**
- * Which phase owns each missing source, named exactly rather than as "later".
- *
- * The simulator core exists from Phase 10 and can produce all three of state, events and
- * references — the Phase 10 review shows it grading a fixture through the real adapter. What no
- * authored exercise can be run against yet is a workflow *executing*: until the Workflow Lab
- * drives a contact through the nodes, a run produces none of the messages, tags or branches these
- * exercises expect, so registering a runtime here would fail a learner for a missing phase.
+ * Which surface supplies each source, named exactly. From Phase 12 the CRM Lab and the Workflow
+ * Lab register runtimes for the exercises they own; a source is missing only for an exercise
+ * neither claims — a roleplay scenario, say — and the runner says so rather than grading it.
  */
 export const SOURCE_PHASE: Record<ContextSource, string> = {
-  state: 'the Workflow Lab running the scenario (Phase 12) on the simulator core (Phase 10)',
-  events: 'the Workflow Lab running the scenario (Phase 12) on the simulator core (Phase 10)',
-  references: 'the Workflow Lab running the scenario (Phase 12) on the simulator core (Phase 10)',
-  architecture: 'the Workflow Lab (Phase 12) on the simulator core (Phase 10)',
+  state: 'a Lab run of this exercise’s scenario (the CRM Lab or the Workflow Lab)',
+  events: 'a Lab run of this exercise’s scenario (the CRM Lab or the Workflow Lab)',
+  references: 'a Lab run of this exercise’s scenario (the CRM Lab or the Workflow Lab)',
+  architecture: 'the Workflow Lab, from the workflow you build there',
   learner: 'this runner',
 };

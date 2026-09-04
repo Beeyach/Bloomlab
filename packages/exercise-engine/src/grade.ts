@@ -5,15 +5,20 @@ import {
 } from '@bloomlab/mastery-engine';
 
 import { evaluateAssertion, sourcesFor } from './assertions.ts';
+import { dimensionOf } from './dimensions.ts';
 import { EXERCISE_GRADER_VERSION, SCORING_RULES } from './rules.ts';
 import {
   ASSERTION_TIERS,
+  SCORING_DIMENSIONS,
+  type AssertionDefinition,
   type AssertionResult,
   type AssertionTier,
   type ContextSource,
+  type DimensionScore,
   type ExerciseDefinition,
   type GradeReport,
   type GradingContext,
+  type ScoringDimension,
 } from './types.ts';
 
 export interface GradeInput {
@@ -45,6 +50,42 @@ export function isFullyGradable(
   return requiredSources(exercise).every((source) => provides.includes(source));
 }
 
+/**
+ * The weighted score (EXR-023): each dimension's pass share, weighted, over the weights of the
+ * dimensions that actually have a scored check. An exercise that authors no maintainability check
+ * is not marked down for maintainability; a dimension it does check counts at its full weight.
+ */
+function weightedScore(
+  scored: AssertionResult[],
+  weights: NonNullable<ExerciseDefinition['grading']['weights']>,
+): { score: number | null; dimensions: Record<ScoringDimension, DimensionScore> } {
+  const dimensions = Object.fromEntries(
+    SCORING_DIMENSIONS.map((dimension) => {
+      const mine = scored.filter((result) => result.dimension === dimension);
+      const passed = mine.filter((result) => result.passed).length;
+      return [
+        dimension,
+        {
+          weight: weights[dimension],
+          total: mine.length,
+          passed,
+          ratio: mine.length === 0 ? null : passed / mine.length,
+        },
+      ];
+    }),
+  ) as Record<ScoringDimension, DimensionScore>;
+  const present = SCORING_DIMENSIONS.filter(
+    (dimension) => dimensions[dimension].ratio !== null && dimensions[dimension].weight > 0,
+  );
+  const weightSum = present.reduce((sum, dimension) => sum + dimensions[dimension].weight, 0);
+  if (weightSum === 0) return { score: scored.length === 0 ? null : 0, dimensions };
+  const weighted = present.reduce(
+    (sum, dimension) => sum + dimensions[dimension].weight * (dimensions[dimension].ratio ?? 0),
+    0,
+  );
+  return { score: Math.round((weighted / weightSum) * 100), dimensions };
+}
+
 const emptyTiers = (): Record<AssertionTier, AssertionResult[]> => ({
   critical: [],
   required: [],
@@ -68,22 +109,33 @@ export function gradeExercise(input: GradeInput): GradeReport {
   const assistance = input.assistance ?? assistanceFromHints([...hints]);
   const tiers = emptyTiers();
 
+  const placed = (assertion: AssertionDefinition, tier: AssertionTier): AssertionResult => ({
+    ...evaluateAssertion(assertion, tier, context),
+    dimension: dimensionOf(assertion),
+  });
   for (const assertion of exercise.critical_failures) {
-    tiers.critical.push(evaluateAssertion(assertion, SCORING_RULES.critical_tier, context));
+    tiers.critical.push(placed(assertion, SCORING_RULES.critical_tier));
   }
   for (const assertion of exercise.expected_outcomes) {
     const tier: AssertionTier =
       assertion.tier && assertion.tier !== 'critical'
         ? assertion.tier
         : SCORING_RULES.default_expected_tier;
-    tiers[tier].push(evaluateAssertion(assertion, tier, context));
+    tiers[tier].push(placed(assertion, tier));
   }
 
   const all = ASSERTION_TIERS.flatMap((tier) => tiers[tier]);
   const unevaluated = all.filter((result) => result.unevaluated);
   const scored = SCORING_RULES.scored_tiers.flatMap((tier) => tiers[tier]);
   const scoredPassed = scored.filter((result) => result.passed).length;
-  const score = scored.length === 0 ? null : Math.round((scoredPassed / scored.length) * 100);
+  const weighted = exercise.grading.weights
+    ? weightedScore(scored, exercise.grading.weights)
+    : null;
+  const score = weighted
+    ? weighted.score
+    : scored.length === 0
+      ? null
+      : Math.round((scoredPassed / scored.length) * 100);
   const failedCritical = tiers.critical.filter((result) => !result.passed && !result.unevaluated);
   const rubricPending =
     exercise.grading.mode === 'deterministic' ? null : (exercise.grading.rubric ?? null);
@@ -106,6 +158,7 @@ export function gradeExercise(input: GradeInput): GradeReport {
     outcome,
     reason,
     score,
+    dimensions: weighted ? weighted.dimensions : null,
     pass_threshold: exercise.grading.pass_threshold,
     assistance,
     hints_used: [...hints],

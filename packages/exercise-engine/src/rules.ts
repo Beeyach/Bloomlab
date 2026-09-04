@@ -4,14 +4,14 @@
  */
 
 /** Bumped whenever grading behaviour changes (date-based, like the mastery rules). */
-export const EXERCISE_GRADER_VERSION = '2026.09.04-r1';
+export const EXERCISE_GRADER_VERSION = '2026.09.07-r1';
 
 export const SCORING_RULES = {
   /**
    * Which tiers make up the score. `critical` is a gate, never a number; `bonus` is reported and
-   * deliberately excluded from the denominator so an unearned bonus cannot lower a score.
-   * Phase 12 (EXR-023) introduces the weighted dimensional model for workflow builds; until an
-   * assertion can name the dimension it belongs to, every scored check counts once (D-067).
+   * deliberately excluded from the denominator so an unearned bonus cannot lower a score. Without
+   * authored weights every scored check counts once (D-067); with them, each dimension's pass
+   * share is weighted and dimensions with no check carry no weight (EXR-023, D-113).
    */
   scored_tiers: ['required', 'quality'] as const,
   /** `expected_outcomes` without an authored tier are required (backward compatible). */
@@ -34,4 +34,21 @@ export const SEQUENCE_RULES = {
    * Equal timestamps are ordered by emitted index. A missing event on either side fails.
    */
   compare: 'earliest_occurrence' as const,
+};
+
+export const DIMENSION_RULES = {
+  /**
+   * How an assertion without an authored `dimension` is placed (EXR-023): architecture checks are
+   * architecture; a negative check guards an edge; a state check on what the learner wrote
+   * (prediction, decision, answer) is explanation; everything else observed in the run is
+   * correctness. Maintainability is only ever authored, never inferred.
+   */
+  by_type: {
+    architecture: 'architecture',
+    negative: 'edge_cases',
+    learner_state: 'explanation',
+    default: 'correctness',
+  } as const,
+  /** A weighted score is the mean over dimensions that have at least one scored check. */
+  absent_dimensions: 'carry_no_weight' as const,
 };

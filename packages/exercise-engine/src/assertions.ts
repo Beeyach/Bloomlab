@@ -9,6 +9,7 @@ import {
   type GradingContext,
   type GradingEvent,
 } from './types.ts';
+import { dimensionOf } from './dimensions.ts';
 
 /** What one assertion must be able to read before it can be judged at all. */
 export function sourcesFor(assertion: AssertionDefinition): ContextSource[] {
@@ -299,7 +300,13 @@ export function evaluateAssertion(
   tier: AssertionTier,
   context: GradingContext,
 ): AssertionResult {
-  const base = { id: assertion.id, description: assertion.description, type: assertion.type, tier };
+  const base = {
+    id: assertion.id,
+    description: assertion.description,
+    type: assertion.type,
+    tier,
+    dimension: dimensionOf(assertion),
+  };
   const missing = sourcesFor(assertion).find((source) => !context.provides.includes(source));
   if (missing) {
     return {

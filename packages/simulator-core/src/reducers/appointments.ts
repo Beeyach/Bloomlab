@@ -125,6 +125,20 @@ export function appointmentStatusChanged(
   const id = requireString(event.payload, 'appointment_id', event.type);
   const existing = entity(account.appointments, id, 'appointment', event.type);
   const status = readStatus(event.payload.status, event.type);
+  if (existing.status === status) {
+    // Marking an appointment with the status it already has changes nothing, so it fires no
+    // trigger and ends no run — the same rule as re-adding a tag a contact already carries.
+    return result(account, [
+      {
+        kind: 'action_skipped',
+        at: event.at,
+        contact_id: existing.contact_id,
+        event_id: event.id,
+        data: { appointment_id: id, status },
+        reason: 'status_unchanged',
+      },
+    ]);
+  }
   const updated: Appointment = { ...existing, status, updated_at: event.at };
   const counter = STATUS_COUNTER[status as keyof typeof STATUS_COUNTER];
   const next = bumpAnalytics(

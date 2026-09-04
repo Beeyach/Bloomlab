@@ -1,12 +1,20 @@
-import { useId, type ReactNode } from 'react';
+import { useId, useMemo, type ReactNode } from 'react';
 import { Link } from 'react-router';
 
-import { EXERCISE_LABELS, type ExerciseType } from '@bloomlab/design-system';
+import { EXERCISE_LABELS, ExecutionEvent, type ExerciseType } from '@bloomlab/design-system';
 
-import { initialAccount, toZone, type SimulatorScenario } from '@bloomlab/simulator-core';
+import {
+  advanceTo,
+  createRun,
+  initialAccount,
+  processEvent,
+  toZone,
+  type SimulatorScenario,
+} from '@bloomlab/simulator-core';
 
 import { content } from '../../content/bundle';
 import { modeWord } from '../../screens/learningCopy';
+import { timelineRow } from '../../workflow/words';
 import styles from './embeds.module.css';
 import { FunnelDiagram } from './FunnelDiagram';
 import { FunnelMathInteractive } from './FunnelMathInteractive';
@@ -175,13 +183,76 @@ export function Simulation({
           </>
         )}
       </p>
+      {workflow && compiled ? (
+        <InlineRun
+          scenario={scenario as unknown as SimulatorScenario}
+          workflowId={workflow.id}
+          contactId={compiled.id}
+        />
+      ) : (
+        <p className={styles.simulationText}>
+          Choose a workflow and a contact to see the engine run them; the structure is drawn in the
+          diagram above.
+        </p>
+      )}
       <p className={styles.simulationText}>
-        Stepping {contact ? (compiled?.first_name ?? 'the contact') : 'a contact'} through{' '}
-        {workflow ? `"${workflow.name}"` : 'the scenario'} node by node needs the Workflow Lab,
-        which arrives in Phase 12. The structure is drawn in the diagram above, and the prediction
-        you wrote down is still the point of this section.
+        <Link to={`/workflow?scenario=${scenario.id}${workflow ? `&workflow=${workflow.id}` : ''}`}>
+          Open this scenario in the Workflow Lab
+        </Link>{' '}
+        to change the workflow and run it again.
       </p>
     </aside>
+  );
+}
+
+/**
+ * The contact walked through the workflow by the real engine, in memory, from the scenario's
+ * authored start (CUR-036). Every row is an execution record the engine wrote; nothing is played
+ * back from a description. Time is moved once past the first wait so a reminder's wake shows.
+ */
+function InlineRun({
+  scenario,
+  workflowId,
+  contactId,
+}: {
+  scenario: SimulatorScenario;
+  workflowId: string;
+  contactId: string;
+}) {
+  const state = useMemo(() => {
+    let run = processEvent(createRun(scenario), {
+      type: 'WORKFLOW_ENROLLED',
+      at: scenario.simulation_time,
+      origin: 'injected',
+      source: { kind: 'injector_action', id: 'academy_embed' },
+      payload: { workflow_id: workflowId, contact_id: contactId },
+    });
+    const parked = Object.values(run.account.workflow_runs).find(
+      (row) => row.workflow_id === workflowId && row.status === 'waiting' && row.wait?.wake_at,
+    );
+    if (parked?.wait?.wake_at) run = advanceTo(run, parked.wait.wake_at);
+    return run;
+  }, [scenario, workflowId, contactId]);
+  const workflow = state.account.workflows[workflowId] ?? null;
+  const theRun = Object.values(state.account.workflow_runs).find(
+    (row) => row.workflow_id === workflowId,
+  );
+  const rows = state.execution
+    .filter((row) => row.workflow_run_id === theRun?.id)
+    .map((row) => timelineRow(row, workflow, state.account, state.clock.timezone));
+  return (
+    <ol className={styles.simulationRows} aria-label="What the engine did">
+      {rows.map((row) => (
+        <ExecutionEvent
+          key={row.id}
+          time={row.time}
+          name={row.name}
+          detail={row.detail}
+          status={row.status}
+          branch={row.branch}
+        />
+      ))}
+    </ol>
   );
 }
 

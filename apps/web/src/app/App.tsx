@@ -7,6 +7,8 @@ import { getFeatureFlags, type FeatureFlagSet } from '@bloomlab/shared';
 // must happen whether or not the learner has opened /crm — the Lab's screen is lazy-loaded, but
 // an exercise authored against its account has to be gradable from the runner (D-097).
 import '../crm/exerciseRuntime';
+// And the Workflow Lab, which grades workflow exercises from the run the learner built in (D-112).
+import '../workflow/exerciseRuntime';
 import { NotFound } from '../screens/NotFound';
 import { FeatureFlagsProvider } from './FeatureFlagsProvider';
 import { RootLayout } from './RootLayout';

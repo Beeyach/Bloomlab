@@ -18,7 +18,12 @@ import { createSyncKey, linkThisDevice } from '../data/sync/link';
 import { listOperations } from '../data/syncQueue';
 import { freshDatabase } from '../data/testing';
 import { NORMAL_RUN, loadAttempt, revealHint, saveResponse, startAttempt } from './attempt';
-import { evidenceKindFor, finalizeAttempt, NotGradableError } from './finalize';
+import {
+  evidenceKindFor,
+  finalizeAttempt,
+  NotGradableError,
+  RuntimeUnavailableError,
+} from './finalize';
 import { canGradeNow, missingSources } from './runtime';
 
 const flags = getFeatureFlags('production');
@@ -155,25 +160,21 @@ describe('the challenge brief', () => {
 });
 
 describe('what cannot be graded yet is not graded (EXR-024)', () => {
-  it('names the exact runtime a build needs and offers no submit', async () => {
-    expect(canGradeNow(byId(BUILD_IT))).toBe(false);
-    expect(missingSources(byId(BUILD_IT)).sort()).toEqual([
-      'architecture',
-      'events',
-      'references',
-      'state',
-    ]);
+  it('a workflow build is gradable now that the Workflow Lab supplies every source it needs', async () => {
+    // Phase 9 shipped this exercise un-runnable and said so; Phase 12 registers the runtime that
+    // owns it, so nothing is missing and the runner offers the submit (EXR-004, EXR-024).
+    expect(canGradeNow(byId(BUILD_IT))).toBe(true);
+    expect(missingSources(byId(BUILD_IT))).toEqual([]);
     await openRunner(BUILD_IT, '');
-    expect(screen.getByText('This one is not runnable yet.')).toBeInTheDocument();
-    expect(screen.getByText(/Workflow Lab \(Phase 12\)/)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Run it' })).not.toBeInTheDocument();
-    expect(await screen.findByText(/Your work is saved on this device/)).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Run it' })).toBeInTheDocument();
+    expect(screen.queryByText('This one is not runnable yet.')).not.toBeInTheDocument();
   });
 
-  it('refuses to finalize an attempt it cannot judge', async () => {
+  it('refuses to finalize a build when the learner has no account for its scenario yet', async () => {
     const attempt = await startAttempt(byId(BUILD_IT), NORMAL_RUN, {}, db);
+    // The runtime exists but has nothing to read: refused, never graded against nothing.
     await expect(finalizeAttempt(byId(BUILD_IT), attempt, db)).rejects.toBeInstanceOf(
-      NotGradableError,
+      RuntimeUnavailableError,
     );
     expect(await db.exercise_attempts.count()).toBe(0);
     expect(await db.skill_evidence.count()).toBe(0);
@@ -181,7 +182,15 @@ describe('what cannot be graded yet is not graded (EXR-024)', () => {
     expect(await loadAttempt(BUILD_IT, NORMAL_RUN, db)).not.toBeUndefined();
   });
 
-  it('RUN THE LEAD captures the prediction now and says the run comes later (EXR-006)', async () => {
+  it('an exercise on a roleplay scenario is still refused as not gradable', async () => {
+    const sayIt = content.exercises.find((row) => row.id === 'EX-SAY_IT-summit-discovery');
+    if (!sayIt) throw new Error('fixture exercise missing');
+    if (canGradeNow(sayIt)) return; // graded from the learner's own answer alone: nothing to refuse
+    const attempt = await startAttempt(sayIt, NORMAL_RUN, {}, db);
+    await expect(finalizeAttempt(sayIt, attempt, db)).rejects.toBeInstanceOf(NotGradableError);
+  });
+
+  it('RUN THE LEAD captures the prediction and grades it from the Lab’s account (EXR-006)', async () => {
     await openRunner(RUN_THE_LEAD, '');
     // The field comes from the authored assertion path, and its label never leaks the answer.
     const tag = await screen.findByLabelText('Tag');
@@ -192,7 +201,9 @@ describe('what cannot be graded yet is not graded (EXR-024)', () => {
       ),
     );
     expect(document.body.textContent).not.toContain('The learner predicted the booked tag');
-    expect(screen.getByText('This one is not runnable yet.')).toBeInTheDocument();
+    // The run comes from the Workflow Lab's account now; the runner offers it rather than a wait.
+    expect(screen.queryByText('This one is not runnable yet.')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Run it' })).toBeInTheDocument();
   });
 });
 

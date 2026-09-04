@@ -32,7 +32,7 @@ function goodRun(): GradingContext {
       {
         type: 'workflow.enrolled',
         at: NO_SHOW,
-        fields: { contact_id: 'maria', trigger_status: 'no_show' },
+        fields: { contact_id: 'maria', trigger_appointment_status: 'no_show' },
       },
       {
         type: 'sms.sent',
@@ -113,7 +113,7 @@ describe('the authored BUILD IT exercise, graded against a run (EXR-002)', () =>
         {
           type: 'workflow.enrolled',
           at: NO_SHOW,
-          fields: { contact_id: 'maria', trigger_status: 'cancelled' },
+          fields: { contact_id: 'maria', trigger_appointment_status: 'cancelled' },
         },
       ]),
     });
@@ -136,7 +136,9 @@ describe('the authored BUILD IT exercise, graded against a run (EXR-002)', () =>
     expect(a2.passed).toBe(false);
     expect(a2.expected).toBe('exactly 1 sms.sent where contact_id=maria, purpose=rebooking');
     expect(a2.observed).toBe('2 matching events');
-    expect(report.score).toBe(83);
+    // Weighted (EXR-023): correctness 3 of 4 at 45, architecture 2 of 2 at 15 → 48.75 / 60 → 81.
+    expect(report.score).toBe(81);
+    expect(report.dimensions?.correctness).toMatchObject({ total: 4, passed: 3 });
     expect(report.outcome).toBe('passed');
   });
 
@@ -156,8 +158,8 @@ describe('the authored BUILD IT exercise, graded against a run (EXR-002)', () =>
     const a3 = report.tiers.required.find((result) => result.id === 'a3')!;
     expect(a3.passed).toBe(false);
     expect(a3.observed).toBe('sms.sent 60 min late');
-    // Five of six checks still hold, so the attempt clears the pass mark with one divergence named.
-    expect(report.score).toBe(83);
+    // Five of six checks still hold; weighted, that is 81 — over the pass mark with one divergence named.
+    expect(report.score).toBe(81);
     expect(report.outcome).toBe('passed');
     expect(report.reason).toBe('threshold_met');
   });

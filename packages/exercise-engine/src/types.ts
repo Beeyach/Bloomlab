@@ -86,6 +86,21 @@ export interface GradingContext {
 export const ASSERTION_TIERS = ['critical', 'required', 'quality', 'bonus'] as const;
 export type AssertionTier = (typeof ASSERTION_TIERS)[number];
 
+/**
+ * The five dimensions a workflow build is scored on (EXR-023, spec §31). An exercise that authors
+ * `grading.weights` is scored per dimension; an assertion names its dimension or is placed by its
+ * type (`dimensionOf`).
+ */
+export const SCORING_DIMENSIONS = [
+  'correctness',
+  'edge_cases',
+  'architecture',
+  'maintainability',
+  'explanation',
+] as const;
+export type ScoringDimension = (typeof SCORING_DIMENSIONS)[number];
+export type GradingWeights = Record<ScoringDimension, number>;
+
 export type AssertionType = 'state' | 'event' | 'timing' | 'architecture' | 'negative' | 'sequence';
 
 /** The authored assertion shape the grader reads (structurally satisfied by the content schema). */
@@ -94,6 +109,8 @@ export interface AssertionDefinition {
   description: string;
   type: AssertionType;
   tier?: AssertionTier;
+  /** Which scored dimension this check counts toward; derived from the type when absent. */
+  dimension?: ScoringDimension;
   // state
   path?: string;
   operator?: 'equals' | 'contains' | 'not_contains' | 'exists' | 'absent' | 'gte' | 'lte';
@@ -131,6 +148,8 @@ export interface ExerciseDefinition {
     mode: 'deterministic' | 'rubric' | 'mixed';
     rubric?: string;
     pass_threshold: number;
+    /** When present, the score is the weighted mean of the dimensions that have checks (EXR-023). */
+    weights?: GradingWeights;
   };
 }
 
@@ -140,6 +159,8 @@ export interface AssertionResult {
   description: string;
   type: AssertionType;
   tier: AssertionTier;
+  /** The dimension this result was scored under (EXR-023). */
+  dimension: ScoringDimension;
   passed: boolean;
   /** What the exercise asked for, in words: "exactly 1 sms.sent where contact_id=maria". */
   expected: string;
@@ -173,8 +194,13 @@ export interface GradeReport {
   grader_version: string;
   outcome: GradeOutcome;
   reason: GradeReason;
-  /** Share of scored checks passed, 0–100; null when nothing could be scored. */
+  /**
+   * 0–100, or null when nothing could be scored. Without weights: the share of scored checks that
+   * passed. With weights: the weighted mean of each present dimension's pass share (EXR-023).
+   */
   score: number | null;
+  /** Per-dimension detail when the exercise is weighted; null for a flat score. */
+  dimensions: Record<ScoringDimension, DimensionScore> | null;
   pass_threshold: number;
   assistance: AssistanceLevel;
   hints_used: readonly HintLevel[];
@@ -190,4 +216,12 @@ export interface GradeReport {
   };
   /** The rubric still owed, when the exercise is rubric-graded or mixed. */
   rubric_pending: string | null;
+}
+
+export interface DimensionScore {
+  weight: number;
+  total: number;
+  passed: number;
+  /** 0–1, or null when the dimension has no scored check and so carries no weight this time. */
+  ratio: number | null;
 }

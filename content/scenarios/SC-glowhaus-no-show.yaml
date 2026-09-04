@@ -7,6 +7,10 @@ summary: >-
   Consultations are booked on the Consultation calendar and confirmed by SMS, then nothing
   happens until the appointment. Two of five booked leads do not show, and nobody follows up.
 initial_account_state:
+  users:
+    - id: dana
+      name: Dana Whitfield
+      role: user
   contacts:
     - id: maria
       first_name: Maria

@@ -36,19 +36,28 @@ export const HINT_LEVELS = ['nudge', 'concept_reminder', 'worked_example'] as co
 
 export type HintLevel = (typeof HINT_LEVELS)[number];
 
-export { EXERCISE_GRADER_VERSION, SCORING_RULES, SEQUENCE_RULES, TIMING_RULES } from './rules.ts';
+export {
+  DIMENSION_RULES,
+  EXERCISE_GRADER_VERSION,
+  SCORING_RULES,
+  SEQUENCE_RULES,
+  TIMING_RULES,
+} from './rules.ts';
 export { resolvePath, describeValue, type Resolved } from './path.ts';
 export { evaluateAssertion, sourcesFor } from './assertions.ts';
+export { dimensionOf } from './dimensions.ts';
 export { gradeExercise, isFullyGradable, requiredSources, type GradeInput } from './grade.ts';
 export {
   ASSERTION_TIERS,
   CONTEXT_SOURCES,
   LEARNER_STATE_ROOTS,
+  SCORING_DIMENSIONS,
   type AssertionDefinition,
   type AssertionResult,
   type AssertionTier,
   type AssertionType,
   type ContextSource,
+  type DimensionScore,
   type ExerciseDefinition,
   type GradeOutcome,
   type GradeReason,
@@ -57,5 +66,7 @@ export {
   type GradingContext,
   type GradingEvent,
   type GradingNode,
+  type GradingWeights,
   type GradingWorkflow,
+  type ScoringDimension,
 } from './types.ts';

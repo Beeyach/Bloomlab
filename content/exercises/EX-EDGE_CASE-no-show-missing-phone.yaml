@@ -38,7 +38,7 @@ expected_outcomes:
 critical_failures:
   - id: c1
     type: negative
-    event: action.failed
+    event: action.skipped
     where: { contact_id: jordan, action: GHL-WF-SEND-SMS }
     description: The workflow must not attempt an SMS to a contact without a phone.
 grading:

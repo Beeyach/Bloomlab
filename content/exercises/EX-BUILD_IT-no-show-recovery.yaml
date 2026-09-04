@@ -81,7 +81,7 @@ critical_failures:
   - id: c2
     type: negative
     event: workflow.enrolled
-    where: { contact_id: maria, trigger_status: cancelled }
+    where: { contact_id: maria, trigger_appointment_status: cancelled }
     description: A cancelled appointment must not enter the recovery workflow.
 grading:
   mode: deterministic
