@@ -251,7 +251,7 @@ describe('the default test fires the trigger and the engine decides (WFL-004)', 
     let outcome = await screen.findByTestId('trigger-outcome', {}, { timeout: 8000 });
     expect(outcome).toHaveAttribute('data-outcome', 'not_enrolled');
     expect(outcome).toHaveTextContent(
-      'Appointment Status did not enrol Maria: the filters (appointment status is no_show) did not match',
+      'Appointment Status did not match this event directly: the filters (appointment status is no_show) did not match. Nothing was started by hand.',
     );
     expect(within(screen.getByTestId('timeline')).getByText(/No run yet/)).toBeInTheDocument();
 
@@ -264,7 +264,7 @@ describe('the default test fires the trigger and the engine decides (WFL-004)', 
     // The booking is a fresh event: the previous outcome clears, then the trigger reports again.
     await waitFor(() => expect(screen.queryByTestId('trigger-outcome')).toBeNull());
     await waitFor(
-      () => expect(screen.getByTestId('trigger-outcome')).toHaveTextContent('did not enrol'),
+      () => expect(screen.getByTestId('trigger-outcome')).toHaveTextContent('did not match'),
       { timeout: 8000 },
     );
     expect(screen.queryByRole('alert')?.textContent ?? '').toBe('');

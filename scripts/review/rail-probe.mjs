@@ -1,4 +1,4 @@
-// Measures the primary rail (spec §73, DES-009, RSP-004): the column is exactly --bl-size-rail wide
+// Measures the primary rail (DES-009, D-117, RSP-004): the column is exactly --bl-size-rail wide
 // on tablet and desktop and the page starts beside it, never under it; on phones it is a bottom
 // bar every area still fits in, with no horizontal overflow. Writes rail-probe.json and rail-*.png
 // to .review/ (override with REVIEW_OUT).
@@ -91,7 +91,8 @@ try {
       checks.rendered = false;
     } else if (width >= 768) {
       const expected = Number.parseFloat(m.token);
-      checks.tokenIs80 = expected === 80;
+      // D-117: the user-directed band is 96–112 px (104 today); the design-rule test pins the same.
+      checks.tokenInBand = expected >= 96 && expected <= 112;
       checks.railWidthMatchesToken = Math.abs(m.rail.w - expected) < 0.5;
       checks.railIsColumn = m.rail.h >= m.innerHeight - 1 && m.rail.x === 0;
       checks.mainStartsBesideRail = m.main.x >= m.rail.w - 0.5;

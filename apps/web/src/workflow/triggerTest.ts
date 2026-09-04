@@ -327,19 +327,18 @@ export function triggerOutcomeFor(
   const root = after.log[beforeLogLength] ?? null;
   if (!root) return { kind: 'not_matched', root_event_id: null };
 
-  const enrolment = after.log.slice(beforeLogLength + 1).find(
-    (event) =>
-      event.type === 'WORKFLOW_ENROLLED' &&
-      event.payload.workflow_id === workflowId &&
-      event.payload.trigger_event_id === root.id &&
-      event.source?.caused_by === root.id,
-  );
+  const enrolment = after.log
+    .slice(beforeLogLength + 1)
+    .find(
+      (event) =>
+        event.type === 'WORKFLOW_ENROLLED' &&
+        event.payload.workflow_id === workflowId &&
+        event.payload.trigger_event_id === root.id &&
+        event.source?.caused_by === root.id,
+    );
   if (!enrolment) {
     const rootRecords = after.execution.filter((record) => record.event_id === root.id);
-    if (
-      rootRecords.length > 0 &&
-      rootRecords.every((record) => record.kind === 'action_skipped')
-    ) {
+    if (rootRecords.length > 0 && rootRecords.every((record) => record.kind === 'action_skipped')) {
       return {
         kind: 'event_noop',
         reason: rootRecords.find((record) => record.reason)?.reason ?? null,
