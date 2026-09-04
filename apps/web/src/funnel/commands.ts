@@ -1,8 +1,10 @@
+import { slotAt } from '@bloomlab/simulator-core';
 import type {
   Funnel,
   PendingEvent,
   SimulatorEventType,
   SimulatorScenario,
+  Slot,
 } from '@bloomlab/simulator-core';
 
 import type { BloomlabDatabase } from '../data/db';
@@ -55,6 +57,11 @@ const injected = (
 });
 
 type Options = ExecutionOptions;
+
+const sameSlot = (a: Slot, b: Slot): boolean =>
+  a.starts_at === b.starts_at &&
+  a.duration_minutes === b.duration_minutes &&
+  a.host_id === b.host_id;
 
 /* ---- definitions --------------------------------------------------------------------- */
 
@@ -186,17 +193,35 @@ export const submitSurvey = (
 /**
  * A booking from a calendar block. The event is HighLevel's own Appointment Booked, so a workflow
  * triggered by Customer Booked Appointment reacts to it exactly as it would to any other booking.
- * Configuring the calendar itself — availability, buffers, notice, staff — is Phase 14's.
+ *
+ * The slot comes from the shared availability engine, so what the visitor books carries the host
+ * that engine assigned and the length the calendar was configured for (D-129). A funnel visitor
+ * is a customer, which is the distinction Customer Booked Appointment turns on.
  */
 export const bookFromFunnel = (
   run: StoredRun,
   scenario: SimulatorScenario,
   visitor: Visitor,
   calendarId: string,
-  startsAt: string,
+  slot: Slot,
   options?: Options,
-) =>
-  execute(
+) => {
+  const calendar = run.state.account.calendars[calendarId];
+  if (calendar) {
+    const current = slotAt(run.state.account, calendar, run.state.clock.now, slot.starts_at);
+    if (!current || !sameSlot(current, slot)) {
+      return Promise.resolve<ExecutionResult>({
+        ok: false,
+        run,
+        refusal: {
+          code: 'INVALID_PAYLOAD',
+          message: 'That time is no longer available. Choose another opening.',
+          detail: { calendar_id: calendarId, starts_at: slot.starts_at },
+        },
+      });
+    }
+  }
+  return execute(
     run,
     scenario,
     {
@@ -205,11 +230,15 @@ export const bookFromFunnel = (
         appointment_id: newAppointmentId(),
         contact_id: visitor.contact_id,
         calendar_id: calendarId,
-        starts_at: startsAt,
+        starts_at: slot.starts_at,
+        duration_minutes: slot.duration_minutes,
+        host_id: slot.host_id,
+        booked_by: 'customer',
       }),
     },
     options,
   );
+};
 
 /**
  * A completed checkout. Phase 13 records what the account already models — one payment received

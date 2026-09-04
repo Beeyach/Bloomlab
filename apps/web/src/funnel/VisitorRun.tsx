@@ -130,8 +130,10 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
           case 'submit_survey':
             return submitSurvey(current, scenario, visitor, action.survey_id, answers);
           case 'book': {
-            const at = slot[action.block_id] ?? action.slots[0];
-            return bookFromFunnel(current, scenario, visitor, action.calendar_id, at as string);
+            const chosen = slot[action.block_id];
+            const picked = action.slots.find((row) => row.starts_at === chosen) ?? action.slots[0];
+            if (!picked) throw new Error('This calendar has no openings to book.');
+            return bookFromFunnel(current, scenario, visitor, action.calendar_id, picked);
           }
           case 'checkout':
             return payFromFunnel(current, scenario, visitor, action.product_id, action.amount);
@@ -355,20 +357,23 @@ function VisitorControl({
       return (
         <div className={styles.visitorForm}>
           {action.slots.length === 0 ? (
-            <p className={styles.pageUnset}>This calendar has no openings in the next week.</p>
+            <p className={styles.pageUnset}>
+              This calendar has no openings. Its working hours, duration, buffers, minimum notice or
+              team are what decide that.
+            </p>
           ) : (
             <Field
               label="Pick a time"
-              hint="Openings on the hour inside a nine-to-five day. Availability, buffers and notice are the Calendar Lab’s."
+              hint="The calendar’s real openings: its working hours, duration, buffers, minimum notice and who is free. Change them in the Calendar Lab and these change."
             >
               <Select
-                value={chosenSlot ?? action.slots[0]}
+                value={chosenSlot ?? action.slots[0]?.starts_at}
                 onChange={(event) => onSlot(event.target.value)}
                 data-testid={`visitor-slot-${action.block_id}`}
               >
-                {action.slots.map((at) => (
-                  <option key={at} value={at}>
-                    {simulatorTime(at, timezone)}
+                {action.slots.map((slot) => (
+                  <option key={slot.starts_at} value={slot.starts_at}>
+                    {simulatorTime(slot.starts_at, timezone)}
                   </option>
                 ))}
               </Select>

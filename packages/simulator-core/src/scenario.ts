@@ -12,10 +12,14 @@ import {
   EMPTY_ANALYTICS,
   type AccountState,
   type Appointment,
+  type AssignmentStrategy,
+  type Calendar,
+  type CalendarType,
   type Contact,
   type Funnel,
   type FunnelBlockRole,
   type FunnelStepPurpose,
+  type LocationKind,
   type SimulatorState,
   type Workflow,
 } from './state.ts';
@@ -141,14 +145,7 @@ export interface ScenarioAccountState {
         custom_fields?: Readonly<Record<string, string | number | boolean>> | undefined;
       }[]
     | undefined;
-  calendars?:
-    | readonly {
-        id: string;
-        name: string;
-        duration_minutes: number;
-        timezone?: string | undefined;
-      }[]
-    | undefined;
+  calendars?: readonly ScenarioCalendar[] | undefined;
   appointments?:
     | readonly {
         id: string;
@@ -156,6 +153,11 @@ export interface ScenarioAccountState {
         calendar_id: string;
         starts_at: string;
         status?: Appointment['status'] | undefined;
+        duration_minutes?: number | undefined;
+        host_id?: string | undefined;
+        service_id?: string | undefined;
+        location_id?: string | undefined;
+        booked_by?: 'customer' | 'staff' | undefined;
       }[]
     | undefined;
   forms?: readonly { id: string; name: string; fields: readonly string[] }[] | undefined;
@@ -165,6 +167,46 @@ export interface ScenarioAccountState {
     | undefined;
   workflows?: readonly ScenarioWorkflow[] | undefined;
   funnels?: readonly ScenarioFunnel[] | undefined;
+}
+
+/**
+ * A calendar a scenario starts with, in the same shape the account holds minus the version.
+ * Everything but the id, the name and the duration has a documented default, so an existing
+ * scenario that only says "a 30-minute consultation calendar" keeps meaning exactly that.
+ */
+export interface ScenarioCalendar {
+  id: string;
+  name: string;
+  duration_minutes: number;
+  type?: CalendarType | undefined;
+  timezone?: string | undefined;
+  slot_interval_minutes?: number | undefined;
+  pre_buffer_minutes?: number | undefined;
+  post_buffer_minutes?: number | undefined;
+  minimum_notice_minutes?: number | undefined;
+  booking_window_days?: number | undefined;
+  availability?: readonly { day: number; start: string; end: string }[] | undefined;
+  staff_ids?: readonly string[] | undefined;
+  assignment?: AssignmentStrategy | undefined;
+  staff_selection?: boolean | undefined;
+  services?:
+    | readonly {
+        id: string;
+        name: string;
+        duration_minutes?: number | undefined;
+        staff_ids?: readonly string[] | undefined;
+        location_id?: string | undefined;
+      }[]
+    | undefined;
+  locations?: readonly { id: string; kind: LocationKind; value?: string | undefined }[] | undefined;
+  default_location_id?: string | undefined;
+  booking?:
+    | {
+        cancellation_allowed?: boolean | undefined;
+        reschedule_allowed?: boolean | undefined;
+        change_cutoff_hours?: number | undefined;
+      }
+    | undefined;
 }
 
 /** A funnel a scenario starts with, in the same shape the account holds minus the version. */
@@ -405,6 +447,55 @@ export function validateScenario(
     }
   });
 
+  // A calendar's team, services and locations are references like any other, and a dangling one
+  // is refused here rather than surfacing later as an appointment hosted by nobody (D-130).
+  collections.calendars.forEach((calendar, index) => {
+    const path = `initial_account_state.calendars.${index}`;
+    if (calendar.timezone !== undefined && !isValidTimeZone(calendar.timezone)) {
+      issues.push(
+        issue('INVALID_TIMEZONE', `${path}.timezone`, `Unknown zone ${calendar.timezone}`),
+      );
+    }
+    const staff = new Set(calendar.staff_ids ?? []);
+    (calendar.staff_ids ?? []).forEach((userId) => {
+      if (!userIds.has(userId)) {
+        issues.push(issue('DANGLING_REF', `${path}.staff_ids`, `Unknown user ${userId}`));
+      }
+    });
+    const locationIds = new Set((calendar.locations ?? []).map((row) => row.id));
+    if (
+      calendar.default_location_id !== undefined &&
+      !locationIds.has(calendar.default_location_id)
+    ) {
+      issues.push(
+        issue(
+          'DANGLING_REF',
+          `${path}.default_location_id`,
+          `Unknown location ${calendar.default_location_id}`,
+        ),
+      );
+    }
+    (calendar.services ?? []).forEach((service, at) => {
+      const servicePath = `${path}.services.${at}`;
+      (service.staff_ids ?? []).forEach((userId) => {
+        if (!staff.has(userId)) {
+          issues.push(
+            issue('DANGLING_REF', `${servicePath}.staff_ids`, `${userId} is not on this calendar`),
+          );
+        }
+      });
+      if (service.location_id !== undefined && !locationIds.has(service.location_id)) {
+        issues.push(
+          issue(
+            'DANGLING_REF',
+            `${servicePath}.location_id`,
+            `Unknown location ${service.location_id}`,
+          ),
+        );
+      }
+    });
+  });
+
   collections.appointments.forEach((appointment, index) => {
     const path = `initial_account_state.appointments.${index}`;
     if (!contactIds.has(appointment.contact_id)) {
@@ -412,6 +503,39 @@ export function validateScenario(
     }
     if (!calendarIds.has(appointment.calendar_id)) {
       issues.push(issue('DANGLING_REF', path, `Unknown calendar ${appointment.calendar_id}`));
+    }
+    checkUser(appointment.host_id, `${path}.host_id`);
+    const held = collections.calendars.find((row) => row.id === appointment.calendar_id);
+    if (
+      held &&
+      appointment.host_id !== undefined &&
+      !(held.staff_ids ?? []).includes(appointment.host_id)
+    ) {
+      issues.push(
+        issue(
+          'DANGLING_REF',
+          `${path}.host_id`,
+          `${appointment.host_id} does not host on this calendar`,
+        ),
+      );
+    }
+    if (
+      held &&
+      appointment.service_id !== undefined &&
+      !(held.services ?? []).some((row) => row.id === appointment.service_id)
+    ) {
+      issues.push(
+        issue('DANGLING_REF', `${path}.service_id`, `Unknown service ${appointment.service_id}`),
+      );
+    }
+    if (
+      held &&
+      appointment.location_id !== undefined &&
+      !(held.locations ?? []).some((row) => row.id === appointment.location_id)
+    ) {
+      issues.push(
+        issue('DANGLING_REF', `${path}.location_id`, `Unknown location ${appointment.location_id}`),
+      );
     }
     try {
       instant(appointment.starts_at);
@@ -718,17 +842,23 @@ export function initialAccount(scenario: SimulatorScenario): AccountState {
       created_at: at,
       updated_at: at,
     })),
-    calendars: index(state.calendars, (calendar) => ({
-      id: calendar.id,
-      name: calendar.name,
-      duration_minutes: calendar.duration_minutes,
-      timezone: calendar.timezone ?? null,
-    })),
+    calendars: index(state.calendars, (calendar) => compileCalendar(calendar)),
     appointments: index(state.appointments, (appointment) => ({
       id: appointment.id,
       contact_id: appointment.contact_id,
       calendar_id: appointment.calendar_id,
       starts_at: toZone(appointment.starts_at, scenario.timezone),
+      duration_minutes:
+        appointment.duration_minutes ??
+        durationOf(state.calendars, appointment.calendar_id, appointment.service_id ?? null),
+      host_id: appointment.host_id ?? null,
+      service_id: appointment.service_id ?? null,
+      location_id:
+        appointment.location_id ??
+        (state.calendars ?? []).find((row) => row.id === appointment.calendar_id)
+          ?.default_location_id ??
+        null,
+      booked_by: appointment.booked_by ?? ('customer' as const),
       status: appointment.status ?? 'booked',
       created_at: at,
       updated_at: at,
@@ -799,6 +929,67 @@ export function initialQueue(scenario: SimulatorScenario, runId: string): Schedu
       };
     })
     .sort(compareScheduled);
+}
+
+/**
+ * An authored calendar as the account holds it. Everything a Phase 14 calendar needs has a
+ * default here, so scenarios written before Calendar Lab keep meaning what they meant: a
+ * personal calendar with one host slot, no buffers, no notice and no working hours until
+ * somebody sets them.
+ */
+function compileCalendar(calendar: ScenarioCalendar): Calendar {
+  const type: CalendarType = calendar.type ?? 'personal';
+  return {
+    id: calendar.id,
+    name: calendar.name,
+    type,
+    timezone: calendar.timezone ?? null,
+    duration_minutes: calendar.duration_minutes,
+    slot_interval_minutes: calendar.slot_interval_minutes ?? calendar.duration_minutes,
+    pre_buffer_minutes: calendar.pre_buffer_minutes ?? 0,
+    post_buffer_minutes: calendar.post_buffer_minutes ?? 0,
+    minimum_notice_minutes: calendar.minimum_notice_minutes ?? 0,
+    booking_window_days: calendar.booking_window_days ?? 30,
+    availability: (calendar.availability ?? []).map((window) => ({ ...window })),
+    staff_ids: [...(calendar.staff_ids ?? [])],
+    assignment:
+      calendar.assignment ??
+      ((type === 'round_robin' ? 'optimize_availability' : 'single') as AssignmentStrategy),
+    staff_selection: calendar.staff_selection ?? false,
+    services: (calendar.services ?? []).map((service) => ({
+      id: service.id,
+      name: service.name,
+      duration_minutes: service.duration_minutes ?? null,
+      staff_ids: [...(service.staff_ids ?? [])],
+      location_id: service.location_id ?? null,
+    })),
+    locations: (calendar.locations ?? []).map((location) => ({
+      id: location.id,
+      kind: location.kind as LocationKind,
+      value: location.value ?? null,
+    })),
+    default_location_id: calendar.default_location_id ?? null,
+    booking: {
+      cancellation_allowed: calendar.booking?.cancellation_allowed ?? true,
+      reschedule_allowed: calendar.booking?.reschedule_allowed ?? true,
+      change_cutoff_hours: calendar.booking?.change_cutoff_hours ?? null,
+    },
+    version: 1,
+  };
+}
+
+/** The length an authored appointment was booked for when the scenario does not say. */
+function durationOf(
+  calendars: readonly ScenarioCalendar[] | undefined,
+  calendarId: string,
+  serviceId: string | null,
+): number {
+  const calendar = (calendars ?? []).find((row) => row.id === calendarId);
+  if (!calendar) return 30;
+  const service = serviceId
+    ? (calendar.services ?? []).find((row) => row.id === serviceId)
+    : undefined;
+  return service?.duration_minutes ?? calendar.duration_minutes;
 }
 
 /**

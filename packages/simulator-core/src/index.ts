@@ -47,15 +47,26 @@ export {
 } from './execution.ts';
 
 export {
+  ASSIGNMENT_STRATEGIES,
+  CALENDAR_TYPES,
   CUSTOM_FIELD_TYPES,
   EMPTY_ANALYTICS,
+  LOCATION_KINDS,
   OPPORTUNITY_STATUSES,
   type Account,
   type AccountState,
   type Analytics,
   type Appointment,
   type AppointmentStatus,
+  type AssignmentStrategy,
+  type AvailabilityWindow,
+  type BookedBy,
   type Calendar,
+  type CalendarBookingRules,
+  type CalendarLocation,
+  type CalendarService,
+  type CalendarType,
+  type LocationKind,
   type Company,
   type Contact,
   type Conversation,
@@ -172,6 +183,31 @@ export {
   visitorActions,
   type VisitAction,
 } from './funnel/visit.ts';
+export { readCalendar } from './reducers/calendars.ts';
+export {
+  MAX_BOOKING_WINDOW_DAYS,
+  bookableSlots as calendarSlots,
+  calendarDay,
+  calendarZone,
+  candidateStaff,
+  earliestStart,
+  isoWeekday,
+  locationFor,
+  serviceOf,
+  slotAt,
+  slotsForCalendar,
+  type Slot,
+  type SlotQuery,
+} from './calendar/availability.ts';
+export { assignHost, type Assignment, type AssignmentReason } from './calendar/assignment.ts';
+export {
+  isBookableDefinition,
+  minutesOfDay,
+  serviceDuration,
+  validateCalendar,
+  type CalendarIssue,
+  type CalendarIssueCode,
+} from './calendar/validation.ts';
 
 export {
   MINUTE_MS,

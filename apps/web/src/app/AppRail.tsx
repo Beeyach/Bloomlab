@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router';
 
 import {
   IconBolt,
+  IconCalendar,
   IconCampaign,
   IconChat,
   IconFunnel,
@@ -44,6 +45,7 @@ const AREAS: Area[] = [
   { to: '/workflow', label: 'Workflow', icon: IconBolt },
   { to: '/crm', label: 'CRM', icon: IconRecords },
   { to: '/funnel', label: 'Funnel', icon: IconFunnel },
+  { to: '/calendar', label: 'Calendar', icon: IconCalendar },
   { to: '/conversations', label: 'Inbox', icon: IconChat },
   { to: '/playground', label: 'Playground', icon: IconSandbox },
 ];

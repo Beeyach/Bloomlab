@@ -1,4 +1,4 @@
-import { addMinutes, instant, instantForDay, partsIn, toZone } from '../time.ts';
+import { slotsForCalendar, type Slot } from '../calendar/availability.ts';
 import { type AccountState, type Funnel, type FunnelBlock, type FunnelStep } from '../state.ts';
 import { stepAfter, stepOf } from './graph.ts';
 
@@ -36,8 +36,12 @@ export type VisitAction =
       kind: 'book';
       block_id: string;
       calendar_id: string;
-      /** Bookable instants, derived from the run's own clock — never the device's. */
-      slots: string[];
+      /**
+       * What the shared availability engine says is bookable, from the run's own clock. The
+       * visitor sees the learner's real calendar configuration — hours, duration, buffers,
+       * notice, who is free — because there is one answer to this question (D-129).
+       */
+      slots: Slot[];
       to_step_id: string | null;
     }
   | {
@@ -51,37 +55,18 @@ export type VisitAction =
   | { kind: 'advance'; block_id: string; to_step_id: string | null };
 
 /**
- * Booking slots for a calendar block, computed from the run's clock and the calendar's duration.
+ * How many openings a funnel's calendar block offers a visitor.
  *
- * Phase 13 needs a visitor to be able to book from a funnel; Phase 14 owns availability, buffers,
- * minimum notice, staff and round robin. So this is the smallest honest rule and is labelled as
- * such wherever it is shown: the next three openings on the hour, starting from the first whole
- * hour at least one hour after the run's current instant, inside a 9-to-5 day in the calendar's
- * own zone. Deterministic, no randomness, no wall clock.
+ * A funnel page is not a scheduling tool: it shows the next few real openings and books one.
+ * Phase 13 computed those from a hardcoded nine-to-five rule of its own, which is exactly the
+ * kind of second answer this codebase refuses to keep. Phase 14 retired it — the engine below is
+ * the same one Calendar Lab uses, so changing the calendar's hours, duration, buffers, notice or
+ * team changes what the visitor is offered (D-129).
  */
-export const SLOT_COUNT = 3;
-const DAY_OPENS = 9;
-const DAY_CLOSES = 17;
+export const SLOT_COUNT = 6;
 
-export function bookableSlots(account: AccountState, calendarId: string, now: string): string[] {
-  const calendar = account.calendars[calendarId];
-  if (!calendar) return [];
-  const zone = calendar.timezone ?? account.account.timezone;
-  const slots: string[] = [];
-  // Start at the first whole hour at least an hour out, then walk hour by hour, skipping the
-  // hours outside the working day. A bounded walk: at most a week of hours is ever examined.
-  const opening = addMinutes(toZone(now, zone), 60, zone);
-  const parts = partsIn(instant(opening), zone);
-  const day = `${pad(parts.year, 4)}-${pad(parts.month, 2)}-${pad(parts.day, 2)}`;
-  const whole = parts.minute === 0 && parts.second === 0 ? parts.hour : parts.hour + 1;
-  let cursor = instantForDay(day, zone, Math.min(whole, 23), 0);
-  if (whole > 23) cursor = addMinutes(cursor, 60, zone);
-  for (let step = 0; step < 24 * 7 && slots.length < SLOT_COUNT; step += 1) {
-    const at = partsIn(instant(cursor), zone);
-    if (at.hour >= DAY_OPENS && at.hour < DAY_CLOSES) slots.push(cursor);
-    cursor = addMinutes(cursor, 60, zone);
-  }
-  return slots;
+export function bookableSlots(account: AccountState, calendarId: string, now: string): Slot[] {
+  return slotsForCalendar(account, calendarId, now, { limit: SLOT_COUNT });
 }
 
 /** Everything the visitor can do on this step, in the order the blocks appear. */
@@ -161,8 +146,6 @@ function actionFor(
       return null;
   }
 }
-
-const pad = (value: number, width: number): string => String(value).padStart(width, '0');
 
 /**
  * Whether the visitor can be identified well enough for a submission to create a new contact.

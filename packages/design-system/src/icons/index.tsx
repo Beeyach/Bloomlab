@@ -181,6 +181,14 @@ export const IconFunnel = (p: IconProps) => (
   </Icon>
 );
 
+/** A month grid with its binding: the Calendar Lab's destination (CAL-001). */
+export const IconCalendar = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3.5" y="5" width="17" height="15" rx="2" />
+    <path d="M3.5 9.5h17M8 3v4M16 3v4" />
+  </Icon>
+);
+
 export const IconChat = (p: IconProps) => (
   <Icon {...p}>
     <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-5 4z" />

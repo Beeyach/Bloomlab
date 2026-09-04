@@ -112,20 +112,151 @@ export interface Opportunity {
   updated_at: string;
 }
 
+/* ---- calendars (CAL-001, spec §44) ------------------------------------------------------ */
+
+/**
+ * The calendar families Bloomlab simulates. HighLevel also ships Class Booking, Collective,
+ * Group and Event calendars; those are practised in GHL and named as omissions in the registry
+ * rather than approximated here (registry GHL-CAL-CALENDARS).
+ */
+export const CALENDAR_TYPES = ['personal', 'round_robin', 'service'] as const;
+export type CalendarType = (typeof CALENDAR_TYPES)[number];
+
+/**
+ * How a calendar picks the host for a booking.
+ *
+ * `single` is a personal calendar's one team member. The other two carry HighLevel's own names
+ * for its round-robin distribution methods, because the simulated rule is close enough to teach
+ * them: Optimize for Availability hands the booking to the next available member, Optimize for
+ * Equal Distribution hands it to the member with the fewest bookings that month. The nuance
+ * HighLevel adds to the second — temporarily limiting a member who runs too far ahead — is not
+ * simulated and the registry says so (D-127).
+ */
+export const ASSIGNMENT_STRATEGIES = ['single', 'optimize_availability', 'optimize_equal'] as const;
+export type AssignmentStrategy = (typeof ASSIGNMENT_STRATEGIES)[number];
+
+/**
+ * One weekly working window, in the calendar's own zone. ISO weekday numbering (1 = Monday …
+ * 7 = Sunday), the same numbering the workflow time window uses. `HH:MM` wall-clock times rather
+ * than instants, because a working day is a wall-clock fact: 09:00 stays 09:00 across a
+ * daylight-saving change, which is what a business actually means by "we open at nine".
+ */
+export interface AvailabilityWindow {
+  day: number;
+  start: string;
+  end: string;
+}
+
+/**
+ * Where the meeting happens. HighLevel's booking pages offer an address, a phone number, a Zoom
+ * or Google Meet link, a custom value, or asking the booker — the same list, with the two
+ * integration-generated links simulated as a stored link rather than a real conferencing call.
+ */
+export const LOCATION_KINDS = [
+  'address',
+  'phone',
+  'zoom',
+  'google_meet',
+  'custom',
+  'ask_booker',
+] as const;
+export type LocationKind = (typeof LOCATION_KINDS)[number];
+
+export interface CalendarLocation {
+  id: string;
+  kind: LocationKind;
+  /** What the booker is given. Null only for `ask_booker`, which the booker fills in. */
+  value: string | null;
+}
+
+/**
+ * One service on a service calendar. A service is behaviour, not a label: it can set its own
+ * duration, narrow the staff who may take it, and carry its own location into the booking.
+ */
+export interface CalendarService {
+  id: string;
+  name: string;
+  /** Overrides the calendar's duration when set. */
+  duration_minutes: number | null;
+  /** Users eligible for this service. Empty means every team member on the calendar. */
+  staff_ids: string[];
+  /** The location this service is delivered at. Null uses the calendar's default. */
+  location_id: string | null;
+}
+
+/**
+ * What the person who booked may do afterwards — HighLevel's "Allow Cancellation of Meeting" and
+ * "Allow Rescheduling of Meeting", with the cutoff that expires those links before the
+ * appointment.
+ */
+export interface CalendarBookingRules {
+  cancellation_allowed: boolean;
+  reschedule_allowed: boolean;
+  /** Hours before the start after which the booker can no longer change it. Null never expires. */
+  change_cutoff_hours: number | null;
+}
+
+/**
+ * A calendar as configuration (CAL-001, D-126). Everything an availability answer depends on is
+ * here as plain data: no Date objects, no formatted labels, no component state. The engine in
+ * `calendar/` is the only thing that turns it into bookable times, and both the Calendar Lab and
+ * the Funnel Lab ask that engine rather than each holding a rule of their own (D-129).
+ */
 export interface Calendar {
   id: string;
   name: string;
-  duration_minutes: number;
+  type: CalendarType;
   timezone: string | null;
+  /** How long one appointment is, unless the chosen service says otherwise. */
+  duration_minutes: number;
+  /** Minutes between the starts of consecutive offered slots — HighLevel's Slot Interval. */
+  slot_interval_minutes: number;
+  pre_buffer_minutes: number;
+  post_buffer_minutes: number;
+  /** HighLevel's Minimum Scheduling Notice, in minutes so an hour rule and a day rule are one field. */
+  minimum_notice_minutes: number;
+  /** How far ahead the calendar offers times, in days. */
+  booking_window_days: number;
+  availability: AvailabilityWindow[];
+  /** The team members who host on this calendar, in the order the learner arranged them. */
+  staff_ids: string[];
+  assignment: AssignmentStrategy;
+  /** Round robin only: the booker may name a host instead of taking the assignment. */
+  staff_selection: boolean;
+  services: CalendarService[];
+  locations: CalendarLocation[];
+  default_location_id: string | null;
+  booking: CalendarBookingRules;
+  /** Bumped by every saved edit, exactly as a workflow and a funnel are (D-104). */
+  version: number;
 }
 
 export type AppointmentStatus = 'booked' | 'confirmed' | 'cancelled' | 'showed' | 'no_show';
 
+/** Who made the booking. HighLevel's Customer Booked Appointment trigger only fires for the first. */
+export type BookedBy = 'customer' | 'staff';
+
+/**
+ * One booking. The fields after `starts_at` are the booking's own history: the calendar can be
+ * re-configured afterwards and this appointment does not move or change length, because what it
+ * was booked for is recorded on it rather than looked up later (D-128).
+ */
 export interface Appointment {
   id: string;
   contact_id: string;
   calendar_id: string;
   starts_at: string;
+  /** The length booked, snapshotted. A later calendar edit never rewrites an existing booking. */
+  duration_minutes: number;
+  /**
+   * The team member hosting it. A different concept from the contact's owner and the
+   * opportunity's owner, which is why it is its own reference: they may name the same user and
+   * they mean different things (D-130).
+   */
+  host_id: string | null;
+  service_id: string | null;
+  location_id: string | null;
+  booked_by: BookedBy;
   status: AppointmentStatus;
   created_at: string;
   updated_at: string;

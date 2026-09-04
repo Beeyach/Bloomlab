@@ -169,6 +169,6 @@ describe('the catalogue is exercised, not merely declared', () => {
     expect(new Set<SimulatorEventType>(SIMULATOR_EVENT_TYPES).size).toBe(
       SIMULATOR_EVENT_TYPES.length,
     );
-    expect(SIMULATOR_EVENT_TYPES).toHaveLength(44);
+    expect(SIMULATOR_EVENT_TYPES).toHaveLength(46);
   });
 });

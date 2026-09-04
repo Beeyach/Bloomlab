@@ -188,9 +188,9 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| CAL-001 | Calendar Lab supports progressively: duration, availability, buffers, minimum notice, staff, assignment, round robin, services, locations, confirmation, reschedule, cancellation. | P1 | 14 | NOT_STARTED | §57 |
+| CAL-001 | Calendar Lab supports progressively: duration, availability, buffers, minimum notice, staff, assignment, round robin, services, locations, confirmation, reschedule, cancellation. | P1 | 14 | PASSED | §57 |
 | CAL-002 | Advanced resource rules (classes, resources, complex scheduling) later. | P3 | 25 | NOT_STARTED | §57, §15 |
-| CAL-003 | Booking events (APPOINTMENT_BOOKED / RESCHEDULED / CANCELLED / STATUS_CHANGED) fire workflows through the shared simulator. | P0 | 14 | NOT_STARTED | §44, §57 |
+| CAL-003 | Booking events (APPOINTMENT_BOOKED / RESCHEDULED / CANCELLED / STATUS_CHANGED) fire workflows through the shared simulator. | P0 | 14 | PASSED | §44, §57 |
 
 ## CONV — Conversations
 

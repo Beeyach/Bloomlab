@@ -115,12 +115,99 @@ const pipeline = z.strictObject({
   stages: stringList.min(1),
 });
 
-const calendar = z.strictObject({
+/** `HH:MM` wall-clock in the calendar's own zone. A working day is a wall-clock fact. */
+const timeOfDay = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Needs an HH:MM time of day');
+
+const availabilityWindow = z.strictObject({
+  /** ISO weekday: 1 = Monday … 7 = Sunday, the same numbering the workflow time window uses. */
+  day: z.number().int().min(1).max(7),
+  start: timeOfDay,
+  end: timeOfDay,
+});
+
+const calendarLocation = z.strictObject({
+  id: z.string().min(1),
+  kind: z.enum(['address', 'phone', 'zoom', 'google_meet', 'custom', 'ask_booker']),
+  /** What the booker is given. Only `ask_booker` may leave it out. */
+  value: z.string().trim().min(1).optional(),
+});
+
+const calendarService = z.strictObject({
   id: z.string().min(1),
   name: z.string().min(1),
-  duration_minutes: z.number().int().min(5),
-  timezone: timeZone.optional(),
+  /** Overrides the calendar's duration when set. */
+  duration_minutes: z.number().int().min(5).optional(),
+  /** Users eligible for this service; empty means every team member on the calendar. */
+  staff_ids: stringList.optional(),
+  location_id: z.string().min(1).optional(),
 });
+
+/** A calendar as configuration (CAL-001). Everything but identity and duration has a default. */
+const calendar = z
+  .strictObject({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    type: z.enum(['personal', 'round_robin', 'service']).optional(),
+    duration_minutes: z.number().int().min(5),
+    slot_interval_minutes: z.number().int().min(5).optional(),
+    pre_buffer_minutes: z.number().int().min(0).optional(),
+    post_buffer_minutes: z.number().int().min(0).optional(),
+    minimum_notice_minutes: z.number().int().min(0).optional(),
+    booking_window_days: z.number().int().min(1).max(60).optional(),
+    timezone: timeZone.optional(),
+    availability: z.array(availabilityWindow).optional(),
+    staff_ids: stringList.optional(),
+    assignment: z.enum(['single', 'optimize_availability', 'optimize_equal']).optional(),
+    staff_selection: z.boolean().optional(),
+    services: z.array(calendarService).optional(),
+    locations: z.array(calendarLocation).optional(),
+    default_location_id: z.string().min(1).optional(),
+    booking: z
+      .strictObject({
+        cancellation_allowed: z.boolean().optional(),
+        reschedule_allowed: z.boolean().optional(),
+        change_cutoff_hours: z.number().int().min(0).optional(),
+      })
+      .optional(),
+  })
+  .superRefine((row, ctx) => {
+    const locations = new Set((row.locations ?? []).map((location) => location.id));
+    (row.locations ?? []).forEach((location, index) => {
+      if (location.kind !== 'ask_booker' && !location.value) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['locations', index, 'value'],
+          message: `A ${location.kind} location needs something to give the booker`,
+        });
+      }
+    });
+    if (row.default_location_id && !locations.has(row.default_location_id)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['default_location_id'],
+        message: `Unknown location ${row.default_location_id}`,
+      });
+    }
+    const staff = new Set(row.staff_ids ?? []);
+    (row.services ?? []).forEach((service, index) => {
+      (service.staff_ids ?? []).forEach((userId) => {
+        if (!staff.has(userId)) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['services', index, 'staff_ids'],
+            message: `${userId} is not on this calendar`,
+          });
+        }
+      });
+      if (service.location_id && !locations.has(service.location_id)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['services', index, 'location_id'],
+          message: `Unknown location ${service.location_id}`,
+        });
+      }
+    });
+  });
 
 const form = z.strictObject({
   id: z.string().min(1),
@@ -145,6 +232,13 @@ const appointment = z.strictObject({
   calendar_id: z.string().min(1),
   starts_at: isoDateTime,
   status: z.enum(['booked', 'confirmed', 'cancelled', 'showed', 'no_show']).default('booked'),
+  /** What the booking was made for, kept on the record so a later calendar edit cannot move it. */
+  duration_minutes: z.number().int().min(5).optional(),
+  /** The team member hosting it — a different thing from the contact's owner (D-130). */
+  host_id: z.string().min(1).optional(),
+  service_id: z.string().min(1).optional(),
+  location_id: z.string().min(1).optional(),
+  booked_by: z.enum(['customer', 'staff']).optional(),
 });
 
 const opportunity = z.strictObject({
@@ -215,7 +309,21 @@ export const AccountStateSchema = z
     );
     const contacts = new Set(state.contacts.map((c) => c.id));
     const calendars = new Set(state.calendars.map((c) => c.id));
+    const calendarsById = new Map(state.calendars.map((c) => [c.id, c]));
+    const users = new Set(state.users.map((u) => u.id));
     const pipelines = new Map(state.pipelines.map((p) => [p.id, p]));
+    // A calendar's team is a reference like any other: a host the account does not have would
+    // put a name on an appointment that means nothing (D-130).
+    state.calendars.forEach((c, index) => {
+      (c.staff_ids ?? []).forEach((userId) => {
+        if (!users.has(userId))
+          ctx.addIssue({
+            code: 'custom',
+            path: ['calendars', index, 'staff_ids'],
+            message: `Unknown user ${userId}`,
+          });
+      });
+    });
     state.appointments.forEach((a, index) => {
       if (!contacts.has(a.contact_id))
         ctx.addIssue({
@@ -228,6 +336,31 @@ export const AccountStateSchema = z
           code: 'custom',
           path: ['appointments', index, 'calendar_id'],
           message: `Unknown calendar ${a.calendar_id}`,
+        });
+      const held = calendarsById.get(a.calendar_id);
+      if (a.host_id && !users.has(a.host_id))
+        ctx.addIssue({
+          code: 'custom',
+          path: ['appointments', index, 'host_id'],
+          message: `Unknown user ${a.host_id}`,
+        });
+      if (held && a.host_id && !(held.staff_ids ?? []).includes(a.host_id))
+        ctx.addIssue({
+          code: 'custom',
+          path: ['appointments', index, 'host_id'],
+          message: `${a.host_id} does not host on ${held.id}`,
+        });
+      if (held && a.service_id && !(held.services ?? []).some((s) => s.id === a.service_id))
+        ctx.addIssue({
+          code: 'custom',
+          path: ['appointments', index, 'service_id'],
+          message: `Unknown service ${a.service_id}`,
+        });
+      if (held && a.location_id && !(held.locations ?? []).some((l) => l.id === a.location_id))
+        ctx.addIssue({
+          code: 'custom',
+          path: ['appointments', index, 'location_id'],
+          message: `Unknown location ${a.location_id}`,
         });
     });
     state.opportunities.forEach((o, index) => {

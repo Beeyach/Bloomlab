@@ -13,6 +13,7 @@ import {
 } from '../src/index.ts';
 import { NOW, event, scenario, withWaitBefore } from './fixtures.ts';
 import { isImplemented, type RegressionFixture } from './fixtures/registry.ts';
+import { CALENDAR_FIXTURES } from './fixtures/calendar-fixtures.ts';
 import { FUNNEL_FIXTURES } from './fixtures/funnel-fixtures.ts';
 import { WORKFLOW_FIXTURES } from './fixtures/workflow-fixtures.ts';
 
@@ -215,6 +216,7 @@ const FIXTURES: RegressionFixture[] = [
   // Workflow Lab behaviours (Phase 12) live beside their builders.
   ...WORKFLOW_FIXTURES,
   ...FUNNEL_FIXTURES,
+  ...CALENDAR_FIXTURES,
 ];
 
 describe('simulator regression fixtures (SIM-017)', () => {

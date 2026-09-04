@@ -61,6 +61,11 @@ export const SIMULATOR_EVENT_TYPES = [
   // them as one (D-092, D-119).
   'FUNNEL_CREATED',
   'FUNNEL_UPDATED',
+  // Calendar Lab (Phase 14). A calendar's configuration saved, in the same definition-as-event
+  // shape a workflow and a funnel use (D-107, D-119, D-126). Calendars are a native HighLevel
+  // object; these two events are Bloomlab's record of one being defined, not GHL triggers.
+  'CALENDAR_CREATED',
+  'CALENDAR_UPDATED',
 ] as const;
 
 export type SimulatorEventType = (typeof SIMULATOR_EVENT_TYPES)[number];
