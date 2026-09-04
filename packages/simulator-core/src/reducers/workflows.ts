@@ -23,11 +23,60 @@ const runId = (workflowId: string, contactId: string, sequence: number) =>
 
 const ACTIVE: WorkflowRun['status'][] = ['active', 'waiting'];
 
+/**
+ * How many times one contact may enter one workflow at a single simulator instant before the
+ * engine calls it a loop (SIM-011, D-141).
+ *
+ * HighLevel's builder has no edge back to an earlier step, and Bloomlab's graph validation
+ * refuses one for the same reason — so the workflow loop a real account actually suffers is not
+ * inside one definition. It is two workflows triggering each other: this one adds a tag that
+ * enrols the contact in that one, which adds a tag that enrols them back here, and neither ever
+ * changes anything that would stop it.
+ *
+ * That loop runs entirely at one instant, because nothing in it waits. So the bound is on
+ * enrolments sharing an instant rather than on enrolments ever: a learner who tests the same
+ * workflow on the same contact twenty times across a week is doing ordinary work and is not
+ * stopped, and ten enrolments at one moment is not ordinary work at all.
+ *
+ * Catching it here rather than at the engine's global cascade limit is what makes it teachable.
+ * A `CASCADE_LIMIT` refusal abandons the whole operation and leaves a diagnostic; this refuses
+ * one enrolment, records the failure with the count and the workflow on it, and leaves the
+ * account — the contact, their tags, the runs that already completed — exactly as it was.
+ */
+export const MAX_ENROLMENTS_AT_ONE_INSTANT = 10;
+
 export function workflowEnrolled(account: AccountState, event: SimulatorEvent): ReducerResult {
   const workflowId = requireString(event.payload, 'workflow_id', event.type);
   const workflow = entity(account.workflows, workflowId, 'workflow', event.type);
   const contactId = requireString(event.payload, 'contact_id', event.type);
   entity(account.contacts, contactId, 'contact', event.type);
+
+  // A loop is stopped before it starts a run, so the cascade ends here rather than at the
+  // engine's last-resort limit, and the record says exactly what was going round.
+  const atThisInstant = Object.values(account.workflow_runs).filter(
+    (run) =>
+      run.workflow_id === workflowId &&
+      run.contact_id === contactId &&
+      run.enrolled_at === event.at,
+  );
+  if (atThisInstant.length >= MAX_ENROLMENTS_AT_ONE_INSTANT) {
+    return result(account, [
+      {
+        kind: 'failure',
+        at: event.at,
+        workflow_id: workflowId,
+        contact_id: contactId,
+        event_id: event.id,
+        data: {
+          enrolments_at_this_instant: atThisInstant.length,
+          limit: MAX_ENROLMENTS_AT_ONE_INSTANT,
+          trigger_feature: workflow.trigger.ghl_feature_id,
+          caused_by: event.source?.caused_by ?? null,
+        },
+        reason: 'workflow_loop',
+      },
+    ]);
+  }
 
   const active = Object.values(account.workflow_runs).find(
     (run) =>

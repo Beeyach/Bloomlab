@@ -1,0 +1,108 @@
+# SIM-011 · missing_phone. The welcome text never arrives, and the workflow says it ran.
+#
+# Nothing here is broken in a way a validator would catch: the workflow is correct, the form is
+# correct, the trigger fired and the Send SMS step was reached. The lead simply has no phone
+# number, because the form asks for one and does not require it. The engine records the send as a
+# skipped action with its reason, which is the whole lesson — a step that ran is not a message
+# that arrived.
+id: SC-glowhaus-incident-missing-phone
+title: Glowhaus — the welcome text nobody got
+client: CL-glowhaus-medspa
+summary: >-
+  A new lead came through the consultation form and never heard back. The workflow is enrolled,
+  the Send SMS step is in its history, and no text exists. What the account holds about that lead
+  explains it, once you look at the lead rather than the workflow.
+initial_account_state:
+  users:
+    - { id: priya, name: Priya Raman, role: admin }
+  contacts: []
+  tags: [new-lead]
+  custom_fields:
+    - key: treatment_interest
+      label: Treatment interest
+      type: dropdown
+      options: [Signature Facial, Membership, Laser]
+  forms:
+    - id: consult-request
+      name: Consultation Request
+      fields: [first_name, last_name, email, phone, treatment_interest]
+  workflows:
+    - id: wf-new-lead-welcome
+      name: New Lead Welcome
+      trigger:
+        ghl_feature_id: GHL-WF-FORM-SUBMITTED
+        filters:
+          - { field: form, operator: is, value: consult-request }
+      nodes:
+        - {
+            id: n1,
+            type: action,
+            ghl_feature_id: GHL-WF-ADD-CONTACT-TAG,
+            label: Tag the lead,
+            config: { tag: new-lead },
+            position: { x: 0, y: 120 },
+          }
+        - id: n2
+          type: action
+          ghl_feature_id: GHL-WF-SEND-SMS
+          label: Welcome text
+          config:
+            template: 'Hi {{contact.first_name}}, thanks for asking about a consultation at Glowhaus. What time suits you this week?'
+            purpose: welcome
+          position: { x: 0, y: 240 }
+        - { id: n3, type: end, position: { x: 0, y: 360 } }
+      edges:
+        - { from: n1, to: n2 }
+        - { from: n2, to: n3 }
+      settings: { allow_reentry: false, timezone: America/Chicago }
+simulation_time: '2026-09-07T09:00:00-05:00'
+timezone: America/Chicago
+seed: 4101
+scheduled_events:
+  - at: '2026-09-07T09:12:00-05:00'
+    type: form.submitted
+    payload:
+      form_id: consult-request
+      contact_id: rosa
+      values:
+        {
+          first_name: Rosa,
+          last_name: Iglesias,
+          email: 'rosa.iglesias@example.com',
+          treatment_interest: Membership,
+        }
+    description: Rosa asks for a consultation
+injectable_events:
+  - id: second-lead
+    type: form.submitted
+    description: Send another test lead through the same form, with a phone number this time.
+    payload:
+      form_id: consult-request
+      contact_id: test-lead
+      values:
+        {
+          first_name: Test,
+          last_name: Lead,
+          email: 'test@example.com',
+          phone: '+15125550199',
+          treatment_interest: Membership,
+        }
+hidden_facts:
+  form_phone_field: 'On the form, not required'
+failure_modes: [missing_phone]
+incident:
+  title: The welcome text nobody got
+  symptom: >-
+    Rosa is in the account, the New Lead Welcome workflow enrolled her, and its history shows the
+    Send SMS step. Her conversation is empty. No text was ever delivered.
+  client_complaint: >-
+    "I filled in your form on Monday morning and I still have not heard anything. Is anyone
+    actually reading these?"
+  failure_mode: missing_phone
+  inspect:
+    - Rosa's contact record
+    - The New Lead Welcome execution log, at the Send SMS step
+    - The fields the consultation form actually collects
+  reproduce:
+    - Run the queued form submission.
+    - Open the execution log and read the Send SMS step rather than the step count.

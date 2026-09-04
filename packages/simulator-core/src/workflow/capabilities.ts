@@ -1,6 +1,7 @@
 import type { PendingEvent, SimulatorEvent, SimulatorEventType } from '../events.ts';
 import type { AccountState, Workflow, WorkflowNode, WorkflowRunContext } from '../state.ts';
 import { hasOffset } from '../time.ts';
+import { appointmentIdOf } from '../reducers/appointments.ts';
 import { readBranches } from './conditions.ts';
 import { answerFor, readHeaders } from './endpoints.ts';
 import { hasMergeFields, renderTemplate } from './merge.ts';
@@ -91,7 +92,9 @@ const TRIGGER_CAPABILITIES: TriggerCapability[] = [
     // which is the split the registry records. How the booking was made is remembered on the
     // appointment, so a reschedule of a staff booking is still a staff booking (CAL-003).
     match: (event, account) => {
-      const appointmentId = str(event.payload.appointment_id);
+      // The id the event produced, which for a booking that named none is the one the reducer
+      // minted from it — otherwise an injected booking would fire nothing at all (D-145).
+      const appointmentId = appointmentIdOf(event);
       if (!appointmentId) return null;
       // A reschedule names only the appointment; the contact and calendar come from the record.
       const appointment = account.appointments[appointmentId];
@@ -132,7 +135,7 @@ const TRIGGER_CAPABILITIES: TriggerCapability[] = [
       { key: 'tag', label: 'Tag', kind: 'list', reference: 'tags' },
     ],
     match: (event, account) => {
-      const appointmentId = str(event.payload.appointment_id);
+      const appointmentId = appointmentIdOf(event);
       if (!appointmentId) return null;
       const appointment = account.appointments[appointmentId];
       if (!appointment) return null;

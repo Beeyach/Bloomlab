@@ -1,0 +1,126 @@
+# SIM-011 · bad_condition. Syntactically fine, logically wrong.
+#
+# The branch parses, evaluates and records its comparison. It compares against a tag the account
+# stopped using: members carried `subscriber` when the workflow was written, and they carry
+# `membership` now. Every member therefore takes the fallback and is sent the join-us email they
+# do not need.
+#
+# The value the condition compares against is visible in the execution record, beside the value
+# the contact actually had. That is deliberately enough to solve it and not a statement of the
+# answer.
+id: SC-glowhaus-incident-bad-condition
+title: Glowhaus — members keep being asked to join
+client: CL-glowhaus-medspa
+summary: >-
+  The follow-up workflow is supposed to send members a different email from everybody else. It is
+  sending all of them the join-us email. The condition runs, and what it compares is in the log.
+initial_account_state:
+  users:
+    - { id: priya, name: Priya Raman, role: admin }
+  contacts:
+    - id: soraya
+      first_name: Soraya
+      last_name: Haddad
+      email: 'soraya.haddad@example.com'
+      phone: '+15125550151'
+      tags: [membership]
+      timezone: America/Chicago
+      source: Referral
+      owner_id: priya
+    - id: bram
+      first_name: Bram
+      last_name: Kessler
+      email: 'bram.kessler@example.com'
+      phone: '+15125550152'
+      tags: []
+      timezone: America/Chicago
+      source: Google
+      owner_id: priya
+  tags: [membership, followed-up]
+  forms:
+    - id: consult-request
+      name: Consultation Request
+      fields: [first_name, last_name, email, phone]
+  workflows:
+    - id: wf-post-visit-followup
+      name: Post-visit Follow-up
+      trigger:
+        ghl_feature_id: GHL-WF-CONTACT-TAG
+        filters:
+          - { field: tag, operator: is, value: followed-up }
+      nodes:
+        - id: n1
+          type: branch
+          ghl_feature_id: GHL-WF-IF-ELSE
+          label: Are they a member?
+          config:
+            branches:
+              - name: member
+                groups:
+                  - conditions:
+                      - { field: contact.tags, operator: contains, value: subscriber }
+          position: { x: 0, y: 120 }
+        - id: n2
+          type: action
+          ghl_feature_id: GHL-WF-SEND-EMAIL
+          label: Members' email
+          config:
+            {
+              subject: 'Your next treatment',
+              body: 'Hi {{contact.first_name}}, your membership covers this one. Shall we book it in?',
+            }
+          position: { x: -160, y: 260 }
+        - id: n3
+          type: action
+          ghl_feature_id: GHL-WF-SEND-EMAIL
+          label: Join-us email
+          config:
+            {
+              subject: 'Have you thought about the Glow Membership?',
+              body: 'Hi {{contact.first_name}}, members save on every treatment. Here is how it works.',
+            }
+          position: { x: 160, y: 260 }
+        - { id: n4, type: end, position: { x: 0, y: 400 } }
+      edges:
+        - { from: n1, to: n2, branch: member }
+        - { from: n1, to: n3 }
+        - { from: n2, to: n4 }
+        - { from: n3, to: n4 }
+      settings: { allow_reentry: true, timezone: America/Chicago }
+simulation_time: '2026-09-07T09:00:00-05:00'
+timezone: America/Chicago
+seed: 4105
+scheduled_events:
+  - at: '2026-09-07T09:30:00-05:00'
+    type: tag.added
+    payload: { contact_id: soraya, tag: followed-up }
+    description: Soraya, who is a member, is marked for follow-up
+  - at: '2026-09-07T09:35:00-05:00'
+    type: tag.added
+    payload: { contact_id: bram, tag: followed-up }
+    description: Bram, who is not a member, is marked for follow-up
+injectable_events:
+  - id: follow-up-soraya
+    type: tag.added
+    description: Mark Soraya for follow-up again and watch which branch she takes.
+    payload: { contact_id: soraya, tag: followed-up }
+hidden_facts:
+  tag_history: 'The membership tag was called `subscriber` until the studio renamed it last spring.'
+failure_modes: [bad_condition]
+incident:
+  title: Members keep being asked to join
+  symptom: >-
+    Soraya has been a member for two years. The follow-up workflow evaluated its membership
+    branch against her and sent her the join-us email anyway. Bram, who is not a member, got the
+    same email, which is correct for him.
+  client_complaint: >-
+    "One of our longest-standing members just replied asking whether we know who she is. She has
+    been paying us monthly since we opened."
+  failure_mode: bad_condition
+  inspect:
+    - The branch result for Soraya, and the two values it compared
+    - The tags on Soraya's contact record
+    - The account's own tag list
+  reproduce:
+    - Run both queued follow-ups.
+    - Open the branch result and read the expected value beside the actual one.

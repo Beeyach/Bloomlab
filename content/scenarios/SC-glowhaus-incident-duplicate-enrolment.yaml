@@ -1,0 +1,135 @@
+# SIM-011 · duplicate_enrollment. The second enquiry that got nothing.
+#
+# Nothing is injected to stage this. The same real trigger fires twice for the same contact, and
+# re-entry is off, so the engine refuses the second enrolment and records why. That refusal is a
+# correct HighLevel behaviour and also, here, the wrong behaviour for the business: the first run
+# is still sitting on a three-day wait, so the person who asked twice is heard once.
+id: SC-glowhaus-incident-duplicate-enrolment
+title: Glowhaus — asked twice, answered once
+client: CL-glowhaus-medspa
+summary: >-
+  A lead filled the consultation form in twice, three days apart, because nobody answered the
+  first one properly. The second submission started nothing at all, and the workflow's own history
+  says so.
+initial_account_state:
+  users:
+    - { id: priya, name: Priya Raman, role: admin }
+  contacts: []
+  tags: [new-lead]
+  forms:
+    - id: consult-request
+      name: Consultation Request
+      fields: [first_name, last_name, email, phone]
+  workflows:
+    - id: wf-new-lead-nurture
+      name: New Lead Nurture
+      trigger:
+        ghl_feature_id: GHL-WF-FORM-SUBMITTED
+        filters:
+          - { field: form, operator: is, value: consult-request }
+      nodes:
+        - {
+            id: n1,
+            type: action,
+            ghl_feature_id: GHL-WF-ADD-CONTACT-TAG,
+            label: Tag the lead,
+            config: { tag: new-lead },
+            position: { x: 0, y: 100 },
+          }
+        - id: n2
+          type: action
+          ghl_feature_id: GHL-WF-SEND-SMS
+          label: First text
+          config:
+            {
+              template: 'Hi {{contact.first_name}}, thanks for getting in touch with Glowhaus.',
+              purpose: welcome,
+            }
+          position: { x: 0, y: 220 }
+        - id: n3
+          type: wait
+          ghl_feature_id: GHL-WF-WAIT
+          label: Wait five days
+          config: { wait_type: period, days: 5 }
+          position: { x: 0, y: 340 }
+        - id: n4
+          type: action
+          ghl_feature_id: GHL-WF-SEND-SMS
+          label: Nudge
+          config:
+            {
+              template: 'Still thinking it over, {{contact.first_name}}? Happy to answer anything.',
+              purpose: nudge,
+            }
+          position: { x: 0, y: 460 }
+        - { id: n5, type: end, position: { x: 0, y: 580 } }
+      edges:
+        - { from: n1, to: n2 }
+        - { from: n2, to: n3 }
+        - { from: n3, to: n4 }
+        - { from: n4, to: n5 }
+      settings: { allow_reentry: false, timezone: America/Chicago }
+simulation_time: '2026-09-07T09:00:00-05:00'
+timezone: America/Chicago
+seed: 4107
+scheduled_events:
+  - at: '2026-09-07T09:10:00-05:00'
+    type: form.submitted
+    payload:
+      form_id: consult-request
+      contact_id: iona
+      values:
+        {
+          first_name: Iona,
+          last_name: Reyes,
+          email: 'iona.reyes@example.com',
+          phone: '+15125550177',
+        }
+    description: Iona asks about a consultation
+  - at: '2026-09-10T14:20:00-05:00'
+    type: form.submitted
+    payload:
+      form_id: consult-request
+      contact_id: iona
+      values:
+        {
+          first_name: Iona,
+          last_name: Reyes,
+          email: 'iona.reyes@example.com',
+          phone: '+15125550177',
+        }
+    description: Iona asks again, three days later, having heard nothing useful
+injectable_events:
+  - id: third-attempt
+    type: form.submitted
+    description: Have Iona submit the form once more and watch what the trigger does with it.
+    payload:
+      form_id: consult-request
+      contact_id: iona
+      values:
+        {
+          first_name: Iona,
+          last_name: Reyes,
+          email: 'iona.reyes@example.com',
+          phone: '+15125550177',
+        }
+hidden_facts:
+  why_she_asked_twice: 'The first text answered none of her questions and nobody followed it up.'
+failure_modes: [duplicate_enrollment]
+incident:
+  title: Asked twice, answered once
+  symptom: >-
+    Two form submissions from the same person are in the log, three days apart. The account holds
+    one workflow run, one text, and a run still parked on a wait. The second submission produced
+    no run at all.
+  client_complaint: >-
+    "She emailed the studio directly in the end, quite annoyed, saying she had filled the form in
+    twice and got one generic text. I can see both submissions, so where did the second one go?"
+  failure_mode: duplicate_enrollment
+  inspect:
+    - Both form submissions in the log
+    - The workflow runs the account holds for Iona, and what the second enrolment recorded
+    - The workflow's own settings
+  reproduce:
+    - Run both queued submissions.
+    - Read the record the second enrolment produced. It is not an error and it is not nothing.

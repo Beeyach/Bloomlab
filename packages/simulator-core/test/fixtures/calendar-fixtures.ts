@@ -56,6 +56,34 @@ const bookPriya = (): SimulatorState =>
 
 export const CALENDAR_FIXTURES: RegressionFixture[] = [
   {
+    id: 'BOOKING-001',
+    behaviour:
+      'A booking that names no appointment id still fires the Customer Booked Appointment trigger.',
+    covers: 'CAL-003, WFL-010, SIM-011',
+    status: 'implemented',
+    run: () =>
+      processEvent(
+        createRun(calendarScenario()),
+        // What an injectable booking looks like: the scenario says who and when, and the engine
+        // mints the appointment's id. Before D-145 the trigger matcher read the id off the event
+        // and found none, so the booking happened and no confirmation workflow ever started.
+        event('APPOINTMENT_BOOKED', NOW, {
+          contact_id: 'priya',
+          calendar_id: 'consultation',
+          starts_at: '2026-09-10T13:00:00-05:00',
+          host_id: 'theo',
+          booked_by: 'customer',
+        }),
+      ),
+    expect: (state) => {
+      const booked = Object.values(state.account.appointments).filter(
+        (row) => row.contact_id === 'priya' && row.starts_at === '2026-09-10T13:00:00-05:00',
+      );
+      expect(booked).toHaveLength(1);
+      expect(enrolled(state).length).toBeGreaterThan(0);
+    },
+  },
+  {
     id: 'SLOT-001',
     behaviour:
       'Slots come from the weekly window and the duration: nothing before opening, nothing that would run past closing.',
