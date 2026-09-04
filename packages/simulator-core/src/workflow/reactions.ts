@@ -13,6 +13,20 @@ import { viewFor } from './view.ts';
  * pure functions of the event and the account, so a replay asks them again and gets the same
  * enrolments and the same wakes. Workflow-internal events never trigger workflows: a workflow
  * cannot enrol a contact because another workflow advanced.
+ *
+ * ## The contact an event is about may not exist yet (D-123)
+ *
+ * A form submitted by someone the account has never met creates the contact: the intake reducer
+ * generates `CONTACT_CREATED`, and that event is queued ahead of anything this function returns.
+ * At the moment the trigger is matched, though, the account still has no such contact — so a
+ * plain "does this contact exist" check would silently refuse to enrol exactly the person the
+ * form was filled in by, which is neither what HighLevel does nor what a learner would expect.
+ *
+ * `arriving` is the contacts this event's own generated events are about to create. A contact who
+ * is in the account **or** arriving counts as present. The order still holds: the enrolment is
+ * pushed behind the creation on the same frontier, so by the time `WORKFLOW_ENROLLED` is
+ * processed the contact is really there. Nothing is invented and no contact is conjured to make
+ * a trigger fire — the creation is a real event either way.
  */
 
 const INTERNAL: ReadonlySet<SimulatorEventType> = new Set<SimulatorEventType>([
@@ -90,10 +104,22 @@ function appointmentExits(event: SimulatorEvent, account: AccountState): Pending
     }));
 }
 
+/** Contacts a set of generated events will create, so a trigger can enrol one of them (D-123). */
+export function arrivingContacts(generated: readonly PendingEvent[]): Set<string> {
+  const ids = new Set<string>();
+  for (const pending of generated) {
+    if (pending.type !== 'CONTACT_CREATED') continue;
+    const id = pending.payload.contact_id;
+    if (typeof id === 'string') ids.add(id);
+  }
+  return ids;
+}
+
 export function workflowReactions(
   event: SimulatorEvent,
   account: AccountState,
   state: SimulatorState,
+  arriving: ReadonlySet<string> = new Set(),
 ): PendingEvent[] {
   if (INTERNAL.has(event.type)) return [];
   // 0. Appointment-scoped runs the platform ends, before anything new starts from this event.
@@ -105,7 +131,8 @@ export function workflowReactions(
     const trigger = triggerCapabilityFor(workflow.trigger.ghl_feature_id);
     if (!trigger || !trigger.events.includes(event.type)) continue;
     const match = trigger.match(event, account);
-    if (!match || !account.contacts[match.contact_id]) continue;
+    if (!match) continue;
+    if (!account.contacts[match.contact_id] && !arriving.has(match.contact_id)) continue;
     if (!filtersPass(workflow.trigger.filters, match)) continue;
     reactions.push({
       type: 'WORKFLOW_ENROLLED',

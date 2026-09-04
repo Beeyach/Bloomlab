@@ -99,7 +99,7 @@ describe('every catalogue event has a transition (SIM-005)', () => {
     expect(SIMULATOR_EVENT_TYPES).toContain('PIPELINE_STAGE_CHANGED');
     expect(SIMULATOR_EVENT_TYPES).toContain('EMAIL_OPENED');
     expect(SIMULATOR_EVENT_TYPES).toContain('WEBHOOK_RESPONSE');
-    expect(SIMULATOR_EVENT_TYPES).toHaveLength(42);
+    expect(SIMULATOR_EVENT_TYPES).toHaveLength(44);
   });
 });
 

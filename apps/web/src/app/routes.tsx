@@ -53,6 +53,11 @@ export const APP_ROUTES: readonly AppRoute[] = [
     Component: lazy(() => import('../workflow/WorkflowLab')),
   },
   {
+    id: 'funnel',
+    path: '/funnel',
+    Component: lazy(() => import('../funnel/FunnelLab')),
+  },
+  {
     id: 'conversations',
     path: '/conversations',
     Component: lazy(() => import('../conversations/ConversationsLab')),

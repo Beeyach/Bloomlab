@@ -13,6 +13,9 @@ import {
   type AccountState,
   type Appointment,
   type Contact,
+  type Funnel,
+  type FunnelBlockRole,
+  type FunnelStepPurpose,
   type SimulatorState,
   type Workflow,
 } from './state.ts';
@@ -161,6 +164,31 @@ export interface ScenarioAccountState {
     | readonly { id: string; name: string; price: number; recurring?: boolean | undefined }[]
     | undefined;
   workflows?: readonly ScenarioWorkflow[] | undefined;
+  funnels?: readonly ScenarioFunnel[] | undefined;
+}
+
+/** A funnel a scenario starts with, in the same shape the account holds minus the version. */
+export interface ScenarioFunnel {
+  id: string;
+  name: string;
+  steps: readonly ScenarioFunnelStep[];
+}
+
+export interface ScenarioFunnelStep {
+  id: string;
+  name: string;
+  purpose: FunnelStepPurpose;
+  blocks: readonly ScenarioFunnelBlock[];
+  next_step_id?: string | null | undefined;
+}
+
+export interface ScenarioFunnelBlock {
+  id: string;
+  role: FunnelBlockRole;
+  headline?: string | null | undefined;
+  body?: string | null | undefined;
+  reference_id?: string | null | undefined;
+  target_step_id?: string | null | undefined;
 }
 
 export interface ScenarioScheduledEvent {
@@ -256,6 +284,7 @@ export function validateScenario(
     surveys: state.surveys ?? [],
     products: state.products ?? [],
     workflows: state.workflows ?? [],
+    funnels: state.funnels ?? [],
   };
   for (const [name, rows] of Object.entries(collections)) {
     for (const id of duplicates(rows.map((row) => row.id))) {
@@ -621,6 +650,26 @@ export function initialAccount(scenario: SimulatorScenario): AccountState {
     version: 1,
   }));
 
+  const funnels: Record<string, Funnel> = index(state.funnels, (funnel) => ({
+    id: funnel.id,
+    name: funnel.name,
+    steps: funnel.steps.map((step) => ({
+      id: step.id,
+      name: step.name,
+      purpose: step.purpose,
+      blocks: step.blocks.map((block) => ({
+        id: block.id,
+        role: block.role,
+        headline: block.headline ?? null,
+        body: block.body ?? null,
+        reference_id: block.reference_id ?? null,
+        target_step_id: block.target_step_id ?? null,
+      })),
+      next_step_id: step.next_step_id ?? null,
+    })),
+    version: 1,
+  }));
+
   return {
     account: { id: scenario.id, name: scenario.title ?? scenario.id, timezone: scenario.timezone },
     users: index(state.users, (user) => ({
@@ -701,6 +750,7 @@ export function initialAccount(scenario: SimulatorScenario): AccountState {
       recurring: product.recurring ?? false,
     })),
     payments: {},
+    funnels,
     conversations: {},
     workflows,
     workflow_runs: {},

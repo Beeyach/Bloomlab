@@ -207,3 +207,105 @@ export function withWaitBefore(base: SimulatorScenario = scenario()): SimulatorS
     },
   };
 }
+
+/**
+ * The Funnel Lab's shape of account (Phase 13): the pieces a funnel connects to — a form, a
+ * survey, a calendar, a product — one contact the account already knows, and a workflow triggered
+ * by a form submission. No funnel: what the learner builds is the thing under test.
+ */
+export function funnelScenario(overrides: Partial<SimulatorScenario> = {}): SimulatorScenario {
+  return {
+    id: 'SC-test-funnel',
+    title: 'Test funnel account',
+    simulation_time: '2026-09-08T09:00:00-05:00',
+    timezone: 'America/Chicago',
+    seed: 5309,
+    initial_account_state: {
+      contacts: [
+        {
+          id: 'nadia',
+          first_name: 'Nadia',
+          last_name: 'Haddad',
+          email: 'nadia@example.com',
+          phone: '+15125550188',
+          tags: ['returning'],
+          custom_fields: { treatment_interest: 'Signature Facial' },
+          timezone: 'America/Chicago',
+        },
+      ],
+      tags: ['returning', 'new-lead', 'booked'],
+      custom_fields: [
+        {
+          key: 'treatment_interest',
+          label: 'Treatment interest',
+          type: 'dropdown',
+          options: ['Signature Facial', 'Membership', 'Laser'],
+        },
+        {
+          key: 'budget_band',
+          label: 'Budget band',
+          type: 'dropdown',
+          options: ['Under 200', '200 to 500', 'Over 500'],
+        },
+      ],
+      calendars: [
+        {
+          id: 'consultation',
+          name: 'Consultation',
+          duration_minutes: 30,
+          timezone: 'America/Chicago',
+        },
+      ],
+      forms: [
+        {
+          id: 'consult-request',
+          name: 'Consultation Request',
+          fields: ['first_name', 'last_name', 'email', 'phone', 'treatment_interest'],
+        },
+      ],
+      surveys: [
+        { id: 'fit-check', name: 'Fit Check', fields: ['treatment_interest', 'budget_band'] },
+      ],
+      products: [{ id: 'glow-membership', name: 'Glow Membership', price: 149, recurring: true }],
+      workflows: [
+        {
+          id: 'wf-new-lead-welcome',
+          name: 'New Lead Welcome',
+          trigger: {
+            ghl_feature_id: 'GHL-WF-FORM-SUBMITTED',
+            filters: [{ field: 'form', operator: 'is' as const, value: 'consult-request' }],
+          },
+          nodes: [
+            {
+              id: 'n1',
+              type: 'action' as const,
+              ghl_feature_id: 'GHL-WF-ADD-CONTACT-TAG',
+              label: 'Tag the lead',
+              config: { tag: 'new-lead' },
+              position: { x: 0, y: 120 },
+            },
+            {
+              id: 'n2',
+              type: 'action' as const,
+              ghl_feature_id: 'GHL-WF-SEND-SMS',
+              label: 'Welcome text',
+              config: {
+                template: 'Hi {{contact.first_name}}, thanks for asking.',
+                purpose: 'welcome',
+              },
+              position: { x: 0, y: 240 },
+            },
+            { id: 'n3', type: 'end' as const, position: { x: 0, y: 360 } },
+          ],
+          edges: [
+            { from: 'n1', to: 'n2' },
+            { from: 'n2', to: 'n3' },
+          ],
+          settings: { allow_reentry: false, timezone: 'America/Chicago' },
+        },
+      ],
+      funnels: [],
+    },
+    ...overrides,
+  };
+}

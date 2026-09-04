@@ -9,6 +9,8 @@ import { getFeatureFlags, type FeatureFlagSet } from '@bloomlab/shared';
 import '../crm/exerciseRuntime';
 // And the Workflow Lab, which grades workflow exercises from the run the learner built in (D-112).
 import '../workflow/exerciseRuntime';
+// And the Funnel Lab, which grades a FUNNEL ASSEMBLY from the funnel the learner built (D-121).
+import '../funnel/exerciseRuntime';
 import { NotFound } from '../screens/NotFound';
 import { FeatureFlagsProvider } from './FeatureFlagsProvider';
 import { RootLayout } from './RootLayout';

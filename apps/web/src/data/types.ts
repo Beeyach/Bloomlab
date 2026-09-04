@@ -176,6 +176,12 @@ export interface DeviceRecord {
    * for every Lab, so the CRM Lab and the Workflow Lab opened on one scenario share one run.
    */
   lab_runs?: Record<string, string>;
+  /**
+   * Which view a Lab is in on this device — the Funnel Lab's BUILD / PREVIEW / SIMULATE mode and
+   * its preview width (FUN-002). The same kind of preference as `lab_runs`: kept on the device,
+   * never synced, never simulator state, and absent means the Lab's own default.
+   */
+  lab_views?: Record<string, string>;
 }
 
 /** The last server-confirmed state of a record: what a push declares as its base (TA§14). */

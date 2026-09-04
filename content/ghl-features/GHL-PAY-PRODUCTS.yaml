@@ -1,0 +1,31 @@
+# Verified 2026-09-04 against search-result summaries of "Getting Started - Create & Sell
+# Products" (Payments → Products → + Create Product; a price is One time or Recurring, and
+# Recurring adds billing cycles, trials and setup fees). The help centre is unreachable from this
+# build environment (egress proxy), so this was not read directly.
+id: GHL-PAY-PRODUCTS
+official_name: Products
+area: Payments
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000005071-getting-started-create-sell-products
+known_limitations:
+  - Simulated — a named product with one price, marked one-time or recurring, that a funnel checkout block can reference and a completed checkout records a payment against.
+  - Not simulated — creating or editing products, several prices per product, billing cycles, trials, setup fees, payment providers, order forms, coupons, failed payments or refunds. Those are the Payments Lab (PAY-001), not Phase 13.
+skills:
+  - SK-SELL-project-pricing
+supported_configs:
+  options:
+    - One time
+    - Recurring
+  config_fields:
+    - name: price
+      type: number
+      required: true
+    - name: recurring
+      type: boolean
+      required: false
+approximation_note: Training approximation — Phase 13 references an existing product and records one payment against it. Product setup, subscriptions, failed payments and refunds are practised in GHL until the Payments Lab exists.
+verification_note: Location (Payments → Products) and the One time / Recurring price choice confirmed through a search-result summary of the official article on 2026-09-04; the help centre is blocked from this build environment.

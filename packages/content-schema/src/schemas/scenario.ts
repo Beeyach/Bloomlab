@@ -12,6 +12,7 @@ import {
   timeZone,
   title,
 } from './common.ts';
+import { FUNNEL_BLOCK_REFERENCES, FunnelDefinitionSchema } from './funnel.ts';
 import { WorkflowDefinitionSchema } from './workflow.ts';
 
 /**
@@ -127,6 +128,17 @@ const form = z.strictObject({
   fields: stringList.min(1),
 });
 
+/** Surveys share the form shape; the engine keeps them apart because HighLevel does. */
+const survey = form;
+
+/** A product a checkout block can reference (FUN-001). Configuration is the Payments Lab's. */
+const product = z.strictObject({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  price: z.number().min(0),
+  recurring: z.boolean().default(false),
+});
+
 const appointment = z.strictObject({
   id: z.string().min(1),
   contact_id: z.string().min(1),
@@ -165,7 +177,10 @@ export const AccountStateSchema = z
     calendars: z.array(calendar).default([]),
     appointments: z.array(appointment).default([]),
     forms: z.array(form).default([]),
+    surveys: z.array(survey).default([]),
+    products: z.array(product).default([]),
     workflows: z.array(WorkflowDefinitionSchema).default([]),
+    funnels: z.array(FunnelDefinitionSchema).default([]),
   })
   .superRefine((state, ctx) => {
     requireUnique(
@@ -191,6 +206,12 @@ export const AccountStateSchema = z
       state.workflows.map((w) => w.id),
       ['workflows'],
       'workflow id',
+    );
+    requireUnique(
+      ctx,
+      state.funnels.map((f) => f.id),
+      ['funnels'],
+      'funnel id',
     );
     const contacts = new Set(state.contacts.map((c) => c.id));
     const calendars = new Set(state.calendars.map((c) => c.id));
@@ -229,6 +250,29 @@ export const AccountStateSchema = z
           path: ['opportunities', index, 'stage'],
           message: `Pipeline ${pipe.id} has no stage "${o.stage}"`,
         });
+    });
+    // A funnel block that names a form, survey, calendar or product this account never declares
+    // is a broken reference the engine would refuse at load; the compiler catches it first.
+    const held: Record<string, Set<string>> = {
+      forms: new Set(state.forms.map((f) => f.id)),
+      surveys: new Set(state.surveys.map((f) => f.id)),
+      calendars,
+      products: new Set(state.products.map((p) => p.id)),
+    };
+    state.funnels.forEach((funnel, index) => {
+      funnel.steps.forEach((step, at) => {
+        step.blocks.forEach((block, position) => {
+          const collection =
+            FUNNEL_BLOCK_REFERENCES[block.role as keyof typeof FUNNEL_BLOCK_REFERENCES];
+          if (!collection || !block.reference_id) return;
+          if (!held[collection]?.has(block.reference_id))
+            ctx.addIssue({
+              code: 'custom',
+              path: ['funnels', index, 'steps', at, 'blocks', position, 'reference_id'],
+              message: `Unknown ${block.role} ${block.reference_id}`,
+            });
+        });
+      });
     });
   });
 

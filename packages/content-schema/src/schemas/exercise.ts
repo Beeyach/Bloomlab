@@ -14,6 +14,7 @@ import {
   stringList,
   title,
 } from './common.ts';
+import { FUNNEL_BLOCK_ROLES, FUNNEL_STEP_PURPOSES } from './funnel.ts';
 import { WorkflowDefinitionSchema } from './workflow.ts';
 
 /**
@@ -34,6 +35,8 @@ export const SIMULATOR_EXERCISE_TYPES: readonly ExerciseType[] = [
   'RUN_THE_LEAD',
   'EDGE_CASE',
   'REBUILD_BLIND',
+  /** Phase 13: a funnel is assembled in the Funnel Lab, inside the shared account (EXR-011). */
+  'FUNNEL_ASSEMBLY',
 ];
 
 /** Families that count as "Sales Use" in the coverage matrix (CUR-033). */
@@ -111,9 +114,26 @@ export const AssertionSchema = z.discriminatedUnion('type', [
       'feature_not_used',
       'node_count_max',
       'reentry_disabled',
+      // Funnel architecture (EXR-011). These are deliberately partial-order rules rather than a
+      // single expected sequence: a scenario with several defensible orderings must be able to
+      // pass all of them, so an exercise states what must be true, never what must be in slot 3.
+      'funnel_step_exists',
+      'funnel_step_order',
+      'funnel_block_exists',
+      'funnel_block_absent',
+      'funnel_block_order',
+      'funnel_reference_connected',
+      'funnel_step_count_max',
     ]),
     ghl_feature: featureRef.optional(),
     value: z.union([z.string(), z.number()]).optional(),
+    /** The block role a funnel requirement is about. */
+    role: z.enum(FUNNEL_BLOCK_ROLES).optional(),
+    /** The step purpose a funnel requirement is about, or the step a block must sit in. */
+    purpose: z.enum(FUNNEL_STEP_PURPOSES).optional(),
+    /** An order rule: what must come first, and what must come after it. */
+    before: z.string().min(1).optional(),
+    after: z.string().min(1).optional(),
   }),
   z.strictObject({
     ...assertionBase,
@@ -315,6 +335,42 @@ export const ExerciseSchema = z
         }
         if (assertion.requirement === 'node_count_max' && typeof assertion.value !== 'number') {
           issue(at('value'), 'node_count_max needs a numeric limit');
+        }
+        const needsRole = [
+          'funnel_block_exists',
+          'funnel_block_absent',
+          'funnel_reference_connected',
+        ];
+        if (needsRole.includes(assertion.requirement) && !assertion.role) {
+          issue(at('role'), `${assertion.requirement} names the block role it looks for`);
+        }
+        if (assertion.requirement === 'funnel_step_exists' && !assertion.purpose) {
+          issue(at('purpose'), 'funnel_step_exists names the step purpose it looks for');
+        }
+        if (
+          assertion.requirement === 'funnel_step_count_max' &&
+          typeof assertion.value !== 'number'
+        ) {
+          issue(at('value'), 'funnel_step_count_max needs a numeric limit');
+        }
+        if (assertion.requirement === 'funnel_block_order') {
+          const roles = FUNNEL_BLOCK_ROLES as readonly string[];
+          if (!assertion.before || !roles.includes(assertion.before))
+            issue(at('before'), 'funnel_block_order names the block role that comes first');
+          if (!assertion.after || !roles.includes(assertion.after))
+            issue(at('after'), 'funnel_block_order names the block role that comes after');
+        }
+        if (assertion.requirement === 'funnel_step_order') {
+          const purposes = FUNNEL_STEP_PURPOSES as readonly string[];
+          if (!assertion.before || !purposes.includes(assertion.before))
+            issue(at('before'), 'funnel_step_order names the step purpose that comes first');
+          if (!assertion.after || !purposes.includes(assertion.after))
+            issue(at('after'), 'funnel_step_order names the step purpose that comes after');
+        }
+        if (assertion.requirement === 'funnel_reference_connected') {
+          const referencing = ['form', 'survey', 'calendar', 'checkout'];
+          if (assertion.role && !referencing.includes(assertion.role))
+            issue(at('role'), `A ${assertion.role} block connects to no account entity`);
         }
       }
       if (assertion.type === 'state') {
