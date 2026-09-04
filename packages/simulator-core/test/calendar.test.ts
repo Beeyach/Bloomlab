@@ -168,6 +168,27 @@ describe('minimum notice hides what is too soon and nothing else', () => {
       slotAt(state, calendarOf(state, 'consultation'), NOW, '2026-09-08T11:30:00-05:00'),
     ).not.toBeNull();
   });
+
+  it('makes exact lookup obey the slot interval and booking window too', () => {
+    const state = withCalendar(account(), 'consultation', { booking_window_days: 1 });
+    const calendar = calendarOf(state, 'consultation');
+    expect(slotAt(state, calendar, NOW, '2026-09-08T09:15:00-05:00')).toBeNull();
+    expect(slotAt(state, calendar, NOW, '2026-09-09T09:00:00-05:00')).toBeNull();
+  });
+
+  it('can preserve an existing appointment duration while finding a move', () => {
+    const state = withCalendar(account(), 'consultation', {
+      duration_minutes: 30,
+      availability: [{ day: 2, start: '16:00', end: '17:00' }],
+    });
+    const calendar = calendarOf(state, 'consultation');
+    expect(slotAt(state, calendar, NOW, '2026-09-08T16:30:00-05:00')).not.toBeNull();
+    expect(
+      slotAt(state, calendar, NOW, '2026-09-08T16:30:00-05:00', {
+        duration_minutes: 45,
+      }),
+    ).toBeNull();
+  });
 });
 
 describe('buffers keep the next booking away without doubling themselves', () => {

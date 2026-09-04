@@ -4,6 +4,7 @@ import type {
   SimulatorEventType,
   SimulatorScenario,
   Slot,
+  slotAt,
 } from '@bloomlab/simulator-core';
 
 import type { BloomlabDatabase } from '../data/db';
@@ -54,6 +55,26 @@ const injected = (
 });
 
 type Options = ExecutionOptions;
+
+const unavailableSlot = (
+  run: StoredRun,
+  calendarId: string,
+  startsAt: string,
+): Promise<ExecutionResult> =>
+  Promise.resolve({
+    ok: false,
+    run,
+    refusal: {
+      code: 'INVALID_PAYLOAD',
+      message: 'That time is no longer available. Pick a current opening and try again.',
+      detail: { calendar_id: calendarId, starts_at: startsAt },
+    },
+  });
+
+const sameSlot = (a: Slot, b: Slot): boolean =>
+  a.starts_at === b.starts_at &&
+  a.duration_minutes === b.duration_minutes &&
+  a.host_id === b.host_id;
 
 /* ---- definitions --------------------------------------------------------------------- */
 
@@ -162,8 +183,24 @@ export const bookAppointment = (
   scenario: SimulatorScenario,
   intent: BookingIntent,
   options?: Options,
-) =>
-  execute(
+) => {
+  const calendar = run.state.account.calendars[intent.calendar_id];
+  if (calendar) {
+    const current = slotAt(
+      run.state.account,
+      calendar,
+      run.state.clock.now,
+      intent.slot.starts_at,
+      {
+        service_id: intent.service_id,
+        staff_id: intent.slot.host_reason === 'requested' ? intent.slot.host_id : null,
+      },
+    );
+    if (!current || !sameSlot(current, intent.slot)) {
+      return unavailableSlot(run, intent.calendar_id, intent.slot.starts_at);
+    }
+  }
+  return execute(
     run,
     scenario,
     {
@@ -182,6 +219,7 @@ export const bookAppointment = (
     },
     options,
   );
+};
 
 /** A status change. Confirming is this event with `confirmed`; so are Showed and No-show. */
 export const setAppointmentStatus = (
@@ -211,8 +249,27 @@ export const rescheduleAppointment = (
   appointmentId: string,
   slot: Slot,
   options?: Options,
-) =>
-  execute(
+) => {
+  const appointment = run.state.account.appointments[appointmentId];
+  const calendar = appointment ? run.state.account.calendars[appointment.calendar_id] : null;
+  if (appointment && calendar) {
+    const current = slotAt(
+      run.state.account,
+      calendar,
+      run.state.clock.now,
+      slot.starts_at,
+      {
+        service_id: appointment.service_id,
+        duration_minutes: appointment.duration_minutes,
+        staff_id: slot.host_reason === 'requested' ? slot.host_id : null,
+        ignore_appointment_id: appointment.id,
+      },
+    );
+    if (!current || !sameSlot(current, slot)) {
+      return unavailableSlot(run, appointment.calendar_id, slot.starts_at);
+    }
+  }
+  return execute(
     run,
     scenario,
     {
@@ -225,6 +282,7 @@ export const rescheduleAppointment = (
     },
     options,
   );
+};
 
 /**
  * A cancellation. `APPOINTMENT_CANCELLED` rather than a status change, because that is the event

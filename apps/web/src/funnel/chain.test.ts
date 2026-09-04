@@ -319,6 +319,32 @@ describe('the rest of the visitor’s funnel reaches the same account', () => {
     expect(result.run.state.account.analytics.appointments_booked).toBe(1);
   });
 
+  it('refuses a calendar opening that became stale before the visitor clicked it', async () => {
+    const stale = firstSlot('consultation');
+    const first = await bookFromFunnel(
+      run,
+      scenario(),
+      { contact_id: 'nadia', is_new: false },
+      'consultation',
+      stale,
+      options(),
+    );
+    expect(first.ok).toBe(true);
+    if (!first.ok) return;
+    const second = await bookFromFunnel(
+      first.run,
+      scenario(),
+      { contact_id: 'nadia', is_new: false },
+      'consultation',
+      stale,
+      options(),
+    );
+    expect(second.ok).toBe(false);
+    if (second.ok) return;
+    expect(second.refusal.code).toBe('INVALID_PAYLOAD');
+    expect(second.run.state.log).toHaveLength(first.run.state.log.length);
+  });
+
   it('records one payment for the referenced product, and nothing more', async () => {
     const result = await payFromFunnel(
       run,

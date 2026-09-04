@@ -153,22 +153,35 @@ export default function CalendarLab() {
 
   const zone = account && draft ? calendarZone(account, draft) : 'UTC';
 
-  // The schedule is drawn from the SAVED calendar, because unsaved edits are not what the account
-  // would offer anybody. The difference is stated rather than hidden.
-  const days = useMemo(() => {
-    if (!account || !run || !saved) return [];
-    return schedule(account, saved, run.state.clock.now, {
-      service_id: serviceId || null,
-      staff_id: staffId || null,
-    });
-  }, [account, run, saved, serviceId, staffId]);
-
   const appointments = useMemo(() => {
     if (!account || !saved) return [];
     return Object.values(account.appointments)
       .filter((row) => row.calendar_id === saved.id)
       .sort((a, b) => a.starts_at.localeCompare(b.starts_at) || a.id.localeCompare(b.id));
   }, [account, saved]);
+  const selectedAppointment = appointments.find((row) => row.id === selected) ?? null;
+
+  // The schedule is drawn from the SAVED calendar, because unsaved edits are not what the account
+  // would offer anybody. When an appointment is selected the same workspace becomes its move
+  // picker: ignore the appointment's old hold and preserve the duration/service it was booked for.
+  const days = useMemo(() => {
+    if (!account || !run || !saved) return [];
+    return schedule(
+      account,
+      saved,
+      run.state.clock.now,
+      selectedAppointment
+        ? {
+            service_id: selectedAppointment.service_id,
+            duration_minutes: selectedAppointment.duration_minutes,
+            ignore_appointment_id: selectedAppointment.id,
+          }
+        : {
+            service_id: serviceId || null,
+            staff_id: staffId || null,
+          },
+    );
+  }, [account, run, saved, selectedAppointment, serviceId, staffId]);
 
   const chain = useMemo(
     () => (run && account && watermark !== null ? chainSince(run, watermark, account) : []),
@@ -443,15 +456,15 @@ export default function CalendarLab() {
               account={account}
               calendar={saved}
               zone={zone}
-              slot={chosen}
+              slot={selectedAppointment ? null : chosen}
               contactId={contactId}
               serviceId={serviceId}
               staffId={staffId}
               bookedBy={bookedBy}
               busy={busy}
               onContact={setPickedContact}
-              onService={(id) => inScope({ serviceId: id, chosen: null })}
-              onStaff={(id) => inScope({ staffId: id, chosen: null })}
+              onService={(id) => inScope({ serviceId: id, chosen: null, selected: null })}
+              onStaff={(id) => inScope({ staffId: id, chosen: null, selected: null })}
               onBookedBy={setBookedBy}
               onBook={() => void book()}
             />
@@ -474,7 +487,9 @@ export default function CalendarLab() {
               selected={selected}
               chosen={chosen}
               busy={busy}
-              onSelect={(id) => inScope({ selected: id === selected ? null : id })}
+              onSelect={(id) =>
+                inScope({ selected: id === selected ? null : id, chosen: null })
+              }
               onConfirm={(id) =>
                 scenario &&
                 void act((current) => setAppointmentStatus(current, scenario, id, 'confirmed'))
@@ -487,7 +502,9 @@ export default function CalendarLab() {
                 scenario &&
                 chosen &&
                 void act((current) => rescheduleAppointment(current, scenario, id, chosen)).then(
-                  () => inScope({ chosen: null }),
+                  (result) => {
+                    if (result?.ok) inScope({ chosen: null });
+                  },
                 )
               }
               onCancel={(id) =>

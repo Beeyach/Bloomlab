@@ -50,6 +50,11 @@ export interface SlotQuery {
   service_id?: string | null;
   /** A host the booker asked for, honoured only when the calendar allows staff selection. */
   staff_id?: string | null;
+  /**
+   * Historical duration to preserve while moving an existing appointment. New bookings omit it
+   * and take the current service/calendar duration.
+   */
+  duration_minutes?: number | null;
   /** Stop after this many. Omit for every slot inside the booking window. */
   limit?: number;
   /** Treat this appointment as if it were not there — what a reschedule needs. */
@@ -260,8 +265,8 @@ export function bookableSlots(
 ): Slot[] {
   const zone = calendarZone(account, calendar);
   const service = serviceOf(calendar, query.service_id);
-  const minutes = serviceDuration(calendar, service);
-  if (minutes <= 0 || calendar.slot_interval_minutes <= 0) return [];
+  const minutes = query.duration_minutes ?? serviceDuration(calendar, service);
+  if (!Number.isInteger(minutes) || minutes <= 0 || calendar.slot_interval_minutes <= 0) return [];
 
   const staff = candidateStaff(calendar, service);
   if (staff.length === 0 && !booksWithoutStaff(calendar)) return [];
@@ -317,18 +322,41 @@ export function slotAt(
   query: SlotQuery = {},
 ): Slot | null {
   const target = instant(startsAt);
-  if (target < earliestStart(calendar, now)) return null;
+  const earliest = earliestStart(calendar, now);
+  if (target < earliest) return null;
   const zone = calendarZone(account, calendar);
   const service = serviceOf(calendar, query.service_id);
-  const minutes = serviceDuration(calendar, service);
-  if (minutes <= 0) return null;
+  const minutes = query.duration_minutes ?? serviceDuration(calendar, service);
+  if (!Number.isInteger(minutes) || minutes <= 0 || calendar.slot_interval_minutes <= 0) return null;
   const staff = candidateStaff(calendar, service);
   if (staff.length === 0 && !booksWithoutStaff(calendar)) return null;
+  const requested = query.staff_id ?? null;
+  if (requested && calendar.staff_selection && !staff.includes(requested)) return null;
 
-  // The instant has to be inside a working window and long enough to fit the appointment.
+  // An exact lookup has the same booking horizon as the list. Otherwise an old/deep link could
+  // name a perfectly shaped time months beyond the calendar's configured booking window and pass
+  // a looser check than the slot picker itself.
   const day = calendarDay(partsIn(target, zone));
+  const days = Math.min(Math.max(1, calendar.booking_window_days), MAX_BOOKING_WINDOW_DAYS);
+  let cursorDay = calendarDay(partsIn(earliest, zone));
+  let insideBookingWindow = false;
+  for (let index = 0; index < days; index += 1) {
+    if (cursorDay === day) {
+      insideBookingWindow = true;
+      break;
+    }
+    cursorDay = nextDay(cursorDay, zone);
+  }
+  if (!insideBookingWindow) return null;
+
+  // The instant must be one of the starts the calendar would actually offer, not merely anywhere
+  // inside a working window. The interval is anchored to each availability window's opening.
+  const intervalMs = calendar.slot_interval_minutes * MINUTE_MS;
   const fits = windowsOn(calendar, day, zone).some(
-    (open) => target >= open.from && target + minutes * MINUTE_MS <= open.to,
+    (open) =>
+      target >= open.from &&
+      target + minutes * MINUTE_MS <= open.to &&
+      (target - open.from) % intervalMs === 0,
   );
   if (!fits) return null;
 

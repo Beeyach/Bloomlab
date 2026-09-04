@@ -187,6 +187,44 @@ describe('CAL-003: the appointment lifecycle reaches workflows', () => {
     return result.run;
   };
 
+  it('refuses a slot that another booking took after it was shown', async () => {
+    const stale = openings(run, 'consultation').find(
+      (row) => row.starts_at === '2026-09-10T13:00:00-05:00',
+    ) as Slot;
+    const first = await bookAppointment(
+      run,
+      scenario(),
+      {
+        contact_id: 'soraya',
+        calendar_id: 'consultation',
+        slot: stale,
+        service_id: null,
+        location_id: 'studio',
+        booked_by: 'customer',
+      },
+      options(),
+    );
+    expect(first.ok).toBe(true);
+    if (!first.ok) return;
+    const second = await bookAppointment(
+      first.run,
+      scenario(),
+      {
+        contact_id: 'marcus',
+        calendar_id: 'consultation',
+        slot: stale,
+        service_id: null,
+        location_id: 'studio',
+        booked_by: 'customer',
+      },
+      options(),
+    );
+    expect(second.ok).toBe(false);
+    if (second.ok) return;
+    expect(second.refusal.code).toBe('INVALID_PAYLOAD');
+    expect(second.run.state.log).toHaveLength(first.run.state.log.length);
+  });
+
   it('books what the engine offered, with its host, length and location', async () => {
     const after = await book();
     const appointment = Object.values(after.state.account.appointments).find(
@@ -271,6 +309,47 @@ describe('CAL-003: the appointment lifecycle reaches workflows', () => {
     expect(result.run.state.account.contacts.soraya?.tags).toContain('win-back');
     // And the time is bookable again.
     expect(openings(result.run, 'consultation').map((row) => row.starts_at)).toContain(
+      '2026-09-10T13:00:00-05:00',
+    );
+  });
+
+  it('refuses a move when the chosen time became unavailable', async () => {
+    const after = await book();
+    const appointment = Object.values(after.state.account.appointments).find(
+      (row) => row.contact_id === 'soraya',
+    );
+    const target = calendarSlots(
+      after.state.account,
+      after.state.account.calendars.consultation as Calendar,
+      after.state.clock.now,
+      { ignore_appointment_id: appointment?.id },
+    ).find((row) => row.starts_at === '2026-09-11T10:00:00-05:00') as Slot;
+    const occupied = await bookAppointment(
+      after,
+      scenario(),
+      {
+        contact_id: 'marcus',
+        calendar_id: 'consultation',
+        slot: target,
+        service_id: null,
+        location_id: 'studio',
+        booked_by: 'staff',
+      },
+      options(),
+    );
+    expect(occupied.ok).toBe(true);
+    if (!occupied.ok) return;
+    const moved = await rescheduleAppointment(
+      occupied.run,
+      scenario(),
+      appointment?.id as string,
+      target,
+      options(),
+    );
+    expect(moved.ok).toBe(false);
+    if (moved.ok) return;
+    expect(moved.refusal.code).toBe('INVALID_PAYLOAD');
+    expect(moved.run.state.account.appointments[appointment?.id as string]?.starts_at).toBe(
       '2026-09-10T13:00:00-05:00',
     );
   });

@@ -4,6 +4,7 @@ import type {
   SimulatorEventType,
   SimulatorScenario,
   Slot,
+  slotAt,
 } from '@bloomlab/simulator-core';
 
 import type { BloomlabDatabase } from '../data/db';
@@ -56,6 +57,11 @@ const injected = (
 });
 
 type Options = ExecutionOptions;
+
+const sameSlot = (a: Slot, b: Slot): boolean =>
+  a.starts_at === b.starts_at &&
+  a.duration_minutes === b.duration_minutes &&
+  a.host_id === b.host_id;
 
 /* ---- definitions --------------------------------------------------------------------- */
 
@@ -199,8 +205,23 @@ export const bookFromFunnel = (
   calendarId: string,
   slot: Slot,
   options?: Options,
-) =>
-  execute(
+) => {
+  const calendar = run.state.account.calendars[calendarId];
+  if (calendar) {
+    const current = slotAt(run.state.account, calendar, run.state.clock.now, slot.starts_at);
+    if (!current || !sameSlot(current, slot)) {
+      return Promise.resolve<ExecutionResult>({
+        ok: false,
+        run,
+        refusal: {
+          code: 'INVALID_PAYLOAD',
+          message: 'That time is no longer available. Choose another opening.',
+          detail: { calendar_id: calendarId, starts_at: slot.starts_at },
+        },
+      });
+    }
+  }
+  return execute(
     run,
     scenario,
     {
@@ -217,6 +238,7 @@ export const bookFromFunnel = (
     },
     options,
   );
+};
 
 /**
  * A completed checkout. Phase 13 records what the account already models — one payment received
