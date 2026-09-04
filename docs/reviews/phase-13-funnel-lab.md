@@ -111,7 +111,7 @@ authors no positional assertion, so neither claim rests on reading the file.
 
 ## Verification
 
-**Tests: 1032 passing in 75 files** (was 935 in 69 at the end of Phase 12; 940 after the count
+**Tests: 1036 passing in 75 files** (was 935 in 69 at the end of Phase 12; 940 after the count
 assertions were updated for the new catalogue entries). 92 new:
 
 | File | Tests | What it proves |
@@ -194,3 +194,22 @@ search-result summaries of the official help-centre articles. The build environm
 rejects `help.gohighlevel.com` with a 403 at the CONNECT, so the articles could not be opened
 directly. Each record's `verification_note` says exactly that. This is the third phase running
 under that constraint and it should be lifted before a phase depends on reading a page in full.
+
+## Post-completion audit correction — D-125
+
+A review after the first green PR head found two cases the original Phase 13 tests did not pin.
+
+First, FUNNEL ASSEMBLY architecture was flattened across every learner funnel in the current account.
+That could let one incomplete funnel supply the capture/form checks while another supplied the
+booking/calendar checks. The grader now evaluates each funnel independently and keeps the strongest
+complete report, so several saved drafts may coexist but two partial funnels can never become one
+imaginary answer. Required FUNNEL ASSEMBLY constraints are also gates: a polished capture page that
+omits the required booking step fails even when its weighted score would otherwise clear 70%.
+
+Second, the SIMULATE activity panel used event-log length as a sequence watermark. Execution records
+also consume simulator sequence numbers, so after several definition saves an older funnel event
+could appear under a newly started visitor. The session boundary now uses the last actual event
+sequence. Regression coverage pins both corrections.
+
+Grader version after this correction: `2026.09.08-r2`.
+Final expected suite on this PR head: 1036 tests in 75 files, subject to exact-head CI.
