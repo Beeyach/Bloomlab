@@ -855,6 +855,104 @@ export const WORKFLOW_FIXTURES: RegressionFixture[] = [
     },
   },
 
+  {
+    id: 'TRIGGER-003',
+    behaviour:
+      'Appointment Status filtered to No-show enrols from a no-show and never from a cancellation, and the trigger record names the status it matched.',
+    covers: 'WFL-004, WFL-005',
+    status: 'implemented',
+    run: () => {
+      const wf = workflow({
+        id: 'wf-no-show-only',
+        trigger: {
+          ghl_feature_id: 'GHL-WF-APPOINTMENT-STATUS',
+          filters: [{ field: 'appointment_status', operator: 'is', value: 'no_show' }],
+        },
+        nodes: [sms('s1', 'Sorry we missed you.')],
+      });
+      let state = processEvent(
+        createRun(clinicWith([wf])),
+        booked('maria', 'appt-sat', SATURDAY_APPOINTMENT),
+      );
+      // Booking is the status "new": no match. Cancelling is "cancelled": no match either.
+      expect(runsOf(state)).toHaveLength(0);
+      state = processEvent(state, cancelled('appt-sat', '2026-09-04T10:00:00-05:00'));
+      expect(runsOf(state)).toHaveLength(0);
+      // A second booking that is then a no-show is the one event the filter admits.
+      state = processEvent(state, booked('maria', 'appt-sun', '2026-09-06T10:00:00-05:00'));
+      return processEvent(
+        state,
+        event('APPOINTMENT_STATUS_CHANGED', '2026-09-06T10:40:00-05:00', {
+          appointment_id: 'appt-sun',
+          status: 'no_show',
+        }),
+      );
+    },
+    expect: (state) => {
+      const runs = runsOf(state);
+      expect(runs).toHaveLength(1);
+      expect(runs[0]).toMatchObject({
+        contact_id: 'maria',
+        context: { appointment_id: 'appt-sun' },
+      });
+      expect(runs[0]?.context.trigger_event_id).toMatch(/^ev-/);
+      const trigger = records(state, 'trigger', runs[0]?.id)[0];
+      expect(trigger?.data).toMatchObject({
+        enrolled_by: 'trigger',
+        trigger_feature: 'GHL-WF-APPOINTMENT-STATUS',
+        trigger_values: { appointment_status: 'no_show' },
+      });
+      // One text, for the no-show; nothing for the booking or the cancellation of appt-sat.
+      expect(messagesTo(state, 'maria')).toHaveLength(1);
+      expect(runs.some((run) => run.context.appointment_id === 'appt-sat')).toBe(false);
+    },
+  },
+  {
+    id: 'TRIGGER-004',
+    behaviour:
+      'A contact enrolled directly (a test started at the first step) is recorded as a direct enrolment, never as the configured trigger firing, and the run replays identically.',
+    covers: 'WFL-004, SIM-013',
+    status: 'implemented',
+    run: () => {
+      const wf = workflow({
+        id: 'wf-no-show-only',
+        trigger: {
+          ghl_feature_id: 'GHL-WF-APPOINTMENT-STATUS',
+          filters: [{ field: 'appointment_status', operator: 'is', value: 'no_show' }],
+        },
+        nodes: [sms('s1', 'Sorry we missed you.')],
+      });
+      const authored = clinicWith([wf]);
+      // Maria's appointment is live and was never a no-show; a direct enrolment still walks her.
+      const live = processEvent(
+        createRun(authored),
+        enrol('wf-no-show-only', 'maria', {
+          context: { appointment_id: 'appt-maria' },
+          test: true,
+        }),
+      );
+      const replayed = replay(authored, live.log, { run_id: live.run_id });
+      expect(stateHash(replayed)).toBe(stateHash(live));
+      expect(historyHash(replayed)).toBe(historyHash(live));
+      expect(replayed.execution).toEqual(live.execution);
+      return live;
+    },
+    expect: (state) => {
+      const run = onlyRun(state, 'wf-no-show-only');
+      expect(run.context.trigger_event_id).toBeNull();
+      const trigger = records(state, 'trigger', run.id)[0];
+      expect(trigger?.data).toMatchObject({
+        enrolled_by: 'direct',
+        test: true,
+        trigger_event_id: null,
+        trigger_values: null,
+      });
+      // The status Appointment Status would have needed never appears as a matched value.
+      expect(JSON.stringify(trigger?.data.trigger_values)).not.toContain('no_show');
+      expect(messagesTo(state, 'maria')).toHaveLength(1);
+    },
+  },
+
   /* ---- replay --------------------------------------------------------------------------- */
   {
     id: 'REPLAY-002',

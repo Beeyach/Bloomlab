@@ -27,9 +27,13 @@
   min-width: 44px;
   min-height: 44px;
   padding: var(--bl-space-1);
+  border: 0;
   border-radius: var(--bl-radius-md);
+  background: none;
   color: var(--bl-color-text-soft);
+  font: inherit;
   text-decoration: none;
+  cursor: pointer;
   transition:
     color var(--bl-motion-fast) var(--bl-motion-ease-standard),
     background var(--bl-motion-fast) var(--bl-motion-ease-standard);
@@ -72,7 +76,19 @@
   white-space: nowrap;
 }
 
-/* Phones: bottom bar, thumb reach, every area still present. */
+/* The More list: phone only; a labelled list of the remaining areas above the bar. */
+.moreMenu {
+  display: none;
+}
+
+.moreMenu[hidden] {
+  display: none;
+}
+
+/*
+ * Phones: a bottom bar in thumb reach. Four areas show with their names; the rest are one tap
+ * away behind a labelled More, so nothing is icon-only and nothing is dropped (RSP-003).
+ */
 @media (max-width: 767px) {
   .rail {
     right: 0;
@@ -86,15 +102,71 @@
 
   .list {
     flex: 1;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     align-items: center;
   }
 
+  .list > li {
+    min-width: 0;
+  }
+
+  .item {
+    width: 100%;
+    min-width: 0;
+    padding: var(--bl-space-1) 0;
+  }
+
+  .label {
+    max-width: 100%;
+    font-size: 0.6875rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .secondary,
   .developer {
-    flex: 0 0 auto;
+    display: none;
+  }
+
+  .moreMenu {
+    position: fixed;
+    right: var(--bl-space-2);
+    bottom: calc(var(--bl-size-rail-bar) + var(--bl-space-2));
+    z-index: var(--bl-z-overlay);
+    display: block;
+    min-width: 12rem;
+    max-width: calc(100vw - 2 * var(--bl-space-2));
+    padding: var(--bl-space-2);
+    border: 1px solid var(--bl-color-border);
+    border-radius: var(--bl-radius-lg);
+    background: var(--bl-color-snow);
+    box-shadow: var(--bl-shadow-md);
+  }
+
+  .moreMenu[hidden] {
+    display: none;
+  }
+
+  .moreList {
+    display: grid;
     gap: var(--bl-space-1);
-    padding-left: var(--bl-space-2);
-    border-left: 1px solid var(--bl-color-border);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moreEntry .item {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--bl-space-3);
+    min-height: 48px;
+    padding: 0 var(--bl-space-3);
+  }
+
+  .moreEntry .label {
+    font-size: var(--bl-font-size-sm);
+    font-weight: var(--bl-font-weight-medium);
   }
 }
 
@@ -131,35 +203,13 @@
     min-height: 56px;
   }
 
+  .moreItem {
+    display: none;
+  }
+
   .developer {
     margin-top: auto;
     padding-top: var(--bl-space-3);
     border-top: 1px solid var(--bl-color-border);
-  }
-}
-
-/*
- * Phones: every item keeps its name for assistive tech but shows an icon only, so the bar fits
- * 390 px and 320 px without overflow or clipping. The developer links dropped their labels first;
- * CRM made the main list a sixth item, and the Workflow Lab, the inbox and the Playground brought
- * it to seven, which no phone fits with labels. Tablets and up keep the labels.
- */
-@media (max-width: 479px) {
-  .rail {
-    padding: 0 var(--bl-space-1);
-  }
-
-  .developer {
-    gap: 0;
-    padding-left: var(--bl-space-1);
-  }
-
-  .label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
   }
 }

@@ -148,6 +148,28 @@ export function nodeStatus(
   return 'idle';
 }
 
+/**
+ * What a node shows while the recorded run is being played back (WFL-012): nothing beyond the
+ * playhead is revealed yet, the node at the playhead is running until its row has settled, and
+ * everything before it shows what the engine recorded. With no playhead, the run's own status.
+ * Presentation only — the run and its records are never changed by playback.
+ */
+export function playbackStatus(
+  node: WorkflowNode,
+  run: WorkflowRun | null,
+  records: ExecutionRecord[],
+  playhead: number | null,
+  trail: string[],
+  settled: boolean,
+): WorkflowNodeStatus {
+  const final = nodeStatus(node, run, records);
+  if (playhead === null || !run) return final;
+  const at = trail.indexOf(node.id);
+  if (at === -1 || at > playhead) return 'idle';
+  if (at < playhead || settled) return final;
+  return final === 'idle' ? 'idle' : 'running';
+}
+
 export const RUN_STATUS_WORDS: Record<WorkflowRun['status'], string> = {
   active: 'Running',
   waiting: 'Waiting',
@@ -229,10 +251,29 @@ export function timelineRow(
   let detail: string | undefined;
   let branch: string | undefined;
   switch (record.kind) {
-    case 'trigger':
-      name = `Enrolled by ${featureName(text(data.trigger_feature))}`;
-      detail = data.reentry === true ? 'Re-entry' : undefined;
+    case 'trigger': {
+      // Only a trigger reaction may be read as the GHL trigger firing. A direct enrolment (a test
+      // contact started at the first step, a scenario, the Academy) says exactly that.
+      const feature = featureName(text(data.trigger_feature));
+      const viaTrigger =
+        data.enrolled_by === 'trigger' || typeof data.trigger_event_id === 'string';
+      if (viaTrigger) {
+        name = `Enrolled by ${feature}`;
+        detail = [
+          triggerValuesWords(data.trigger_values),
+          data.reentry === true ? 'Re-entry' : null,
+        ]
+          .filter(Boolean)
+          .join(' · ');
+        detail = detail || undefined;
+      } else {
+        name = data.test === true ? 'Started at the first step (test)' : 'Enrolled directly';
+        detail = `${feature} was not fired; the trigger and its filters were skipped${
+          data.reentry === true ? ' · Re-entry' : ''
+        }`;
+      }
       break;
+    }
     case 'step_started':
       name = `${stepName ?? 'Step'} started`;
       break;
@@ -355,6 +396,18 @@ function inputDetail(record: ExecutionRecord, timezone: string): string | undefi
   if (typeof d.version === 'number') return `Version ${d.version}`;
   if (text(d.held_until)) return `Held until ${simulatorTime(text(d.held_until), timezone)}`;
   return undefined;
+}
+
+/** The values a trigger matched on, as "field: value" pairs, so a learner sees why it fired. */
+function triggerValuesWords(raw: unknown): string | null {
+  if (typeof raw !== 'object' || raw === null) return null;
+  const pairs = Object.entries(raw as Record<string, unknown>)
+    .filter(([, value]) => value !== null && value !== undefined && value !== '')
+    .map(
+      ([key, value]) =>
+        `${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : String(value)}`,
+    );
+  return pairs.length ? pairs.join(' · ') : null;
 }
 
 /** A comparison operator in plain words, for filters and conditions alike. */

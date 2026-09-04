@@ -179,6 +179,9 @@ Last updated: 2026-09-07 (end of Phase 12)
 - **Assign To User rotates by current load, not by HighLevel's split-traffic percentages.** The record says so.
 - **Create/Update Opportunity keeps its combined name.** HighLevel states the combined action is being phased out for separate Create and Update actions; the registry record notes it and the palette shows the name learners still see in accounts today.
 - **Touch, reduced motion and the frame timings were measured in headless Chromium on the build machine**, not on a physical phone or tablet. The rail and holographic checks were re-run on the same build.
+- **REAL TABLET RAIL CHECK: PENDING.** The phone bar now shows four named areas and a labelled More; the rail was a user-reported design issue and the user inspects the new preview on the real tablet. Nothing here marks that check passed.
+- **The trigger test covers the events the panel can make.** Every runnable trigger's events have a producer (bookings, status changes, reschedules, tags, replies, forms, surveys, deals, new contacts). Payment Received and Inbound Webhook are fidelity C: the panel says they cannot fire in the simulator and offers only the direct start.
+- **Autoplay reveals the trace at a fixed cadence (650 ms a row).** A long trace can be skipped at any time; there is no speed control.
 - **Positions are layout only.** Moving a node is a draft edit, never an event, so a node's position is not synced until the next save. That is D-107 working as intended, recorded here because a learner who moves nodes and leaves will find them where they were at the last save.
 
 ## Simulator approximations versus real GHL

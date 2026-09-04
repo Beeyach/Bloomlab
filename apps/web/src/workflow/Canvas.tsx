@@ -1,4 +1,5 @@
 import {
+  memo,
   useCallback,
   useEffect,
   useRef,
@@ -24,7 +25,7 @@ import type {
 
 import { COLUMN, ROW } from './graphEdit';
 import { featureName, paletteEntry } from './palette';
-import { configSummary, nodeKind, nodeName, nodeStatus } from './words';
+import { configSummary, nodeKind, nodeName, playbackStatus } from './words';
 import styles from './workflow.module.css';
 
 /**
@@ -52,6 +53,8 @@ export interface CanvasProps {
   /** Index into the ordered step trail during playback, or null when idle. */
   playhead: number | null;
   trail: string[];
+  /** Whether the node at the playhead has reached its recorded status yet. */
+  settled: boolean;
 }
 
 const CARD_WIDTH = 240;
@@ -64,7 +67,7 @@ const center = (node: { position: { x: number; y: number } }) => ({
   y: node.position.y + PAD + CARD_HEIGHT / 2,
 });
 
-export function Canvas({
+function CanvasInner({
   workflow,
   account,
   selectedId,
@@ -74,6 +77,7 @@ export function Canvas({
   records,
   playhead,
   trail,
+  settled,
 }: CanvasProps) {
   const [dragging, setDragging] = useState<{
     id: string;
@@ -166,14 +170,17 @@ export function Canvas({
     null,
   );
 
-  // Where the travelling dot sits: on the node at the playhead, else on the run's current node.
+  // Where the travelling dot sits: on the node at the playhead (nowhere before the first node),
+  // else on the run's current node.
   const dotNode =
     playhead !== null
-      ? (workflow.nodes.find((node) => node.id === trail[playhead]) ?? null)
+      ? playhead >= 0
+        ? (workflow.nodes.find((node) => node.id === trail[playhead]) ?? null)
+        : null
       : watched && watched.current_node_id
         ? (workflow.nodes.find((node) => node.id === watched.current_node_id) ?? null)
         : null;
-  const lit = new Set(playhead !== null ? trail.slice(0, playhead + 1) : []);
+  const lit = new Set(playhead !== null && playhead >= 0 ? trail.slice(0, playhead + 1) : []);
 
   return (
     <InkSurface depth="deep" padding="none" className={styles.canvas}>
@@ -257,7 +264,14 @@ export function Canvas({
 
         {workflow.nodes.map((node) => {
           const position = positionOf(node);
-          const status: WorkflowNodeStatus = nodeStatus(node, watched, records);
+          const status: WorkflowNodeStatus = playbackStatus(
+            node,
+            watched,
+            records,
+            playhead,
+            trail,
+            settled,
+          );
           const runnable =
             node.type === 'end' || paletteEntry(node.ghl_feature_id)?.runnable === true;
           return (
@@ -276,9 +290,7 @@ export function Canvas({
                     : `${featureName(node.ghl_feature_id)} (practised in GHL)`
                 }
                 config={configSummary(node, account)}
-                status={
-                  runnable ? (lit.has(node.id) && playhead !== null ? 'done' : status) : 'failed'
-                }
+                status={runnable ? status : 'failed'}
                 approximation={Boolean(paletteEntry(node.ghl_feature_id)?.approximation)}
                 selected={selectedId === node.id}
                 className={styles.placedNode}
@@ -319,3 +331,6 @@ const positionedNode = (
   node: WorkflowNode,
   positionOf: (node: WorkflowNode) => { x: number; y: number },
 ): { position: { x: number; y: number } } => ({ position: positionOf(node) });
+
+/** Memoised: playback ticks re-render only what they change (PERF-002). */
+export const Canvas = memo(CanvasInner);

@@ -278,8 +278,11 @@ issues and is run at save and at content compile (D-106).
 
 **Reactions.** After every processed event, `workflowReactions` asks each published workflow's
 trigger adapter whether the event matches and the filters pass (`compareValues`, D-103), then
-generates `WORKFLOW_ENROLLED` with `trigger_values` and a context (appointment, opportunity, form,
-message). Re-entry is judged at enrolment. An event whose records are all `action_skipped` fires
+generates `WORKFLOW_ENROLLED` with `trigger_values`, the trigger event id and a context
+(appointment, opportunity, form, message). The trigger record carries `enrolled_by: 'trigger'`
+for a reaction and `'direct'` for any enrolment injected without a trigger event (a test started
+at the first step, a scenario), so no reader can present a direct enrolment as the GHL trigger
+firing (D-114). Re-entry is judged at enrolment. An event whose records are all `action_skipped` fires
 no reactions (D-101). Appointment-scoped runs are ended when the appointment is cancelled, marked
 no-show or invalid, or rescheduled, and a reschedule fires the appointment triggers again.
 

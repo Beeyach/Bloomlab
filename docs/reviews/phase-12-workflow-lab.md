@@ -26,7 +26,7 @@ were out of scope and none were touched.
 | WFL-001 | PASSED | Canvas, toolbar, inspector and execution timeline at `/workflow` from 1024 px up. Probe section `desktop-present` (12 checks) and `width-1024`. |
 | WFL-002 | PASSED | Add trigger, filter, action, Wait, If/Else, branches, reorder, connect, undo, redo, run test and inspect history all work by pointer and keyboard. `graphEdit.test.ts` (9), `workflow.test.ts` (18), probe sections `desktop-edit-undo-redo-save`, `keyboard-move`, `drag-move`, `run-and-replay`. |
 | WFL-003 | PASSED | Every palette item is a registry record. Fidelity C records (Goal Event, Inbound Webhook, Payment Received) are shown as not runnable and refuse to run. Probe checks `realFeatureNames` and `nonRunnableMarked`. All 21 runnable records re-verified 2026-09-04 (§46). |
-| WFL-004 | PASSED | Existing or generated test contact runs visibly with the current node lit, the travelling dot, current values in the inspector, branch result and the timeline. Probe `run-and-replay` (14 rows, node lit, dot travelled). |
+| WFL-004 | PASSED | The default test fires the configured trigger for real (a booking, a status change, a tag, a reply, a form) and the engine's matcher decides who enrols; a labelled "Start at the first step" skips the trigger and is recorded as a direct enrolment. Existing or generated contact runs visibly with the current node lit, the travelling dot, branch result and the timeline. Fixtures TRIGGER-003/004, `workflow.test.ts` (4 trigger tests), `workflowScreen.test.tsx` (4), probe `first-execution-autoplay` and `run-and-replay`. |
 | WFL-005 | PASSED | A node shows feature name, one line of configuration and status. Settings open only in the inspector. `workflowScreen.test.tsx`, probe `desktop-present`. |
 | WFL-006 | PASSED | At 390 and 320 px the Lab is a vertical step editor with a sheet inspector, add-from-sheet, branch paths and a Timeline tab. Probe `width-390` and `width-320` (8 checks each). |
 | WFL-007 | PASSED | Ink workspace luminance 0.06, node luminance 1.0, aqua for the active run. No neon, no eyebrow, no monospace (`designRules.test.ts`). |
@@ -34,7 +34,7 @@ were out of scope and none were touched.
 | WFL-009 | PASSED | Fixtures BRANCH-001 to BRANCH-005 and the dynamic-value test: AND within a group, OR between groups, seven comparisons, dynamic values from the run, None fallback, multiple paths. |
 | WFL-010 | PASSED | Fixtures ENROLL-001, ENROLL-002, OVERLAP-001, MSG-003, EXIT-001, EXIT-002, REM-002, TRIGGER-001, TRIGGER-002: re-entry allowed and refused, repeated triggers, overlapping workflows, duplicate messages, exits. |
 | WFL-011 | PASSED | `palette.ts` derives everything from `content.ghl_features`; a source-level test refuses `const ACTIONS` or `const TRIGGERS` in the Lab, and a registry record added in a test appears in the palette without code change. |
-| WFL-012 | PASSED | The first run animates the contact travelling the graph, the timeline fills in order, and Replay walks it again. Probe `run-and-replay` and `reduced-motion`. |
+| WFL-012 | PASSED | The first successful test plays its recorded trace on its own: rows, connectors, node statuses and the travelling dot are revealed from the engine's execution records, with Pause, Skip and Replay; reduced motion shows the whole trace at once. Screen tests (autoplay, skip, replay, reduced motion, rows are records), probe `first-execution-autoplay`, `run-and-replay`, `reduced-motion`, and the phone sections. |
 | SIM-014 | PASSED | The engine runs in a Web Worker through one door. 504 events added in the probe at p95 43.5 ms per frame, no frame over 100 ms, no long task over 100 ms, main thread responsive. Parity and crash tests in `workflow.test.ts`. |
 | SIM-015 | PASSED | `/playground` lists every unlocked feature by the D-111 rule with no exercise attached. `unlocks.test.ts` (4), `playgroundScreen.test.tsx`, probe `playground`. |
 | EXR-023 | PASSED | Weighted dimensions 45/20/15/10/10 with critical override in `packages/exercise-engine` (`grade.test.ts`, 24 tests) and applied to the authored workflow exercises (`authoredGrading.test.ts`). |
@@ -51,7 +51,7 @@ were out of scope and none were touched.
 | EXR-019 | PASSED | REBUILD BLIND: a reminder system built through the command layer and graded from the two texts the engine sent 24 h and 2 h before the appointment. |
 | EXR-024 | PARTIAL | No stub was added. The requirement spans the product and stays open. |
 | CUR-036 | PASSED | The Academy's inline simulation runs the engine in memory and lists its execution records; a test asserts the rows are engine output (`academy.test.tsx`). |
-| DES-009 | PARTIAL | The rail is 80 px from one token at 768 px and up with the page starting beside it, verified at five widths. Clients and Portfolio join with Phases 23 and 24. |
+| DES-009 | PARTIAL | The rail is 80 px from one token at 768 px and up with the page starting beside it. On phones the bar shows four named areas and a labelled More that opens the rest; nothing is icon-only. Verified at five widths by the rail probe. Clients and Portfolio join with Phases 23 and 24. REAL TABLET RAIL CHECK: PENDING. |
 
 ## 4. Architecture
 
@@ -73,7 +73,9 @@ history. Everything that runs, waits, branches, matches or exits happens in
 
 React edits definitions, starts tests, renders execution and animates trace playback. It does not
 decide which branch matches, when a wait completes, whether a trigger matches, mutate CRM records,
-decide re-entry, or emit timeline events. A source-level test in `workflow.test.ts` fails if any
+decide re-entry, or emit timeline events. The default test does not enrol anyone by hand: it makes
+the event the trigger listens for and reads back from the account whether the engine enrolled the
+contact (`triggerTest.ts`, D-114). A source-level test in `workflow.test.ts` fails if any
 screen file imports `processEvent` or writes to `sim_events` directly, and the timeline is derived
 from `state.execution` alone.
 
@@ -305,18 +307,39 @@ fields), condition editors and wait settings. A goal or fidelity C node says it 
 
 ## 33. Test panel (WFL-004)
 
-Pick an existing contact or generate one, choose the workflow, enrol with the contact's next live
-appointment as context when there is one, then move time by a minute, an hour, a day or to the
-next queued event. The panel also sends a reply as the contact, books an appointment on a calendar
-and runs the scenario's injectable actions (a cancellation, a no-show, a reschedule), all through
-`commands.ts`. The current node, the wait's wake instant and the run's status are read from the
-run.
+Two things, kept apart on purpose.
 
-## 34. Timeline and replay (WFL-012)
+**Test the trigger** is the default. The panel reads which events the configured trigger listens
+for from the engine's capability table and offers each as something that happens to the test
+contact: books an appointment (calendar, start time), an appointment changes status (which one,
+which status), reschedules, gets or loses a tag, replies by text or email, submits a form or a
+survey, a deal moves to a stage or changes status, a new contact is created. It collects the
+smallest real context, injects that one event, and the engine's trigger matcher and filters decide.
+The outcome is read back from the account: "Appointment Status fired and enrolled Maria", or "the
+event happened, but Appointment Status did not enrol Maria: the filters (appointment status is
+no_show) did not match. Nothing was started by hand." A trigger the engine cannot run (Payment
+Received, Inbound Webhook) has no event to fire and the panel says so.
+
+**Start at the first step** is the diagnostic. It enrols the contact directly, skipping the
+trigger and its filters, to test the steps alone. The engine records that enrolment as `direct`
+(`enrolled_by`, D-114) and the timeline row reads "Started at the first step (test)" with the
+detail "<trigger> was not fired; the trigger and its filters were skipped". No timeline ever says
+"Enrolled by <trigger>" unless a trigger reaction enrolled the run.
+
+The panel also moves time by a minute, an hour, a day or to the next queued event, sends a reply,
+books an appointment and runs the scenario's injectable actions, all through `commands.ts`.
+
+## 34. Timeline, first execution and replay (WFL-012)
 
 The timeline is `state.execution` for the selected run, in sequence order, phrased by `words.ts`.
-Replay walks the rows with the node highlight and the travelling dot at a fixed cadence; the
-reduced-motion probe shows the end state at once with no dot travel.
+The first successful test starts playback on its own: the engine has already finished and the
+account already holds the result, and what plays is that recorded trace. Rows are highlighted one
+by one, the canvas (or the phone's step list) reveals the trigger, each node, each branch, each
+wait and the exit as its record is reached, and the travelling dot follows the same trail. Nothing
+beyond the playhead is shown as done; a run parked at a wait ends its trace at the wait. Pause and
+Skip move only the highlight, and the final picture is the same whether the trace finishes, is
+skipped, or reduced motion showed it at once. Replay walks it again. This is presentation only
+(D-115): the engine never waits for the animation, and skipping never changes the account.
 
 ## 35. Tablet (768 to 1023 px)
 
@@ -340,8 +363,19 @@ enforces the first two across the app.
 
 The rail is drawn from `--bl-size-rail: 80px` and `--bl-size-rail-bar: 64px`. `RootLayout` offsets
 the page by the same token, so the page starts beside the rail. Seven areas: Home, Campaign, Skill
-Map, CRM, Workflow, Inbox, Playground. Labels hide below 480 px so seven items fit at 320 px.
-`npm run review:rail` measures all five widths (§49). The holographic cards are unaffected (§49).
+Map, Workflow, CRM, Inbox, Playground. Tablet and desktop keep one labelled column of all seven.
+
+On phones the bar is a deliberate composition (D-116): four areas with their names showing (Home,
+Campaign, Skill Map, Workflow) and a labelled **More** that opens the remaining areas as a small
+labelled list above the bar (CRM, Inbox, Playground, plus the developer surfaces when their flags
+are on). Every area keeps its accessible name in every composition; nothing is icon-only, nothing
+is dropped, the list closes on Escape, on an outside press and on navigation, and More reads as
+active when the page is one of the areas it holds. No label is hidden to avoid layout work.
+
+`npm run review:rail` measures all five widths (§49). The holographic cards are unaffected.
+
+**REAL TABLET RAIL CHECK: PENDING.** The rail was a user-reported design issue; the user will
+inspect the new preview on the real tablet. This review does not mark it passed.
 
 ## 39. Conversations (CONV-001)
 
@@ -447,45 +481,51 @@ Contains Phrase and Reply Channel filters only.
 |---|---|---|
 | `packages/simulator-core/test/workflow-engine.test.ts` | 37 | Graph validation, definitions and versioning, merge fields, capability registry, actions, waits, walk, dynamic values |
 | `packages/simulator-core/test/workflow.test.ts` | 21 | Enrolment, re-entry, exits, wait metadata, scheduled wakes (extended) |
-| `packages/simulator-core/test/regression.test.ts` and `fixtures/workflow-fixtures.ts` | 3 + fixtures | WAIT-001..004, RESCHED-001, BRANCH-001..005, TIME-001/002, REPLY-001/002, ENROLL-001/002, OVERLAP-001, MSG-003, EXIT-001/002, REM-002, TRIGGER-001/002, REPLAY-002 |
+| `packages/simulator-core/test/regression.test.ts` and `fixtures/workflow-fixtures.ts` | 3 + 25 fixtures | WAIT-001..004, RESCHED-001, BRANCH-001..005, TIME-001/002, REPLY-001/002, ENROLL-001/002, OVERLAP-001, MSG-003, EXIT-001/002, REM-002, TRIGGER-001..004, REPLAY-002 |
 | `packages/simulator-core/test/{reducers,integration,coverage,purity}.test.ts` | 79 | Extended for 42 events, booking fires a workflow, purity of the new modules |
 | `packages/content-schema/test/*` | 56 | Workflow config schemas, graph validation at compile, `dimension` on assertions |
 | `packages/exercise-engine/test/grade.test.ts` | 24 | Weighted dimensions, critical override, `report.dimensions` |
-| `apps/web/src/workflow/workflow.test.ts` | 18 | Commands, one door, Worker parity, crash safety, current run, definition events, undo/redo |
+| `apps/web/src/workflow/workflow.test.ts` | 22 | Commands, one door, Worker parity, crash safety, current run, definition events, undo/redo, trigger test (matching enrols, non-matching does not, direct start labelled, non-runnable trigger has no event) |
 | `apps/web/src/workflow/graphEdit.test.ts` | 9 | Add, connect, disconnect, reorder, branches, palette from registry, forbidden literals |
-| `apps/web/src/workflow/workflowScreen.test.tsx` | 5 | The real App at `/workflow` on desktop and phone |
+| `apps/web/src/workflow/workflowScreen.test.tsx` | 9 | The real App at `/workflow`: trigger fired and enrolled by the engine, autoplay then skip then replay with the same final picture, rows are the run's records, direct start labelled, no-show filter ignores a cancellation, reduced motion, phone |
 | `apps/web/src/workflow/exerciseRuntime.test.ts` | 9 | Claims, architecture from the learner, BUILD IT, FIX IT, REBUILD BLIND graded from runs |
 | `apps/web/src/conversations/conversationsScreen.test.tsx` | 1 | Reply releases a wait |
 | `apps/web/src/playground/{unlocks,playgroundScreen}.test.ts(x)` | 5 | Unlock rule, screen |
 | `apps/web/src/academy/academy.test.tsx` | 18 | Inline simulation is engine output (extended) |
 | `apps/web/src/exercise/{exercise,authoredGrading}.test.ts(x)` | 41 | Runner offers Run it, weighted scores, dimensions block (extended) |
 | `apps/web/src/styles/designRules.test.ts` | 20 | Rail token, no eyebrow, no monospace (extended) |
+| `apps/web/src/app/App.test.tsx` | 11 | Routing, flags, and the phone navigation: every area named and reachable, More opens, navigates and closes (extended) |
 
-Total: 923 tests in 69 files. Phase 12 added 122 tests and 8 files.
+Total: 935 tests in 69 files. Phase 12 added 134 tests and 8 files.
 
 ## 49. Browser probes
 
-`npm run review:workflow` (14 sections, PASS): desktop present, edit/undo/redo/save,
-keyboard move, drag move, run and replay, reduced motion, 500 events, wait released by the time
-machine, conversations, playground, 1024, 768, 390, 320.
+`npm run review:workflow` (15 sections, PASS): desktop present, edit/undo/redo/save,
+keyboard move, drag move, first-execution autoplay, run and replay, reduced motion, 500 events,
+wait released by the time machine, conversations, playground, 1024, 768, 390, 320.
 
 | Measurement | Value |
 |---|---|
-| Drag frames (90) | mean 16.5 ms, p95 17 ms, max 17 ms, none over 50 ms |
-| Playback frames (221) | mean 16.7 ms, p95 16.8 ms |
-| 500-event run | 504 events, compute 71 ms in the Worker, p95 43.5 ms, max 87 ms, no long task over 100 ms |
-| Reduced motion | dot transition 0.00001 s, end state at once |
+| Drag frames (89) | mean 16.6 ms, p95 17 ms, max 18 ms, none over 50 ms |
+| First-execution autoplay (355 frames) | mean 16.7 ms, p95 16.9 ms, max 22 ms; trigger enrolled by the engine, playing on its own, dot travelling, End not revealed until reached, Skip present, Replay afterwards |
+| Playback frames (222) | mean 16.7 ms, p95 16.9 ms, max 29 ms |
+| 500-event run | 504 events in the Worker, p95 43.2 ms, max 82 ms, no long task over 100 ms, with each run's trace auto-playing while the next ran |
+| Reduced motion | first execution and Replay both show the last row at once, dot transition 0.00001 s |
+| Phones (390, 320) | both test paths present, a run moves to the Timeline tab and the trace plays there |
 | Canvas / node luminance | 0.06 / 1.00 |
 
 `npm run review:rail` (PASS): rail 80 px wide and full height at 768, 1024 and 1440 with the page
-starting at x = 80; a 64 px bottom bar at 390 and 320 with all seven areas visible and 44 px
-targets; no horizontal overflow at any width.
+starting at x = 80; a 64 px bottom bar at 390 and 320 with four named areas and a labelled More,
+every bar item's wording visible, More opening a labelled list inside the viewport with 44 px
+rows, all seven destinations reachable, Escape closing it, no horizontal overflow with the list
+open or closed. Screenshots `rail-390.png`, `rail-390-more.png`, `rail-320.png`,
+`rail-320-more.png`.
 
-Holographic probe re-run on the Skill Map on the same build: follow t63 60 ms, settle t95 440 ms,
+Holographic probe re-run on the Skill Map on the same build: follow t63 60 ms, settle t95 460 ms,
 tracking cleared at 880 ms, reduced motion tokens 0, touch `pan-y`, no regression from Phase 11.
+The holo-touch probe reports PASS. The CRM review probe (`review:crm-review`) reports PASS.
 
-Existing probes (crm-review, keyboard, touch, simulator, exercise, learning, academy, offline,
-sync) re-run: no regressions.
+REAL TABLET RAIL CHECK: PENDING (the user inspects the preview; not marked by this review).
 
 ## 50. Known limitations
 

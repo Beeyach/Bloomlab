@@ -50,6 +50,11 @@ export function workflowEnrolled(account: AccountState, event: SimulatorEvent): 
 
   const id = runId(workflowId, contactId, event.sequence);
   const context = readContext(event.payload.context);
+  // Who put the contact here. A trigger reaction names the event it matched; anything else — a
+  // Test Contact started at the first step, a scenario, the Academy — is a direct enrolment, and
+  // the record says so, so no timeline ever claims the configured GHL trigger fired when it did not.
+  const triggerEventId = optionalString(event.payload, 'trigger_event_id');
+  const enrolledBy: 'trigger' | 'direct' = triggerEventId ? 'trigger' : 'direct';
   const run: WorkflowRun = {
     id,
     workflow_id: workflowId,
@@ -61,7 +66,7 @@ export function workflowEnrolled(account: AccountState, event: SimulatorEvent): 
     exit_reason: null,
     exited_at: null,
     wait: null,
-    context: { ...context, trigger_event_id: optionalString(event.payload, 'trigger_event_id') },
+    context: { ...context, trigger_event_id: triggerEventId },
     definition_version: workflow.version,
     definition_hash: fnv1a(canonical(behaviouralWorkflow(workflow))),
   };
@@ -79,6 +84,9 @@ export function workflowEnrolled(account: AccountState, event: SimulatorEvent): 
           trigger_feature: workflow.trigger.ghl_feature_id,
           filters: workflow.trigger.filters,
           trigger_values: event.payload.trigger_values ?? null,
+          enrolled_by: enrolledBy,
+          trigger_event_id: triggerEventId,
+          test: event.payload.test === true,
           reentry: Boolean(active),
           definition_version: workflow.version,
         },

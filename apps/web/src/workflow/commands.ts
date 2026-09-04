@@ -158,8 +158,10 @@ export interface EnrolmentContext {
 }
 
 /**
- * Runs a contact through a workflow: the same enrolment event a trigger would generate, so
- * everything after it — steps, branches, waits, messages — is what the engine actually does.
+ * Starts a contact at the workflow's first step, skipping the trigger and its filters. This is
+ * the diagnostic path, not the default test: the engine records the enrolment as direct and the
+ * timeline says the trigger was not fired. Everything after it — steps, branches, waits,
+ * messages — is still what the engine actually does.
  */
 export const enrolTestContact = (
   run: StoredRun,
@@ -183,6 +185,19 @@ export const enrolTestContact = (
     },
     options,
   );
+
+/**
+ * The default test (WFL-004): something happens in the account — the kind of event the workflow's
+ * trigger listens for — and the engine's trigger matcher decides whether anyone enrols. The event
+ * is built by `triggerTest.ts` from the smallest real context; nothing here presumes a match.
+ */
+export const fireTriggerEvent = (
+  run: StoredRun,
+  scenario: SimulatorScenario,
+  type: SimulatorEventType,
+  payload: Record<string, unknown>,
+  options?: Options,
+) => execute(run, scenario, { kind: 'process', event: injected(run, type, payload) }, options);
 
 /* ---- things that happen to the contact ------------------------------------------------- */
 

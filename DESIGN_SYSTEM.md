@@ -156,7 +156,7 @@ Never one density everywhere.
 
 Desktop: compact left rail ≈ 68–80 px. Primary areas: Home · Campaign · Skill Map · Simulator · Clients · Portfolio · Playground. Minimal top context. No giant sidebar.
 
-**Implementation (Phase 12):** the rail is drawn from one token, `--bl-size-rail: 80px` (a 64 px bottom bar from `--bl-size-rail-bar` below 768 px), and `RootLayout` offsets the page by the same token, so the page starts beside the rail and never under it. Areas today: Home · Campaign · Skill Map · CRM · Workflow · Inbox · Playground; Clients and Portfolio join with Phases 23 and 24. Labels hide below 480 px so seven items fit at 320 px. `npm run review:rail` measures all five widths.
+**Implementation (Phase 12):** the rail is drawn from one token, `--bl-size-rail: 80px` (a 64 px bottom bar from `--bl-size-rail-bar` below 768 px), and `RootLayout` offsets the page by the same token, so the page starts beside the rail and never under it. Areas today: Home · Campaign · Skill Map · Workflow · CRM · Inbox · Playground; Clients and Portfolio join with Phases 23 and 24. On phones the bar shows four areas with their names and a labelled More that opens the rest as a small labelled list (D-116); no label is hidden. `npm run review:rail` measures all five widths. Real-tablet check of the corrected rail: pending.
 
 ### Command Center (DES-010)
 

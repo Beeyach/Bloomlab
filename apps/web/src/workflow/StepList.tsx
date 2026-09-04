@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import {
   Button,
   InkSurface,
@@ -13,7 +15,7 @@ import type {
 
 import { orderedSteps } from './graphEdit';
 import { paletteEntry } from './palette';
-import { configSummary, nodeKind, nodeName, nodeStatus } from './words';
+import { configSummary, nodeKind, nodeName, playbackStatus } from './words';
 import styles from './workflow.module.css';
 
 /**
@@ -33,9 +35,13 @@ export interface StepListProps {
   onAddAfter: (afterId: string | null, branch: string | null) => void;
   watched: WorkflowRun | null;
   records: ExecutionRecord[];
+  /** Playback position, so the list reveals the trace the way the canvas does (WFL-012). */
+  playhead: number | null;
+  trail: string[];
+  settled: boolean;
 }
 
-export function StepList({
+function StepListInner({
   workflow,
   account,
   selectedId,
@@ -43,6 +49,9 @@ export function StepList({
   onAddAfter,
   watched,
   records,
+  playhead,
+  trail,
+  settled,
 }: StepListProps) {
   const steps = orderedSteps(workflow);
   const trigger = paletteEntry(workflow.trigger.ghl_feature_id);
@@ -74,7 +83,14 @@ export function StepList({
         {steps.map(({ node, depth, branch }, index) => {
           const previous = steps[index - 1];
           const newBranch = branch && (!previous || previous.branch !== branch);
-          const status: WorkflowNodeStatus = nodeStatus(node, watched, records);
+          const status: WorkflowNodeStatus = playbackStatus(
+            node,
+            watched,
+            records,
+            playhead,
+            trail,
+            settled,
+          );
           const runnable =
             node.type === 'end' || paletteEntry(node.ghl_feature_id)?.runnable === true;
           return (
@@ -133,3 +149,6 @@ const branchNamesOf = (node: Workflow['nodes'][number]): string[] => {
     'None',
   ];
 };
+
+/** Memoised: playback ticks re-render only what they change (PERF-002). */
+export const StepList = memo(StepListInner);

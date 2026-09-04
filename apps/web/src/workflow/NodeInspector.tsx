@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import {
   Button,
   Field,
@@ -73,7 +75,7 @@ export interface NodeInspectorProps {
 const text = (value: unknown): string =>
   typeof value === 'string' ? value : value === undefined || value === null ? '' : String(value);
 
-export function NodeInspector({
+function NodeInspectorInner({
   workflow,
   account,
   selectedId,
@@ -1117,3 +1119,6 @@ function Problems({ issues }: { issues: GraphIssue[] }) {
     </ul>
   );
 }
+
+/** Memoised: playback ticks re-render only what they change (PERF-002). */
+export const NodeInspector = memo(NodeInspectorInner);

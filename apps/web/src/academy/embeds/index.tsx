@@ -14,6 +14,12 @@ import {
 
 import { content } from '../../content/bundle';
 import { modeWord } from '../../screens/learningCopy';
+import { featureName } from '../../workflow/palette';
+import {
+  buildTriggerEvent,
+  defaultTriggerInput,
+  triggerTestOptions,
+} from '../../workflow/triggerTest';
 import { timelineRow } from '../../workflow/words';
 import styles from './embeds.module.css';
 import { FunnelDiagram } from './FunnelDiagram';
@@ -220,13 +226,39 @@ function InlineRun({
   contactId: string;
 }) {
   const state = useMemo(() => {
-    let run = processEvent(createRun(scenario), {
-      type: 'WORKFLOW_ENROLLED',
-      at: scenario.simulation_time,
-      origin: 'injected',
-      source: { kind: 'injector_action', id: 'academy_embed' },
-      payload: { workflow_id: workflowId, contact_id: contactId },
-    });
+    // The contact is put through the workflow the way the account would do it: the kind of event
+    // its trigger listens for happens (a booking, a tag, a reply), and the engine's trigger
+    // matcher decides. Only when the trigger cannot be fired in the simulator is the contact
+    // enrolled directly, and the engine records that as a direct enrolment.
+    let run = createRun(scenario);
+    const workflow = run.account.workflows[workflowId] ?? null;
+    const option = workflow ? triggerTestOptions(workflow)[0] : undefined;
+    const built = option
+      ? buildTriggerEvent(
+          option,
+          defaultTriggerInput(run.account, contactId, scenario.simulation_time),
+          run.account,
+        )
+      : null;
+    const source = { kind: 'injector_action' as const, id: 'academy_embed' };
+    run = processEvent(
+      run,
+      built?.ok
+        ? {
+            type: built.event.type,
+            at: scenario.simulation_time,
+            origin: 'injected',
+            source,
+            payload: built.event.payload,
+          }
+        : {
+            type: 'WORKFLOW_ENROLLED',
+            at: scenario.simulation_time,
+            origin: 'injected',
+            source,
+            payload: { workflow_id: workflowId, contact_id: contactId },
+          },
+    );
     const parked = Object.values(run.account.workflow_runs).find(
       (row) => row.workflow_id === workflowId && row.status === 'waiting' && row.wait?.wake_at,
     );
@@ -240,6 +272,15 @@ function InlineRun({
   const rows = state.execution
     .filter((row) => row.workflow_run_id === theRun?.id)
     .map((row) => timelineRow(row, workflow, state.account, state.clock.timezone));
+  if (!theRun) {
+    return (
+      <p className={styles.simulationText} data-testid="embed-not-enrolled">
+        The event happened, but{' '}
+        {workflow ? featureName(workflow.trigger.ghl_feature_id) : 'the trigger'} did not enrol this
+        contact: the trigger or its filters did not match. Nothing was started by hand.
+      </p>
+    );
+  }
   return (
     <ol className={styles.simulationRows} aria-label="What the engine did">
       {rows.map((row) => (

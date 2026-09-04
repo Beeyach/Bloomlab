@@ -23,12 +23,15 @@ import {
   blankWorkflow,
   createTestContact,
   enrolTestContact,
+  fireTriggerEvent,
   injectReply,
   saveWorkflow,
 } from './commands';
 import { canRedo, canUndo, edit, isDirty, markSaved, redo, startHistory, undo } from './draft';
 import { handleEngineRequest, runOp, type EngineOp, type EngineRequest } from './engineOps';
 import { execute, resetEngineWorker } from './execution';
+import { buildTriggerEvent, enrolledByEvent, triggerTestOptions } from './triggerTest';
+import { timelineRow } from './words';
 
 /**
  * The Workflow Lab's command and execution layers (WFL-002, SIM-014, D-107, D-109, D-110).
@@ -537,5 +540,133 @@ describe('the boundary holds (WFL-011, D-109)', () => {
     );
     expect(crm).toContain("from '../simulator/currentRun'");
     expect(crm).not.toContain('database.device.put');
+  });
+});
+
+describe('the default test fires the configured trigger, and the engine decides (WFL-004)', () => {
+  const saved = async () => {
+    let run = await startRun(scenario, database);
+    run = ok(await saveWorkflow(run, scenario, noShowRecovery(), direct()));
+    return run;
+  };
+  const trace = (run: StoredRun, runId: string) =>
+    run.state.execution
+      .filter((row) => row.workflow_run_id === runId)
+      .map((row) =>
+        timelineRow(
+          row,
+          run.state.account.workflows['wf-no-show-recovery'] ?? null,
+          run.state.account,
+          run.state.clock.timezone,
+        ),
+      );
+
+  it('a matching event enrols through the trigger matcher, and the record names what matched', async () => {
+    const before = await saved();
+    const option = triggerTestOptions(before.state.account.workflows['wf-no-show-recovery']!).find(
+      (row) => row.event === 'APPOINTMENT_STATUS_CHANGED',
+    )!;
+    const built = buildTriggerEvent(
+      option,
+      { appointment_id: 'appt-maria', status: 'no_show' },
+      before.state.account,
+    );
+    expect(built.ok).toBe(true);
+    if (!built.ok) return;
+    const after = ok(
+      await fireTriggerEvent(before, scenario, built.event.type, built.event.payload, direct()),
+    );
+    const enrolled = enrolledByEvent(
+      before.state.account.workflow_runs,
+      after.state.account.workflow_runs,
+      'wf-no-show-recovery',
+    );
+    expect(enrolled).toHaveLength(1);
+    expect(enrolled[0]).toMatchObject({
+      contact_id: 'maria',
+      context: { appointment_id: 'appt-maria' },
+    });
+    const rows = trace(after, enrolled[0]!.id);
+    expect(rows[0]?.name).toBe('Enrolled by Appointment Status');
+    expect(rows[0]?.detail).toContain('appointment status: no_show');
+    expect(after.state.execution.find((row) => row.kind === 'trigger')?.data).toMatchObject({
+      enrolled_by: 'trigger',
+      trigger_values: { appointment_status: 'no_show' },
+    });
+  });
+
+  it('a cancellation does not enrol a workflow filtered to no-shows, and nothing is started by hand', async () => {
+    const before = await saved();
+    const option = triggerTestOptions(before.state.account.workflows['wf-no-show-recovery']!).find(
+      (row) => row.event === 'APPOINTMENT_STATUS_CHANGED',
+    )!;
+    const built = buildTriggerEvent(
+      option,
+      { appointment_id: 'appt-maria', status: 'cancelled' },
+      before.state.account,
+    );
+    if (!built.ok) throw new Error(built.missing);
+    const after = ok(
+      await fireTriggerEvent(before, scenario, built.event.type, built.event.payload, direct()),
+    );
+    // The event was real: the appointment is cancelled. The trigger simply did not match.
+    expect(after.state.account.appointments['appt-maria']?.status).toBe('cancelled');
+    expect(
+      enrolledByEvent(
+        before.state.account.workflow_runs,
+        after.state.account.workflow_runs,
+        'wf-no-show-recovery',
+      ),
+    ).toHaveLength(0);
+    expect(
+      Object.values(after.state.account.workflow_runs).filter(
+        (row) => row.workflow_id === 'wf-no-show-recovery',
+      ),
+    ).toHaveLength(0);
+  });
+
+  it('starting at the first step is recorded as a direct test enrolment, never as the trigger firing', async () => {
+    const before = await saved();
+    const after = ok(
+      await enrolTestContact(before, scenario, 'wf-no-show-recovery', 'maria', {}, direct()),
+    );
+    const run = Object.values(after.state.account.workflow_runs).find(
+      (row) => row.workflow_id === 'wf-no-show-recovery',
+    )!;
+    expect(run.context.trigger_event_id).toBeNull();
+    const rows = trace(after, run.id);
+    expect(rows[0]?.name).toBe('Started at the first step (test)');
+    expect(rows[0]?.detail).toContain('Appointment Status was not fired');
+    expect(rows.some((row) => row.name.startsWith('Enrolled by'))).toBe(false);
+    expect(after.state.execution.find((row) => row.kind === 'trigger')?.data).toMatchObject({
+      enrolled_by: 'direct',
+      test: true,
+      trigger_values: null,
+    });
+  });
+
+  it('a trigger the engine cannot run has no event to fire, and an event is refused until its context exists', async () => {
+    const run = await saved();
+    const practised: Workflow = {
+      ...noShowRecovery(),
+      trigger: { ghl_feature_id: 'GHL-WF-PAYMENT-RECEIVED', filters: [] },
+    };
+    expect(triggerTestOptions(practised)).toEqual([]);
+    const options = triggerTestOptions(run.state.account.workflows['wf-no-show-recovery']!);
+    // Appointment Status listens for three events; each is offered and each needs real context.
+    expect(options.map((row) => row.event)).toEqual([
+      'APPOINTMENT_BOOKED',
+      'APPOINTMENT_RESCHEDULED',
+      'APPOINTMENT_STATUS_CHANGED',
+    ]);
+    const change = options.find((row) => row.event === 'APPOINTMENT_STATUS_CHANGED')!;
+    expect(buildTriggerEvent(change, {}, run.state.account)).toMatchObject({
+      ok: false,
+      missing: 'an appointment',
+    });
+    expect(buildTriggerEvent(options[0]!, {}, run.state.account)).toMatchObject({
+      ok: false,
+      missing: 'a contact',
+    });
   });
 });

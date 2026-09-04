@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -132,5 +132,64 @@ describe('App routing', () => {
       /API unreachable: API responded 503/,
     );
     expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
+  });
+});
+
+describe('the phone navigation keeps every area named and reachable (DES-009, RSP-003)', () => {
+  const AREAS = [
+    ['Home', '/'],
+    ['Campaign', '/campaign'],
+    ['Skill Map', '/skills'],
+    ['Workflow', '/workflow'],
+    ['CRM', '/crm'],
+    ['Inbox', '/conversations'],
+    ['Playground', '/playground'],
+  ];
+
+  it('offers four areas in the bar and the rest behind a labelled More that opens, navigates and closes', async () => {
+    renderAt('/', productionFlags);
+    await screen.findByRole('heading', { level: 1, name: 'What should I do next?' });
+    const rail = screen.getByRole('navigation', { name: 'Primary' });
+    // Every area is a labelled link in the rail, whatever the width composes.
+    for (const [name, href] of AREAS) {
+      expect(within(rail).getByRole('link', { name })).toHaveAttribute('href', href);
+    }
+    const more = within(rail).getByRole('button', { name: 'More' });
+    expect(more).toHaveAttribute('aria-expanded', 'false');
+    const menu = screen.getByTestId('rail-more-menu');
+    expect(menu).toHaveAttribute('hidden');
+    fireEvent.click(more);
+    expect(more).toHaveAttribute('aria-expanded', 'true');
+    expect(menu).not.toHaveAttribute('hidden');
+    const list = within(menu).getByRole('list', { name: 'More areas' });
+    for (const name of ['CRM', 'Inbox', 'Playground']) {
+      expect(within(list).getByRole('link', { name })).toBeInTheDocument();
+    }
+    // The bar itself never repeats them: they are the secondary items, shown in the list only.
+    expect(within(list).queryByRole('link', { name: 'Home' })).toBeNull();
+    // Escape closes it; navigating from it closes it too.
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(menu).toHaveAttribute('hidden');
+    fireEvent.click(more);
+    fireEvent.click(within(list).getByRole('link', { name: 'Playground' }));
+    expect(
+      await screen.findByRole('heading', { level: 1, name: /Playground/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('rail-more-menu')).toHaveAttribute('hidden');
+    expect(within(rail).getByRole('button', { name: 'More' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+  });
+
+  it('marks More as the active area when the page is one of the areas it holds', async () => {
+    renderAt('/crm', productionFlags);
+    const rail = screen.getByRole('navigation', { name: 'Primary' });
+    const more = within(rail).getByRole('button', { name: 'More' });
+    expect(more.className).toMatch(/active/);
+    expect(within(rail).getByRole('link', { name: 'Home' })).not.toHaveAttribute(
+      'aria-current',
+      'page',
+    );
   });
 });

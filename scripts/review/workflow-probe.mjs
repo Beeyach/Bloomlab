@@ -210,7 +210,64 @@ try {
 
   /* ---- 3. run a test contact and replay it (WFL-004, WFL-012) ----------------------------- */
   await setSelect(page, '#test-contact', 'maria');
+  // The default test fires the configured trigger (Customer Booked Appointment: Maria books) and
+  // the engine's matcher enrols her; nothing is enrolled by hand.
+  await startFrames(page);
   await click(page, '[data-testid="run-test"]');
+  const enrolledByTrigger = await waitFor(
+    page,
+    `${q('[data-testid="trigger-outcome"]')}?.dataset.outcome === 'enrolled'`,
+    { timeout: 8000 },
+  );
+  // The first execution plays its recorded trace on its own (WFL-012): the timeline is playing,
+  // one row is current, the dot is on the canvas, and the End step is not revealed yet.
+  const autoPlaying = await waitFor(
+    page,
+    `${q('[data-testid="timeline"]')}?.dataset.playing === 'true'`,
+    { timeout: 3000 },
+  );
+  const autoCurrent =
+    (await count(page, '[data-testid="timeline"] ol li[data-current="true"]')) === 1;
+  // The dot appears once the trace reaches its first step (the trigger row has no step yet).
+  const dotWhilePlaying = await waitFor(
+    page,
+    `Boolean(${q('[data-testid="travelling-contact"]')})`,
+    {
+      timeout: 3000,
+      every: 50,
+    },
+  );
+  const endNotRevealed =
+    (await page.evaluate(`${q('[data-node="n3"]')}?.dataset.status`)) !== 'done';
+  const skipPresent = await exists(page, '[data-testid="skip-playback"]');
+  const autoFinished = await waitFor(
+    page,
+    `${q('[data-testid="timeline"]')}?.dataset.playing !== 'true'`,
+    { timeout: 15000 },
+  );
+  const autoFrames = await stopFrames(page);
+  const replayAfterAuto = await page.evaluate(
+    `[...document.querySelectorAll('[data-testid="timeline"] button')].some((b) => b.textContent.trim() === 'Replay')`,
+  );
+  const triggerRowHonest = await page.evaluate(
+    `(() => { const t = ${q('[data-testid="timeline"]')}.textContent; return t.includes('Enrolled by Customer Booked Appointment') && !t.includes('Started at the first step'); })()`,
+  );
+  section(
+    'first-execution-autoplay',
+    {
+      enrolledByTrigger,
+      autoPlaying,
+      autoCurrent,
+      dotWhilePlaying,
+      endNotRevealed,
+      skipPresent,
+      autoFinished,
+      replayAfterAuto,
+      triggerRowHonest,
+      smooth: autoFrames.over50ms <= 2,
+    },
+    { frames: autoFrames },
+  );
   // The saved definition now carries the Wait added above, so the run parks there first; the Time
   // Machine releases it and the run completes — one more fixed wait released in the real Lab.
   const parked = await waitFor(
@@ -266,6 +323,16 @@ try {
   const lastCurrent = await page.evaluate(
     `(() => { const rows = [...document.querySelectorAll('[data-testid="timeline"] ol li')]; return rows.length > 0 && rows[rows.length - 1].dataset.current === 'true'; })()`,
   );
+  // A fresh first execution under reduced motion: the whole trace at once, nothing travels.
+  await setSelect(page, '#test-contact', 'maria');
+  await click(page, '[data-testid="run-test"]');
+  await waitFor(page, `${q('[data-testid="trigger-outcome"]')}?.dataset.outcome === 'enrolled'`, {
+    timeout: 8000,
+  });
+  await sleep(200);
+  const autoplayAtOnce = await page.evaluate(
+    `(() => { const t = ${q('[data-testid="timeline"]')}; const rows = [...t.querySelectorAll('ol li')]; return t.dataset.playing !== 'true' && rows.length > 0 && rows[rows.length - 1].dataset.current === 'true'; })()`,
+  );
   const dotTransition = await page.evaluate(
     `(() => { const d = ${q('[data-testid="travelling-contact"]')}; return d ? getComputedStyle(d).transitionDuration : null; })()`,
   );
@@ -278,6 +345,7 @@ try {
     {
       emulated: reducedSeen,
       endStateAtOnce: lastCurrent,
+      firstExecutionAtOnce: autoplayAtOnce,
       noDotTravel: Number.isFinite(dotSeconds) && dotSeconds <= 0.02,
     },
     { dotTransition },
@@ -343,6 +411,9 @@ try {
   await waitFor(page, READY);
   await sleep(300);
   await setSelect(page, '#test-contact', 'maria');
+  // Maria books (the trigger is Appointment Status: new) for the 5th at noon, so the 24-hour
+  // reminder wait ends on the 4th at noon: one day of waiting, then release on the second.
+  await setText(page, '#trigger-starts-at', '2026-09-05T12:00:00-05:00');
   await click(page, '[data-testid="run-test"]');
   const waiting = await waitFor(
     page,
@@ -443,6 +514,23 @@ try {
     );
     await key(page, 'Escape', 'Escape', 27);
     await sleep(200);
+    // The test tab carries both paths, and a run moves the phone to the Timeline tab with the
+    // trace playing there (WFL-012 on a phone).
+    const bothPaths =
+      (await exists(page, '[data-testid="trigger-test"]')) &&
+      (await exists(page, '[data-testid="start-at-first-step"]'));
+    await setSelect(page, '#test-contact', 'maria');
+    await click(page, '[data-testid="run-test"]');
+    const movedToTimeline = await waitFor(
+      page,
+      `${q('[role="tab"][aria-selected="true"]')}?.textContent.trim() === 'Timeline' && Boolean(${q('[data-testid="timeline"] ol li')})`,
+      { timeout: 8000 },
+    );
+    const phoneAutoplay = await waitFor(
+      page,
+      `${q('[data-testid="timeline"]')}?.dataset.playing === 'true' || ${q('[data-testid="timeline"] ol li[data-current="true"]')} !== null`,
+      { timeout: 3000 },
+    );
     await clickText(page, '[role="tab"]', 'Timeline');
     const timelineTab = await waitFor(page, `Boolean(${q('[data-testid="timeline"]')})`, {
       timeout: 3000,
@@ -457,6 +545,9 @@ try {
       configureInSheet: templateField,
       addFromSheet: paletteSheet,
       timelineTab,
+      bothTestPaths: bothPaths,
+      runMovesToTimeline: movedToTimeline,
+      tracePlaysOnPhone: phoneAutoplay,
       touchTargets44: targets,
       noHorizontalOverflow: overflow,
     });

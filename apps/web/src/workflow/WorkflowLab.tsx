@@ -8,7 +8,7 @@ import { Canvas } from './Canvas';
 import { NodeInspector, type InspectorEdits } from './NodeInspector';
 import { StepList } from './StepList';
 import { TestPanel } from './TestPanel';
-import { Timeline } from './Timeline';
+import { Timeline, type Autoplay } from './Timeline';
 import { blankWorkflow, saveWorkflow } from './commands';
 import {
   canRedo,
@@ -109,10 +109,12 @@ export default function WorkflowLab() {
     history: DraftHistory;
   } | null>(null);
   const [watchedId, setWatchedId] = useState<string | null>(null);
-  const [playhead, setPlayhead] = useState<{ index: number | null; trail: string[] }>({
-    index: null,
-    trail: [],
-  });
+  const [autoplay, setAutoplay] = useState<Autoplay | null>(null);
+  const [playhead, setPlayhead] = useState<{
+    index: number | null;
+    trail: string[];
+    settled: boolean;
+  }>({ index: null, trail: [], settled: true });
   const [lowerTab, setLowerTab] = useState<LowerTab>('test');
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [sheet, setSheet] = useState<'inspector' | 'palette' | null>(null);
@@ -272,8 +274,30 @@ export default function WorkflowLab() {
   }, [save, selectedId, edits, setParam, setHistory]);
 
   const onPlayhead = useCallback(
-    (index: number | null, trail: string[]) => setPlayhead({ index, trail }),
+    (index: number | null, trail: string[], settled: boolean) =>
+      setPlayhead({ index, trail, settled }),
     [],
+  );
+  // A test just started a run: watch it and play its recorded trace (WFL-012). The engine has
+  // finished by now; only the presentation moves.
+  const onRan = useCallback(
+    (id: string) => {
+      setWatchedId(id);
+      setAutoplay((current) => ({ runId: id, token: (current?.token ?? 0) + 1 }));
+      if (narrow) setLowerTab('timeline');
+    },
+    [narrow],
+  );
+
+  const draftId = draft?.id ?? null;
+  const runsOfThis = useMemo(
+    () =>
+      account && draftId
+        ? Object.values(account.workflow_runs)
+            .filter((row) => row.workflow_id === draftId)
+            .sort((a, b) => b.enrolled_at.localeCompare(a.enrolled_at) || b.id.localeCompare(a.id))
+        : [],
+    [account, draftId],
   );
 
   if (loading || !run || !scenario || !account || !draft || !history) {
@@ -288,9 +312,6 @@ export default function WorkflowLab() {
   }
 
   const workflows = Object.values(account.workflows).sort((a, b) => a.name.localeCompare(b.name));
-  const runsOfThis = Object.values(account.workflow_runs)
-    .filter((row) => row.workflow_id === draft.id)
-    .sort((a, b) => b.enrolled_at.localeCompare(a.enrolled_at) || b.id.localeCompare(a.id));
   const watched = runsOfThis.find((row) => row.id === watchedId) ?? null;
   const versions = run.state.execution.filter(
     (row) =>
@@ -374,10 +395,7 @@ export default function WorkflowLab() {
         dirty={dirty || !saved}
         busy={busy}
         perform={perform}
-        onRan={(id) => {
-          setWatchedId(id);
-          if (narrow) setLowerTab('timeline');
-        }}
+        onRan={onRan}
       />
       <Timeline
         workflow={saved ?? draft}
@@ -387,6 +405,7 @@ export default function WorkflowLab() {
         watchedId={watchedId}
         onWatch={setWatchedId}
         records={run.state.execution}
+        autoplay={autoplay}
         onPlayhead={onPlayhead}
       />
     </>
@@ -602,6 +621,9 @@ export default function WorkflowLab() {
             }}
             watched={watched}
             records={run.state.execution}
+            playhead={playhead.index}
+            trail={playhead.trail}
+            settled={playhead.settled}
           />
           <div role="tablist" aria-label="Test, timeline and history" className={styles.tabs}>
             {(['test', 'timeline', 'history'] as LowerTab[]).map((tab) => (
@@ -626,10 +648,7 @@ export default function WorkflowLab() {
               dirty={dirty || !saved}
               busy={busy}
               perform={perform}
-              onRan={(id) => {
-                setWatchedId(id);
-                setLowerTab('timeline');
-              }}
+              onRan={onRan}
             />
           )}
           {lowerTab === 'timeline' && (
@@ -641,6 +660,7 @@ export default function WorkflowLab() {
               watchedId={watchedId}
               onWatch={setWatchedId}
               records={run.state.execution}
+              autoplay={autoplay}
               onPlayhead={onPlayhead}
             />
           )}
@@ -676,6 +696,7 @@ export default function WorkflowLab() {
                 records={run.state.execution}
                 playhead={playhead.index}
                 trail={playhead.trail}
+                settled={playhead.settled}
               />
               <p className={styles.canvasHint}>
                 Drag a step to move it, or select it and use the arrow keys. Connections and order
