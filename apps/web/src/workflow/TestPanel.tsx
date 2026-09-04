@@ -71,6 +71,7 @@ export interface TestPanelProps {
 type Outcome =
   | { kind: 'enrolled'; contact: string; feature: string }
   | { kind: 'trigger_blocked'; contact: string; feature: string }
+  | { kind: 'event_noop'; contact: string; feature: string; reason: string | null }
   | { kind: 'not_enrolled'; contact: string; feature: string; filters: string[] }
   | { kind: 'direct'; contact: string }
   | { kind: 'direct_blocked'; contact: string };
@@ -129,7 +130,12 @@ function TestPanelInner({
 
   // Resolved values for the event: the chosen test contact stands in wherever a contact is needed,
   // and the first real option stands in for anything not picked yet.
-  const defaults = defaultTriggerInput(account, chosen?.id ?? null, run.state.clock.now);
+  const defaults = defaultTriggerInput(
+    account,
+    chosen?.id ?? null,
+    run.state.clock.now,
+    option?.event,
+  );
   const resolved: TriggerTestInput = {
     ...defaults,
     ...Object.fromEntries(Object.entries(input).filter(([, value]) => value !== undefined)),
@@ -157,6 +163,13 @@ function TestPanelInner({
       onRan(triggerOutcome.run.id);
     } else if (triggerOutcome.kind === 'blocked_reentry') {
       setOutcome({ kind: 'trigger_blocked', contact: who, feature: triggerName });
+    } else if (triggerOutcome.kind === 'event_noop') {
+      setOutcome({
+        kind: 'event_noop',
+        contact: who,
+        feature: triggerName,
+        reason: triggerOutcome.reason,
+      });
     } else {
       setOutcome({
         kind: 'not_enrolled',
@@ -556,6 +569,10 @@ function TestPanelInner({
             `${outcome.feature} fired and enrolled ${outcome.contact}. Watch the run below.`}
           {outcome.kind === 'trigger_blocked' &&
             `${outcome.feature} matched for ${outcome.contact}, but they are already active in this workflow and re-entry is off. No second run was started.`}
+          {outcome.kind === 'event_noop' &&
+            `The event made no change for ${outcome.contact}${
+              outcome.reason ? ` (${outcome.reason.replace(/_/g, ' ')})` : ''
+            }, so ${outcome.feature} did not fire.`}
           {outcome.kind === 'not_enrolled' &&
             `The event happened, but ${outcome.feature} did not match this event directly${
               outcome.filters.length > 0

@@ -109,6 +109,7 @@ export function defaultTriggerInput(
   account: AccountState,
   contactId: string | null,
   now: string,
+  event?: SimulatorEventType,
 ): TriggerTestInput {
   const appointments = Object.values(account.appointments)
     .filter((row) => row.contact_id === contactId)
@@ -116,6 +117,13 @@ export function defaultTriggerInput(
   const opportunities = Object.values(account.opportunities).filter(
     (row) => row.contact_id === contactId,
   );
+  const contact = contactId ? account.contacts[contactId] : null;
+  const tag =
+    event === 'TAG_ADDED'
+      ? account.tags.find((candidate) => !contact?.tags.includes(candidate))
+      : event === 'TAG_REMOVED'
+        ? contact?.tags[0]
+        : account.tags[0];
   return {
     contact_id: contactId ?? undefined,
     form_id: Object.values(account.forms)[0]?.id,
@@ -124,7 +132,7 @@ export function defaultTriggerInput(
     starts_at: dayAfter(now),
     appointment_id: appointments[0]?.id,
     status: 'no_show',
-    tag: account.tags[0],
+    tag,
     opportunity_id: opportunities[0]?.id,
     opportunity_status: 'won',
   };
@@ -308,6 +316,7 @@ export function enrolledByEvent(
 export type TriggerFireOutcome =
   | { kind: 'enrolled'; run: WorkflowRun; root_event_id: string }
   | { kind: 'blocked_reentry'; existing_run_id: string | null; root_event_id: string }
+  | { kind: 'event_noop'; reason: string | null; root_event_id: string }
   | { kind: 'not_matched'; root_event_id: string | null };
 
 export function triggerOutcomeFor(
@@ -325,7 +334,20 @@ export function triggerOutcomeFor(
       event.payload.trigger_event_id === root.id &&
       event.source?.caused_by === root.id,
   );
-  if (!enrolment) return { kind: 'not_matched', root_event_id: root.id };
+  if (!enrolment) {
+    const rootRecords = after.execution.filter((record) => record.event_id === root.id);
+    if (
+      rootRecords.length > 0 &&
+      rootRecords.every((record) => record.kind === 'action_skipped')
+    ) {
+      return {
+        kind: 'event_noop',
+        reason: rootRecords.find((record) => record.reason)?.reason ?? null,
+        root_event_id: root.id,
+      };
+    }
+    return { kind: 'not_matched', root_event_id: root.id };
+  }
 
   const run = Object.values(after.account.workflow_runs).find(
     (candidate) =>

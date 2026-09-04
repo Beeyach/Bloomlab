@@ -32,6 +32,7 @@ import { handleEngineRequest, runOp, type EngineOp, type EngineRequest } from '.
 import { execute, resetEngineWorker } from './execution';
 import {
   buildTriggerEvent,
+  defaultTriggerInput,
   directStartOutcome,
   enrolledByEvent,
   triggerOutcomeFor,
@@ -731,6 +732,55 @@ describe('the default test fires the configured trigger, and the engine decides 
         (row) => row.workflow_id === 'wf-reply-wait',
       ),
     ).toHaveLength(1);
+  });
+
+  it('picks a tag that will actually change the chosen contact for the default tag test', async () => {
+    const run = await saved();
+    const added = defaultTriggerInput(run.state.account, 'maria', run.state.clock.now, 'TAG_ADDED');
+    const removed = defaultTriggerInput(
+      run.state.account,
+      'maria',
+      run.state.clock.now,
+      'TAG_REMOVED',
+    );
+    expect(added.tag).not.toBe('meta-lead');
+    expect(run.state.account.contacts.maria?.tags).not.toContain(added.tag);
+    expect(removed.tag).toBe('meta-lead');
+  });
+
+  it('reports a no-op event separately from a trigger filter miss', async () => {
+    let run = await startRun(scenario, database);
+    const tagged: Workflow = {
+      ...blankWorkflow('wf-tag-test', 'Tag test'),
+      trigger: {
+        ghl_feature_id: 'GHL-WF-CONTACT-TAG',
+        filters: [
+          { field: 'change', operator: 'is', value: 'added' },
+          { field: 'tag', operator: 'is', value: 'meta-lead' },
+        ],
+      },
+      nodes: [],
+      edges: [],
+    };
+    run = ok(await saveWorkflow(run, scenario, tagged, direct()));
+    const beforeLogLength = run.state.log.length;
+    const after = ok(
+      await fireTriggerEvent(
+        run,
+        scenario,
+        'TAG_ADDED',
+        { contact_id: 'maria', tag: 'meta-lead' },
+        direct(),
+      ),
+    );
+    expect(triggerOutcomeFor(beforeLogLength, after.state, tagged.id)).toEqual({
+      kind: 'event_noop',
+      reason: 'tag_already_present',
+      root_event_id: after.state.log[beforeLogLength]?.id,
+    });
+    expect(
+      Object.values(after.state.account.workflow_runs).filter((row) => row.workflow_id === tagged.id),
+    ).toHaveLength(0);
   });
 
   it('a trigger the engine cannot run has no event to fire, and an event is refused until its context exists', async () => {

@@ -236,7 +236,7 @@ function InlineRun({
     const built = option
       ? buildTriggerEvent(
           option,
-          defaultTriggerInput(run.account, contactId, scenario.simulation_time),
+          defaultTriggerInput(run.account, contactId, scenario.simulation_time, option.event),
           run.account,
         )
       : null;
