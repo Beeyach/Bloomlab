@@ -675,35 +675,35 @@ describe('the default test fires the configured trigger, and the engine decides 
     'reports a trigger that matched but was blocked by re-entry separately from a filter miss',
     async () => {
       let run = await startRun(scenario, database);
-    run = ok(await saveWorkflow(run, scenario, waitingReplyWorkflow(), direct()));
-    run = ok(
-      await fireTriggerEvent(
-        run,
-        scenario,
-        'SMS_RECEIVED',
-        { contact_id: 'maria', body: 'first reply' },
-        direct(),
-      ),
-    );
-    const active = Object.values(run.state.account.workflow_runs).find(
-      (row) => row.workflow_id === 'wf-reply-wait',
-    )!;
-    expect(active.status).toBe('waiting');
+      run = ok(await saveWorkflow(run, scenario, waitingReplyWorkflow(), direct()));
+      run = ok(
+        await fireTriggerEvent(
+          run,
+          scenario,
+          'SMS_RECEIVED',
+          { contact_id: 'maria', body: 'first reply' },
+          direct(),
+        ),
+      );
+      const active = Object.values(run.state.account.workflow_runs).find(
+        (row) => row.workflow_id === 'wf-reply-wait',
+      )!;
+      expect(active.status).toBe('waiting');
 
-    const beforeLogLength = run.state.log.length;
-    const after = ok(
-      await fireTriggerEvent(
-        run,
-        scenario,
-        'SMS_RECEIVED',
-        { contact_id: 'maria', body: 'second reply' },
-        direct(),
-      ),
-    );
-    expect(triggerOutcomeFor(beforeLogLength, after.state, 'wf-reply-wait')).toMatchObject({
-      kind: 'blocked_reentry',
-      existing_run_id: active.id,
-    });
+      const beforeLogLength = run.state.log.length;
+      const after = ok(
+        await fireTriggerEvent(
+          run,
+          scenario,
+          'SMS_RECEIVED',
+          { contact_id: 'maria', body: 'second reply' },
+          direct(),
+        ),
+      );
+      expect(triggerOutcomeFor(beforeLogLength, after.state, 'wf-reply-wait')).toMatchObject({
+        kind: 'blocked_reentry',
+        existing_run_id: active.id,
+      });
       expect(
         after.state.execution.some(
           (row) => row.reason === 'duplicate_enrolment' && row.workflow_run_id === active.id,
@@ -734,19 +734,27 @@ describe('the default test fires the configured trigger, and the engine decides 
     ).toHaveLength(1);
   });
 
-  it('picks a tag that will actually change the chosen contact for the default tag test', async () => {
-    const run = await saved();
-    const added = defaultTriggerInput(run.state.account, 'maria', run.state.clock.now, 'TAG_ADDED');
-    const removed = defaultTriggerInput(
-      run.state.account,
-      'maria',
-      run.state.clock.now,
-      'TAG_REMOVED',
-    );
-    expect(added.tag).not.toBe('meta-lead');
-    expect(run.state.account.contacts.maria?.tags).not.toContain(added.tag);
-    expect(removed.tag).toBe('meta-lead');
-  });
+  it(
+    'picks a tag that will actually change the chosen contact for the default tag test',
+    async () => {
+      const run = await saved();
+      const added = defaultTriggerInput(
+        run.state.account,
+        'maria',
+        run.state.clock.now,
+        'TAG_ADDED',
+      );
+      const removed = defaultTriggerInput(
+        run.state.account,
+        'maria',
+        run.state.clock.now,
+        'TAG_REMOVED',
+      );
+      expect(added.tag).not.toBe('meta-lead');
+      expect(run.state.account.contacts.maria?.tags).not.toContain(added.tag);
+      expect(removed.tag).toBe('meta-lead');
+    },
+  );
 
   it('reports a no-op event separately from a trigger filter miss', async () => {
     let run = await startRun(scenario, database);
@@ -779,7 +787,9 @@ describe('the default test fires the configured trigger, and the engine decides 
       root_event_id: after.state.log[beforeLogLength]?.id,
     });
     expect(
-      Object.values(after.state.account.workflow_runs).filter((row) => row.workflow_id === tagged.id),
+      Object.values(after.state.account.workflow_runs).filter(
+        (row) => row.workflow_id === tagged.id,
+      ),
     ).toHaveLength(0);
   });
 

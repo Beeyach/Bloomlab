@@ -118,12 +118,12 @@ export function defaultTriggerInput(
     (row) => row.contact_id === contactId,
   );
   const contact = contactId ? account.contacts[contactId] : null;
-  const tag =
-    event === 'TAG_ADDED'
-      ? account.tags.find((candidate) => !contact?.tags.includes(candidate))
-      : event === 'TAG_REMOVED'
-        ? contact?.tags[0]
-        : account.tags[0];
+  let tag = account.tags[0];
+  if (event === 'TAG_ADDED') {
+    tag = account.tags.find((candidate) => !contact?.tags.includes(candidate));
+  } else if (event === 'TAG_REMOVED') {
+    tag = contact?.tags[0];
+  }
   return {
     contact_id: contactId ?? undefined,
     form_id: Object.values(account.forms)[0]?.id,
