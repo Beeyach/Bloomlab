@@ -15,8 +15,9 @@ request. Phase 13 was not started.
 Spec Phase 12 is the flagship Workflow Lab with extensive testing. The requirement rows are
 WFL-001 to WFL-012, SIM-014, SIM-015, EXR-023, CONV-001, A11Y-006, PERF-002 and the workflow half
 of RSP-004. The phase also re-evaluates SIM-001, SIM-010, EXR-004 to EXR-007, EXR-019, EXR-024
-and CUR-036 against what now runs. D-117 later widens the app rail (DES-009) to 104 px after
-names. The Funnel Lab, Calendar Lab, realistic-failure library, AI grading and every later phase
+and CUR-036 against what now runs. D-117 later widens the app rail (DES-009) to 104 px after a
+real screenshot showed that the previous width still crowded full destination names. The Funnel
+Lab, Calendar Lab, realistic-failure library, AI grading and every later phase
 were out of scope and none were touched.
 
 ## 3. Requirement status

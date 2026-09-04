@@ -169,7 +169,7 @@
   }
 }
 
-/* Tablet and desktop: the rail column, from the one token the page offsets by (spec: 68–80 px). */
+/* Wider screens: the 104 px rail column, from the same token the page uses for its offset. */
 @media (min-width: 768px) {
   .rail {
     top: 0;
