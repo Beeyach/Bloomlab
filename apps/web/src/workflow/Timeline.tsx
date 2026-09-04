@@ -202,7 +202,7 @@ export function Timeline({
                   status={row.status}
                   branch={row.branch}
                   className={styles.timelineRow}
-                  {...({ 'data-current': index === at || undefined } as Record<string, unknown>)}
+                  data-current={index === at || undefined}
                 />
               ))}
             </ol>

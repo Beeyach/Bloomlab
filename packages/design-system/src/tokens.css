@@ -57,6 +57,12 @@
   --bl-space-12: 48px;
   --bl-space-16: 64px;
 
+  /* ---- layout sizes ---- */
+  /* The primary rail (spec §73: 68–80 px). One token: the rail draws it, the page offsets by it. */
+  --bl-size-rail: 80px;
+  /* The phone bottom bar the rail becomes below 768 px. */
+  --bl-size-rail-bar: 64px;
+
   /* ---- radius ---- */
   --bl-radius-sm: 6px;
   --bl-radius-md: 10px;

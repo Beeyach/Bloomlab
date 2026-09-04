@@ -1,4 +1,4 @@
-/* Compact rail (spec §73): 72 px column on tablet and desktop, a bottom bar on phones. */
+/* Compact rail (spec §73): an 80 px column on tablet and desktop (--bl-size-rail), a bottom bar on phones. */
 .rail {
   position: fixed;
   z-index: var(--bl-z-sticky);
@@ -78,7 +78,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    height: 64px;
+    height: var(--bl-size-rail-bar);
     padding: 0 var(--bl-space-2);
     border-top: 1px solid;
     justify-content: center;
@@ -98,13 +98,13 @@
   }
 }
 
-/* Tablet and desktop: 72 px left column (spec: 68–80 px). */
+/* Tablet and desktop: the rail column, from the one token the page offsets by (spec: 68–80 px). */
 @media (min-width: 768px) {
   .rail {
     top: 0;
     bottom: 0;
     left: 0;
-    width: 72px;
+    width: var(--bl-size-rail);
     flex-direction: column;
     align-items: stretch;
     padding: var(--bl-space-4) var(--bl-space-2);
@@ -139,12 +139,12 @@
 }
 
 /*
- * Narrowest phones: every item keeps its name for assistive tech but shows an icon only, so the
- * bar fits 320 px without overflow. The developer links dropped their labels here first; CRM made
- * the main list a sixth item, and six labelled items do not fit, so the same treatment now covers
- * both lists rather than letting the rail scroll or clip.
+ * Phones: every item keeps its name for assistive tech but shows an icon only, so the bar fits
+ * 390 px and 320 px without overflow or clipping. The developer links dropped their labels first;
+ * CRM made the main list a sixth item, and the Workflow Lab, the inbox and the Playground brought
+ * it to seven, which no phone fits with labels. Tablets and up keep the labels.
  */
-@media (max-width: 359px) {
+@media (max-width: 479px) {
   .rail {
     padding: 0 var(--bl-space-1);
   }

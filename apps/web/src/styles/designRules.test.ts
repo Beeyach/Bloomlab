@@ -300,3 +300,22 @@ describe('the tablet engines the cards are actually read on (D-086)', () => {
     expect(split?.body).not.toMatch(/transform:/);
   });
 });
+
+describe('the rail is one token (spec §73, DES-009)', () => {
+  it('defines the rail width once, inside the spec’s 68–80 px band', () => {
+    const tokens = read(join(ROOT, 'packages', 'design-system', 'src', 'tokens.css'));
+    const match = tokens.match(/--bl-size-rail:\s*(\d+)px/);
+    expect(match).not.toBeNull();
+    const width = Number(match?.[1]);
+    expect(width).toBeGreaterThanOrEqual(68);
+    expect(width).toBeLessThanOrEqual(80);
+  });
+
+  it('the rail draws it and the page offsets by it — nothing hardcodes the width', () => {
+    const rail = read(join(ROOT, 'apps', 'web', 'src', 'app', 'AppRail.module.css'));
+    const layout = read(join(ROOT, 'apps', 'web', 'src', 'app', 'RootLayout.module.css'));
+    expect(rail).toMatch(/width:\s*var\(--bl-size-rail\)/);
+    expect(layout).toMatch(/padding-left:\s*var\(--bl-size-rail\)/);
+    for (const sheet of [rail, layout]) expect(sheet).not.toMatch(/\b(68|72|76|80)px\b/);
+  });
+});
