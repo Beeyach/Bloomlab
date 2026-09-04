@@ -243,7 +243,7 @@ export function timelineRow(
     case 'branch_result':
       name = `${stepName ?? 'If/Else'} evaluated`;
       branch = text(data.chosen) || 'None';
-      detail = data.fallback === true ? 'No branch matched' : undefined;
+      detail = branchDetail(data);
       break;
     case 'waiting':
       name = stepName ?? 'Wait';
@@ -284,6 +284,42 @@ export function timelineRow(
     node_id: record.node_id,
     sequence: record.sequence,
   };
+}
+
+/**
+ * What the branch actually compared, in words: each condition with the value the run saw and the
+ * value it wanted, so a learner reads why a branch was or was not taken (WFL-004, SIM-010).
+ */
+function branchDetail(data: Record<string, unknown>): string | undefined {
+  const branches = Array.isArray(data.branches) ? (data.branches as Record<string, unknown>[]) : [];
+  const lines: string[] = [];
+  for (const branch of branches) {
+    const groups = Array.isArray(branch.groups) ? (branch.groups as Record<string, unknown>[]) : [];
+    const parts = groups.map((group) => {
+      const conditions = Array.isArray(group.conditions)
+        ? (group.conditions as Record<string, unknown>[])
+        : [];
+      return conditions
+        .map((condition) => {
+          const actual = condition.actual;
+          const shown =
+            actual === null || actual === undefined || actual === ''
+              ? 'nothing'
+              : Array.isArray(actual)
+                ? actual.join(', ')
+                : String(actual);
+          const expected =
+            condition.expected === null || condition.expected === undefined
+              ? ''
+              : ` ${String(condition.expected)}`;
+          return `${text(condition.field)} ${operatorWords(text(condition.operator))}${expected} → saw ${shown} (${condition.passed ? 'yes' : 'no'})`;
+        })
+        .join(' and ');
+    });
+    lines.push(`${text(branch.name)}: ${parts.join(' or ')}`);
+  }
+  if (lines.length === 0) return data.fallback === true ? 'No branch matched' : undefined;
+  return `${data.fallback === true ? 'No branch matched. ' : ''}${lines.join(' · ')}`;
 }
 
 function describeEffect(record: ExecutionRecord, account: AccountState): string | undefined {

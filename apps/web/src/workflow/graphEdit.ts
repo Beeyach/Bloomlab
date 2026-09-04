@@ -191,13 +191,21 @@ export const moveNode = (workflow: Workflow, id: string, x: number, y: number): 
 
 /** Swaps a node with its predecessor or successor along a straight chain. Behaviour changes; layout follows. */
 export function reorder(workflow: Workflow, id: string, direction: 'up' | 'down'): Workflow {
-  const before = incoming(workflow, id);
   const after = outgoing(workflow, id);
-  if (before.length !== 1 || after.length > 1) return workflow;
+  if (after.length > 1) return workflow;
+  if (direction === 'down') {
+    // Moving a step down is moving the step after it up; the entry step has no step before it,
+    // so the checks below belong to the step that does.
+    const next = after[0];
+    if (!next) return workflow;
+    return reorder(workflow, next.to, 'up');
+  }
+  const before = incoming(workflow, id);
+  if (before.length !== 1) return workflow;
   const prev = before[0] as WorkflowEdge;
   const prevNode = workflow.nodes.find((node) => node.id === prev.from);
   if (!prevNode || prevNode.type === 'branch') return workflow;
-  if (direction === 'up') {
+  {
     // A → prev → id → next  becomes  A → id → prev → next
     const intoPrev = incoming(workflow, prev.from);
     if (intoPrev.length > 1) return workflow;
@@ -213,9 +221,6 @@ export function reorder(workflow: Workflow, id: string, direction: 'up' | 'down'
     ];
     return tidy({ ...workflow, edges });
   }
-  const next = after[0];
-  if (!next) return workflow;
-  return reorder(workflow, next.to, 'up');
 }
 
 /** Steps in walking order from the entry, following the first connection; branches list their paths. */

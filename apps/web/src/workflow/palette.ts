@@ -34,13 +34,6 @@ export interface PaletteEntry {
   feature: GhlFeature;
 }
 
-const WORKFLOW_FEATURES: GhlFeature[] = content.ghl_features.filter(
-  (feature) =>
-    feature.area === 'Workflows' &&
-    (feature.feature_type === 'trigger' || feature.feature_type === 'action') &&
-    feature.status !== 'removed',
-);
-
 function entryFor(feature: GhlFeature): PaletteEntry {
   const capability = capabilityFor(feature.id);
   const runnable = capability !== null && feature.simulation_fidelity !== 'REAL_GHL';
@@ -64,10 +57,24 @@ function entryFor(feature: GhlFeature): PaletteEntry {
   };
 }
 
+/**
+ * The palette for a set of registry records: every workflow trigger and action, runnable first,
+ * then by name. Exported so a test can hand it a record the registry does not hold yet and see it
+ * appear — the proof that adding a registry record adds a palette entry (WFL-011).
+ */
+export const paletteFrom = (features: readonly GhlFeature[]): PaletteEntry[] =>
+  features
+    .filter(
+      (feature) =>
+        feature.area === 'Workflows' &&
+        (feature.feature_type === 'trigger' || feature.feature_type === 'action') &&
+        feature.status !== 'removed',
+    )
+    .map(entryFor)
+    .sort((a, b) => Number(b.runnable) - Number(a.runnable) || a.name.localeCompare(b.name));
+
 /** Every workflow trigger and action in the registry, runnable first, then by name. */
-export const PALETTE: readonly PaletteEntry[] = WORKFLOW_FEATURES.map(entryFor).sort(
-  (a, b) => Number(b.runnable) - Number(a.runnable) || a.name.localeCompare(b.name),
-);
+export const PALETTE: readonly PaletteEntry[] = paletteFrom(content.ghl_features);
 
 export const paletteEntry = (id: string | null | undefined): PaletteEntry | null =>
   (id && PALETTE.find((entry) => entry.id === id)) || null;

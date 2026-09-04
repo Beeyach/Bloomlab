@@ -776,3 +776,67 @@ describe('a run can be read back without the workflow running twice', () => {
     ]);
   });
 });
+
+describe('dynamic values in conditions (WFL-009)', () => {
+  it('a condition value may be a merge field, resolved against the same contact', () => {
+    // "Source is the contact's own first name" — true only for a contact named after their source.
+    const wf = workflow({
+      id: 'wf-dyn',
+      trigger: { ghl_feature_id: 'GHL-WF-CONTACT-CREATED' },
+      nodes: [
+        ifElse('b1', [
+          {
+            name: 'Self-referral',
+            groups: [
+              {
+                conditions: [
+                  {
+                    field: 'contact.custom_fields.consult_outcome',
+                    operator: 'is',
+                    value: '{{contact.custom_fields.treatment_interest}}',
+                  },
+                ],
+              },
+            ],
+          },
+        ]),
+        tag('t1', 'matched'),
+        tag('t2', 'unmatched'),
+      ],
+      edges: [edge('b1', 't1', 'Self-referral'), edge('b1', 't2', 'None')],
+    });
+    const base = clinicWith([wf]);
+    const contacts = [
+      ...(base.initial_account_state.contacts ?? []),
+      {
+        id: 'same',
+        first_name: 'Same',
+        custom_fields: { treatment_interest: 'Laser', consult_outcome: 'Laser' },
+      },
+    ];
+    let state = createRun({
+      ...base,
+      initial_account_state: {
+        ...base.initial_account_state,
+        contacts,
+        custom_fields: [
+          ...(base.initial_account_state.custom_fields ?? []).map((field) =>
+            field.key === 'consult_outcome'
+              ? { ...field, options: ['Booked', 'Thinking about it', 'Not a fit', 'Laser'] }
+              : field,
+          ),
+        ],
+      },
+    });
+    state = processEvent(state, enrol('wf-dyn', 'same'));
+    state = processEvent(state, enrol('wf-dyn', 'maria'));
+    expect(state.account.contacts.same?.tags).toContain('matched');
+    expect(state.account.contacts.maria?.tags).toContain('unmatched');
+    const [first] = records(state, 'branch_result');
+    expect(first?.data).toMatchObject({
+      branches: [
+        { groups: [{ conditions: [{ expected: 'Laser', actual: 'Laser', passed: true }] }] },
+      ],
+    });
+  });
+});

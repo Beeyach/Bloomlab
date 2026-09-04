@@ -14,7 +14,9 @@ import { gradingContextFrom } from '../simulator/grading';
 import { startRun, type StoredRun } from '../simulator/store';
 import {
   advanceTime,
+  advanceTimeTo,
   blankWorkflow,
+  bookAppointment,
   changeAppointmentStatus,
   enrolTestContact,
   saveWorkflow,
@@ -322,5 +324,179 @@ describe('the authored BUILD IT, graded from a real run (EXR-004, EXR-023)', () 
       },
     });
     expect(report.failed_critical).toEqual(['c1']);
+  });
+});
+
+describe('FIX IT, graded from the broken account (EXR-005)', () => {
+  const broken = (content.scenarios as unknown as SimulatorScenario[]).find(
+    (row) => row.id === 'SC-glowhaus-double-reminder',
+  ) as SimulatorScenario;
+  const fixIt = content.exercises.find((row) => row.id === 'EX-FIX_IT-double-reminder') as Exercise;
+
+  /** Maria books; both published workflows enrol; the day passes to the 24h-before wake. */
+  async function reproduce(run: StoredRun): Promise<StoredRun> {
+    run = ok(
+      await bookAppointment(
+        run,
+        broken,
+        'maria',
+        'consultation',
+        '2026-09-06T14:00:00-05:00',
+        direct(),
+      ),
+    ).run;
+    return ok(await advanceTimeTo(run, broken, '2026-09-05T14:30:00-05:00', direct())).run;
+  }
+
+  const grade = (run: StoredRun) =>
+    gradeExercise({
+      exercise: fixIt,
+      context: gradingContextFrom(run.state, {
+        subjectContactId: 'maria',
+        architecture: learnerArchitecture(run.state.account, broken),
+      }),
+    });
+
+  it('the symptom reproduces from the account as authored: two reminders from two workflows', async () => {
+    const run = await reproduce(await startRun(broken, database));
+    const texts = run.state.account.conversations.maria?.messages.filter(
+      (message) => message.direction === 'outbound' && message.channel === 'sms',
+    );
+    expect(texts).toHaveLength(2);
+    const senders = Object.values(run.state.account.workflow_runs).map((row) => row.workflow_id);
+    expect(senders.sort()).toEqual(['wf-booking-tags', 'wf-reminders']);
+    const report = grade(run);
+    expect(report.outcome).toBe('failed');
+    expect(report.failed_critical).toEqual(['c1']);
+  });
+
+  it('removing the copied reminder from Booking Tags fixes the cause and the grade agrees', async () => {
+    let run = await startRun(broken, database);
+    const tags = run.state.account.workflows['wf-booking-tags'] as Workflow;
+    const fixed: Workflow = {
+      ...tags,
+      nodes: tags.nodes.filter((node) => node.id === 'n1' || node.id === 'n4'),
+      edges: [{ from: 'n1', to: 'n4', branch: null }],
+    };
+    run = ok(await saveWorkflow(run, broken, fixed, direct())).run;
+    run = await reproduce(run);
+    const texts = run.state.account.conversations.maria?.messages.filter(
+      (message) => message.direction === 'outbound' && message.channel === 'sms',
+    );
+    expect(texts).toHaveLength(1);
+    expect(run.state.account.contacts.maria?.tags).toContain('booked');
+    // The changed workflow is the learner's architecture; the untouched reminder is not.
+    expect(learnerArchitecture(run.state.account, broken).workflows.map((w) => w.id)).toEqual([
+      'wf-booking-tags',
+    ]);
+    const report = grade(run);
+    expect(report.failed_critical).toEqual([]);
+    expect(report.outcome).toBe('passed');
+    expect(report.score).toBe(100);
+  });
+});
+
+describe('REBUILD BLIND, graded from the learner’s own reminder system (EXR-019)', () => {
+  const rebuild = content.exercises.find(
+    (row) => row.id === 'EX-REBUILD_BLIND-appointment-reminders',
+  ) as Exercise;
+
+  const reminders = (): Workflow => ({
+    ...blankWorkflow('wf-reminders', 'Appointment Reminders'),
+    trigger: {
+      ghl_feature_id: 'GHL-WF-APPOINTMENT-STATUS',
+      filters: [{ field: 'appointment_status', operator: 'is', value: 'new' }],
+    },
+    nodes: [
+      {
+        id: 'n1',
+        type: 'wait',
+        ghl_feature_id: 'GHL-WF-WAIT',
+        label: null,
+        position: { x: 0, y: 0 },
+        config: { wait_type: 'appointment', relative: 'before', hours: 24 },
+      },
+      {
+        id: 'n2',
+        type: 'action',
+        ghl_feature_id: 'GHL-WF-SEND-SMS',
+        label: null,
+        position: { x: 0, y: 1 },
+        config: {
+          template: 'See you tomorrow at {{appointment.start_time}}.',
+          purpose: 'reminder',
+        },
+      },
+      {
+        id: 'n3',
+        type: 'wait',
+        ghl_feature_id: 'GHL-WF-WAIT',
+        label: null,
+        position: { x: 0, y: 2 },
+        config: { wait_type: 'appointment', relative: 'before', hours: 2 },
+      },
+      {
+        id: 'n4',
+        type: 'action',
+        ghl_feature_id: 'GHL-WF-SEND-SMS',
+        label: null,
+        position: { x: 0, y: 3 },
+        config: { template: 'See you in two hours, {{contact.first_name}}.', purpose: 'reminder' },
+      },
+      {
+        id: 'n5',
+        type: 'end',
+        ghl_feature_id: null,
+        label: null,
+        config: {},
+        position: { x: 0, y: 4 },
+      },
+    ],
+    edges: [
+      { from: 'n1', to: 'n2', branch: null },
+      { from: 'n2', to: 'n3', branch: null },
+      { from: 'n3', to: 'n4', branch: null },
+      { from: 'n4', to: 'n5', branch: null },
+    ],
+  });
+
+  it('two reminders land 24h and 2h before Maria’s consultation, and the grade is read from them', async () => {
+    let run = await startRun(scenario, database);
+    run = ok(await saveWorkflow(run, scenario, reminders(), direct())).run;
+    run = ok(
+      await enrolTestContact(
+        run,
+        scenario,
+        'wf-reminders',
+        'maria',
+        { appointment_id: 'appt-maria' },
+        direct(),
+      ),
+    ).run;
+    // Maria's consultation is on the 4th at 15:00; move past the second reminder, not the no-show.
+    run = ok(await advanceTimeTo(run, scenario, '2026-09-04T13:30:00-05:00', direct())).run;
+    const texts = (run.state.account.conversations.maria?.messages ?? []).filter(
+      (message) => message.direction === 'outbound' && message.channel === 'sms',
+    );
+    expect(texts.map((message) => message.at)).toEqual([
+      '2026-09-03T15:00:00-05:00',
+      '2026-09-04T13:00:00-05:00',
+    ]);
+    const context = gradingContextFrom(run.state, {
+      subjectContactId: 'maria',
+      architecture: learnerArchitecture(run.state.account, scenario),
+    });
+    expect(context.references['appointment.start']).toBe('2026-09-04T15:00:00-05:00');
+    const report = gradeExercise({ exercise: rebuild, context });
+    const byId = Object.fromEntries(
+      Object.values(report.tiers)
+        .flat()
+        .map((result) => [result.id, result]),
+    );
+    expect(byId.a1?.passed).toBe(true);
+    expect(byId.a2?.passed).toBe(true);
+    expect(byId.a3?.passed).toBe(true);
+    expect(byId.c1?.passed).toBe(true);
+    expect(report.outcome).toBe('passed');
   });
 });
