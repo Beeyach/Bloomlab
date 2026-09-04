@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button, Field, Input, Select, StatusPill } from '@bloomlab/design-system';
 import {
@@ -17,11 +17,18 @@ import {
 import type { StoredRun } from '../simulator/store';
 import type { ExecutionResult } from '../workflow/execution';
 import {
+  VISIT_SOURCES,
   bookFromFunnel,
+  formStarted,
+  newVisitId,
   newVisitor,
   payFromFunnel,
+  performEvents,
+  stepViewed,
   submitForm,
   submitSurvey,
+  visitEnded,
+  visitStarted,
   type SubmissionValues,
   type Visitor,
 } from './commands';
@@ -81,6 +88,17 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
   /** Where in the run's log this visit began, so the chain shows this visit and not the account. */
   const [from, setFrom] = useState<number>(() => visitorLogWatermark(run));
   const [done, setDone] = useState(false);
+  /**
+   * The visit this walk is being recorded as (FUN-004). A walk is traffic, so it is recorded as
+   * traffic, through the same events an authored cohort uses. Telemetry needs a funnel the
+   * account actually holds, so an unsaved draft is walked without being recorded and the screen
+   * says so rather than losing the visit silently.
+   */
+  const [source, setSource] = useState<string>(VISIT_SOURCES[0]);
+  const [visitId, setVisitId] = useState<string | null>(null);
+  const recordable = Boolean(account.funnels[funnel.id]);
+  const started = useRef<string | null>(null);
+  const seen = useRef<Set<string>>(new Set());
 
   const step = stepId ? stepOf(funnel, stepId) : null;
   const actions = useMemo(
@@ -88,22 +106,77 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
     [funnel, account, step, run.state.clock.now],
   );
 
+  /** Records telemetry beside whatever else the visitor did, as one commit. */
+  const record = useCallback(
+    async (events: (current: StoredRun) => Parameters<typeof performEvents>[2]) => {
+      if (!recordable) return;
+      await perform(async (current) => performEvents(current, scenario, events(current)));
+    },
+    [perform, recordable, scenario],
+  );
+
+  // Deliberately not memoised: it is one button's handler, and it both writes an event and
+  // resets six pieces of state, which is not something a stable identity buys anything for.
   const restart = () => {
+    // A walk that is abandoned mid-funnel is a drop-off, and the Autopsy has to see it as one.
+    const ending = visitId;
+    if (ending && !done) void record((current) => [visitEnded(current, ending, 'left')]);
     setVisitor(newVisitor());
     setStepId(firstStep(funnel)?.id ?? null);
     setValues({});
     setSlot({});
     setRefusal(null);
     setDone(false);
+    setVisitId(null);
+    started.current = null;
+    seen.current = new Set();
     setFrom(visitorLogWatermark(run));
   };
 
+  /**
+   * The visit begins when the walk does, and the first step view goes with it. Guarded by a ref
+   * rather than by state, so a re-render never starts a second visit for one walk.
+   */
+  useEffect(() => {
+    if (!recordable || visitId || !start || started.current === funnel.id) return;
+    started.current = funnel.id;
+    const id = newVisitId();
+    setVisitId(id);
+    seen.current.add(start.id);
+    void record((current) => [
+      visitStarted(current, { visit_id: id, funnel_id: funnel.id, source }),
+      stepViewed(current, id, start.id, start.blocks.length),
+    ]);
+  }, [funnel.id, recordable, record, source, start, visitId]);
+
   const known = account.contacts[visitor.contact_id];
 
-  const advance = useCallback((to: string | null) => {
-    if (to === null) setDone(true);
-    else setStepId(to);
-  }, []);
+  const advance = useCallback(
+    (to: string | null) => {
+      if (to === null) {
+        setDone(true);
+        if (visitId) void record((current) => [visitEnded(current, visitId, 'completed')]);
+        return;
+      }
+      setStepId(to);
+      if (visitId && !seen.current.has(to)) {
+        seen.current.add(to);
+        const next = stepOf(funnel, to);
+        void record((current) => [stepViewed(current, visitId, to, next?.blocks.length ?? 1)]);
+      }
+    },
+    [funnel, record, visitId],
+  );
+
+  /** The visitor began filling something in. Starting is not submitting, and never becomes it. */
+  const noteFormStart = useCallback(
+    (blockId: string) => {
+      if (!visitId || seen.current.has(`form:${blockId}`)) return;
+      seen.current.add(`form:${blockId}`);
+      void record((current) => [formStarted(current, visitId, blockId)]);
+    },
+    [record, visitId],
+  );
 
   const act = useCallback(
     async (action: VisitAction) => {
@@ -126,9 +199,25 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
       const result = await perform(async (current) => {
         switch (action.kind) {
           case 'submit_form':
-            return submitForm(current, scenario, visitor, action.form_id, answers);
+            return submitForm(
+              current,
+              scenario,
+              visitor,
+              action.form_id,
+              answers,
+              undefined,
+              visitId,
+            );
           case 'submit_survey':
-            return submitSurvey(current, scenario, visitor, action.survey_id, answers);
+            return submitSurvey(
+              current,
+              scenario,
+              visitor,
+              action.survey_id,
+              answers,
+              undefined,
+              visitId,
+            );
           case 'book': {
             const chosen = slot[action.block_id];
             const picked = action.slots.find((row) => row.starts_at === chosen) ?? action.slots[0];
@@ -148,7 +237,7 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
       setVisitor((current) => ({ ...current, is_new: false }));
       advance(action.to_step_id);
     },
-    [advance, known, perform, scenario, slot, values, visitor],
+    [advance, known, perform, scenario, slot, values, visitId, visitor],
   );
 
   /** What the account did since this visit began, in the run's own order. Read, never invented. */
@@ -190,10 +279,31 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
             ? `Visiting as ${known.first_name}${known.last_name ? ` ${known.last_name}` : ''} — the account already has this contact, so a submission updates it.`
             : 'Visiting as someone the account has never met. The first submission creates the contact.'}
         </p>
+        <Field label="Came from">
+          <Select
+            value={source}
+            onChange={(event) => setSource(event.target.value)}
+            disabled={visitId !== null}
+            data-testid="visitor-source"
+          >
+            {VISIT_SOURCES.map((row) => (
+              <option key={row} value={row}>
+                {row}
+              </option>
+            ))}
+          </Select>
+        </Field>
         <Button variant="ghost" size="sm" onClick={restart} data-testid="visitor-restart">
           Start over as a new visitor
         </Button>
       </div>
+
+      {!recordable && (
+        <p className={styles.muted} data-testid="visit-not-recorded">
+          This funnel is not saved yet, so the walk is not recorded as traffic and the Autopsy will
+          not see it. Save it in Build first.
+        </p>
+      )}
 
       {refusal && (
         <p className={styles.refusal} role="alert" data-testid="visitor-refusal">
@@ -232,12 +342,13 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
                     values={values[action.block_id] ?? {}}
                     chosenSlot={slot[action.block_id]}
                     timezone={run.state.clock.timezone}
-                    onValue={(field, value) =>
+                    onValue={(field, value) => {
+                      noteFormStart(action.block_id);
                       setValues((current) => ({
                         ...current,
                         [action.block_id]: { ...(current[action.block_id] ?? {}), [field]: value },
-                      }))
-                    }
+                      }));
+                    }}
                     onSlot={(value) =>
                       setSlot((current) => ({ ...current, [action.block_id]: value }))
                     }

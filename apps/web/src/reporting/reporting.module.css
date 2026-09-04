@@ -1,0 +1,445 @@
+/*
+ * The Reporting Lab (REP-001, REP-002).
+ *
+ * The object here is a chain of numbers, so the screen is a report: tables, in reading order,
+ * at a density that lets a person compare two rows without scrolling between them. Deliberately
+ * not the Calendar Lab's schedule-and-settings split and not the Funnel Lab's three panels — a
+ * different job wants a different composition.
+ *
+ * No hero statistic, no metric cards in a grid of four, no sparklines, no gradients, no icon
+ * beside every heading, no eyebrow. The evidence drawer is the one thing that overlays.
+ *
+ * Phones keep everything. Wide tables scroll inside their own container rather than being cut
+ * down, the metric list becomes one column, and the drawer arrives from the bottom. Nothing is
+ * removed because it is awkward to fit (§43).
+ */
+
+.screen {
+  --bl-density-row: var(--bl-density-high);
+  display: grid;
+  gap: var(--bl-space-6);
+  max-width: 76rem;
+}
+
+.header {
+  display: grid;
+  gap: var(--bl-space-2);
+  max-width: 46rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-2xl);
+  font-weight: var(--bl-font-weight-bold);
+  letter-spacing: var(--bl-font-tracking-display);
+  line-height: var(--bl-font-leading-tight);
+}
+
+.panelHeading {
+  margin: 0 0 var(--bl-space-3);
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-lg);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.drawerHeading {
+  margin: var(--bl-space-5) 0 var(--bl-space-2);
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-md);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.lead {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+}
+
+.muted {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+.panel {
+  padding: var(--bl-space-5);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-lg);
+  background: var(--bl-color-surface);
+}
+
+.refusal {
+  margin: 0;
+  padding: var(--bl-space-3);
+  border: 1px solid var(--bl-color-error);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface-2);
+}
+
+/* ---- running the window ------------------------------------------------------------------ */
+
+.window,
+.emptyState {
+  display: grid;
+  gap: var(--bl-space-3);
+  justify-items: start;
+}
+
+.windowTitle {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-md);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+/* ---- tables ------------------------------------------------------------------------------- */
+
+/*
+ * Wide tables scroll inside this rather than pushing the page sideways. `tabindex` is not set
+ * here because the rows hold their own focusable controls, which is what carries keyboard
+ * users through the data.
+ */
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--bl-font-size-sm);
+}
+
+.caption {
+  margin-bottom: var(--bl-space-3);
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: var(--bl-space-2) var(--bl-space-3);
+  border-bottom: 1px solid var(--bl-color-border);
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.table thead th {
+  color: var(--bl-color-text-soft);
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.row:hover {
+  background: var(--bl-color-surface-2);
+}
+
+/* Selection is a left rule and a weight change, never colour on its own (A11Y-005). */
+.rowSelected > th,
+.rowSelected > td {
+  background: var(--bl-color-surface-tint);
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.rowSelected > th:first-child {
+  box-shadow: inset 2px 0 0 var(--bl-color-text);
+}
+
+.rowButton {
+  min-height: 44px;
+  padding: var(--bl-space-1) 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--bl-font-weight-medium);
+  text-align: left;
+  cursor: pointer;
+}
+
+.rowButton:hover {
+  text-decoration: underline;
+}
+
+.workings {
+  display: block;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-regular);
+  white-space: normal;
+}
+
+.workingsLine {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.observation {
+  margin: var(--bl-space-4) 0 0;
+  padding-left: var(--bl-space-3);
+  border-left: 2px solid var(--bl-color-border-strong);
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+/* ---- the ten ------------------------------------------------------------------------------- */
+
+.metrics {
+  display: grid;
+  gap: var(--bl-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+}
+
+.metric {
+  display: grid;
+  gap: var(--bl-space-1);
+  padding: var(--bl-space-3) 0;
+  border-top: 1px solid var(--bl-color-border);
+}
+
+.metricHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--bl-space-3);
+}
+
+.metricLabel {
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.metricValue {
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Absent is said in words as well as weight: "Not enough data" is the label, not a grey dash. */
+.metricAbsent {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+.metricBasis {
+  margin: 0;
+  color: var(--bl-color-text-faint);
+  font-size: var(--bl-font-size-xs);
+}
+
+.metricActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-3);
+  margin-top: var(--bl-space-1);
+}
+
+.disclosure {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--bl-color-link);
+  font: inherit;
+  font-size: var(--bl-font-size-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.disclosure:hover {
+  text-decoration: underline;
+}
+
+.calculation {
+  display: grid;
+  gap: var(--bl-space-2);
+  padding: var(--bl-space-3);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface-2);
+  font-size: var(--bl-font-size-sm);
+}
+
+.calculation p {
+  margin: 0;
+}
+
+/* ---- source detail --------------------------------------------------------------------------- */
+
+.sourceDetail,
+.stageEvidence {
+  display: grid;
+  gap: var(--bl-space-2);
+  margin-top: var(--bl-space-4);
+  padding: var(--bl-space-4);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface-2);
+}
+
+.sourceDetail p,
+.stageEvidence p {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+}
+
+.detailTitle {
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-md);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+/* ---- definitions ------------------------------------------------------------------------------ */
+
+.definitions {
+  display: grid;
+  gap: var(--bl-space-4);
+  margin: 0 0 var(--bl-space-4);
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.definition {
+  display: grid;
+  gap: var(--bl-space-1);
+}
+
+.definition dt {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+.definition dd {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- the workspace ------------------------------------------------------------------------------ */
+
+.stageChoices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-2);
+  margin-top: var(--bl-space-3);
+}
+
+.choice {
+  min-height: 44px;
+  padding: var(--bl-space-2) var(--bl-space-4);
+  border: 1px solid var(--bl-color-border-strong);
+  border-radius: var(--bl-radius-full);
+  background: var(--bl-color-surface);
+  color: inherit;
+  font: inherit;
+  font-size: var(--bl-font-size-sm);
+  cursor: pointer;
+}
+
+.choiceOn {
+  border-color: var(--bl-color-text);
+  background: var(--bl-color-workspace);
+  color: var(--bl-color-text-inverse);
+}
+
+.exerciseLink {
+  display: flex;
+  align-items: center;
+  gap: var(--bl-space-2);
+  margin: var(--bl-space-5) 0 0;
+}
+
+.inlineLink {
+  color: var(--bl-color-link);
+}
+
+/* ---- the drawer ----------------------------------------------------------------------------------- */
+
+.sheet {
+  max-width: 34rem;
+}
+
+.drawer {
+  display: grid;
+  gap: var(--bl-space-2);
+}
+
+.drawer p {
+  margin: 0;
+}
+
+.drawerReading {
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-xl);
+  font-variant-numeric: tabular-nums;
+}
+
+.recordList {
+  display: grid;
+  gap: var(--bl-space-1);
+  margin: 0;
+  padding-left: var(--bl-space-5);
+  font-size: var(--bl-font-size-sm);
+}
+
+/* ---- odds and ends ----------------------------------------------------------------------------------- */
+
+.runPicker {
+  display: grid;
+  gap: var(--bl-space-1);
+  max-width: 22rem;
+}
+
+.fieldLabel {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+.runPicker select {
+  min-height: 44px;
+  padding: var(--bl-space-2) var(--bl-space-3);
+  border: 1px solid var(--bl-color-border-strong);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface);
+  color: inherit;
+  font: inherit;
+  font-size: max(16px, var(--bl-font-size-md));
+}
+
+.resetArea {
+  display: grid;
+  gap: var(--bl-space-2);
+  justify-items: start;
+  padding-top: var(--bl-space-5);
+  border-top: 1px solid var(--bl-color-border);
+}
+
+@media (width <= 768px) {
+  .screen {
+    gap: var(--bl-space-5);
+  }
+
+  .panel {
+    padding: var(--bl-space-4);
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 400px) {
+  .panel {
+    padding: var(--bl-space-3);
+  }
+
+  .definitions {
+    grid-template-columns: 1fr;
+  }
+}

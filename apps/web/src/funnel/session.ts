@@ -16,5 +16,21 @@ import type { StoredRun } from '../simulator/store';
 
 export const visitorLogWatermark = (run: StoredRun): number => run.state.log.at(-1)?.sequence ?? -1;
 
+/**
+ * The visit recording itself is not the account doing something (FUN-004, D-136).
+ *
+ * "What the account did" answers one question: what did this person's actions cause? A visit
+ * beginning, a step being met and a form being started are facts *about the visit*, which the
+ * Autopsy reads and this panel has no business restating — leaving them in would make a refused
+ * submission look as though something had happened.
+ */
+const TELEMETRY: ReadonlySet<string> = new Set([
+  'FUNNEL_VISIT_STARTED',
+  'FUNNEL_STEP_VIEWED',
+  'FUNNEL_SCROLL_RECORDED',
+  'FUNNEL_FORM_STARTED',
+  'FUNNEL_VISIT_ENDED',
+]);
+
 export const visitorEventsSince = (run: StoredRun, afterSequence: number): SimulatorEvent[] =>
-  run.state.log.filter((event) => event.sequence > afterSequence);
+  run.state.log.filter((event) => event.sequence > afterSequence && !TELEMETRY.has(event.type));

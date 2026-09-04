@@ -195,6 +195,23 @@ export const IconChat = (p: IconProps) => (
     <path d="M8 9h8M8 12.5h5" />
   </Icon>
 );
+/** Three columns of different heights: the Reporting Lab's destination (REP-001). */
+export const IconReport = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 20h16" />
+    <path d="M7 20v-6M12 20V6M17 20v-9" />
+  </Icon>
+);
+
+/** A magnifier over a break: the Incident Room's destination (SIM-011, DES-013). */
+export const IconIncident = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="10.5" cy="10.5" r="6" />
+    <path d="M15 15l5 5" />
+    <path d="M10.5 7.5v3.5M10.5 13.5h.01" />
+  </Icon>
+);
+
 export const IconSandbox = (p: IconProps) => (
   <Icon {...p}>
     <path d="M9 3h6M10 3v6.5L4.8 18.2A1.5 1.5 0 0 0 6.1 20.5h11.8a1.5 1.5 0 0 0 1.3-2.3L14 9.5V3" />

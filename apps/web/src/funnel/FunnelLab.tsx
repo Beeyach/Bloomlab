@@ -25,6 +25,7 @@ import {
 
 import { blankFunnel, newFunnelId, saveFunnel } from './commands';
 import * as edit from './edit';
+import { AutopsyLens } from './AutopsyLens';
 import { FunnelPage } from './FunnelPage';
 import { VisitorRun } from './VisitorRun';
 import {
@@ -169,6 +170,13 @@ export default function FunnelLab() {
   } | null>(null);
   const [sheet, setSheet] = useState<'inspector' | 'steps' | null>(null);
   const [confirmingReset, setConfirmingReset] = useState(false);
+  /**
+   * The Autopsy is a lens over whichever funnel is open, not a fourth mode (FUN-004, §40). BUILD,
+   * PREVIEW and SIMULATE are what a learner *does* to a funnel and are remembered on the device;
+   * reading its traffic is something they do beside any of the three, so it opens and closes here
+   * and is not persisted.
+   */
+  const [autopsyOpen, setAutopsyOpen] = useState(false);
 
   const account = run?.state.account ?? null;
   const saved: Funnel | null = account && funnelId ? (account.funnels[funnelId] ?? null) : null;
@@ -487,6 +495,26 @@ export default function FunnelLab() {
             perform={perform}
           />
         </div>
+      )}
+
+      {funnelId && (
+        <section aria-labelledby="autopsy-title" className={styles.autopsyPanel}>
+          <div className={styles.autopsyBar}>
+            <h3 id="autopsy-title" className={styles.panelHeading}>
+              Autopsy
+            </h3>
+            <button
+              type="button"
+              className={styles.autopsyToggle}
+              aria-expanded={autopsyOpen}
+              onClick={() => setAutopsyOpen((current) => !current)}
+              data-testid="funnel-autopsy-toggle"
+            >
+              {autopsyOpen ? 'Close the autopsy' : 'Read the traffic'}
+            </button>
+          </div>
+          {autopsyOpen && <AutopsyLens state={run.state} funnelId={funnelId} />}
+        </section>
       )}
 
       {/*

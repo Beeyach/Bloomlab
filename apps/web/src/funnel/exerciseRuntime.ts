@@ -24,9 +24,19 @@ import { gradingContextFrom } from '../simulator/grading';
  * — a funnel the scenario did not author, or an authored one the learner has changed (its version
  * is past 1), is theirs; an authored funnel left as it was is a starting condition, not an answer.
  *
- * The claim is exactly one exercise family. `handles` narrows to `FUNNEL_ASSEMBLY` on a runnable
- * scenario, and the Workflow Lab's runtime declines that family for the same reason — `runtimeFor`
- * refuses two claimants, and a test walks every authored exercise to prove there is never one.
+ * Phase 15 adds the second family the Funnel Lab owns: `FUNNEL_AUTOPSY` (EXR-010). It is a
+ * different job — nothing is built, the funnel's own traffic is read and diagnosed — but it runs
+ * in the same Lab on the same shared account, so it belongs to the same runtime rather than to a
+ * second one claiming the same screen.
+ *
+ * Architecture keeps its meaning in both: the funnels the learner *built*. An autopsy grades what
+ * they wrote about traffic they did not create, so an autopsy of an authored funnel supplies no
+ * architecture, which is correct — they built nothing, and no assertion should be able to say
+ * otherwise.
+ *
+ * The claim is exactly those two families on a runnable scenario, and the Workflow Lab's runtime
+ * declines both for the same reason — `runtimeFor` refuses two claimants, and a test walks every
+ * authored exercise to prove there is never one.
  */
 export const FUNNEL_RUNTIME_ID = 'funnel-lab';
 
@@ -80,7 +90,8 @@ export const funnelExerciseRuntime: ExerciseRuntime = {
   id: FUNNEL_RUNTIME_ID,
   provides: ['state', 'events', 'references', 'architecture'],
   handles: (exercise: Exercise) =>
-    exercise.type === 'FUNNEL_ASSEMBLY' && runnable(exercise.scenario) !== null,
+    (exercise.type === 'FUNNEL_ASSEMBLY' || exercise.type === 'FUNNEL_AUTOPSY') &&
+    runnable(exercise.scenario) !== null,
   async context(
     exercise: Exercise,
     learner: Record<string, unknown>,

@@ -86,14 +86,16 @@ export const SOURCE_DEPENDENCY: Record<ContextSource, string> = {
 };
 
 /**
- * Which surface supplies each source, named exactly. From Phase 12 the CRM Lab and the Workflow
- * Lab register runtimes for the exercises they own; a source is missing only for an exercise
- * neither claims — a roleplay scenario, say — and the runner says so rather than grading it.
+ * Which surface supplies each source. Each Lab registers a runtime for the exercises it owns —
+ * the CRM Lab its account, the Workflow Lab its builds, the Funnel Lab its funnels and their
+ * traffic, the Reporting Lab its report. A source is missing only for an exercise none of them
+ * claims — a roleplay scenario, say — and the runner says so rather than grading it.
  */
 export const SOURCE_PHASE: Record<ContextSource, string> = {
-  state: 'a Lab run of this exercise’s scenario (the CRM Lab or the Workflow Lab)',
-  events: 'a Lab run of this exercise’s scenario (the CRM Lab or the Workflow Lab)',
-  references: 'a Lab run of this exercise’s scenario (the CRM Lab or the Workflow Lab)',
-  architecture: 'the Workflow Lab, from the workflow you build there',
+  state: 'a Lab run of this exercise’s scenario',
+  events: 'a Lab run of this exercise’s scenario',
+  references: 'a Lab run of this exercise’s scenario',
+  architecture:
+    'the Lab you build in — the Workflow Lab for a workflow, the Funnel Lab for a funnel',
   learner: 'this runner',
 };

@@ -40,6 +40,7 @@ export const newFunnelId = () => `fn-${randomId()}`;
 export const newStepId = () => `st-${randomId()}`;
 export const newBlockId = () => `bl-${randomId()}`;
 export const newVisitorId = () => `contact-${randomId()}`;
+export const newVisitId = () => `fv-${randomId()}`;
 export const newAppointmentId = () => `appt-${randomId()}`;
 export const newPaymentId = () => `pay-${randomId()}`;
 
@@ -141,6 +142,54 @@ export const newVisitor = (): Visitor => ({ contact_id: newVisitorId(), is_new: 
 
 export type SubmissionValues = Record<string, string | number | boolean>;
 
+/* ---- what the visit itself did ---------------------------------------------------------- */
+
+/**
+ * Funnel visit telemetry (FUN-004, EXR-010, D-136).
+ *
+ * A walk through SIMULATE is traffic, so the Lab records it as traffic: the visit began, it met a
+ * step, somebody started filling a form in, it ended. These are the same events an authored
+ * cohort uses, through the same door, so the Autopsy reads a live walk and three weeks of
+ * authored history the same way and there is no second telemetry path.
+ *
+ * The Lab renders a whole step at once — there is no scrolling model here and there is not going
+ * to be one — so the reach it can honestly record is the whole step. Varied reach depth comes
+ * from authored history, and `KNOWN_LIMITATIONS.md` says exactly that.
+ */
+export interface VisitTelemetry {
+  visit_id: string;
+  funnel_id: string;
+  source: string;
+}
+
+export const visitStarted = (run: StoredRun, visit: VisitTelemetry): PendingEvent =>
+  injected(run, 'FUNNEL_VISIT_STARTED', { ...visit });
+
+export const stepViewed = (
+  run: StoredRun,
+  visitId: string,
+  stepId: string,
+  blocks: number,
+): PendingEvent =>
+  injected(run, 'FUNNEL_STEP_VIEWED', {
+    visit_id: visitId,
+    step_id: stepId,
+    reach: 'bottom',
+    blocks_seen: Math.max(1, blocks),
+  });
+
+export const formStarted = (run: StoredRun, visitId: string, blockId: string): PendingEvent =>
+  injected(run, 'FUNNEL_FORM_STARTED', { visit_id: visitId, block_id: blockId });
+
+export const visitEnded = (
+  run: StoredRun,
+  visitId: string,
+  reason: 'left' | 'completed',
+): PendingEvent => injected(run, 'FUNNEL_VISIT_ENDED', { visit_id: visitId, reason });
+
+/** The sources a learner can walk a funnel as. Authored traffic may name any source it likes. */
+export const VISIT_SOURCES = ['meta-ads', 'google-search', 'instagram-bio', 'Unknown'] as const;
+
 /**
  * A form submission from the funnel. The real `FORM_SUBMITTED` event, with the referenced form
  * and only the answers the visitor gave — an unknown field is refused by the reducer rather than
@@ -153,6 +202,7 @@ export const submitForm = (
   formId: string,
   values: SubmissionValues,
   options?: Options,
+  visitId?: string | null,
 ) =>
   execute(
     run,
@@ -163,6 +213,7 @@ export const submitForm = (
         form_id: formId,
         contact_id: visitor.contact_id,
         values,
+        ...(visitId ? { visit_id: visitId } : {}),
       }),
     },
     options,
@@ -175,6 +226,7 @@ export const submitSurvey = (
   surveyId: string,
   values: SubmissionValues,
   options?: Options,
+  visitId?: string | null,
 ) =>
   execute(
     run,
@@ -185,6 +237,7 @@ export const submitSurvey = (
         survey_id: surveyId,
         contact_id: visitor.contact_id,
         values,
+        ...(visitId ? { visit_id: visitId } : {}),
       }),
     },
     options,
@@ -266,6 +319,24 @@ export const payFromFunnel = (
         amount,
       }),
     },
+    options,
+  );
+
+/**
+ * Several events as one commit. Telemetry travels beside the thing it describes — a form
+ * submission and the step view that follows it are one action from the visitor, so they are one
+ * unit here: either all of it happened or none of it did, and the Autopsy never sees half a walk.
+ */
+export const performEvents = (
+  run: StoredRun,
+  scenario: SimulatorScenario,
+  events: PendingEvent[],
+  options?: Options,
+): Promise<ExecutionResult> =>
+  execute(
+    run,
+    scenario,
+    { kind: 'batch', ops: events.map((event) => ({ kind: 'process' as const, event })) },
     options,
   );
 

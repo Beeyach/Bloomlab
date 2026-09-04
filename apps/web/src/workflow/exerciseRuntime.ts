@@ -11,6 +11,7 @@ import {
 
 import { content } from '../content/bundle';
 import { CRM_SCENARIO_ID } from '../crm/useCrmRun';
+import { DEFAULT_REPORTING_SCENARIO_ID } from '../reporting/useReportingRun';
 import { registerRuntime, type ExerciseRuntime } from '../exercise/runtime';
 import { gradingContextFrom } from '../simulator/grading';
 import { currentRun } from '../simulator/currentRun';
@@ -26,11 +27,12 @@ import { currentRun } from '../simulator/currentRun';
  * left as it was is the scenario's starting condition and is not offered as their answer.
  *
  * The claim is exactly the exercises the Lab owns: a simulator-family exercise on a runnable
- * scenario that is not the CRM training account, and not a FUNNEL ASSEMBLY — that family runs in
- * the Funnel Lab, which reads funnels rather than workflows (D-121). The CRM runtime claims the
- * CRM account; roleplay scenarios have no simulator run to grade from. `runtimeFor` refuses two
- * claimants, and the test for this module walks every authored exercise to prove there are never
- * two.
+ * scenario that is not one another Lab owns, and not a funnel family — FUNNEL ASSEMBLY and
+ * FUNNEL AUTOPSY run in the Funnel Lab, which reads funnels and their traffic rather than
+ * workflows (D-121, D-146). The CRM runtime claims the CRM account and the Reporting runtime
+ * claims the reporting account; roleplay scenarios have no simulator run to grade from.
+ * `runtimeFor` refuses two claimants, and the test for this module walks every authored exercise
+ * to prove there are never two.
  */
 export const WORKFLOW_RUNTIME_ID = 'workflow-lab';
 
@@ -38,6 +40,7 @@ const scenarios = content.scenarios as unknown as SimulatorScenario[];
 
 const runnable = (scenarioId: string | undefined): SimulatorScenario | null => {
   if (!scenarioId || scenarioId === CRM_SCENARIO_ID) return null;
+  if (scenarioId === DEFAULT_REPORTING_SCENARIO_ID) return null;
   const scenario = scenarios.find((row) => row.id === scenarioId);
   return scenario && validateScenario(scenario).length === 0 ? scenario : null;
 };
@@ -79,6 +82,7 @@ export const workflowExerciseRuntime: ExerciseRuntime = {
   handles: (exercise: Exercise) =>
     SIMULATOR_EXERCISE_TYPES.includes(exercise.type) &&
     exercise.type !== 'FUNNEL_ASSEMBLY' &&
+    exercise.type !== 'FUNNEL_AUTOPSY' &&
     runnable(exercise.scenario) !== null,
   async context(
     exercise: Exercise,
