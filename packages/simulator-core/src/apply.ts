@@ -34,6 +34,13 @@ import { result, type Reducer, type ReducerResult } from './reducers/shared.ts';
 import { workflowCreated, workflowUpdated } from './reducers/definitions.ts';
 import { calendarCreated, calendarUpdated } from './reducers/calendars.ts';
 import { funnelCreated, funnelUpdated } from './reducers/funnels.ts';
+import {
+  funnelFormStarted,
+  funnelScrollRecorded,
+  funnelStepViewed,
+  funnelVisitEnded,
+  funnelVisitStarted,
+} from './reducers/funnelVisits.ts';
 import { notificationSent } from './reducers/notifications.ts';
 import { workflowEnrolled, workflowExited, workflowStepCompleted } from './reducers/workflows.ts';
 import { workflowAdvanced, workflowResumed } from './workflow/traverse.ts';
@@ -107,6 +114,11 @@ const REDUCERS: Record<SimulatorEventType, Reducer> = {
   FUNNEL_UPDATED: funnelUpdated,
   CALENDAR_CREATED: calendarCreated,
   CALENDAR_UPDATED: calendarUpdated,
+  FUNNEL_VISIT_STARTED: funnelVisitStarted,
+  FUNNEL_STEP_VIEWED: funnelStepViewed,
+  FUNNEL_SCROLL_RECORDED: funnelScrollRecorded,
+  FUNNEL_FORM_STARTED: funnelFormStarted,
+  FUNNEL_VISIT_ENDED: funnelVisitEnded,
 };
 
 /** Every catalogue type has a reducer; the type system proves it and this exposes it to tests. */

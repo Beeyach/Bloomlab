@@ -255,6 +255,36 @@ const opportunity = z.strictObject({
   custom_fields: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional(),
 });
 
+/**
+ * What one outside service answers a Webhook action with (SIM-011, D-139).
+ *
+ * Training simulation, not a HighLevel control. Bloomlab makes no request: this is the scenario's
+ * own deterministic reply for one exact URL, so a learner can tell a refused credential from a
+ * service that is down. Anywhere it is shown, the interface says it is the simulator's stand-in
+ * for the outside world rather than something a sub-account holds.
+ */
+const externalEndpoint = z.strictObject({
+  id: z.string().min(1),
+  url: z.string().url(),
+  /** What the service requires before it accepts a call at all. */
+  auth: z
+    .strictObject({
+      /** The header it looks in. Defaults to Authorization, which is what most services use. */
+      header: z.string().trim().min(1).optional(),
+      token: z.string().trim().min(1),
+    })
+    .optional(),
+  ok_status: z.number().int().min(100).max(599).optional(),
+  unauthorized_status: z.number().int().min(400).max(499).optional(),
+  /** When set, the service itself is failing — a different problem from a wrong credential. */
+  outage: z
+    .strictObject({
+      status: z.number().int().min(100).max(599).optional(),
+      kind: z.enum(['server_error', 'unavailable', 'timeout']),
+    })
+    .optional(),
+});
+
 export const AccountStateSchema = z
   .strictObject({
     users: z.array(user).default([]),
@@ -275,6 +305,7 @@ export const AccountStateSchema = z
     products: z.array(product).default([]),
     workflows: z.array(WorkflowDefinitionSchema).default([]),
     funnels: z.array(FunnelDefinitionSchema).default([]),
+    external_endpoints: z.array(externalEndpoint).default([]),
   })
   .superRefine((state, ctx) => {
     requireUnique(
@@ -306,6 +337,20 @@ export const AccountStateSchema = z
       state.funnels.map((f) => f.id),
       ['funnels'],
       'funnel id',
+    );
+    requireUnique(
+      ctx,
+      state.external_endpoints.map((e) => e.id),
+      ['external_endpoints'],
+      'endpoint id',
+    );
+    // Two profiles for one URL would make the answer depend on iteration order, which is exactly
+    // the kind of invisible behaviour a troubleshooting scenario must not have.
+    requireUnique(
+      ctx,
+      state.external_endpoints.map((e) => e.url),
+      ['external_endpoints'],
+      'endpoint URL',
     );
     const contacts = new Set(state.contacts.map((c) => c.id));
     const calendars = new Set(state.calendars.map((c) => c.id));
@@ -469,6 +514,34 @@ const injectableEvent = z.strictObject({
   payload: z.record(z.string(), z.unknown()).default({}),
 });
 
+/**
+ * A staged failure a learner is asked to diagnose (SIM-011, DES-013, D-142).
+ *
+ * Everything here is a case fact — what is wrong from the outside, what the client said, where to
+ * look. Nothing here is the answer. The fault and the fix live in the grading assertions of the
+ * exercise that uses the scenario, so an Incident can be rendered in full without handing the
+ * learner what they were asked to work out (§26, §71).
+ *
+ * `failure_mode` names which of the nine §49 failures this incident stages, so the Incident
+ * surface and the regression fixtures address the same thing by the same name.
+ */
+const incident = z.strictObject({
+  title: title,
+  /** What is observably wrong, stated without naming a cause. */
+  symptom: z.string().trim().min(20),
+  /** What the client actually said, in their words. */
+  client_complaint: z.string().trim().min(20),
+  /** Which of the nine failures this stages. */
+  failure_mode: z.enum(FAILURE_MODES),
+  /** Where to look: the parts of the account this incident is about. */
+  inspect: stringList.min(1),
+  /**
+   * What the learner should do to reproduce it — advancing the clock, sending a test lead. Plain
+   * steps, never "the problem is …".
+   */
+  reproduce: stringList.default([]),
+});
+
 export const ScenarioSchema = z
   .strictObject({
     id: ref('scenarios'),
@@ -483,6 +556,8 @@ export const ScenarioSchema = z
     injectable_events: z.array(injectableEvent).default([]),
     hidden_facts: factRecord.default({}),
     failure_modes: z.array(z.enum(FAILURE_MODES)).default([]),
+    /** The staged failure this scenario is, when it is one (SIM-011, DES-013). */
+    incident: incident.nullable().default(null),
     economics: PricingEconomicsSchema.optional(),
     /** Overrides of the client's hidden roleplay state for this situation (spec §39). */
     hidden_state_overrides: z.record(z.string(), z.number()).default({}),
@@ -495,6 +570,15 @@ export const ScenarioSchema = z
       'event id',
     );
     requireUnique(ctx, scenario.failure_modes, ['failure_modes'], 'failure mode');
+    // An incident is one of the scenario's declared failure modes, so the two can never disagree
+    // about what is being staged.
+    if (scenario.incident && !scenario.failure_modes.includes(scenario.incident.failure_mode)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['incident', 'failure_mode'],
+        message: `${scenario.incident.failure_mode} is not one of this scenario's failure_modes`,
+      });
+    }
   });
 
 export type Scenario = z.infer<typeof ScenarioSchema>;

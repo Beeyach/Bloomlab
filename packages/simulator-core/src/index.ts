@@ -51,6 +51,9 @@ export {
   CALENDAR_TYPES,
   CUSTOM_FIELD_TYPES,
   EMPTY_ANALYTICS,
+  EXTERNAL_FAILURE_KINDS,
+  FUNNEL_REACH_LEVELS,
+  FUNNEL_VISIT_ENDINGS,
   LOCATION_KINDS,
   OPPORTUNITY_STATUSES,
   type Account,
@@ -73,7 +76,13 @@ export {
   type CrmTarget,
   type CustomField,
   type CustomFieldType,
+  type ExternalEndpoint,
+  type ExternalFailureKind,
   type Form,
+  type FunnelReachLevel,
+  type FunnelStepView,
+  type FunnelVisit,
+  type FunnelVisitEnding,
   FUNNEL_BLOCK_REFERENCES,
   FUNNEL_BLOCK_ROLES,
   FUNNEL_STEP_PURPOSES,
@@ -161,7 +170,8 @@ export {
   workflowZone,
   type RunView,
 } from './workflow/view.ts';
-export { waitToken } from './workflow/traverse.ts';
+export { MAX_NODE_VISITS_PER_RUN, waitToken } from './workflow/traverse.ts';
+export { answerFor, endpointFor, readHeaders, type WebhookAnswer } from './workflow/endpoints.ts';
 export { arrivingContacts, workflowReactions } from './workflow/reactions.ts';
 export { readDefinition } from './reducers/definitions.ts';
 export { readFunnel } from './reducers/funnels.ts';
@@ -176,6 +186,44 @@ export {
   type FunnelIssue,
   type FunnelPosition,
 } from './funnel/graph.ts';
+export {
+  METRIC_DEFINITIONS,
+  METRIC_IDS,
+  REPORT_ORDER,
+  type MetricBasis,
+  type MetricDefinition,
+  type MetricId,
+  type MetricUnit,
+} from './reporting/definitions.ts';
+export {
+  mean,
+  median,
+  metric,
+  rate,
+  type MetricInput,
+  type MetricStatus,
+  type MetricValue,
+} from './reporting/provenance.ts';
+export {
+  buildReport,
+  definitionOf,
+  type AppointmentCohort,
+  type ContactSpeed,
+  type Report,
+  type SourceRow,
+  type StageRow,
+} from './reporting/report.ts';
+export {
+  BOOKING_DENOMINATOR,
+  funnelAutopsy,
+  funnelsWithTraffic,
+  type AutopsyDropOffRow,
+  type AutopsyRate,
+  type AutopsyReachRow,
+  type AutopsySourceRow,
+  type FunnelAutopsy,
+} from './reporting/funnelAutopsy.ts';
+export { identifyVisit } from './reducers/funnelVisits.ts';
 export {
   SLOT_COUNT,
   bookableSlots,
@@ -253,6 +301,7 @@ export {
   type FeatureRecord,
   type ScenarioAccountState,
   type ScenarioContact,
+  type ScenarioExternalEndpoint,
   type ScenarioFunnel,
   type ScenarioFunnelBlock,
   type ScenarioFunnelStep,

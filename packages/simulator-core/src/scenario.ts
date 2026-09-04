@@ -20,6 +20,7 @@ import {
   type FunnelBlockRole,
   type FunnelStepPurpose,
   type LocationKind,
+  type ExternalFailureKind,
   type SimulatorState,
   type Workflow,
 } from './state.ts';
@@ -35,6 +36,15 @@ import { SIMULATOR_VERSION } from './version.ts';
  * schema`, the same way the exercise grader accepts an authored exercise without depending on the
  * content package. That keeps the dependency arrow pointing one way.
  */
+
+/** What a service answers with when it is failing and the scenario does not name a status. */
+const DEFAULT_OUTAGE_STATUS: Record<Exclude<ExternalFailureKind, 'auth'>, number> = {
+  server_error: 500,
+  unavailable: 503,
+  // A call that never answers is still a failed action in HighLevel's logs; 504 is how the
+  // simulator represents "nothing came back" without pretending a timer ran.
+  timeout: 504,
+};
 
 export interface ScenarioContact {
   id: string;
@@ -167,6 +177,22 @@ export interface ScenarioAccountState {
     | undefined;
   workflows?: readonly ScenarioWorkflow[] | undefined;
   funnels?: readonly ScenarioFunnel[] | undefined;
+  external_endpoints?: readonly ScenarioExternalEndpoint[] | undefined;
+}
+
+/**
+ * What one outside service answers a Webhook action with (SIM-011, D-139). Training simulation,
+ * not a HighLevel field: Bloomlab makes no request and this is the scenario's own deterministic
+ * reply for a named URL.
+ */
+export interface ScenarioExternalEndpoint {
+  id: string;
+  url: string;
+  auth?: { header?: string | undefined; token: string } | undefined;
+  ok_status?: number | undefined;
+  unauthorized_status?: number | undefined;
+  outage?:
+    { status?: number | undefined; kind: 'server_error' | 'unavailable' | 'timeout' } | undefined;
 }
 
 /**
@@ -881,6 +907,22 @@ export function initialAccount(scenario: SimulatorScenario): AccountState {
     })),
     payments: {},
     funnels,
+    funnel_visits: {},
+    external_endpoints: index(state.external_endpoints, (endpoint) => ({
+      id: endpoint.id,
+      url: endpoint.url,
+      auth: endpoint.auth
+        ? { header: endpoint.auth.header ?? 'Authorization', token: endpoint.auth.token }
+        : null,
+      ok_status: endpoint.ok_status ?? 200,
+      unauthorized_status: endpoint.unauthorized_status ?? 401,
+      outage: endpoint.outage
+        ? {
+            status: endpoint.outage.status ?? DEFAULT_OUTAGE_STATUS[endpoint.outage.kind],
+            kind: endpoint.outage.kind,
+          }
+        : null,
+    })),
     conversations: {},
     workflows,
     workflow_runs: {},

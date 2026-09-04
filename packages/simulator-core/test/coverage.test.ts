@@ -61,9 +61,11 @@ describe('the account holds every domain the spec names (SIM-004)', () => {
     expect(run).toHaveProperty('random');
   });
 
-  it('covers all twenty-two collections §43 lists, counting the event log, plus funnels', () => {
-    // 21 through Phase 12, plus `funnels` for the Funnel Lab (FUN-001).
-    expect(Object.keys(account)).toHaveLength(22);
+  it('covers every collection §43 lists, counting the event log, plus what the Labs added', () => {
+    // 21 through Phase 12, `funnels` for the Funnel Lab (FUN-001), and Phase 15's two:
+    // `funnel_visits` for the Autopsy (FUN-004) and `external_endpoints` for the deterministic
+    // webhook failures troubleshooting needs (SIM-011).
+    expect(Object.keys(account)).toHaveLength(24);
     expect(Array.isArray(run.log)).toBe(true);
   });
 });
@@ -165,10 +167,10 @@ describe('rewind is a real operation (SIM-013)', () => {
 });
 
 describe('the catalogue is exercised, not merely declared', () => {
-  it('names 44 event types and no duplicates', () => {
+  it('names every event type once', () => {
     expect(new Set<SimulatorEventType>(SIMULATOR_EVENT_TYPES).size).toBe(
       SIMULATOR_EVENT_TYPES.length,
     );
-    expect(SIMULATOR_EVENT_TYPES).toHaveLength(46);
+    expect(SIMULATOR_EVENT_TYPES).toHaveLength(51);
   });
 });

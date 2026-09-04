@@ -37,6 +37,12 @@ export const SIMULATOR_EXERCISE_TYPES: readonly ExerciseType[] = [
   'REBUILD_BLIND',
   /** Phase 13: a funnel is assembled in the Funnel Lab, inside the shared account (EXR-011). */
   'FUNNEL_ASSEMBLY',
+  /**
+   * Phase 15: a funnel's own traffic is inspected and diagnosed (EXR-010). A different job from
+   * FUNNEL_ASSEMBLY, which builds architecture — this one reads what visitors actually did, so it
+   * needs a funnel with traffic rather than an empty account to build in (§72).
+   */
+  'FUNNEL_AUTOPSY',
 ];
 
 /** Families that count as "Sales Use" in the coverage matrix (CUR-033). */
@@ -175,6 +181,25 @@ const decisionOption = z.strictObject({
   label: z.string().trim().min(2),
 });
 
+/**
+ * Long-form answers the exercise asks for by name (EXR-010, D-143).
+ *
+ * The runner already collects one piece of writing. Some work needs more than one and needs them
+ * kept apart: a FUNNEL AUTOPSY asks what the problem is and what might explain it, and the whole
+ * lesson is that those are different kinds of statement. One textarea would let them blur, so
+ * each authored field is its own saved answer, graded on its own.
+ *
+ * The fields are content. React renders whatever the exercise authors and knows none of their
+ * names.
+ */
+const writtenField = z.strictObject({
+  key: z.string().regex(/^[a-z][a-z0-9_]*$/, 'Written field keys are lower-case tokens'),
+  label: z.string().trim().min(2),
+  /** The question under the label, in the learner's words. Never a hint at the answer. */
+  help: z.string().trim().min(4),
+  rows: z.number().int().min(2).max(20).default(5),
+});
+
 const responseMarkers = z.record(
   z.string().regex(/^[a-z][a-z0-9_]*$/, 'Marker keys are lower-case tokens'),
   z.array(z.string().trim().min(2)).min(1),
@@ -196,6 +221,8 @@ const startingState = z.strictObject({
   notes: z.string().optional(),
   /** For RUN THE LEAD: the contact that will be enrolled. */
   contact_id: z.string().optional(),
+  /** For FUNNEL AUTOPSY: the funnel whose traffic is being read (EXR-010). */
+  funnel_id: z.string().optional(),
 });
 
 const gradingWeights = z
@@ -239,6 +266,8 @@ export const ExerciseSchema = z
     }),
     hints: z.array(hint).max(3).default([]),
     response_markers: responseMarkers.default({}),
+    /** Named long-form answers, when one textarea is not the right shape (EXR-010). */
+    written_fields: z.array(writtenField).default([]),
     decision_options: z.array(decisionOption).default([]),
     fieldwork: fieldwork.nullable().default(null),
     portfolio: portfolioRef.nullable().default(null),
@@ -255,6 +284,12 @@ export const ExerciseSchema = z
       exercise.decision_options.map((option) => option.value),
       ['decision_options'],
       'decision option',
+    );
+    requireUnique(
+      ctx,
+      exercise.written_fields.map((field) => field.key),
+      ['written_fields'],
+      'written field',
     );
     requireUnique(
       ctx,
@@ -400,6 +435,15 @@ export const ExerciseSchema = z
             issue(at('path'), `answer.${key} needs a response_markers entry named ${key}`);
           }
         }
+        // A check on a named written answer must name a field the exercise actually asks for, or
+        // nothing the learner can type could ever satisfy it.
+        if (root === 'written') {
+          const written = new Set(exercise.written_fields.map((field) => field.key));
+          const field = (rest[0] ?? '').replace(/_mentions$/, '').replace(/_answered$/, '');
+          if (!written.has(field)) {
+            issue(at('path'), `written.${rest.join('.')} needs a written field named ${field}`);
+          }
+        }
         if (
           root === 'decision' &&
           rest[0] === 'reasoning_mentions' &&
@@ -421,6 +465,25 @@ export const ExerciseSchema = z
     );
     if (exercise.type === 'RUN_THE_LEAD' && !exercise.starting_state.contact_id) {
       issue(['starting_state', 'contact_id'], 'RUN THE LEAD names the contact that gets enrolled');
+    }
+    if (exercise.type === 'FUNNEL_AUTOPSY') {
+      if (!exercise.starting_state.funnel_id) {
+        issue(
+          ['starting_state', 'funnel_id'],
+          'FUNNEL AUTOPSY names the funnel whose traffic is being read',
+        );
+      }
+      // The distinction between what is observed and what might explain it is the requirement,
+      // not a presentation choice, so the schema will not let an autopsy collapse them into one.
+      const keys = new Set(exercise.written_fields.map((field) => field.key));
+      for (const required of ['problem', 'hypothesis']) {
+        if (!keys.has(required)) {
+          issue(
+            ['written_fields'],
+            `FUNNEL AUTOPSY asks for a separate ${required}; add a written field named ${required}`,
+          );
+        }
+      }
     }
   });
 

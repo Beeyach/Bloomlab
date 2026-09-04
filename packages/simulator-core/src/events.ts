@@ -66,6 +66,16 @@ export const SIMULATOR_EVENT_TYPES = [
   // object; these two events are Bloomlab's record of one being defined, not GHL triggers.
   'CALENDAR_CREATED',
   'CALENDAR_UPDATED',
+  // Funnel visit telemetry (Phase 15, FUN-004, EXR-010). Simulated visitor behaviour: a visit
+  // begins, meets a step, gets a certain way down it, starts filling something in, and ends.
+  // These are facts about traffic, never derived metrics — there is no REPORT_CALCULATED and no
+  // CONVERSION_RATE_CHANGED, because a rate is something a projection computes, not something
+  // that happens (D-136).
+  'FUNNEL_VISIT_STARTED',
+  'FUNNEL_STEP_VIEWED',
+  'FUNNEL_SCROLL_RECORDED',
+  'FUNNEL_FORM_STARTED',
+  'FUNNEL_VISIT_ENDED',
 ] as const;
 
 export type SimulatorEventType = (typeof SIMULATOR_EVENT_TYPES)[number];

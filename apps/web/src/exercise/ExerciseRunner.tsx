@@ -22,7 +22,7 @@ import {
 import { finalizeAttempt, gradeAttempt, RuntimeUnavailableError } from './finalize';
 import { HintDrawer } from './HintDrawer';
 import { Markdown } from './markdown';
-import { predictionFields } from './response';
+import { predictionFields, writtenOf } from './response';
 import { ResultView } from './ResultView';
 import { canGradeNow, missingSources, SOURCE_DEPENDENCY, SOURCE_PHASE } from './runtime';
 import { MODE_WORDS, treatmentFor } from './runnerCopy';
@@ -143,6 +143,30 @@ function WorkSurface({
           ))}
         </div>
       )}
+
+      {/*
+        Named long-form answers (EXR-010). Each is its own saved field, because for some work the
+        difference between two answers is the whole point: what you observed is not what you think
+        explains it. Nothing is prefilled and nothing is suggested.
+      */}
+      {exercise.written_fields.map((field) => (
+        <label key={field.key} className={styles.field}>
+          <span className={styles.fieldLabel}>{field.label}</span>
+          <textarea
+            className={styles.response}
+            rows={field.rows}
+            value={writtenOf(draft)[field.key] ?? ''}
+            disabled={disabled}
+            aria-describedby={`written-help-${field.key}`}
+            onChange={(event) =>
+              update({ written: { ...writtenOf(draft), [field.key]: event.target.value } })
+            }
+          />
+          <span id={`written-help-${field.key}`} className={styles.help}>
+            {field.help}
+          </span>
+        </label>
+      ))}
 
       <label className={styles.field}>
         <span className={styles.fieldLabel}>{treatment.responseLabel}</span>
