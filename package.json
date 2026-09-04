@@ -42,7 +42,8 @@
     "review:crm-review": "node scripts/review/crm-review-probe.mjs",
     "review:rail": "node scripts/review/rail-probe.mjs",
     "review:workflow": "node scripts/review/workflow-probe.mjs",
-    "review:funnel": "node scripts/review/funnel-probe.mjs"
+    "review:funnel": "node scripts/review/funnel-probe.mjs",
+    "review:calendar": "node scripts/review/calendar-probe.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
