@@ -57,6 +57,19 @@ export interface VisitorRunProps {
   ) => Promise<ExecutionResult | null>;
 }
 
+/**
+ * The exact event-sequence boundary for a visitor session.
+ *
+ * Event sequence is not the same thing as log length: execution records consume sequence numbers
+ * too. Using log length here can make old account events appear under "What the account did" after
+ * a funnel has been saved several times. A session starts after the last event actually in the log.
+ */
+export const visitorLogWatermark = (run: StoredRun): number =>
+  run.state.log.at(-1)?.sequence ?? -1;
+
+export const visitorEventsSince = (run: StoredRun, afterSequence: number) =>
+  run.state.log.filter((event) => event.sequence > afterSequence);
+
 /** One thing the account did because of the visitor, read out of the run's own history. */
 interface ChainEntry {
   sequence: number;
@@ -78,7 +91,7 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
   const [slot, setSlot] = useState<Record<string, string>>({});
   const [refusal, setRefusal] = useState<string | null>(null);
   /** Where in the run's log this visit began, so the chain shows this visit and not the account. */
-  const [from, setFrom] = useState<number>(() => run.state.log.length);
+  const [from, setFrom] = useState<number>(() => visitorLogWatermark(run));
   const [done, setDone] = useState(false);
 
   const step = stepId ? stepOf(funnel, stepId) : null;
@@ -94,7 +107,7 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
     setSlot({});
     setRefusal(null);
     setDone(false);
-    setFrom(run.state.log.length);
+    setFrom(visitorLogWatermark(run));
   };
 
   const known = account.contacts[visitor.contact_id];
@@ -151,9 +164,7 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
   /** What the account did since this visit began, in the run's own order. Read, never invented. */
   const chain: ChainEntry[] = useMemo(
     () =>
-      run.state.log
-        .filter((event) => event.sequence > from)
-        .map((event) => ({
+      visitorEventsSince(run, from).map((event) => ({
           sequence: event.sequence,
           type: contentEventName(event.type),
           at: event.at,

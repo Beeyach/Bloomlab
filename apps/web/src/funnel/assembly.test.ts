@@ -53,8 +53,8 @@ const block = (id: string, role: Block['role'], reference: string | null = null)
   target_step_id: null,
 });
 
-const built = (steps: Funnel['steps']): Funnel => ({
-  id: 'fn-learner',
+const built = (steps: Funnel['steps'], id = 'fn-learner'): Funnel => ({
+  id,
   name: "The learner's funnel",
   steps,
   version: 2,
@@ -165,15 +165,21 @@ const sellsMembership = (): Funnel => {
 };
 
 /** A context built the way the runtime builds one: real account, the learner's own funnel. */
-function contextFor(funnel: Funnel): GradingContext {
+function contextForFunnels(funnels: Funnel[]): GradingContext {
   const account = initialAccount(scenario());
-  const withFunnel = { ...account, funnels: { ...account.funnels, [funnel.id]: funnel } };
+  const withFunnels = {
+    ...account,
+    funnels: {
+      ...account.funnels,
+      ...Object.fromEntries(funnels.map((funnel) => [funnel.id, funnel])),
+    },
+  };
   const architecture: GradingArchitecture = {
     workflows: [],
-    funnels: learnerFunnels(withFunnel, scenario()),
+    funnels: learnerFunnels(withFunnels, scenario()),
   };
   return {
-    state: withFunnel as unknown as Record<string, unknown>,
+    state: withFunnels as unknown as Record<string, unknown>,
     events: [],
     references: {},
     architecture,
@@ -181,8 +187,17 @@ function contextFor(funnel: Funnel): GradingContext {
   };
 }
 
+const contextFor = (funnel: Funnel): GradingContext => contextForFunnels([funnel]);
+
 const report = (funnel: Funnel) =>
   gradeExercise({ exercise: exercise(), context: contextFor(funnel), assistance: 'independent' });
+
+const reportMany = (funnels: Funnel[]) =>
+  gradeExercise({
+    exercise: exercise(),
+    context: contextForFunnels(funnels),
+    assistance: 'independent',
+  });
 
 const failedIds = (funnel: Funnel): string[] => {
   const result = report(funnel);
@@ -240,6 +255,81 @@ describe('EXR-011: more than one valid architecture passes', () => {
     expect(result.failed_critical).toEqual(['c1']);
     // Every scored check still passed; the critical gate is what failed it (D-067).
     expect(result.counts.scored_passed).toBe(result.counts.scored_total);
+  });
+
+  it('does not average away a missing core booking requirement', () => {
+    const captureOnly = built([
+      {
+        id: 'st-capture',
+        name: 'Strong capture page',
+        purpose: 'capture',
+        next_step_id: null,
+        blocks: [
+          block('b1', 'headline'),
+          block('b2', 'outcome'),
+          block('b3', 'proof'),
+          block('b4', 'form', 'consult-request'),
+        ],
+      },
+    ]);
+    const result = report(captureOnly);
+    expect(result.score).toBeGreaterThanOrEqual(result.pass_threshold);
+    expect(result.outcome).toBe('failed');
+    expect(result.reason).toBe('required_failure');
+  });
+
+  it('never combines two incomplete funnels into one imaginary passing solution', () => {
+    const capture = built(
+      [
+        {
+          id: 'st-capture',
+          name: 'Capture half',
+          purpose: 'capture',
+          next_step_id: null,
+          blocks: [
+            block('a1', 'headline'),
+            block('a2', 'outcome'),
+            block('a3', 'proof'),
+            block('a4', 'form', 'consult-request'),
+          ],
+        },
+      ],
+      'fn-capture-half',
+    );
+    const booking = built(
+      [
+        {
+          id: 'st-book',
+          name: 'Booking half',
+          purpose: 'booking',
+          next_step_id: null,
+          blocks: [block('b1', 'headline'), block('b2', 'calendar', 'consultation')],
+        },
+      ],
+      'fn-booking-half',
+    );
+
+    const result = reportMany([capture, booking]);
+    expect(result.outcome).toBe('failed');
+    expect(result.reason).toBe('required_failure');
+  });
+
+  it('can ignore an unrelated draft when one complete funnel is a valid answer', () => {
+    const draft = built(
+      [
+        {
+          id: 'st-draft',
+          name: 'Unfinished idea',
+          purpose: 'content',
+          next_step_id: null,
+          blocks: [block('d1', 'headline')],
+        },
+      ],
+      'fn-unfinished',
+    );
+    const result = reportMany([draft, orderingB()]);
+    expect(result.outcome).toBe('passed');
+    expect(result.counts.unevaluated).toBe(0);
   });
 
   it('grades the same funnel the same way every time', () => {

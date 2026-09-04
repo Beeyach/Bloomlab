@@ -20,6 +20,7 @@ import {
   submitSurvey,
   type Visitor,
 } from './commands';
+import { visitorEventsSince, visitorLogWatermark } from './VisitorRun';
 
 /**
  * FUN-003: submitting a form in the Funnel Lab creates real CRM data and fires the workflow,
@@ -333,6 +334,43 @@ describe('the rest of the visitor’s funnel reaches the same account', () => {
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.refusal.code).toBe('UNKNOWN_ENTITY');
+  });
+});
+
+describe('the visitor chain starts at the real event sequence', () => {
+  it('does not leak earlier funnel saves into What the account did', async () => {
+    let current = run;
+    let funnel = consultFunnel();
+
+    for (const name of ['Consultation funnel', 'Consultation funnel v2', 'Consultation funnel v3']) {
+      funnel = { ...funnel, name };
+      const saved = await saveFunnel(current, scenario(), funnel, options());
+      expect(saved.ok).toBe(true);
+      if (!saved.ok) return;
+      current = saved.run;
+    }
+
+    const watermark = visitorLogWatermark(current);
+    expect(watermark).toBe(current.state.log.at(-1)?.sequence);
+    expect(watermark).toBeGreaterThan(current.state.log.length);
+
+    const visitor = newVisitor();
+    const submitted = await submitForm(
+      current,
+      scenario(),
+      visitor,
+      'consult-request',
+      { first_name: 'Priya', email: 'priya@example.com' },
+      options(),
+    );
+    expect(submitted.ok).toBe(true);
+    if (!submitted.ok) return;
+
+    const visit = visitorEventsSince(submitted.run, watermark);
+    expect(visit[0]?.type).toBe('FORM_SUBMITTED');
+    expect(visit.every((event) => event.sequence > watermark)).toBe(true);
+    expect(visit.some((event) => event.type === 'FUNNEL_CREATED')).toBe(false);
+    expect(visit.some((event) => event.type === 'FUNNEL_UPDATED')).toBe(false);
   });
 });
 

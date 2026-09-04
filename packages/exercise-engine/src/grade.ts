@@ -103,7 +103,7 @@ const emptyTiers = (): Record<AssertionTier, AssertionResult[]> => ({
  * Pure: same exercise plus same context always produces the same report, and nothing here reads
  * the clock, the network or a random source.
  */
-export function gradeExercise(input: GradeInput): GradeReport {
+function gradeOne(input: GradeInput): GradeReport {
   const { exercise, context } = input;
   const hints = input.hints_used ?? [];
   const assistance = input.assistance ?? assistanceFromHints([...hints]);
@@ -137,6 +137,10 @@ export function gradeExercise(input: GradeInput): GradeReport {
       ? null
       : Math.round((scoredPassed / scored.length) * 100);
   const failedCritical = tiers.critical.filter((result) => !result.passed && !result.unevaluated);
+  const failedRequired =
+    exercise.type === 'FUNNEL_ASSEMBLY'
+      ? tiers.required.filter((result) => !result.passed && !result.unevaluated)
+      : [];
   const rubricPending =
     exercise.grading.mode === 'deterministic' ? null : (exercise.grading.rubric ?? null);
 
@@ -144,6 +148,9 @@ export function gradeExercise(input: GradeInput): GradeReport {
     // A dangerous failure ends it, whatever the number says (MAS-004).
     if (failedCritical.length > 0) return { outcome: 'failed', reason: 'critical_failure' };
     if (unevaluated.length > 0) return { outcome: 'partial', reason: 'unevaluated_assertions' };
+    // A FUNNEL ASSEMBLY brief names structural constraints as required. Missing one cannot be
+    // averaged away by quality points from the rest of the page (EXR-011, D-125).
+    if (failedRequired.length > 0) return { outcome: 'failed', reason: 'required_failure' };
     // A rubric this phase cannot evaluate is never quietly treated as passed (AI-006).
     if (rubricPending) return { outcome: 'partial', reason: 'rubric_pending' };
     if (score === null) return { outcome: 'partial', reason: 'nothing_to_grade' };
@@ -173,4 +180,53 @@ export function gradeExercise(input: GradeInput): GradeReport {
     },
     rubric_pending: rubricPending,
   };
+}
+
+const OUTCOME_RANK: Record<GradeReport['outcome'], number> = {
+  failed: 0,
+  partial: 1,
+  passed: 2,
+};
+
+/**
+ * A FUNNEL ASSEMBLY answer is one funnel, never a collage of several funnels in the account.
+ *
+ * The Lab deliberately allows several funnels. If the learner has more than one, grade each
+ * candidate independently and keep the strongest complete report. Sorting by id makes an exact
+ * tie deterministic. This lets an unrelated draft coexist with a valid answer, while preventing
+ * a form in funnel A and a calendar in funnel B from being combined into one imaginary solution.
+ */
+function strongerFunnelReport(candidate: GradeReport, current: GradeReport): GradeReport {
+  const rank = OUTCOME_RANK[candidate.outcome] - OUTCOME_RANK[current.outcome];
+  if (rank !== 0) return rank > 0 ? candidate : current;
+
+  const critical =
+    current.failed_critical.length - candidate.failed_critical.length;
+  if (critical !== 0) return critical > 0 ? candidate : current;
+
+  const candidateScore = candidate.score ?? -1;
+  const currentScore = current.score ?? -1;
+  return candidateScore > currentScore ? candidate : current;
+}
+
+export function gradeExercise(input: GradeInput): GradeReport {
+  const architecture = input.context.architecture;
+  const funnels =
+    input.exercise.type === 'FUNNEL_ASSEMBLY' ? (architecture?.funnels ?? []) : [];
+
+  if (!architecture || funnels.length <= 1) return gradeOne(input);
+
+  const candidates = [...funnels].sort((a, b) => a.id.localeCompare(b.id));
+  let best: GradeReport | null = null;
+  for (const funnel of candidates) {
+    const report = gradeOne({
+      ...input,
+      context: {
+        ...input.context,
+        architecture: { ...architecture, funnels: [funnel] },
+      },
+    });
+    best = best ? strongerFunnelReport(report, best) : report;
+  }
+  return best ?? gradeOne(input);
 }

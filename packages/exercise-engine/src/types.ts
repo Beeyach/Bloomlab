@@ -221,6 +221,7 @@ export type GradeOutcome = 'passed' | 'failed' | 'partial';
 export type GradeReason =
   /** A critical assertion failed; the numeric score cannot override it (MAS-004). */
   | 'critical_failure'
+  | 'required_failure'
   | 'below_threshold'
   | 'threshold_met'
   /** The exercise names a rubric, which a later phase evaluates (AI-006, Phase 19). */
