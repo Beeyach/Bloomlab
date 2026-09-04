@@ -1,0 +1,32 @@
+# Verified 2026-09-04. The build environment's egress proxy blocks help.gohighlevel.com, so this
+# record was checked against search-result summaries of the official articles rather than by
+# opening them: "How to Launch a HighLevel Funnel" (Sites -> Funnels -> New Funnel, build from a
+# template or blank, add forms, edit pages, connect a domain) and "Websites Overview" (a funnel is
+# a step-by-step series of pages for one purpose, such as capturing leads or booking).
+id: GHL-FUNNEL-FUNNELS
+official_name: Funnels
+area: Funnels & Websites
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000005057-getting-started-launch-a-funnel
+known_limitations:
+  - Simulated — a funnel as ordered steps, what each step is for, what is on each step in order, and which account form, survey, calendar or product a step uses.
+  - Not simulated — the page editor, sections, rows, columns, elements, styling, templates, domains, tracking pixels, split tests, AI page generation or publishing.
+  - Bloomlab's step purposes and block roles are its own conversion vocabulary, not HighLevel controls; the interface says so on every one.
+skills:
+  - SK-BUILD-lead-capture-form
+supported_configs:
+  config_fields:
+    - name: steps
+      type: json
+      required: true
+      description: Ordered funnel steps, each with a purpose and its ordered blocks.
+    - name: next_step_id
+      type: string
+      required: false
+      description: Where a completed step sends the visitor.
+approximation_note: Training approximation — Bloomlab simulates a funnel's conversion architecture, not HighLevel's page builder. Layout, styling and publishing are practised in GHL.
+verification_note: Location (Sites → Funnels) and the step-series model confirmed through search-result summaries of the official articles on 2026-09-04; the help centre itself is unreachable from this build environment.

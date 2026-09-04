@@ -212,10 +212,10 @@ Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine a
 
 ## Phase 13 — Funnel Lab
 
-- **FUN-001** All eight capabilities present; device preview switches between three widths.
-- **FUN-002** BUILD, PREVIEW, SIMULATE modes switch and persist.
-- **FUN-003** Submitting a form in SIMULATE creates a contact and fires the connected workflow (scenario test).
-- **EXR-011** FUNNEL ASSEMBLY accepts more than one valid ordering for a scenario with multiple solutions.
+- **FUN-001** All eight capabilities present; device preview switches between three widths. *Evidence: `funnel.test.ts`, `edit.test.ts`, `funnelScreen.test.tsx`, probe sections `build-core-actions`, `preview-device-switch`, `simulate-form-chain`, `simulate-booking`. Checkout is the account's own product and one payment; the Payments Lab boundary is stated in the interface and the registry (D-124).*
+- **FUN-002** BUILD, PREVIEW, SIMULATE modes switch and persist. *Evidence: the mode and the preview width are read back after a remount and after a reload from the device record (D-120); probe section `mode-persists`.*
+- **FUN-003** Submitting a form in SIMULATE creates a contact and fires the connected workflow (scenario test). *Evidence: `chain.test.ts` over `SC-glowhaus-funnel`, asserted on the run's own log — the generated `CONTACT_CREATED`, the enrolment the matcher decided, and the tag and text the workflow's nodes produced; probe section `simulate-form-chain`. The refusal paths are covered too, and no test injects `WORKFLOW_ENROLLED`.*
+- **EXR-011** FUNNEL ASSEMBLY accepts more than one valid ordering for a scenario with multiple solutions. *Evidence: `assembly.test.ts` grades two structurally different funnels — a two-step capture-then-book and a three-step qualify-capture-book with proof on a different step — against the same authored exercise and expects both to pass; a wrong architecture fails and the critical gate holds at a full score.*
 
 ## Phase 14 — Calendar Lab
 

@@ -5,6 +5,7 @@ import {
   IconBolt,
   IconCampaign,
   IconChat,
+  IconFunnel,
   IconHome,
   IconInfo,
   IconMap,
@@ -42,6 +43,7 @@ const AREAS: Area[] = [
   { to: '/skills', label: 'Skill Map', icon: IconMap },
   { to: '/workflow', label: 'Workflow', icon: IconBolt },
   { to: '/crm', label: 'CRM', icon: IconRecords },
+  { to: '/funnel', label: 'Funnel', icon: IconFunnel },
   { to: '/conversations', label: 'Inbox', icon: IconChat },
   { to: '/playground', label: 'Playground', icon: IconSandbox },
 ];

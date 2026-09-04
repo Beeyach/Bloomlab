@@ -1,0 +1,26 @@
+# Verified 2026-09-04 against search-result summaries of "Create Forms and Surveys in HighLevel
+# Funnel and Website Builder" — forms and surveys are created and managed in the builder and can
+# be placed on a funnel or website page. The help centre is unreachable from this build
+# environment (egress proxy), so this was not read directly.
+id: GHL-FORM-SURVEYS
+official_name: Surveys
+area: Forms & Surveys
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000006719-create-forms-surveys-inside-the-site-builder
+known_limitations:
+  - Simulated — ordered questions mapped to contact fields; a submission creates or updates a contact and fires Survey Submitted.
+  - Not simulated — multi-page surveys, conditional logic, scoring, disqualification, styling or embed modes.
+skills:
+  - SK-BUILD-lead-capture-form
+supported_configs:
+  config_fields:
+    - name: fields
+      type: json
+      required: true
+      description: Ordered questions mapped to standard and custom contact fields.
+approximation_note: Training approximation — survey submissions create or update contacts and fire Survey Submitted; the question builder, logic and scoring are practised in GHL.
+verification_note: Name and builder location confirmed through a search-result summary of the official article on 2026-09-04; the help centre is blocked from this build environment.

@@ -15,7 +15,7 @@ import {
 } from './scenario.ts';
 import { compareScheduled, partitionDue, peek, type ScheduledEvent } from './scheduler.ts';
 import type { SimulatorDiagnostic, SimulatorState } from './state.ts';
-import { workflowReactions } from './workflow/reactions.ts';
+import { arrivingContacts, workflowReactions } from './workflow/reactions.ts';
 import { addDays, addHours, addMinutes, instant, isAfter, toZone } from './time.ts';
 
 /**
@@ -159,7 +159,14 @@ export function processEvent(state: SimulatorState, pending: PendingEvent): Simu
     // its own tag from enrolling itself forever (D-101).
     const changedNothing =
       outcome.records.length > 0 && outcome.records.every((row) => row.kind === 'action_skipped');
-    if (!changedNothing) frontier.push(...workflowReactions(event, current.account, current));
+    if (!changedNothing) {
+      // A submission by someone new creates the contact in a generated event that is already
+      // ahead of this enrolment on the frontier; the matcher is told who is arriving so it can
+      // enrol them rather than refuse a contact that exists one event later (D-123).
+      frontier.push(
+        ...workflowReactions(event, current.account, current, arrivingContacts(outcome.generated)),
+      );
+    }
   }
 
   return current;

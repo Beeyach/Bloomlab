@@ -1,8 +1,7 @@
 # Release stamp of the curriculum (spec §101, CNT-007). Bump content_version whenever any file
 # under content/ changes, then run `npm run content:lock`. Git = what Bloomlab teaches.
-content_version: '2026.09.07'
+content_version: '2026.09.08'
 schema_version: 1
 notes: >-
-  Phase 12 — the Workflow Settings registry record, re-verified wait, appointment and reply
-  records (cancellation and reschedule behaviour, filters), structured wait and If/Else configs,
-  and grading purposes on the authored SMS steps.
+  Phase 13 — the Funnel Lab's training account (SC-glowhaus-funnel), the FUNNEL ASSEMBLY exercise
+  with partial-order architecture checks, and registry records for Funnels, Surveys and Products.

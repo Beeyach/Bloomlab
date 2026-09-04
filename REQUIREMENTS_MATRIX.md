@@ -109,7 +109,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-008 | WHAT WOULD YOU BUILD?: business problem without naming the GHL feature under test; multiple valid architectures accepted; AI used only where open-ended reasoning requires it. | P1 | 9 | PARTIAL | §27 |
 | EXR-009 | ARCHITECTURE DECISION: tag vs custom field vs custom value vs opportunity field vs custom object; multiple-choice support removed at later levels. | P1 | 9 | PARTIAL | §27 |
 | EXR-010 | FUNNEL AUTOPSY: simulated page plus data; inspect traffic source, conversion rate, scroll behavior, form completion, booking rate, drop-off; learner must separate problem from hypothesis. | P1 | 15 | NOT_STARTED | §27 |
-| EXR-011 | FUNNEL ASSEMBLY: blocks or blank architecture; learner creates page/funnel information structure; no forced universal order where several are valid. | P1 | 13 | NOT_STARTED | §27 |
+| EXR-011 | FUNNEL ASSEMBLY: blocks or blank architecture; learner creates page/funnel information structure; no forced universal order where several are valid. Phase 13: `EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel` is graded from the learner's own funnel through the Funnel Lab runtime (D-121) with partial-order architecture rules (D-122); two structurally different funnels both pass, a wrong one fails, and the critical failure gates at any score. | P1 | 13 | PASSED | §27 |
 | EXR-012 | PROSPECT IT: multiple fake businesses; learner decides Contact / Maybe / Skip with required reasoning. | P1 | 16 | NOT_STARTED | §27 |
 | EXR-013 | AUDIT IT: findings forced into Verified / Likely / Unknown. | P1 | 16 | NOT_STARTED | §27 |
 | EXR-014 | WRITE IT: cold email, follow-up, interested reply, discovery recap, proposal explanation, client update, scope response, payment reminder, upsell, breakup email; AI rubric where needed. | P1 | 16 | NOT_STARTED | §27 |
@@ -122,7 +122,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-021 | BOSS CLIENT: persistent multi-stage engagement (audit → discovery → architecture → pricing → negotiation → proposal → implementation → QA → launch → reporting → change request); earlier decisions affect later consequences. | P1 | 24 | NOT_STARTED | §27 |
 | EXR-022 | Hint system: Nudge, Concept Reminder, Worked Example; assistance tracked per attempt. | P1 | 9 | PASSED | §28 |
 | EXR-023 | Workflow scoring example (correctness 45%, edge cases 20%, architecture 15%, maintainability 10%, explanation 10%) with critical-failure override. Phase 12: weighted dimensions with critical override in `packages/exercise-engine` (D-113, `grade.test.ts`) and applied to the authored workflow exercises (`authoredGrading.test.ts`). | P1 | 12 | PASSED | §31 |
-| EXR-024 | No stub / no static replacement: a requirement that logs to console, shows fake success, is a static placeholder, says "coming soon", works only for a screenshot, or opens a nonfunctional modal stays PARTIAL. Interactive simulation is never replaced by a diagram, negotiation by an article, Funnel Autopsy by a quiz. Phase 12: no stub added; every Lab surface runs the engine. | P0 | all | PARTIAL | §129, §130 |
+| EXR-024 | No stub / no static replacement: a requirement that logs to console, shows fake success, is a static placeholder, says "coming soon", works only for a screenshot, or opens a nonfunctional modal stays PARTIAL. Interactive simulation is never replaced by a diagram, negotiation by an article, Funnel Autopsy by a quiz. Phase 13: no stub added; the Funnel Lab's every mode runs the engine, and the one scope boundary (checkout beyond a single payment) is named in the interface and the registry rather than faked (D-124). Phase 12: no stub added; every Lab surface runs the engine. | P0 | all | PARTIAL | §129, §130 |
 
 ## SIM — Simulator Core
 
@@ -144,7 +144,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | SIM-014 | Heavy simulation runs in a browser Web Worker where beneficial; UI never blocks during large workflow executions. Phase 12: one execution door on a stateless Web Worker with the same handler as the direct path (D-109); parity and crash tests; 504 events in the probe at p95 43.5 ms per frame with no long task over 100 ms. | P1 | 12 | PASSED | §97, TA§27 |
 | SIM-015 | Playground: once a feature is unlocked it stays available for free experimentation without an assigned exercise. Phase 12: `/playground` lists every unlocked feature by the D-111 rule on a sandbox with no exercise (`unlocks.test.ts`, `playgroundScreen.test.tsx`, probe `playground`). | P1 | 12 | PASSED | §61 |
 | SIM-016 | Workflow definition schema: `id, name, trigger, trigger_filters, nodes[], edges[], settings`; node `id, type, ghl_feature_id, config, position`. Layout is separate from behavior — moving a node never changes automation. | P0 | 10 | PASSED | TA§28 |
-| SIM-017 | Simulator regression suite with fixture IDs (e.g. WAIT-001 fixed wait, WAIT-002 appointment-relative, WAIT-003 late enrollment, WAIT-004 cancellation during wait). Every bug fix adds a regression fixture. CI fails on regression. | P0 | 10 | PASSED | §133, TA§74 |
+| SIM-017 | Simulator regression suite with fixture IDs (e.g. WAIT-001 fixed wait, WAIT-002 appointment-relative, WAIT-003 late enrollment, WAIT-004 cancellation during wait). Every bug fix adds a regression fixture. CI fails on regression. Phase 13 adds FORM-002 (the D-123 trigger fix), FORM-003, FORM-004 and FUNNEL-001. | P0 | 10 | PASSED | §133, TA§74 |
 | SIM-018 | Replay and reset of any scenario. | P0 | 10 | PASSED | §145 |
 | SIM-019 | Simulator has its own version; attempts record `simulator_version`. | P0 | 10 | PASSED | §101, TA§56 |
 
@@ -179,9 +179,9 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| FUN-001 | Funnel Lab is a conversion architecture simulator (not a page-builder replacement): funnel steps, page structure blocks, forms, surveys, calendar, checkout concepts, mobile/tablet/desktop preview, simulated visitor. | P1 | 13 | NOT_STARTED | §56 |
-| FUN-002 | Modes BUILD / PREVIEW / SIMULATE. | P1 | 13 | NOT_STARTED | §56 |
-| FUN-003 | Submitting a form in Funnel Lab creates real simulated CRM data and fires workflows through the shared account. | P0 | 13 | NOT_STARTED | §56, §41 |
+| FUN-001 | Funnel Lab is a conversion architecture simulator (not a page-builder replacement): funnel steps, page structure blocks, forms, surveys, calendar, checkout concepts, mobile/tablet/desktop preview, simulated visitor. Phase 13: all eight are real at `/funnel` over the shared account (D-118, D-119) and verified by the 16-section funnel probe in Chrome; checkout is the account's own product and payment, with its Phase 18 boundary stated (D-124). | P1 | 13 | PASSED | §56 |
+| FUN-002 | Modes BUILD / PREVIEW / SIMULATE. Phase 13: the three modes switch, and the mode and the preview width persist on the device record (D-120) across a reload, verified by the screen test and the probe. | P1 | 13 | PASSED | §56 |
+| FUN-003 | Submitting a form in Funnel Lab creates real simulated CRM data and fires workflows through the shared account. Phase 13: one real `FORM_SUBMITTED` through the Phase 12 execution door generates `CONTACT_CREATED` or `CONTACT_UPDATED` on the ordinary path, and the engine's own matcher enrols the connected workflow; nothing writes a contact and nothing injects `WORKFLOW_ENROLLED`. Fixing the D-123 trigger gap was what made this true for a brand-new lead. | P0 | 13 | PASSED | §56, §41 |
 | FUN-004 | Funnel Autopsy data inspection: traffic source, conversion rate, scroll behavior, form completion, booking rate, drop-off. | P1 | 15 | NOT_STARTED | §27 |
 
 ## CAL — Calendar Lab
@@ -334,14 +334,14 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | RSP-001 | Required review widths: 1440, 1024, 768, 390, 320. | P0 | all | IN_PROGRESS | §82 |
 | RSP-002 | Tablet is first class; mobile is recomposed, not shrunk. | P0 | all | IN_PROGRESS | §82 |
 | RSP-003 | No critical desktop feature disappears on mobile because responsive work is difficult; recompose instead. | P0 | all | IN_PROGRESS | §82, §131 |
-| RSP-004 | Mobile recompositions: Workflow → vertical step editor; CRM → stage view / local horizontal scroller; Academy → editorial reading; Call Room → mobile-first voice; Inbox → natural conversation flow; Skill Map → territory-first. Phase 12: Workflow → vertical step editor holds at 390 and 320 (probe). Call Room and Inbox recompositions belong to Phase 21 and later. | P1 | 12 | PARTIAL | §83 |
+| RSP-004 | Mobile recompositions: Workflow → vertical step editor; CRM → stage view / local horizontal scroller; Academy → editorial reading; Call Room → mobile-first voice; Inbox → natural conversation flow; Skill Map → territory-first. Phase 13: Funnel → the step list and the block inspector become labelled sheets on phones and every mode stays operable at 390 and 320 (probe). Phase 12: Workflow → vertical step editor holds at 390 and 320 (probe). Call Room and Inbox recompositions belong to Phase 21 and later. | P1 | 12 | PARTIAL | §83 |
 | RSP-005 | Preview deployments for substantial branches/PRs inspectable on a phone before merge. | P2 | 1 | PASSED | TA§76 |
 
 ## A11Y — Accessibility
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| A11Y-001 | Full keyboard operability of core flows. | P0 | 2 | PARTIAL | §84 |
+| A11Y-001 | Full keyboard operability of core flows. Phase 13: the Funnel Lab's reorder is reached by Tab with a visible ring and activated by Enter — there is no drag-only path anywhere in it (probe `keyboard-reorder`). | P0 | 2 | PARTIAL | §84 |
 | A11Y-002 | Visible focus states. | P0 | 2 | PASSED | §84 |
 | A11Y-003 | Accessible labels on controls and inputs. | P0 | 2 | PASSED | §84 |
 | A11Y-004 | Sufficient contrast, including text over holographic surfaces. | P0 | 2 | PASSED | §84 |

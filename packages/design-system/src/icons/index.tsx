@@ -174,6 +174,13 @@ export const IconMap = (p: IconProps) => (
     <path d="M9 4v14M15 6v14" />
   </Icon>
 );
+/** A funnel: three stacked steps narrowing to the ask. The Funnel Lab's destination (FUN-001). */
+export const IconFunnel = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 5h16l-6 7v7l-4-2v-5z" />
+  </Icon>
+);
+
 export const IconChat = (p: IconProps) => (
   <Icon {...p}>
     <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-5 4z" />

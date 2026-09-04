@@ -12,6 +12,17 @@ export {
   WorkflowDefinitionSchema,
   type WorkflowDefinition,
 } from './workflow.ts';
+export {
+  FUNNEL_BLOCK_REFERENCES,
+  FUNNEL_BLOCK_ROLES,
+  FUNNEL_STEP_PURPOSES,
+  FunnelBlockSchema,
+  FunnelDefinitionSchema,
+  FunnelStepSchema,
+  type FunnelBlockRole,
+  type FunnelDefinition,
+  type FunnelStepPurpose,
+} from './funnel.ts';
 export { SkillSchema, type Skill } from './skill.ts';
 export {
   FEATURE_AREAS,

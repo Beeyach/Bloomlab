@@ -26,9 +26,11 @@ import { currentRun } from '../simulator/currentRun';
  * left as it was is the scenario's starting condition and is not offered as their answer.
  *
  * The claim is exactly the exercises the Lab owns: a simulator-family exercise on a runnable
- * scenario that is not the CRM training account. The CRM runtime claims that account; roleplay
- * scenarios have no simulator run to grade from. `runtimeFor` refuses two claimants, and the
- * test for this module walks every authored exercise to prove there are never two.
+ * scenario that is not the CRM training account, and not a FUNNEL ASSEMBLY — that family runs in
+ * the Funnel Lab, which reads funnels rather than workflows (D-121). The CRM runtime claims the
+ * CRM account; roleplay scenarios have no simulator run to grade from. `runtimeFor` refuses two
+ * claimants, and the test for this module walks every authored exercise to prove there are never
+ * two.
  */
 export const WORKFLOW_RUNTIME_ID = 'workflow-lab';
 
@@ -75,7 +77,9 @@ export const workflowExerciseRuntime: ExerciseRuntime = {
   id: WORKFLOW_RUNTIME_ID,
   provides: ['state', 'events', 'references', 'architecture'],
   handles: (exercise: Exercise) =>
-    SIMULATOR_EXERCISE_TYPES.includes(exercise.type) && runnable(exercise.scenario) !== null,
+    SIMULATOR_EXERCISE_TYPES.includes(exercise.type) &&
+    exercise.type !== 'FUNNEL_ASSEMBLY' &&
+    runnable(exercise.scenario) !== null,
   async context(
     exercise: Exercise,
     learner: Record<string, unknown>,

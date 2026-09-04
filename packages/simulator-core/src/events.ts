@@ -55,6 +55,12 @@ export const SIMULATOR_EVENT_TYPES = [
   'NOTIFICATION_SENT',
   /** An inbound email reply (CONV-001). SMS_RECEIVED has had this counterpart since Phase 12. */
   'EMAIL_RECEIVED',
+  // Funnel Lab (Phase 13). Bloomlab's own record of a funnel's conversion architecture being
+  // defined, exactly as WORKFLOW_CREATED / WORKFLOW_UPDATED record a workflow's. Funnels are a
+  // native HighLevel object; these two events are not HighLevel triggers and nothing presents
+  // them as one (D-092, D-119).
+  'FUNNEL_CREATED',
+  'FUNNEL_UPDATED',
 ] as const;
 
 export type SimulatorEventType = (typeof SIMULATOR_EVENT_TYPES)[number];

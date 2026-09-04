@@ -2,16 +2,16 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-07 (end of Phase 12)
+Last updated: 2026-09-08 (end of Phase 13)
 
 ## Current state
 
-- The product has curriculum content compiled in (Phase 5), a working learning engine over it (Phase 6), the Command Center, Campaign and Skill Map (Phase 7), the Academy (Phase 8), the exercise runner (Phase 9), the simulator core (Phase 10), the CRM Lab (Phase 11) and the Workflow Lab with Conversations and the Playground (Phase 12). Five exercise families are graded from real runs; Run the Lead and Edge Case still carry the gaps recorded under Phase 12. Evidence that no runnable family produces still enters through the diagnostic form on `/system`.
+- The product has curriculum content compiled in (Phase 5), a working learning engine over it (Phase 6), the Command Center, Campaign and Skill Map (Phase 7), the Academy (Phase 8), the exercise runner (Phase 9), the simulator core (Phase 10), the CRM Lab (Phase 11), the Workflow Lab with Conversations and the Playground (Phase 12) and the Funnel Lab (Phase 13). Five exercise families are graded from real runs; Run the Lead and Edge Case still carry the gaps recorded under Phase 12. Evidence that no runnable family produces still enters through the diagnostic form on `/system`.
 - `/system` (diagnostics) and `/design` (gallery) exist only in local and preview environments; both are off in production by flag.
 - The semantic components are presentational: Phase 7 wires SkillCard, HoloTerritory, MasteryBadge and StatusPill to the learning engine; the simulator components are wired by their phases. Prop shapes may still change when those data models land; they share tokens, so the visual language will not.
 - Deployment is live: every push to `main` deploys the `bloomlab` Worker (https://bloomlab.cool-sunset-2169.workers.dev) and every pull request redeploys the single shared `bloomlab-preview` Worker (D-020). Both hosts are public `workers.dev` URLs serving the foundation app with no learner data. D1 databases and R2 buckets do not exist yet (Phase 4).
 - The dev machine runs Node 22.18 while `engines.node` is `>=22.22.0` (react-router 8's floor). Everything works locally with npm engine warnings; CI uses the latest 22.x.
-- GHL feature names are verified only for the 34 registry records (Phase 5); the gallery samples in `/design` still use illustrative labels and are not wired to the registry (GHL-005 / GHL-010 apply from the screens onward).
+- GHL feature names are verified only for the 41 registry records; the gallery samples in `/design` still use illustrative labels and are not wired to the registry (GHL-005 / GHL-010 apply from the screens onward).
 - The ~128k ElevenLabs credits have an expiry window; voice asset generation (VOI-005) is scheduled for Phase 20. Risk: credits expire before Phase 20. By design this is not a functional dependency.
 - Prettier does not format Markdown (`*.md` is ignored) so the control documents keep their hand-laid tables.
 
@@ -205,3 +205,56 @@ Last updated: 2026-09-07 (end of Phase 12)
 | `GHL-WF-WEBHOOK` | B | Recorded with a simulated 200 response; nothing is sent. | The build environment has no egress and a learner's sandbox should not either. |
 | `GHL-WF-CREATE-UPDATE-OPPORTUNITY` | A | Creates or moves the contact's opportunity in a pipeline and stage. HighLevel is phasing the combined action out. | The name learners still see. |
 | `GHL-WF-REMOVE-FROM-WORKFLOW` | A | This workflow, all workflows, or a named one. The exact option labels could not be confirmed. | Stated in the record. |
+
+## Phase 13 — Funnel Lab
+
+- **The Funnel Lab is conversion architecture, not a page builder, and never becomes one.** There
+  is no styling, no layout control, no section or column model, no template, no domain and no
+  publishing anywhere in it, and none is planned: `Funnel` holds steps, the ordered blocks inside
+  them and the account entity a capture block uses, and that is the whole model (D-118). The page
+  a learner sees in Preview and Simulate is the product's typography and rhythm applied to their
+  structure, not their design. Practising HighLevel's actual builder stays fieldwork.
+- **Step purposes and block roles are Bloomlab's own vocabulary.** HighLevel has no "capture step"
+  and no "proof block". The inspector says so on every block, and the `GHL-FUNNEL-FUNNELS` record
+  says so as an approximation note. The four roles that connect to something — form, survey,
+  calendar, checkout — name real HighLevel objects and keep HighLevel's own names.
+- **Checkout records one payment and stops there.** A checkout block references a product the
+  account holds and completing it fires the real `PAYMENT_RECEIVED` at that product's price
+  (D-124). There is no product creation or editing, no second price, no subscription, no billing
+  cycle, trial or setup fee, no payment provider, no order form, no coupon, no failed payment and
+  no refund. Those are the Payments Lab (PAY-001, Phase 18). The visitor is told this in the
+  checkout block itself rather than left to assume otherwise.
+- **Booking from a funnel uses the smallest honest rule.** The slots offered are the next three
+  openings on the hour, starting an hour after the run's own clock, inside a nine-to-five day in
+  the calendar's zone. There is no availability, no buffer, no minimum notice, no staff, no round
+  robin and no service calendar — all of that is the Calendar Lab (CAL-001, Phase 14). The picker
+  says so under the field.
+- **A funnel has no analytics.** FUN-004 (traffic source, conversion rate, scroll behaviour, form
+  completion, booking rate, drop-off) is Phase 15 and nothing in Phase 13 shows a number that
+  looks like one. The visitor run shows what the account actually did, read from the run's log.
+- **The FUNNEL ASSEMBLY exercise reuses existing skills.** `SK-BUILD-lead-capture-form` and
+  `SK-BUILD-consultation-calendar` are both genuinely exercised by it, but conversion architecture
+  itself has no skill of its own yet; adding one is a curriculum change for the phase that owns
+  Gate 6 (Conversion and Copy), not a Lab phase.
+- **A visitor is a session, not a saved record.** Who the visitor is lives in the Lab while the
+  run is open: leaving Simulate and coming back starts a new visitor. Everything the visitor
+  *did* is permanent — the contact, the appointment, the payment and every event are in the
+  account — but "the visitor I was halfway through being" is not restored by a reload.
+- **Blocks move within their step, not between steps.** Moving a block to another step is a
+  remove and an add. The step a block belongs to is part of what the exercise grades, so the
+  operation exists; it is two actions rather than one.
+- **One HighLevel funnel behaviour is deliberately absent: a step is reached only through the
+  funnel.** There is no per-step URL, so a visitor cannot start halfway through, and nothing
+  models a returning visitor picking up where they left off.
+- **Registry verification was indirect again.** `GHL-FUNNEL-FUNNELS`, `GHL-FORM-SURVEYS` and
+  `GHL-PAY-PRODUCTS` were checked on 2026-09-04 against search-result summaries of the official
+  help-centre articles, because the build environment's egress proxy rejects
+  `help.gohighlevel.com` outright. Each record's `verification_note` says exactly that rather
+  than claiming the article was read.
+
+| Feature | Fidelity | What differs | Why |
+|---|---|---|---|
+| `GHL-FUNNEL-FUNNELS` | C | Ordered steps, what each step is for, what is on it in order, and which account object a capture element uses. No page editor, sections, rows, columns, elements, styling, templates, domains, pixels, split tests, AI generation or publishing. | Bloomlab teaches conversion architecture; the builder itself is practised in GHL. |
+| `GHL-FORM-SURVEYS` | B | Ordered questions mapped to contact fields; a submission creates or updates a contact and fires Survey Submitted. No multi-page surveys, conditional logic, scoring, disqualification or styling. | The chain into CRM and workflows is what Phase 13 needs. |
+| `GHL-PAY-PRODUCTS` | C | A named product with one price, one-time or recurring, that a checkout block references and a completed checkout records a payment against. Nothing else about products or payments. | Everything beyond the one event is the Payments Lab (D-124). |
+| `GHL-CAL-CALENDARS` from a funnel | B (narrower here) | Booking from a funnel offers three hourly openings inside a nine-to-five day from the run's clock. Availability, buffers, minimum notice, staff, round robin and service calendars are untouched. | Phase 13 needs a coherent booking; configuring one is Phase 14. |

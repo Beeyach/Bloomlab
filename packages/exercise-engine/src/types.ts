@@ -24,6 +24,35 @@ export interface GradingEvent {
   fields: Record<string, string | number | boolean | null>;
 }
 
+/**
+ * A funnel as the grader sees it (EXR-011): steps in order, blocks in order, and for a capture
+ * block the account entity it is connected to. No styling, no layout, nothing visual — the same
+ * reason a workflow arrives without node coordinates.
+ */
+export interface GradingFunnel {
+  id: string;
+  name?: string;
+  steps: GradingFunnelStep[];
+}
+
+export interface GradingFunnelStep {
+  id: string;
+  name?: string;
+  /** `capture` · `offer` · `booking` · `checkout` · `confirmation` · `content`. */
+  purpose: string;
+  blocks: GradingFunnelBlock[];
+}
+
+export interface GradingFunnelBlock {
+  id: string;
+  /** `headline` · `problem` · `outcome` · `proof` · `benefits` · `objections` · `cta` · … */
+  role: string;
+  /** The account entity a capture block uses, when it has been connected to one. */
+  reference_id?: string | null;
+  /** Whether that entity is actually in the account the funnel belongs to. */
+  reference_resolved?: boolean;
+}
+
 /** A workflow as the grader sees it: normalized, with no visual positions (EXR-002). */
 export interface GradingWorkflow {
   id: string;
@@ -46,6 +75,8 @@ export interface GradingNode {
 /** Everything an architecture assertion may inspect. Node coordinates are deliberately absent. */
 export interface GradingArchitecture {
   workflows: GradingWorkflow[];
+  /** The funnels the learner built, when a runtime can say which those are (EXR-011, D-121). */
+  funnels?: GradingFunnel[];
 }
 
 /** Where each part of a grading context comes from; used to refuse a grade rather than fake one. */
@@ -130,9 +161,20 @@ export interface AssertionDefinition {
     | 'feature_used'
     | 'feature_not_used'
     | 'node_count_max'
-    | 'reentry_disabled';
+    | 'reentry_disabled'
+    | 'funnel_step_exists'
+    | 'funnel_step_order'
+    | 'funnel_block_exists'
+    | 'funnel_block_absent'
+    | 'funnel_block_order'
+    | 'funnel_reference_connected'
+    | 'funnel_step_count_max';
   ghl_feature?: string;
-  // sequence
+  /** Funnel architecture: the block role a requirement is about. */
+  role?: string;
+  /** Funnel architecture: the step purpose a requirement is about, or a block's containing step. */
+  purpose?: string;
+  // sequence, and the two funnel order requirements
   before?: string;
   after?: string;
 }
@@ -179,6 +221,7 @@ export type GradeOutcome = 'passed' | 'failed' | 'partial';
 export type GradeReason =
   /** A critical assertion failed; the numeric score cannot override it (MAS-004). */
   | 'critical_failure'
+  | 'required_failure'
   | 'below_threshold'
   | 'threshold_met'
   /** The exercise names a rubric, which a later phase evaluates (AI-006, Phase 19). */

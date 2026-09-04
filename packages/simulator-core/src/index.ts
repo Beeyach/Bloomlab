@@ -63,6 +63,16 @@ export {
   type CustomField,
   type CustomFieldType,
   type Form,
+  FUNNEL_BLOCK_REFERENCES,
+  FUNNEL_BLOCK_ROLES,
+  FUNNEL_STEP_PURPOSES,
+  isReferencingRole,
+  type Funnel,
+  type FunnelBlock,
+  type FunnelBlockRole,
+  type FunnelReferencingRole,
+  type FunnelStep,
+  type FunnelStepPurpose,
   type Message,
   type MessageChannel,
   type MessageDirection,
@@ -141,7 +151,27 @@ export {
   type RunView,
 } from './workflow/view.ts';
 export { waitToken } from './workflow/traverse.ts';
+export { arrivingContacts, workflowReactions } from './workflow/reactions.ts';
 export { readDefinition } from './reducers/definitions.ts';
+export { readFunnel } from './reducers/funnels.ts';
+export {
+  firstStep,
+  isWalkable,
+  reachableSteps,
+  readingOrder,
+  stepAfter,
+  stepOf,
+  validateFunnel,
+  type FunnelIssue,
+  type FunnelPosition,
+} from './funnel/graph.ts';
+export {
+  SLOT_COUNT,
+  bookableSlots,
+  canCreateContact,
+  visitorActions,
+  type VisitAction,
+} from './funnel/visit.ts';
 
 export {
   MINUTE_MS,
@@ -187,6 +217,9 @@ export {
   type FeatureRecord,
   type ScenarioAccountState,
   type ScenarioContact,
+  type ScenarioFunnel,
+  type ScenarioFunnelBlock,
+  type ScenarioFunnelStep,
   type ScenarioInjectableEvent,
   type ScenarioIssue,
   type ScenarioNote,

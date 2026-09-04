@@ -1,0 +1,141 @@
+# FUNNEL ASSEMBLY (spec §27, EXR-011): "Give blocks or blank architecture. Learner creates the
+# page/funnel information structure. Do not force one universal order where multiple solutions are
+# valid."
+#
+# Every check below is an existence rule or a partial order, deliberately. There is no expected
+# sequence anywhere in this file, and there could not be: a one-page funnel that captures and then
+# books, and a two-step funnel that qualifies with a survey first, are both defensible answers to
+# this brief, and both pass. What is not defensible is asking for details before saying what the
+# thing is, or selling a membership on a page written to book a free consultation — and those fail.
+id: EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel
+type: FUNNEL_ASSEMBLY
+title: Assemble Glowhaus's consultation funnel
+mode: practice
+difficulty: 3
+estimated_minutes: 35
+skills:
+  - SK-BUILD-lead-capture-form
+  - SK-BUILD-consultation-calendar
+scenario: SC-glowhaus-funnel
+instructions: |
+  Glowhaus is about to put $1,200 a month behind ads for free consultations. The account already
+  has everything the traffic needs to land on: the **Consultation Request** form, the **Fit Check**
+  survey, the **Consultation** calendar, the **Glow Membership** product, and a workflow that fires
+  when the consultation request form is submitted.
+
+  There is no funnel. Build one in the Funnel Lab.
+
+  It has to:
+
+  1. capture the stranger's details on a real form from this account;
+  2. get them onto the **Consultation** calendar;
+  3. say what the consultation is and why it is worth their time **before** it asks for anything;
+  4. give a reason to believe it.
+
+  There is more than one good answer here. One step or three, survey or no survey, proof high or
+  proof low: what matters is that the visitor knows what they are being offered before they are
+  asked for anything, that capture comes before booking, and that both use the real account
+  objects rather than a page that only looks like it does.
+
+  Glowhaus does not sell the membership on this funnel. The consultation is free and the
+  membership is sold in the room.
+allowed_features:
+  - GHL-FUNNEL-FUNNELS
+  - GHL-FORM-FORMS
+  - GHL-FORM-SURVEYS
+  - GHL-CAL-CALENDARS
+starting_state:
+  notes: The account has the form, the survey, the calendar, the product and the welcome workflow. It has no funnel.
+expected_outcomes:
+  - id: a1
+    type: architecture
+    requirement: funnel_step_exists
+    purpose: capture
+    dimension: architecture
+    description: The funnel has a step whose job is to capture the visitor's details.
+  - id: a2
+    type: architecture
+    requirement: funnel_step_exists
+    purpose: booking
+    dimension: architecture
+    description: The funnel has a step whose job is to get a time on the calendar.
+  - id: a3
+    type: architecture
+    requirement: funnel_step_order
+    before: capture
+    after: booking
+    dimension: architecture
+    description: Capture comes before booking — Glowhaus keeps the lead even if the visitor never picks a time.
+  - id: a4
+    type: architecture
+    requirement: funnel_reference_connected
+    role: form
+    dimension: correctness
+    description: A form block is connected to a real form in this account.
+  - id: a5
+    type: architecture
+    requirement: funnel_reference_connected
+    role: calendar
+    dimension: correctness
+    description: A calendar block is connected to a real calendar in this account.
+  - id: a6
+    type: architecture
+    requirement: funnel_block_order
+    before: outcome
+    after: form
+    dimension: correctness
+    description: The visitor is told what they get before the funnel asks for their details.
+  - id: a7
+    type: architecture
+    requirement: funnel_block_exists
+    role: proof
+    dimension: architecture
+    tier: quality
+    description: Somewhere in the funnel there is a reason to believe it.
+  - id: a8
+    type: architecture
+    requirement: funnel_block_order
+    before: headline
+    after: cta
+    dimension: correctness
+    tier: quality
+    description: The page says what it is before it asks.
+  - id: a9
+    type: architecture
+    requirement: funnel_step_count_max
+    value: 4
+    dimension: maintainability
+    tier: quality
+    description: Four steps or fewer — a free consultation does not need a long funnel.
+critical_failures:
+  - id: c1
+    type: architecture
+    requirement: funnel_block_absent
+    role: checkout
+    description: The membership is not sold on this funnel; the consultation is free.
+grading:
+  mode: deterministic
+  # Only the three dimensions this exercise actually checks carry weight. A funnel assembly has no
+  # edge cases to run and no written explanation to read; giving either a share would move the
+  # score for reasons the exercise never measures.
+  weights:
+    correctness: 40
+    edge_cases: 0
+    architecture: 40
+    maintainability: 20
+    explanation: 0
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: Ads bring strangers. What does a stranger need to know before they will hand over a phone number?
+  - level: concept_reminder
+    text: A funnel step has one job. Two jobs on one step is fine when the second one follows from the first — telling them what it is, then asking. Two unrelated jobs is a step nobody finishes.
+  - level: worked_example
+    text: |
+      One defensible shape: a **capture** step with a headline, the problem, the outcome, proof
+      and the **Consultation Request** form, then a **booking** step with a headline and the
+      **Consultation** calendar. Another, equally defensible: a **content** step that qualifies
+      with the **Fit Check** survey, a **capture** step with the form, and a **booking** step with
+      the calendar. Both put the offer before the ask and capture before booking.
+fieldwork: null
+portfolio: null

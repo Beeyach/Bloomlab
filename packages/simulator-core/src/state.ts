@@ -150,6 +150,96 @@ export interface Product {
   recurring: boolean;
 }
 
+/* ---- funnels (FUN-001, spec §56) ------------------------------------------------------- */
+
+/**
+ * A funnel is a native GoHighLevel object (Sites → Funnels): an ordered set of steps a visitor
+ * moves through. What Bloomlab simulates is the **conversion architecture** of one — the steps,
+ * what each step is for, what is on each step in what order, and which real account entity a
+ * capture element uses. It is not a page builder: there is no styling, no layout, no pixel
+ * position anywhere below, and none is coming.
+ *
+ * `purpose` and `role` are Bloomlab's own vocabulary for the job a step or a block does. They are
+ * architecture abstractions, not GoHighLevel controls, and the interface says so. The four roles
+ * that carry a `reference_id` are the ones that name a real account entity — a form, a survey, a
+ * calendar, a product — and those are native features under their registry records.
+ */
+
+/** What a step is for. A Bloomlab abstraction; HighLevel does not label steps this way. */
+export const FUNNEL_STEP_PURPOSES = [
+  'capture',
+  'offer',
+  'booking',
+  'checkout',
+  'confirmation',
+  'content',
+] as const;
+export type FunnelStepPurpose = (typeof FUNNEL_STEP_PURPOSES)[number];
+
+/** The conversion job one block does. Also a Bloomlab abstraction. */
+export const FUNNEL_BLOCK_ROLES = [
+  'headline',
+  'problem',
+  'outcome',
+  'proof',
+  'benefits',
+  'objections',
+  'cta',
+  'form',
+  'survey',
+  'calendar',
+  'checkout',
+] as const;
+export type FunnelBlockRole = (typeof FUNNEL_BLOCK_ROLES)[number];
+
+/**
+ * The roles that use a real account entity, and which collection each one names. A block of any
+ * other role references nothing: it is words on a page and the simulation treats it as such.
+ */
+export const FUNNEL_BLOCK_REFERENCES = {
+  form: 'forms',
+  survey: 'surveys',
+  calendar: 'calendars',
+  checkout: 'products',
+} as const;
+export type FunnelReferencingRole = keyof typeof FUNNEL_BLOCK_REFERENCES;
+
+export const isReferencingRole = (role: FunnelBlockRole): role is FunnelReferencingRole =>
+  role in FUNNEL_BLOCK_REFERENCES;
+
+export interface FunnelBlock {
+  id: string;
+  role: FunnelBlockRole;
+  /** The learner's own words for this block. Content, not styling. */
+  headline: string | null;
+  body: string | null;
+  /** The account entity this block uses, for the four roles that use one; null when unset. */
+  reference_id: string | null;
+  /** For a `cta`: the step it sends the visitor to. Null means the step's own `next_step_id`. */
+  target_step_id: string | null;
+}
+
+export interface FunnelStep {
+  id: string;
+  name: string;
+  purpose: FunnelStepPurpose;
+  /** In reading order, which is the order the visitor meets them. */
+  blocks: FunnelBlock[];
+  /** Where a completed step sends the visitor. Null ends the funnel. */
+  next_step_id: string | null;
+}
+
+/**
+ * One funnel, versioned exactly the way a workflow definition is (D-104): a save bumps the
+ * version, so a grade or a run that read version 2 still says so once the learner is on version 5.
+ */
+export interface Funnel {
+  id: string;
+  name: string;
+  steps: FunnelStep[];
+  version: number;
+}
+
 export interface Payment {
   id: string;
   contact_id: string;
@@ -411,6 +501,8 @@ export interface AccountState {
   surveys: Record<string, Survey>;
   products: Record<string, Product>;
   payments: Record<string, Payment>;
+  /** The funnels the account holds, learner-built or authored by the scenario (FUN-001). */
+  funnels: Record<string, Funnel>;
   conversations: Record<string, Conversation>;
   workflows: Record<string, Workflow>;
   workflow_runs: Record<string, WorkflowRun>;

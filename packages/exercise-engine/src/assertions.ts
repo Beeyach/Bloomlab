@@ -8,6 +8,9 @@ import {
   type ContextSource,
   type GradingContext,
   type GradingEvent,
+  type GradingFunnel,
+  type GradingFunnelBlock,
+  type GradingFunnelStep,
 } from './types.ts';
 import { dimensionOf } from './dimensions.ts';
 
@@ -178,8 +181,186 @@ function evaluateTiming(assertion: AssertionDefinition, context: GradingContext)
   };
 }
 
+/**
+ * Funnel architecture (EXR-011).
+ *
+ * Every rule below is a **partial order** or an existence rule, never an expected sequence. A
+ * funnel with several defensible orderings has to be able to pass all of them, so an exercise
+ * says "the offer is stated before the form asks for details", not "the offer is block 3". Two
+ * structurally different architectures that both respect the stated constraints both pass, and
+ * one that inverts a stated dependency fails — which is the whole requirement.
+ *
+ * Order is judged in reading order — steps in their order, blocks in theirs — by the same rule
+ * the `sequence` assertion uses on events: the earliest `before` precedes the earliest `after`.
+ *
+ * One difference from events, and it is the difference that makes several architectures passable.
+ * An order rule is about a **dependency**, so it is judged only when the thing that depends on
+ * something is actually there. "The headline comes before the call to action" is a rule about
+ * funnels that have a call to action; a funnel whose ask is the form itself has not broken it,
+ * and failing that funnel would be pinning a sequence by the back door. So: no `after` means the
+ * rule does not apply and passes, an `after` with no `before` fails (the page asks without ever
+ * saying what it is), and both present are compared in reading order. Whether a block has to
+ * exist at all is a separate rule an exercise states separately (`funnel_block_exists`).
+ */
+interface FlatBlock {
+  step: GradingFunnelStep;
+  block: GradingFunnelBlock;
+  index: number;
+}
+
+const flatten = (funnels: GradingFunnel[]): FlatBlock[] => {
+  const rows: FlatBlock[] = [];
+  for (const funnel of funnels) {
+    for (const step of funnel.steps) {
+      for (const block of step.blocks) rows.push({ step, block, index: rows.length });
+    }
+  }
+  return rows;
+};
+
+const stepsOf = (funnels: GradingFunnel[]): GradingFunnelStep[] =>
+  funnels.flatMap((funnel) => funnel.steps);
+
+const listRoles = (rows: FlatBlock[]): string =>
+  rows.length === 0 ? 'nothing' : rows.map((row) => row.block.role).join(', ');
+
+/** Roles that name an account entity; only these can be "connected" to anything. */
+const REFERENCING_ROLES = new Set(['form', 'survey', 'calendar', 'checkout']);
+
+function evaluateFunnelArchitecture(assertion: AssertionDefinition, context: GradingContext) {
+  const funnels = context.architecture?.funnels ?? [];
+  const steps = stepsOf(funnels);
+  const blocks = flatten(funnels);
+  const none = funnels.length === 0 ? 'no funnel in the solution' : null;
+
+  switch (assertion.requirement) {
+    case 'funnel_step_exists': {
+      const found = steps.filter((step) => step.purpose === assertion.purpose);
+      return {
+        passed: found.length > 0,
+        expected: `a ${assertion.purpose} step`,
+        observed:
+          none ??
+          `steps: ${steps.map((step) => `${step.name ?? step.id} (${step.purpose})`).join(', ')}`,
+      };
+    }
+    case 'funnel_step_count_max': {
+      const limit = typeof assertion.value === 'number' ? assertion.value : Number.NaN;
+      return {
+        passed: Number.isFinite(limit) && steps.length > 0 && steps.length <= limit,
+        expected: `at most ${assertion.value} steps`,
+        observed: `${steps.length} steps`,
+      };
+    }
+    case 'funnel_step_order': {
+      const first = steps.findIndex((step) => step.purpose === assertion.before);
+      const then = steps.findIndex((step) => step.purpose === assertion.after);
+      const expected = `a ${assertion.before} step before a ${assertion.after} step`;
+      if (then === -1) {
+        return {
+          passed: true,
+          expected,
+          observed: none ?? `there is no ${assertion.after} step, so nothing can come before it`,
+        };
+      }
+      if (first === -1) {
+        return { passed: false, expected, observed: `there is no ${assertion.before} step` };
+      }
+      return {
+        passed: first < then,
+        expected,
+        observed:
+          first < then
+            ? `${assertion.before} is step ${first + 1}, ${assertion.after} is step ${then + 1}`
+            : `${assertion.after} comes first (step ${then + 1} before step ${first + 1})`,
+        detail: { before_index: first, after_index: then, rule: SEQUENCE_RULES.compare },
+      };
+    }
+    case 'funnel_block_exists': {
+      const found = blocks.filter(
+        (row) =>
+          row.block.role === assertion.role &&
+          (!assertion.purpose || row.step.purpose === assertion.purpose),
+      );
+      const where = assertion.purpose ? ` on a ${assertion.purpose} step` : '';
+      return {
+        passed: found.length > 0,
+        expected: `a ${assertion.role} block${where}`,
+        observed: none ?? `the funnel holds ${listRoles(blocks)}`,
+      };
+    }
+    case 'funnel_block_absent': {
+      const found = blocks.filter((row) => row.block.role === assertion.role);
+      return {
+        passed: found.length === 0,
+        expected: `no ${assertion.role} block`,
+        observed:
+          found.length === 0
+            ? `no ${assertion.role} block`
+            : `${found.length} on ${found.map((row) => row.step.name ?? row.step.id).join(', ')}`,
+      };
+    }
+    case 'funnel_block_order': {
+      const first = blocks.find((row) => row.block.role === assertion.before);
+      const then = blocks.find((row) => row.block.role === assertion.after);
+      const expected = `${assertion.before} before ${assertion.after}`;
+      if (!then) {
+        return {
+          passed: true,
+          expected,
+          observed:
+            none ?? `there is no ${assertion.after} block, so nothing has to come before one`,
+        };
+      }
+      if (!first) {
+        return { passed: false, expected, observed: `the funnel has no ${assertion.before} block` };
+      }
+      const passed = first.index < then.index;
+      return {
+        passed,
+        expected,
+        observed: passed
+          ? `${assertion.before} on “${first.step.name ?? first.step.id}” then ${assertion.after} on “${then.step.name ?? then.step.id}”`
+          : `${assertion.after} on “${then.step.name ?? then.step.id}” comes first`,
+        detail: {
+          before_index: first.index,
+          after_index: then.index,
+          rule: SEQUENCE_RULES.compare,
+        },
+      };
+    }
+    case 'funnel_reference_connected': {
+      const role = assertion.role ?? '';
+      const found = blocks.filter((row) => row.block.role === role);
+      const connected = found.filter(
+        (row) => Boolean(row.block.reference_id) && row.block.reference_resolved !== false,
+      );
+      const expected = `a ${role} block connected to a real ${role === 'checkout' ? 'product' : role} in the account`;
+      if (!REFERENCING_ROLES.has(role)) {
+        return { passed: false, expected, observed: `a ${role} block connects to nothing` };
+      }
+      if (found.length === 0) {
+        return { passed: false, expected, observed: none ?? `the funnel has no ${role} block` };
+      }
+      return {
+        passed: connected.length > 0,
+        expected,
+        observed:
+          connected.length > 0
+            ? `connected to ${connected.map((row) => row.block.reference_id).join(', ')}`
+            : `${found.length} ${role} block${found.length === 1 ? '' : 's'}, none connected`,
+      };
+    }
+    default:
+      return { passed: false, expected: 'a known funnel requirement', observed: 'unknown' };
+  }
+}
+
 /** ARCHITECTURE: the normalized workflow structure. Node positions are not part of the input. */
 function evaluateArchitecture(assertion: AssertionDefinition, context: GradingContext) {
+  if (assertion.requirement?.startsWith('funnel_')) {
+    return evaluateFunnelArchitecture(assertion, context);
+  }
   const workflows = context.architecture?.workflows ?? [];
   const nodes = workflows.flatMap((workflow) => workflow.nodes);
   const feature = assertion.ghl_feature;
