@@ -19,6 +19,8 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ### Fixed — Phase 11
 
+- **Task due dates no longer depend on the device timezone (D-098).** The task form sent `${date}T09:00:00` with no offset, which `Date.parse` reads in the host's zone, so two devices would have stored two due dates for one choice. A chosen day now becomes 09:00 in the account's zone with that zone's offset on that day through `instantForDay` in simulator-core, and the engine refuses an offset-less `due_at` on `TASK_CREATED` and `TASK_UPDATED`. Nine regressions cover canonicalisation, device-zone independence, DST, display, refusal, replay, reload and sync.
+- **Several saved CRM accounts are now offered, as D-096 said (D-099).** The Lab showed only a notice; it now offers a "Working in" selector, switches through the existing `switchRun`, records the choice on the device record, and the CRM exercise runtime grades that same run. Switching touches no run.
 - The stage editor used a raw `<textarea>` inside `<Field>`, so its label pointed at nothing; it now uses the `Textarea` primitive and names its pipeline.
 - Tag chips were 34 px on a coarse pointer; they are 44 px there now (A11Y-007).
 - Two GlowHaus dropdown custom fields had no options; the content was fixed rather than the rule weakened.

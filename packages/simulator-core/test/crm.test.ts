@@ -5,6 +5,7 @@ import { processEvent } from '../src/run.ts';
 import { replay } from '../src/replay.ts';
 import { historyHash } from '../src/hash.ts';
 import { SimulatorError } from '../src/errors.ts';
+import { hasOffset, instantForDay, offsetInstant } from '../src/time.ts';
 import type { PendingEvent } from '../src/events.ts';
 import type { SimulatorScenario } from '../src/scenario.ts';
 import type { SimulatorState } from '../src/state.ts';
@@ -606,5 +607,116 @@ describe('the CRM mutations replay like everything else (SIM-018)', () => {
     expect(replayed.account.tasks.t1?.completed).toBe(true);
     expect(replayed.account.notes.n1?.contact_id).toBe('jordan');
     expect(replayed.account.opportunities['opp-jordan']?.stage).toBe('Booked');
+  });
+});
+
+describe('task due dates are simulator time, never device time (D-098)', () => {
+  const chicago = 'America/Chicago';
+
+  it('turns a chosen day into 09:00 in the account zone with that zone’s offset', () => {
+    expect(instantForDay('2026-09-05', chicago)).toBe('2026-09-05T09:00:00-05:00');
+    expect(instantForDay('2026-09-05', 'Asia/Tokyo')).toBe('2026-09-05T09:00:00+09:00');
+    expect(instantForDay('2026-09-05', 'Europe/London', 17, 30)).toBe('2026-09-05T17:30:00+01:00');
+  });
+
+  it('stores the same instant whatever zone the device happens to be in', () => {
+    const before = process.env.TZ;
+    const seen = new Set<string>();
+    try {
+      for (const deviceZone of ['Asia/Tokyo', 'Pacific/Honolulu', 'UTC', 'Europe/Berlin']) {
+        process.env.TZ = deviceZone;
+        seen.add(instantForDay('2026-09-05', chicago));
+      }
+    } finally {
+      if (before === undefined) delete process.env.TZ;
+      else process.env.TZ = before;
+    }
+    expect([...seen]).toEqual(['2026-09-05T09:00:00-05:00']);
+  });
+
+  it('resolves a daylight-saving day by the account zone, not by the machine', () => {
+    // Chicago leaves daylight time on 1 November 2026 and enters it on 8 March 2026.
+    expect(instantForDay('2026-11-01', chicago)).toBe('2026-11-01T09:00:00-06:00');
+    expect(instantForDay('2026-10-31', chicago)).toBe('2026-10-31T09:00:00-05:00');
+    expect(instantForDay('2026-03-08', chicago)).toBe('2026-03-08T09:00:00-05:00');
+    expect(instantForDay('2026-03-07', chicago)).toBe('2026-03-07T09:00:00-06:00');
+  });
+
+  it('refuses something that is not a calendar day', () => {
+    for (const bad of ['2026-9-5', '05/09/2026', '2026-02-30', '2026-13-01', '']) {
+      expect(() => instantForDay(bad, chicago)).toThrow(SimulatorError);
+    }
+  });
+
+  it('refuses a TASK_CREATED due date with no offset rather than reading it in the host zone', () => {
+    const error = refusal(() =>
+      fire(run(), {
+        type: 'TASK_CREATED',
+        payload: {
+          task_id: 'bare',
+          title: 'Bare',
+          contact_id: 'maria',
+          due_at: '2026-09-05T09:00:00',
+        },
+      }),
+    );
+    expect(error?.code).toBe('INVALID_TIME');
+    expect(error?.message).toContain('offset');
+    // A date on its own is not an instant either: Date.parse would read it as UTC midnight.
+    expect(
+      refusal(() =>
+        fire(run(), {
+          type: 'TASK_CREATED',
+          payload: { task_id: 'day', title: 'Day', contact_id: 'maria', due_at: '2026-09-05' },
+        }),
+      )?.code,
+    ).toBe('INVALID_TIME');
+  });
+
+  it('refuses a TASK_UPDATED due date with no offset the same way', () => {
+    const withTask = fire(run(), {
+      type: 'TASK_CREATED',
+      payload: {
+        task_id: 't-due',
+        title: 'Due',
+        contact_id: 'maria',
+        due_at: '2026-09-05T09:00:00-05:00',
+      },
+    });
+    const error = refusal(() =>
+      fire(withTask, {
+        type: 'TASK_UPDATED',
+        payload: { task_id: 't-due', due_at: '2026-09-06T09:00:00' },
+      }),
+    );
+    expect(error?.code).toBe('INVALID_TIME');
+    // The task is exactly as it was.
+    expect(withTask.account.tasks['t-due']?.due_at).toBe('2026-09-05T09:00:00-05:00');
+  });
+
+  it('accepts a canonical instant and keeps it byte for byte, and replay reproduces it', () => {
+    const due = instantForDay('2026-11-01', chicago);
+    const state = fire(run(), {
+      type: 'TASK_CREATED',
+      payload: {
+        task_id: 't-dst',
+        title: 'After the clocks change',
+        contact_id: 'maria',
+        due_at: due,
+      },
+    });
+    expect(state.account.tasks['t-dst']?.due_at).toBe('2026-11-01T09:00:00-06:00');
+    const replayed = replay(scenario(), state.log);
+    expect(replayed.account.tasks['t-dst']?.due_at).toBe('2026-11-01T09:00:00-06:00');
+    expect(historyHash(replayed)).toBe(historyHash(state));
+  });
+
+  it('exposes the offset check for anything else that takes an instant from outside', () => {
+    expect(hasOffset('2026-09-05T09:00:00-05:00')).toBe(true);
+    expect(hasOffset('2026-09-05T09:00:00Z')).toBe(true);
+    expect(hasOffset('2026-09-05T09:00:00')).toBe(false);
+    expect(hasOffset('2026-09-05')).toBe(false);
+    expect(() => offsetInstant('2026-09-05T09:00:00')).toThrow(SimulatorError);
+    expect(offsetInstant('2026-09-05T09:00:00-05:00')).toBe(Date.UTC(2026, 8, 5, 14));
   });
 });

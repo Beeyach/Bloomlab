@@ -237,7 +237,9 @@ stages?, migrate? }` refuses to strand an opportunity: a stage holding deals may
 `migrate` maps it onto a stage that stays (D-093).
 
 **Notes and tasks.** Both carry `CrmTarget { contact_id, opportunity_id }` with one required
-(D-091). `NOTE_ADDED { id, body, author_id?, contact_id | opportunity_id }`. `TASK_CREATED { id,
+(D-091). A task's `due_at` must carry its offset; an offset-less datetime is refused with
+`INVALID_TIME`. A calendar day becomes an instant only through `instantForDay(day, timeZone)`,
+which is 09:00 on that day in the account's zone with that zone's offset on that day (D-098). `NOTE_ADDED { id, body, author_id?, contact_id | opportunity_id }`. `TASK_CREATED { id,
 title, description?, due_at?, assigned_to?, contact_id | opportunity_id }`, `TASK_UPDATED`,
 `TASK_COMPLETED { task_id, completed }`.
 

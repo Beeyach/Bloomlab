@@ -1,6 +1,6 @@
 import { fail } from '../errors.ts';
 import { optionalString, requireBoolean, requireString, type SimulatorEvent } from '../events.ts';
-import { instant } from '../time.ts';
+import { hasOffset, instant } from '../time.ts';
 import type { AccountState, CrmTarget, Note, Task } from '../state.ts';
 import { entity, put, result, type ReducerResult } from './shared.ts';
 
@@ -56,10 +56,22 @@ function readUser(account: AccountState, event: SimulatorEvent, field: string): 
   return value;
 }
 
-/** Simulator time or nothing. A due date that cannot be read is refused, never stored raw. */
+/**
+ * Simulator time or nothing. A due date that cannot be read is refused, never stored raw — and so
+ * is one with no offset (`2026-09-05T09:00:00`), because `Date.parse` would read that in the
+ * host's zone and two devices would then disagree about when the task is due (D-098). A caller
+ * with only a calendar day turns it into an instant with `instantForDay` and the account's zone.
+ */
 function readDueAt(event: SimulatorEvent): string | null {
   const due = optionalString(event.payload, 'due_at');
   if (!due) return null;
+  if (!hasOffset(due)) {
+    fail(
+      'INVALID_TIME',
+      `${event.type} due_at must carry its offset (use instantForDay with the account zone): ${due}`,
+      { due_at: due },
+    );
+  }
   try {
     instant(due);
   } catch {

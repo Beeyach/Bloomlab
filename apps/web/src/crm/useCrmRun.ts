@@ -3,7 +3,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { SimulatorScenario } from '@bloomlab/simulator-core';
 
 import { content } from '../content/bundle';
-import { listRuns, loadRun, resetStoredRun, startRun, type StoredRun } from '../simulator/store';
+import { loadRun, resetStoredRun, startRun, type StoredRun } from '../simulator/store';
+import { currentCrmRunId, rememberCrmRun, savedCrmRuns, type CrmRunSummary } from './currentRun';
 import type { CrmOutcome, CrmRefusal } from './commands';
 
 /**
@@ -15,9 +16,10 @@ import type { CrmOutcome, CrmRefusal } from './commands';
  *
  * **Which run, when there are several.** Two devices that each start the Lab offline genuinely
  * start two runs — that is Phase 10's rule and nothing here overrides it. The Lab does not merge
- * them and does not throw one away. It works on the **most recently updated** run of the scenario,
- * which `listRuns` already orders first, and reports how many exist so the screen can offer the
- * others. Deterministic, documented, and it never silently discards a learner's work.
+ * them and does not throw one away. It works on the run `currentCrmRunId` resolves — the one this
+ * device chose, else the most recently updated (D-099) — lists the others so the screen can offer
+ * them, and remembers a switch on the device. The exercise runtime reads the same rule, so a grade
+ * is always of the account the learner can see.
  *
  * Nothing here starts a run on render. The effect runs once per scenario and guards against a
  * second start with a ref, because two `startRun` calls would be two accounts.
@@ -28,7 +30,8 @@ export const CRM_SCENARIO_ID = 'SC-glowhaus-crm';
 export interface CrmRunState {
   run: StoredRun | null;
   scenario: SimulatorScenario | null;
-  /** Every saved run of this scenario, newest first, so the screen can say there is more than one. */
+  /** Every saved run of this scenario, newest first, so the screen can offer the others. */
+  runs: CrmRunSummary[];
   runIds: string[];
   loading: boolean;
   /** The last refusal, kept until the next command or an explicit dismissal. */
@@ -51,7 +54,7 @@ const scenarioFor = (id: string): SimulatorScenario | null =>
 
 export function useCrmRun(scenarioId: string = CRM_SCENARIO_ID): CrmRunApi {
   const [run, setRun] = useState<StoredRun | null>(null);
-  const [runIds, setRunIds] = useState<string[]>([]);
+  const [runs, setRuns] = useState<CrmRunSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [refusal, setRefusal] = useState<CrmRefusal | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
@@ -63,12 +66,16 @@ export function useCrmRun(scenarioId: string = CRM_SCENARIO_ID): CrmRunApi {
     starting.current = true;
     let cancelled = false;
     (async () => {
-      const saved = (await listRuns()).filter((row) => row.scenario_id === scenario.id);
-      // `listRuns` is newest first, so the head is the run most recently worked in.
-      const resumed = saved[0] ? await loadRun(saved[0].run_id) : null;
+      const saved = await savedCrmRuns(scenario.id);
+      const currentId = await currentCrmRunId(scenario.id);
+      const resumed = currentId ? await loadRun(currentId) : null;
       const next = resumed ?? (await startRun(scenario));
       if (cancelled) return;
-      setRunIds(saved.length > 0 ? saved.map((row) => row.run_id) : [next.state.run_id]);
+      setRuns(
+        saved.length > 0
+          ? saved
+          : [{ run_id: next.state.run_id, updated_at: next.state.clock.now }],
+      );
       setRun(next);
       setLoading(false);
     })().catch((error: unknown) => {
@@ -117,6 +124,7 @@ export function useCrmRun(scenarioId: string = CRM_SCENARIO_ID): CrmRunApi {
   const switchRun = useCallback(async (runId: string) => {
     const loaded = await loadRun(runId);
     if (loaded) {
+      await rememberCrmRun(runId);
       setRun(loaded);
       setRefusal(null);
     }
@@ -125,7 +133,8 @@ export function useCrmRun(scenarioId: string = CRM_SCENARIO_ID): CrmRunApi {
   return {
     run,
     scenario,
-    runIds,
+    runs,
+    runIds: runs.map((row) => row.run_id),
     loading,
     refusal,
     problem,

@@ -47,6 +47,20 @@ function subscribeNarrow(onChange: () => void) {
 
 const isNarrow = () => typeof window.matchMedia === 'function' && window.matchMedia(NARROW).matches;
 
+/** The device wall time a run was last saved at — sync metadata, labelled as such, never simulator time. */
+const savedAt = (iso: string): string => {
+  try {
+    return new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      hour: 'numeric',
+      minute: '2-digit',
+    }).format(new Date(iso));
+  } catch {
+    return iso;
+  }
+};
+
 type Area = 'contacts' | 'pipeline' | 'setup';
 const AREAS: { id: Area; label: string }[] = [
   { id: 'contacts', label: 'Contacts' },
@@ -55,8 +69,18 @@ const AREAS: { id: Area; label: string }[] = [
 ];
 
 export default function CrmLab() {
-  const { run, scenario, runIds, loading, refusal, problem, apply, reset, dismissRefusal } =
-    useCrmRun();
+  const {
+    run,
+    scenario,
+    runs,
+    loading,
+    refusal,
+    problem,
+    apply,
+    reset,
+    switchRun,
+    dismissRefusal,
+  } = useCrmRun();
   const [params, setParams] = useSearchParams();
   const narrow = useSyncExternalStore(subscribeNarrow, isNarrow, () => false);
   const [confirmingReset, setConfirmingReset] = useState(false);
@@ -149,11 +173,27 @@ export default function CrmLab() {
         </div>
       </div>
 
-      {runIds.length > 1 && (
-        <p className={styles.muted} role="status">
-          This scenario has {runIds.length} saved accounts, probably started on different devices.
-          You are in the one used most recently; the others are untouched.
-        </p>
+      {runs.length > 1 && (
+        <div className={styles.accountChoice} role="status">
+          <p className={styles.muted}>
+            This scenario has {runs.length} saved accounts, probably started on different devices.
+            Each keeps its own history; switching changes none of them.
+          </p>
+          <Field label="Working in" id="crm-run-choice">
+            <Select
+              value={run.state.run_id}
+              onChange={(event) => void switchRun(event.target.value)}
+            >
+              {runs.map((row, index) => (
+                <option key={row.run_id} value={row.run_id}>
+                  Account {runs.length - index}
+                  {index === 0 ? ' (saved most recently)' : ''} · last saved{' '}
+                  {savedAt(row.updated_at)}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </div>
       )}
 
       <nav aria-label="CRM areas">

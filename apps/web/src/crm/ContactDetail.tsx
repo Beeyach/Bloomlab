@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import type { Contact } from '@bloomlab/simulator-core';
+import { instantForDay, type Contact } from '@bloomlab/simulator-core';
 import { Button, Field, Input, Select, Stack, StatusPill, Textarea } from '@bloomlab/design-system';
 
 import type { StoredRun } from '../simulator/store';
@@ -416,8 +416,9 @@ function TasksPanel({ run, contact, apply }: ContactDetailProps) {
             createTask(r, {
               contact_id: contact.id,
               title: title.trim(),
-              // A date input gives a day; the account's own zone makes it an instant.
-              due_at: dueAt ? `${dueAt}T09:00:00` : null,
+              // A date input gives a day; 09:00 on it in the *account's* zone, written with that
+              // zone's offset, so no device clock is ever part of when a task is due (D-098).
+              due_at: dueAt ? instantForDay(dueAt, zone) : null,
               assigned_to: assignee || null,
             }),
           ).then((ok) => {

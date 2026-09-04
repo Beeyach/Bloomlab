@@ -3,7 +3,13 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { historyHash, replay, stateHash, type SimulatorScenario } from '@bloomlab/simulator-core';
+import {
+  historyHash,
+  instantForDay,
+  replay,
+  stateHash,
+  type SimulatorScenario,
+} from '@bloomlab/simulator-core';
 
 import { content } from '../content/bundle';
 import type { BloomlabDatabase } from '../data/db';
@@ -27,7 +33,11 @@ import {
   updateContact,
   updatePipeline,
 } from './commands';
+import { ensureDevice } from '../data/device';
+import { currentCrmRun, currentCrmRunId, rememberCrmRun, savedCrmRuns } from './currentRun';
+import { crmExerciseRuntime } from './exerciseRuntime';
 import { CRM_SCENARIO_ID } from './useCrmRun';
+import { simulatorDay } from './words';
 
 /**
  * The CRM Lab against the real authored account (CRM-001, CRM-003).
@@ -399,5 +409,128 @@ describe('two devices share one CRM account (SYNC-008)', () => {
       a.close();
       b.close();
     }
+  });
+});
+
+describe('a task’s due date is the account’s time on every device (D-098)', () => {
+  it('persists the exact instant and reads it back after a reload', async () => {
+    let run = await start();
+    const zone = run.state.clock.timezone;
+    expect(zone).toBe('America/Chicago');
+    const due = instantForDay('2026-09-05', zone);
+    expect(due).toBe('2026-09-05T09:00:00-05:00');
+    run = await ok(
+      createTask(run, { contact_id: 'maria', title: 'Ring Maria', due_at: due }, database),
+    );
+    const id = Object.values(run.state.account.tasks).find((t) => t.title === 'Ring Maria')?.id;
+    expect(id).toBeDefined();
+
+    const reloaded = await loadRun(run.state.run_id, database);
+    expect(reloaded?.state.account.tasks[id as string]?.due_at).toBe('2026-09-05T09:00:00-05:00');
+    expect(historyHash(reloaded?.state as never)).toBe(historyHash(run.state));
+  });
+
+  it('shows the chosen day in the account zone, not the device zone', async () => {
+    const run = await start();
+    const zone = run.state.clock.timezone;
+    const due = instantForDay('2026-09-05', zone);
+    expect(simulatorDay(due, zone)).toMatch(/5 Sept/);
+    // The same instant read in Tokyo would already be the 5th at 23:00 — still the 5th here,
+    // because the display uses the account's zone and never `Date`'s local view.
+    expect(simulatorDay('2026-09-05T23:00:00+09:00', zone)).toMatch(/5 Sept/);
+    expect(simulatorDay('2026-09-06T01:00:00+09:00', zone)).toMatch(/5 Sept/);
+  });
+
+  it('carries the same due date to a second device, byte for byte', async () => {
+    const server = new FakeSyncServer();
+    const a = freshDatabase();
+    const b = freshDatabase();
+    try {
+      const key = createSyncKey();
+      await linkThisDevice(key.display, a, server);
+      await linkThisDevice(key.canonical, b, server);
+
+      let run = await startRun(scenario, a);
+      const due = instantForDay('2026-11-01', run.state.clock.timezone);
+      run = await ok(createTask(run, { contact_id: 'lena', title: 'After DST', due_at: due }, a));
+      await syncNow(a, server);
+      await syncNow(b, server);
+
+      const onB = await loadRun(run.state.run_id, b);
+      const task = Object.values(onB?.state.account.tasks ?? {}).find(
+        (t) => t.title === 'After DST',
+      );
+      expect(task?.due_at).toBe('2026-11-01T09:00:00-06:00');
+      expect(stateHash(onB?.state as never)).toBe(stateHash(run.state));
+    } finally {
+      a.close();
+      b.close();
+    }
+  });
+
+  it('refuses a bare local datetime at the command door too', async () => {
+    const run = await start();
+    const outcome = await createTask(
+      run,
+      { contact_id: 'maria', title: 'Bare', due_at: '2026-09-05T09:00:00' },
+      database,
+    );
+    expect(outcome.ok).toBe(false);
+    if (!outcome.ok) expect(outcome.refusal.message).toContain('offset');
+    expect(Object.values(outcome.run.state.account.tasks).some((t) => t.title === 'Bare')).toBe(
+      false,
+    );
+  });
+});
+
+describe('which run the Lab and the grader work in (D-096, D-099)', () => {
+  it('uses the most recently updated run until the device chooses one', async () => {
+    await ensureDevice(database);
+    const first = await startRun(scenario, database, 'run-first');
+    const second = await startRun(scenario, database, 'run-second');
+    expect((await savedCrmRuns(CRM_SCENARIO_ID, database)).map((r) => r.run_id)).toEqual([
+      'run-second',
+      'run-first',
+    ]);
+    expect(await currentCrmRunId(CRM_SCENARIO_ID, database)).toBe(second.state.run_id);
+
+    await rememberCrmRun('run-first', database);
+    expect(await currentCrmRunId(CRM_SCENARIO_ID, database)).toBe(first.state.run_id);
+  });
+
+  it('falls back to the newest run when the remembered one no longer exists', async () => {
+    await ensureDevice(database);
+    await startRun(scenario, database, 'run-only');
+    await rememberCrmRun('run-gone', database);
+    expect(await currentCrmRunId(CRM_SCENARIO_ID, database)).toBe('run-only');
+  });
+
+  it('switching touches no run: neither history changes', async () => {
+    await ensureDevice(database);
+    const first = await startRun(scenario, database, 'run-first');
+    const second = await startRun(scenario, database, 'run-second');
+    const before = [historyHash(first.state), historyHash(second.state)];
+    await rememberCrmRun('run-first', database);
+    const after = [
+      historyHash((await loadRun('run-first', database))?.state as never),
+      historyHash((await loadRun('run-second', database))?.state as never),
+    ];
+    expect(after).toEqual(before);
+    expect((await savedCrmRuns(CRM_SCENARIO_ID, database)).length).toBe(2);
+  });
+
+  it('grades the run the learner is working in, not another that is newer', async () => {
+    await ensureDevice(database);
+    const chosen = await startRun(scenario, database, 'run-chosen');
+    await startRun(scenario, database, 'run-newer');
+    await ok(addTag(chosen, 'jordan', 'only-here', database));
+    await rememberCrmRun('run-chosen', database);
+
+    const current = await currentCrmRun(CRM_SCENARIO_ID, database);
+    expect(current?.state.run_id).toBe('run-chosen');
+    expect(current?.state.account.contacts.jordan?.tags).toContain('only-here');
+    // The runtime reads the same rule through the default database; here the resolver is the
+    // contract, and the runtime module delegates to it (see exerciseRuntime.ts).
+    expect(typeof crmExerciseRuntime.context).toBe('function');
   });
 });

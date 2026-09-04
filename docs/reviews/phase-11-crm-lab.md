@@ -22,7 +22,7 @@ pricing and voice were out of scope and none were touched.
 
 | ID | Status | Evidence |
 |---|---|---|
-| CRM-001 | PASSED | All nine areas are worked through the Lab and every change is a simulator event on the shared run: 35 engine tests, 22 data-layer tests, 22 screen tests, the 27-check flow probe and the five-width review probe, all green. |
+| CRM-001 | PASSED | All nine areas are worked through the Lab and every change is a simulator event on the shared run: 43 engine tests, 30 data-layer tests, 24 screen tests, the 27-check flow probe and the five-width review probe, all green. |
 | CRM-003 | PASSED | The poor choice is allowed and unremarked (tests in `crm.test.ts` and `crmScreen.test.tsx`), and the consequence is a real deterministic exercise graded from the learner's own account: fails while Jordan's interest is three tags, passes once it is one field (`consequence.test.ts`, 9 tests). |
 | CRM-004 | PASSED | Dense rows and a two-pane workspace on desktop; a stage switcher plus local scroller on tablet and phone; seventeen states audited at 1440 / 1024 / 768 / 390 / 320 with no page-level overflow, no touch control under 44 px on a coarse pointer, no input under 16 px on a phone (`crm-review-probe.mjs`, PASS). |
 | SIM-001 | PARTIAL (unchanged) | Phase 11 adds the CRM half of the shared-account chain — contact, tag, field, owner, opportunity, owner, stage, note, task — all in one state and one log. The "fire a workflow" link still waits for Phase 12. |
@@ -158,6 +158,15 @@ Title, description, due date in simulator time, assignee from `users`, linked to
 opportunity; complete and reopen. Shown in the Tasks panel and in activity. No recurrence,
 priorities or bulk operations.
 
+**Due dates (D-098).** The screen's date input gives a calendar day; `instantForDay(day, zone)`
+in simulator-core turns it into 09:00 on that day in the *account's* zone, written with that
+zone's offset on that day (`2026-11-01` in America/Chicago is `2026-11-01T09:00:00-06:00`, the
+day after the clocks change; `2026-09-05` is `-05:00`). The engine refuses a `due_at` with no
+offset on `TASK_CREATED` and `TASK_UPDATED`, so a bare local datetime can never make determinism
+depend on the host. Tests prove the same input stores the same instant under four different
+device zones, that `simulatorDay` still shows the chosen day, that replay reproduces the task, that
+a reload preserves the exact instant, and that a second device receives it byte for byte.
+
 ## 16. Activity history
 
 Derived from the run's event log by `activity.ts`, ordered by simulator sequence, filtered to the
@@ -171,9 +180,11 @@ account's zone. Set in Inter with tabular digits — no monospace (DES-022).
 The Lab runs `SC-glowhaus-crm`: five contacts (one with no phone and no owner, one with no email,
 one on DND), two users, six-stage pipeline, four deals, two notes, two tasks, one appointment and
 a scheduled confirmation. Jordan carries three `wants-*` tags — the CRM-003 case, seeded rather
-than staged. The Lab resumes the most recently updated run of the scenario and never merges or
-discards others; with several it says so and offers the rest (D-096). It never starts a run on
-render.
+than staged. The Lab works in the run `currentCrmRunId` resolves — the one this device chose,
+else the most recently updated (D-096, D-099) — and never merges or discards another. With several
+saved accounts it says so and offers them as one "Working in" selector, labelled by save order and
+last-saved time in normal language; switching records the choice on the device record and touches
+no run. The selector is the same control at every width. It never starts a run on render.
 
 ## 18. Persistence
 
@@ -248,7 +259,9 @@ four cases are tests.
 The CRM Lab is the first entry in `EXERCISE_RUNTIMES` (D-097). It claims `state`, `events` and
 `references` from the CRM run through the Phase 10 adapter, and never `architecture`. `handles`
 matches only exercises whose scenario is the CRM scenario, so every workflow exercise stays exactly
-as un-runnable as before, which a test asserts. If the runtime has no account to read (the Lab has
+as un-runnable as before, which a test asserts. The runtime resolves the run through the same
+`currentCrmRunId` rule the Lab uses, so the grade is of the account the learner is working in and
+never of another run that happens to be newer (D-099). If the runtime has no account to read (the Lab has
 never been opened on this device) the grade is refused with `RuntimeUnavailableError` rather than
 graded against a learner-only context that would claim state it never had; the runner says in
 words to open the CRM first. Evidence finalizes through the Phase 9 path with normal attempt
@@ -290,13 +303,13 @@ panel, for an authored account of five contacts. No Worker.
 
 | File | Tests | Covers |
 |---|---|---|
-| `packages/simulator-core/test/crm.test.ts` | 35 | Owners, field definitions and values, pipelines and migration, notes, tasks, activity order, refusals, replay |
-| `apps/web/src/crm/crm.test.ts` | 22 | One-account chain, direct-mutation guard, activity adapter, two-device sync, reset, CRM-003 allowance |
-| `apps/web/src/crm/crmScreen.test.tsx` | 22 | The real App at `/crm`: list from the run, search never writes, every edit lands in `sim_events`, refusal shown, field defined in Setup appears on a contact, stage switcher, edit details |
+| `packages/simulator-core/test/crm.test.ts` | 43 | Owners, field definitions and values, pipelines and migration, notes, tasks, activity order, refusals, replay |
+| `apps/web/src/crm/crm.test.ts` | 30 | One-account chain, direct-mutation guard, activity adapter, two-device sync, reset, CRM-003 allowance |
+| `apps/web/src/crm/crmScreen.test.tsx` | 24 | The real App at `/crm`: list from the run, search never writes, every edit lands in `sim_events`, refusal shown, field defined in Setup appears on a contact, stage switcher, edit details |
 | `apps/web/src/crm/consequence.test.ts` | 9 | The CRM-003 exercise fails before and passes after; runtime scope; refusal without an account; evidence recorded |
 | Existing suites | 695 | Unchanged, green; two event-count assertions moved from 26 to 36 |
 
-Total: 783 tests in 61 files. Phase 11 added 88.
+Total: 801 tests in 61 files. Phase 11 added 106.
 
 ## 31. Browser probes
 

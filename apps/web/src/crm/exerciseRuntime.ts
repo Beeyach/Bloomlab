@@ -2,8 +2,8 @@ import type { Exercise } from '@bloomlab/content-schema';
 import type { GradingContext } from '@bloomlab/exercise-engine';
 
 import { gradingContextFrom, SIMULATOR_PROVIDES } from '../simulator/grading';
-import { listRuns, loadRun } from '../simulator/store';
 import { registerRuntime, type ExerciseRuntime } from '../exercise/runtime';
+import { currentCrmRun } from './currentRun';
 import { CRM_SCENARIO_ID } from './useCrmRun';
 
 /**
@@ -26,14 +26,6 @@ import { CRM_SCENARIO_ID } from './useCrmRun';
  */
 export const CRM_RUNTIME_ID = 'crm-lab';
 
-/** The most recently updated run of the CRM account — the same one the Lab resumes. */
-async function currentCrmRun() {
-  const projects = await listRuns();
-  const mine = projects.filter((row) => row.scenario_id === CRM_SCENARIO_ID);
-  const first = mine[0];
-  return first ? loadRun(first.run_id) : null;
-}
-
 export const crmExerciseRuntime: ExerciseRuntime = {
   id: CRM_RUNTIME_ID,
   provides: SIMULATOR_PROVIDES,
@@ -42,7 +34,9 @@ export const crmExerciseRuntime: ExerciseRuntime = {
     exercise: Exercise,
     learner: Record<string, unknown>,
   ): Promise<GradingContext | null> {
-    const run = await currentCrmRun();
+    // The run the Lab shows on this device — the same rule, so the grade is of the account the
+    // learner can see, never of another run that happens to be newer (D-099).
+    const run = await currentCrmRun(CRM_SCENARIO_ID);
     // No account means the learner never opened the Lab. Returning null refuses the grade rather
     // than inventing a starting state and failing them for work they were never able to do.
     if (!run) return null;

@@ -323,3 +323,41 @@ describe('a phone gets a stage switcher, not a drag (CRM-004)', () => {
     }
   });
 });
+
+describe('a due date chosen on screen is stored in the account’s zone (D-098)', () => {
+  it('stores 09:00 Chicago with its offset for the chosen day', async () => {
+    await openLab();
+    fireEvent.click(contactRow('maria') as HTMLElement);
+    fireEvent.click(await screen.findByRole('button', { name: 'Tasks' }));
+    fireEvent.change(await screen.findByLabelText(/New task/), { target: { value: 'Dated' } });
+    fireEvent.change(screen.getByLabelText(/^Due/), { target: { value: '2026-11-01' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add task' }));
+    await screen.findByText(/Dated/);
+    const events = await db.sim_events.toArray();
+    const created = events
+      .map((row) => row.event as { type: string; payload: Record<string, unknown> })
+      .find((event) => event.type === 'TASK_CREATED' && event.payload.title === 'Dated');
+    expect(created?.payload.due_at).toBe('2026-11-01T09:00:00-06:00');
+    expect(screen.getByText(/Sun 1 Nov/)).toBeInTheDocument();
+  });
+});
+
+describe('several saved accounts are offered, not merged (D-099)', () => {
+  it('shows a selector when there is more than one run and switches without touching either', async () => {
+    const { startRun } = await import('../simulator/store');
+    const { content } = await import('../content/bundle');
+    const scenario = content.scenarios.find((row) => row.id === 'SC-glowhaus-crm');
+    await startRun(scenario as never, db, 'run-older');
+    await startRun(scenario as never, db, 'run-newer');
+    const before = await db.sim_events.count();
+
+    await openLab();
+    const choice = await screen.findByLabelText('Working in');
+    expect((choice as HTMLSelectElement).value).toBe('run-newer');
+    expect(within(choice as HTMLSelectElement).getAllByRole('option')).toHaveLength(2);
+    fireEvent.change(choice, { target: { value: 'run-older' } });
+    await waitFor(() => expect((choice as HTMLSelectElement).value).toBe('run-older'));
+    expect(await db.sim_events.count()).toBe(before);
+    expect((await db.device.toCollection().first())?.crm_run_id).toBe('run-older');
+  });
+});
