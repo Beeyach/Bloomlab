@@ -1,0 +1,45 @@
+# Verified 2026-09-03 against "Manage Tasks Across Contacts and Opportunities in HighLevel".
+# Direct fetch of help.gohighlevel.com is blocked by this build environment's egress proxy, so the
+# article was read through indexed search summaries rather than opened; the wording below is what
+# those summaries attribute to the official page. Re-open the source directly at the next review.
+id: GHL-CRM-TASKS
+official_name: Tasks
+area: Contacts
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-03
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000005529-unified-task-management-across-contacts-and-opportunities
+known_limitations:
+  - Simulated — title, description, due date in simulator time, an assignee from the account's users, one linked contact or opportunity, and completing or reopening it.
+  - Not simulated — priorities, recurring tasks, bulk actions, and linking one task to as many as ten records of each object type.
+skills:
+  - SK-ARCHITECT-pipeline-design
+supported_configs:
+  config_fields:
+    - name: title
+      type: string
+      required: true
+    - name: description
+      type: string
+      required: false
+    - name: due_at
+      type: string
+      required: false
+      description: Simulator time, not the device clock.
+    - name: assignee
+      type: reference
+      required: false
+      description: A user in the account.
+  options:
+    - Contact task
+    - Opportunity task
+  notes: A task is work someone owes on a record; completing it is a state change, not a message.
+approximation_note: >-
+  Training approximation — Bloomlab models one linked record per task and a complete/reopen
+  status. HighLevel adds priorities, recurrence, bulk operations and multi-object associations.
+verification_note: >-
+  The task form's fields (title, description, due date, assignee) and task assignment across
+  contacts and opportunities confirmed through search summaries of the official help article,
+  2026-09-03. Direct page fetch was blocked by the build environment's egress proxy.

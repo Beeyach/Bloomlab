@@ -165,6 +165,12 @@ export interface DeviceRecord {
   /** The canonical sync key, kept so the learner can show, copy or re-download it. */
   sync_key?: string | null;
   linked_at?: string | null;
+  /**
+   * The CRM run this device is working in, when the learner has chosen one among several
+   * (D-099). A device preference like `label`, never synced and never CRM state: the run itself
+   * lives in `sim_projects`. Absent or stale means "the most recently updated run".
+   */
+  crm_run_id?: string | null;
 }
 
 /** The last server-confirmed state of a record: what a push declares as its base (TA§14). */

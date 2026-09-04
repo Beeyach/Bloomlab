@@ -1,0 +1,33 @@
+# Verified 2026-09-03 against "How to Decouple Owners for Contacts and Opportunities".
+# Direct fetch of help.gohighlevel.com is blocked by this build environment's egress proxy, so the
+# article was read through indexed search summaries rather than opened; the wording below is what
+# those summaries attribute to the official page. Re-open the source directly at the next review.
+id: GHL-CRM-OWNERS
+official_name: Allow different owners for contacts and its opportunities
+area: Settings
+feature_type: setting
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-03
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002273-how-to-decouple-owners-for-contacts-and-opportunities
+known_limitations:
+  - Simulated — a contact owner and an opportunity owner, each a user in the account, allowed to differ. A new opportunity takes the contact's owner and can then be changed.
+  - Not simulated — the sub-account toggle itself (Bloomlab's account behaves as though it is on), and the two follower-sync sub-settings that keep a contact follower and an opportunity owner in step.
+skills:
+  - SK-ARCHITECT-pipeline-design
+supported_configs:
+  options:
+    - Contact owner
+    - Opportunity owner
+  notes: >-
+    Ownership is a reference to a user in the account, never a name copied onto the record. The
+    default owner of a new opportunity is the contact's owner; changing one afterwards does not
+    change the other.
+approximation_note: >-
+  Training approximation — Bloomlab always behaves as though "Allow different owners for contacts
+  and its opportunities" is on, and does not reproduce the follower-sync sub-settings.
+verification_note: >-
+  The setting's official name, the default-to-contact-owner behaviour on opportunity creation, and
+  the two follower-sync sub-settings confirmed through search summaries of the official help
+  article, 2026-09-03. Direct page fetch was blocked by the build environment's egress proxy.

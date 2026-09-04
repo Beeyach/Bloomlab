@@ -42,6 +42,12 @@ export interface Contact {
   timezone: string | null;
   source: string | null;
   company_id: string | null;
+  /**
+   * The user who owns this contact — GoHighLevel's Contact Owner, called Assigned User on the
+   * creation form. A reference into `users`, never a name copied onto the record, so renaming a
+   * user does not leave stale names behind (D-089).
+   */
+  owner_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -51,11 +57,28 @@ export interface Company {
   name: string;
 }
 
+export const CUSTOM_FIELD_TYPES = [
+  'text',
+  'number',
+  'date',
+  'checkbox',
+  'dropdown',
+  'phone',
+  'email',
+] as const;
+
+export type CustomFieldType = (typeof CUSTOM_FIELD_TYPES)[number];
+
 export interface CustomField {
   key: string;
   label: string;
-  type: 'text' | 'number' | 'date' | 'checkbox' | 'dropdown' | 'phone' | 'email';
+  type: CustomFieldType;
   object: 'contact' | 'opportunity';
+  /**
+   * The choices a `dropdown` offers. Required for that type and refused for every other, because
+   * a dropdown with no options is a field the learner cannot actually fill in (D-090).
+   */
+  options: string[] | null;
 }
 
 export interface Pipeline {
@@ -64,13 +87,27 @@ export interface Pipeline {
   stages: string[];
 }
 
+export const OPPORTUNITY_STATUSES = ['open', 'won', 'lost', 'abandoned'] as const;
+
+export type OpportunityStatus = (typeof OPPORTUNITY_STATUSES)[number];
+
 export interface Opportunity {
   id: string;
+  /** What the deal is called. GoHighLevel names an opportunity; it is not just its contact. */
+  name: string;
   contact_id: string;
   pipeline_id: string;
   stage: string;
   value: number;
-  status: 'open' | 'won' | 'lost' | 'abandoned';
+  status: OpportunityStatus;
+  /**
+   * The user who owns this deal. Allowed to differ from the contact's owner, which is what
+   * "Allow different owners for contacts and its opportunities" turns on in a real sub-account;
+   * a new opportunity starts with the contact's owner and can then be changed (D-089).
+   */
+  owner_id: string | null;
+  /** Values for custom fields whose `object` is `opportunity`. */
+  custom_fields: Record<string, string | number | boolean>;
   created_at: string;
   updated_at: string;
 }
@@ -167,19 +204,40 @@ export interface WorkflowRun {
   exited_at: string | null;
 }
 
-export interface Task {
-  id: string;
-  contact_id: string;
-  title: string;
-  due_at: string | null;
-  completed: boolean;
-  assigned_to: string | null;
+/**
+ * What a note or a task is attached to (D-091).
+ *
+ * HighLevel puts both on a contact, an opportunity or a company. Bloomlab models the first two
+ * and keeps them as two nullable references rather than one polymorphic id, so a record attached
+ * to an opportunity can still be read from its contact's history without a join table, and so
+ * companies can be added later by adding a third column rather than reshaping every row.
+ * At least one reference is always set; the reducers refuse a record attached to nothing.
+ */
+export interface CrmTarget {
+  contact_id: string | null;
+  opportunity_id: string | null;
 }
 
-export interface Note {
+export interface Task extends CrmTarget {
   id: string;
-  contact_id: string;
+  title: string;
+  description: string | null;
+  /** Simulator time, never the device clock. */
+  due_at: string | null;
+  completed: boolean;
+  completed_at: string | null;
+  /** A user in the account. */
+  assigned_to: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Internal only: a note is context for the team and never reaches the contact. */
+export interface Note extends CrmTarget {
+  id: string;
   body: string;
+  /** Who wrote it, when the account knows. */
+  author_id: string | null;
   at: string;
 }
 

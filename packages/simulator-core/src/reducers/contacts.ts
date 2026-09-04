@@ -29,6 +29,21 @@ function readCustomFields(
   return fields;
 }
 
+/**
+ * The owner a new contact starts with. A reference into `users`, so an unknown one is refused
+ * rather than stored as a label that resolves to nothing (D-089). Changing it afterwards is
+ * `CONTACT_ASSIGNED`, which is the event the CRM Lab and any later workflow both go through.
+ */
+function readOwner(account: AccountState, event: SimulatorEvent): string | null {
+  const value = event.payload.owner_id;
+  if (value === undefined || value === null) return null;
+  if (typeof value !== 'string' || value.length === 0) {
+    fail('INVALID_PAYLOAD', `${event.type} owner_id must be a user id`, { value });
+  }
+  entity(account.users, value, 'user', event.type);
+  return value;
+}
+
 function readTags(payload: Record<string, unknown>, eventType: string): string[] {
   const raw = payload.tags;
   if (raw === undefined) return [];
@@ -36,6 +51,37 @@ function readTags(payload: Record<string, unknown>, eventType: string): string[]
     fail('INVALID_PAYLOAD', `${eventType} tags must be a list of names`, { payload });
   }
   return raw as string[];
+}
+
+/**
+ * Every custom-field value must name a field the account has defined, and one defined for
+ * contacts. `CONTACT_UPDATED` already checked this; creation did not, which let a run start with
+ * values no screen could label and no assertion could read.
+ */
+function definedFields(
+  account: AccountState,
+  fields: Record<string, string | number | boolean>,
+  event: SimulatorEvent,
+): Record<string, string | number | boolean> {
+  for (const key of Object.keys(fields)) {
+    const defined = account.custom_fields[key];
+    if (!defined) {
+      fail(
+        'UNKNOWN_ENTITY',
+        `${event.type} sets a custom field the account has not defined: ${key}`,
+        {
+          key,
+        },
+      );
+    }
+    if (defined.object !== 'contact') {
+      fail('INVALID_PAYLOAD', `${key} is an opportunity field, not a contact field`, {
+        key,
+        object: defined.object,
+      });
+    }
+  }
+  return fields;
 }
 
 export function contactCreated(account: AccountState, event: SimulatorEvent): ReducerResult {
@@ -50,11 +96,12 @@ export function contactCreated(account: AccountState, event: SimulatorEvent): Re
     email: optionalString(event.payload, 'email'),
     phone: optionalString(event.payload, 'phone'),
     tags: readTags(event.payload, event.type),
-    custom_fields: readCustomFields(event.payload, event.type),
+    custom_fields: definedFields(account, readCustomFields(event.payload, event.type), event),
     dnd: event.payload.dnd === true,
     timezone: optionalString(event.payload, 'timezone'),
     source: optionalString(event.payload, 'source'),
     company_id: optionalString(event.payload, 'company_id'),
+    owner_id: readOwner(account, event),
     created_at: event.at,
     updated_at: event.at,
   };
@@ -111,18 +158,7 @@ export function contactUpdated(account: AccountState, event: SimulatorEvent): Re
   }
 
   if (event.payload.custom_fields !== undefined) {
-    const fields = readCustomFields(event.payload, event.type);
-    for (const key of Object.keys(fields)) {
-      if (!account.custom_fields[key]) {
-        fail(
-          'UNKNOWN_ENTITY',
-          `${event.type} sets a custom field the account has not defined: ${key}`,
-          {
-            key,
-          },
-        );
-      }
-    }
+    const fields = definedFields(account, readCustomFields(event.payload, event.type), event);
     updated.custom_fields = { ...existing.custom_fields, ...fields };
     changed.custom_fields = fields;
   }

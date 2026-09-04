@@ -119,6 +119,57 @@ export function epochFromParts(parts: ZonedParts, timeZone: string): number {
 
 const pad = (value: number, width = 2) => String(value).padStart(width, '0');
 
+/** An ISO 8601 instant that says where it is: a full date-time with `Z` or a `±HH:MM` offset. */
+const OFFSET_INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/;
+
+/**
+ * True only for an instant carrying its offset. `Date.parse` accepts `2026-09-05T09:00:00` and
+ * reads it in the host's zone, which is exactly the dependence on the machine the simulator
+ * forbids, so anything a learner or a scenario supplies as an instant is checked here first.
+ */
+export const hasOffset = (iso: string): boolean => OFFSET_INSTANT.test(iso);
+
+/** Milliseconds for an instant that must carry its offset; an offset-less one is refused. */
+export function offsetInstant(iso: string): number {
+  if (!hasOffset(iso)) {
+    fail('INVALID_TIME', `Not a simulator instant (no offset): ${iso}`, { value: iso });
+  }
+  return instant(iso);
+}
+
+const CALENDAR_DAY = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/**
+ * A calendar day and a time of day in the scenario's zone, as a canonical instant (D-098).
+ *
+ * This is how a date-only choice — a task due "on the 5th" — becomes simulator time: 09:00 on
+ * that day *in the account's zone*, written with that zone's offset on that day, so a device in
+ * Tokyo and a device in Austin store the same string for the same choice, and a daylight-saving
+ * change on the day is resolved by the zone rather than by whoever happened to click.
+ */
+export function instantForDay(day: string, timeZone: string, hour = 9, minute = 0): string {
+  const match = CALENDAR_DAY.exec(day);
+  if (!match) fail('INVALID_TIME', `Not a calendar day (YYYY-MM-DD): ${day}`, { value: day });
+  const [, year, month, date] = match;
+  const parts: ZonedParts = {
+    year: Number(year),
+    month: Number(month),
+    day: Number(date),
+    hour,
+    minute,
+    second: 0,
+  };
+  if (parts.month < 1 || parts.month > 12 || parts.day < 1 || parts.day > 31) {
+    fail('INVALID_TIME', `Not a calendar day: ${day}`, { value: day });
+  }
+  const epoch = epochFromParts(parts, timeZone);
+  const check = partsIn(epoch, timeZone);
+  if (check.year !== parts.year || check.month !== parts.month || check.day !== parts.day) {
+    fail('INVALID_TIME', `No such day in the calendar: ${day}`, { value: day });
+  }
+  return formatInstant(epoch, timeZone);
+}
+
 /** An ISO 8601 instant written with the zone's offset, e.g. `2026-09-04T15:00:00-05:00`. */
 export function formatInstant(epochMs: number, timeZone: string): string {
   const parts = partsIn(epochMs, timeZone);

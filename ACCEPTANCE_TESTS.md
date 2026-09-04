@@ -187,6 +187,8 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **CRM-003** A deliberately poor choice (e.g. tag as a field) is allowed; a later exercise surfaces its consequence.
 - **CRM-004** Desktop shows dense rows; mobile shows stage view / local horizontal scroller reviewed at 390 and 320.
 
+Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine areas on the built preview and finds every change after reload, offline and reset, and `apps/web/src/crm/crmScreen.test.tsx` checks each lands in `sim_events`. CRM-003 — `EX-FIX_IT-jordan-treatment-interest` is graded from the learner's own account and fails before the fix and passes after (`consequence.test.ts`). CRM-004 — `npm run review:crm-review` audits seventeen states at 1440 / 1024 / 768 / 390 / 320.
+
 ## Phase 12 — Workflow Lab
 
 - **WFL-001** Canvas, toolbar, inspector and timeline present at 1440 and 1024.

@@ -40,6 +40,37 @@ export interface ScenarioContact {
   dnd?: boolean | undefined;
   timezone?: string | undefined;
   source?: string | undefined;
+  /** A user in the scenario's own `users` list (D-089). */
+  owner_id?: string | undefined;
+}
+
+/** A person in the account, so ownership and assignment resolve to somebody (D-089). */
+export interface ScenarioUser {
+  id: string;
+  name: string;
+  role?: 'admin' | 'user' | undefined;
+}
+
+/** An internal note the account already carries when the run starts (D-091). */
+export interface ScenarioNote {
+  id: string;
+  body: string;
+  contact_id?: string | undefined;
+  opportunity_id?: string | undefined;
+  author_id?: string | undefined;
+  at?: string | undefined;
+}
+
+/** Work already owed on a record when the run starts (D-091). */
+export interface ScenarioTask {
+  id: string;
+  title: string;
+  contact_id?: string | undefined;
+  opportunity_id?: string | undefined;
+  description?: string | undefined;
+  due_at?: string | undefined;
+  completed?: boolean | undefined;
+  assigned_to?: string | undefined;
 }
 
 export interface ScenarioWorkflowNode {
@@ -76,7 +107,10 @@ export interface ScenarioWorkflow {
 }
 
 export interface ScenarioAccountState {
+  users?: readonly ScenarioUser[] | undefined;
   contacts?: readonly ScenarioContact[] | undefined;
+  notes?: readonly ScenarioNote[] | undefined;
+  tasks?: readonly ScenarioTask[] | undefined;
   tags?: readonly string[] | undefined;
   custom_fields?:
     | readonly {
@@ -84,6 +118,8 @@ export interface ScenarioAccountState {
         label: string;
         type: 'text' | 'number' | 'date' | 'checkbox' | 'dropdown' | 'phone' | 'email';
         object?: 'contact' | 'opportunity' | undefined;
+        /** Required for `dropdown`, refused for every other type (D-090). */
+        options?: readonly string[] | undefined;
       }[]
     | undefined;
   custom_values?: readonly { key: string; value: string }[] | undefined;
@@ -95,6 +131,10 @@ export interface ScenarioAccountState {
         pipeline_id: string;
         stage: string;
         value?: number | undefined;
+        name?: string | undefined;
+        status?: 'open' | 'won' | 'lost' | 'abandoned' | undefined;
+        owner_id?: string | undefined;
+        custom_fields?: Readonly<Record<string, string | number | boolean>> | undefined;
       }[]
     | undefined;
   calendars?:
@@ -203,7 +243,10 @@ export function validateScenario(
   }
 
   const collections = {
+    users: state.users ?? [],
     contacts: state.contacts ?? [],
+    notes: state.notes ?? [],
+    tasks: state.tasks ?? [],
     pipelines: state.pipelines ?? [],
     calendars: state.calendars ?? [],
     appointments: state.appointments ?? [],
@@ -222,6 +265,115 @@ export function validateScenario(
   const contactIds = new Set(collections.contacts.map((contact) => contact.id));
   const calendarIds = new Set(collections.calendars.map((calendar) => calendar.id));
   const pipelines = new Map(collections.pipelines.map((pipeline) => [pipeline.id, pipeline]));
+  const userIds = new Set(collections.users.map((user) => user.id));
+  const opportunityIds = new Set(collections.opportunities.map((row) => row.id));
+  const fields = new Map((state.custom_fields ?? []).map((field) => [field.key, field]));
+
+  /** An owner or assignee must be somebody the account actually has (D-089). */
+  const checkUser = (id: string | undefined, path: string) => {
+    if (id !== undefined && !userIds.has(id)) {
+      issues.push(issue('DANGLING_REF', path, `Unknown user ${id}`));
+    }
+  };
+
+  /** A value must name a field the account defines, for the object it is stored on (D-090). */
+  const checkFieldValues = (
+    values: Readonly<Record<string, string | number | boolean>> | undefined,
+    object: 'contact' | 'opportunity',
+    path: string,
+  ) => {
+    for (const key of Object.keys(values ?? {})) {
+      const field = fields.get(key);
+      if (!field) {
+        issues.push(issue('UNKNOWN_FIELD', `${path}.${key}`, `No custom field ${key} is defined`));
+        continue;
+      }
+      if ((field.object ?? 'contact') !== object) {
+        issues.push(
+          issue(
+            'WRONG_FIELD_OBJECT',
+            `${path}.${key}`,
+            `${key} is a ${field.object ?? 'contact'} field`,
+          ),
+        );
+      }
+    }
+  };
+
+  // A dropdown with no options is a field nobody can fill in; options on anything else are a
+  // promise no screen keeps. The reducer refuses both, so authoring must too (D-090).
+  (state.custom_fields ?? []).forEach((field, index) => {
+    const path = `initial_account_state.custom_fields.${index}`;
+    if (field.type === 'dropdown' && (field.options ?? []).length === 0) {
+      issues.push(issue('MISSING_OPTIONS', path, `Dropdown ${field.key} offers no options`));
+    }
+    if (field.type !== 'dropdown' && field.options) {
+      issues.push(
+        issue(
+          'UNEXPECTED_OPTIONS',
+          path,
+          `Only a dropdown has options; ${field.key} is ${field.type}`,
+        ),
+      );
+    }
+    if (field.options && new Set(field.options).size !== field.options.length) {
+      issues.push(issue('DUPLICATE_OPTION', path, `${field.key} offers the same option twice`));
+    }
+  });
+
+  collections.contacts.forEach((contact, index) => {
+    const path = `initial_account_state.contacts.${index}`;
+    checkUser(contact.owner_id, `${path}.owner_id`);
+    checkFieldValues(contact.custom_fields, 'contact', `${path}.custom_fields`);
+  });
+
+  // A note or a task must hang off something that exists, and off something at all (D-091).
+  const checkTarget = (
+    row: { contact_id?: string | undefined; opportunity_id?: string | undefined },
+    path: string,
+  ) => {
+    if (row.contact_id !== undefined && !contactIds.has(row.contact_id)) {
+      issues.push(issue('DANGLING_REF', `${path}.contact_id`, `Unknown contact ${row.contact_id}`));
+    }
+    if (row.opportunity_id !== undefined && !opportunityIds.has(row.opportunity_id)) {
+      issues.push(
+        issue(
+          'DANGLING_REF',
+          `${path}.opportunity_id`,
+          `Unknown opportunity ${row.opportunity_id}`,
+        ),
+      );
+    }
+    if (row.contact_id === undefined && row.opportunity_id === undefined) {
+      issues.push(issue('NO_TARGET', path, 'Needs a contact_id or an opportunity_id'));
+    }
+  };
+
+  collections.notes.forEach((note, index) => {
+    const path = `initial_account_state.notes.${index}`;
+    checkTarget(note, path);
+    checkUser(note.author_id, `${path}.author_id`);
+    if (note.at !== undefined) {
+      try {
+        instant(note.at);
+      } catch {
+        issues.push(issue('INVALID_TIME', `${path}.at`, `Not an instant: ${note.at}`));
+      }
+    }
+  });
+
+  collections.tasks.forEach((task, index) => {
+    const path = `initial_account_state.tasks.${index}`;
+    checkTarget(task, path);
+    checkUser(task.assigned_to, `${path}.assigned_to`);
+    if (task.due_at !== undefined) {
+      try {
+        instant(task.due_at);
+      } catch {
+        issues.push(issue('INVALID_TIME', `${path}.due_at`, `Not an instant: ${task.due_at}`));
+      }
+    }
+  });
 
   collections.appointments.forEach((appointment, index) => {
     const path = `initial_account_state.appointments.${index}`;
@@ -239,6 +391,9 @@ export function validateScenario(
   });
 
   collections.opportunities.forEach((opportunity, index) => {
+    const ownerPath = `initial_account_state.opportunities.${index}`;
+    checkUser(opportunity.owner_id, `${ownerPath}.owner_id`);
+    checkFieldValues(opportunity.custom_fields, 'opportunity', `${ownerPath}.custom_fields`);
     const path = `initial_account_state.opportunities.${index}`;
     if (!contactIds.has(opportunity.contact_id)) {
       issues.push(issue('DANGLING_REF', path, `Unknown contact ${opportunity.contact_id}`));
@@ -306,6 +461,12 @@ export function validateScenario(
     workflow_id: new Set(collections.workflows.map((row) => row.id)),
     pipeline_id: new Set(pipelines.keys()),
     product_id: new Set(collections.products.map((row) => row.id)),
+    user_id: userIds,
+    owner_id: userIds,
+    assigned_to: userIds,
+    author_id: userIds,
+    task_id: new Set(collections.tasks.map((row) => row.id)),
+    note_id: new Set(collections.notes.map((row) => row.id)),
   };
 
   const checkEvent = (event: ScenarioScheduledEvent | ScenarioInjectableEvent, path: string) => {
@@ -355,6 +516,9 @@ const CREATES: Partial<Record<SimulatorEventType, string[]>> = {
   OPPORTUNITY_CREATED: ['opportunity_id'],
   PAYMENT_RECEIVED: ['payment_id'],
   PAYMENT_FAILED: ['payment_id'],
+  PIPELINE_CREATED: ['pipeline_id'],
+  NOTE_ADDED: ['note_id'],
+  TASK_CREATED: ['task_id'],
 };
 
 /** Accepts either the authored dotted name or the catalogue type itself. */
@@ -375,6 +539,25 @@ export function assertRunnableScenario(
     );
   }
 }
+
+/**
+ * A note or a task authored against an opportunity inherits that deal's contact, exactly as the
+ * `NOTE_ADDED` and `TASK_CREATED` reducers do, so a record seeded by a scenario and one created
+ * by a learner have the same shape (D-091).
+ */
+const contactOfOpportunity = (
+  state: ScenarioAccountState,
+  opportunityId: string | undefined,
+): string | null =>
+  (opportunityId
+    ? (state.opportunities ?? []).find((row) => row.id === opportunityId)?.contact_id
+    : null) ?? null;
+
+const resolveNoteContact = (state: ScenarioAccountState, note: ScenarioNote): string | null =>
+  contactOfOpportunity(state, note.opportunity_id);
+
+const resolveTaskContact = (state: ScenarioAccountState, task: ScenarioTask): string | null =>
+  contactOfOpportunity(state, task.opportunity_id);
 
 const index = <T extends { id: string }, R>(
   rows: readonly T[] | undefined,
@@ -397,6 +580,7 @@ export function initialAccount(scenario: SimulatorScenario): AccountState {
     timezone: contact.timezone ?? null,
     source: contact.source ?? null,
     company_id: null,
+    owner_id: contact.owner_id ?? null,
     created_at: at,
     updated_at: at,
   }));
@@ -430,14 +614,24 @@ export function initialAccount(scenario: SimulatorScenario): AccountState {
 
   return {
     account: { id: scenario.id, name: scenario.title ?? scenario.id, timezone: scenario.timezone },
-    users: {},
+    users: index(state.users, (user) => ({
+      id: user.id,
+      name: user.name,
+      role: user.role ?? 'user',
+    })),
     contacts,
     companies: {},
     tags: [...(state.tags ?? [])],
     custom_fields: Object.fromEntries(
       (state.custom_fields ?? []).map((field) => [
         field.key,
-        { key: field.key, label: field.label, type: field.type, object: field.object ?? 'contact' },
+        {
+          key: field.key,
+          label: field.label,
+          type: field.type,
+          object: field.object ?? 'contact',
+          options: field.options ? [...field.options] : null,
+        },
       ]),
     ),
     custom_values: Object.fromEntries(
@@ -450,11 +644,19 @@ export function initialAccount(scenario: SimulatorScenario): AccountState {
     })),
     opportunities: index(state.opportunities, (opportunity) => ({
       id: opportunity.id,
+      name: opportunity.name ?? opportunity.id,
       contact_id: opportunity.contact_id,
       pipeline_id: opportunity.pipeline_id,
       stage: opportunity.stage,
       value: opportunity.value ?? 0,
-      status: 'open' as const,
+      status: opportunity.status ?? ('open' as const),
+      // A deal with no author-given owner starts on the contact's owner, the same rule the
+      // creation event follows, so a scenario and a learner produce the same shape (D-089).
+      owner_id:
+        opportunity.owner_id ??
+        (state.contacts ?? []).find((row) => row.id === opportunity.contact_id)?.owner_id ??
+        null,
+      custom_fields: { ...(opportunity.custom_fields ?? {}) },
       created_at: at,
       updated_at: at,
     })),
@@ -493,8 +695,27 @@ export function initialAccount(scenario: SimulatorScenario): AccountState {
     conversations: {},
     workflows,
     workflow_runs: {},
-    tasks: {},
-    notes: {},
+    tasks: index(state.tasks, (task) => ({
+      id: task.id,
+      contact_id: task.contact_id ?? resolveTaskContact(state, task),
+      opportunity_id: task.opportunity_id ?? null,
+      title: task.title,
+      description: task.description ?? null,
+      due_at: task.due_at ? toZone(task.due_at, scenario.timezone) : null,
+      completed: task.completed ?? false,
+      completed_at: task.completed ? at : null,
+      assigned_to: task.assigned_to ?? null,
+      created_at: at,
+      updated_at: at,
+    })),
+    notes: index(state.notes, (note) => ({
+      id: note.id,
+      contact_id: note.contact_id ?? resolveNoteContact(state, note),
+      opportunity_id: note.opportunity_id ?? null,
+      body: note.body,
+      author_id: note.author_id ?? null,
+      at: note.at ? toZone(note.at, scenario.timezone) : at,
+    })),
     analytics: { ...EMPTY_ANALYTICS },
   };
 }

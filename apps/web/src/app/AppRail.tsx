@@ -6,6 +6,7 @@ import {
   IconHome,
   IconInfo,
   IconMap,
+  IconRecords,
   VisuallyHidden,
   cx,
   type IconProps,
@@ -29,6 +30,7 @@ const AREAS: Area[] = [
   { to: '/', label: 'Home', icon: IconHome, end: true },
   { to: '/campaign', label: 'Campaign', icon: IconCampaign },
   { to: '/skills', label: 'Skill Map', icon: IconMap },
+  { to: '/crm', label: 'CRM', icon: IconRecords },
 ];
 
 const DEVELOPER: Area[] = [

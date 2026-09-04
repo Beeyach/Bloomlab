@@ -37,7 +37,9 @@
     "review:exercise": "node scripts/review/exercise-probe.mjs",
     "review:academy": "node scripts/review/academy-probe.mjs",
     "review:simulator": "node scripts/review/simulator-probe.mjs",
-    "review:holo-touch": "node scripts/review/holo-touch-probe.mjs"
+    "review:holo-touch": "node scripts/review/holo-touch-probe.mjs",
+    "review:crm": "node scripts/review/crm-probe.mjs",
+    "review:crm-review": "node scripts/review/crm-review-probe.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

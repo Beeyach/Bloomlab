@@ -4,6 +4,28 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 11 · CRM Lab
+
+- `/crm`, a lazy route where the learner works one real training account: contacts as dense rows with a record inspector (standard fields as one form, do-not-disturb, owner, tags, custom fields, opportunities, activity, notes, tasks), the pipeline as a board with a stage picker on the deal, and Setup for custom fields and pipeline stages. CRM joins the rail with its own icon.
+- One CRM command layer (`apps/web/src/crm/commands.ts`, D-094): every screen mutation is a simulator event processed by the engine and persisted by the Phase 10 store, returning the new run or a structured refusal. No CRM store in React; a source-level test fails if a screen cuts a second door.
+- Ten internal simulator events — `CONTACT_ASSIGNED`, `OPPORTUNITY_ASSIGNED`, `FIELD_DEFINED`, `FIELD_UPDATED`, `PIPELINE_CREATED`, `PIPELINE_UPDATED`, `NOTE_ADDED`, `TASK_CREATED`, `TASK_UPDATED`, `TASK_COMPLETED` — with reducers, validation, replay and 35 engine tests. None is a HighLevel workflow trigger and nothing implies one is (D-092).
+- State: `users`-referenced `owner_id` on contacts and opportunities that may differ (D-089); typed custom fields with an object and dropdown options (D-090); opportunity name, status and custom fields; notes and tasks attached to a contact or an opportunity (D-091). Scenarios author users, notes, tasks, owners and options, and validation refuses what dangles.
+- A pipeline edit that would strand deals is refused unless the same event says where they go; Setup asks for the destination (D-093).
+- Activity history derived from the event log in simulator order, with wording kept apart from meaning and ids resolved through the account at render (D-095).
+- `SC-glowhaus-crm`, the CRM training account: five contacts with the gaps a learner has to notice, two users, a six-stage pipeline, four deals, notes, tasks, and Jordan's three `wants-*` tags as the seeded CRM-003 case. The Lab resumes the newest run and never merges or discards another (D-096).
+- CRM-003's consequence: the CRM Lab is the first registered exercise runtime (D-097), and `EX-FIX_IT-jordan-treatment-interest` is graded from the learner's own account — failing while the interest is three tags, passing once it is one field. A runtime with nothing to read refuses the grade rather than failing the learner. Every workflow exercise stays exactly as un-runnable as before.
+- Registry: `GHL-CRM-OWNERS`, `GHL-CRM-NOTES`, `GHL-CRM-TASKS` (fidelity B, verified 2026-09-03 through search summaries of the official articles because the build environment's proxy blocks the help centre — stated in each record).
+- `npm run review:crm` (27-check flow probe: mutate, reload, offline, reconnect, reset, post-reset) and `npm run review:crm-review` (seventeen states at five widths, keyboard, touch stage move, reduced motion), both PASS.
+
+### Fixed — Phase 11
+
+- **Task due dates no longer depend on the device timezone (D-098).** The task form sent `${date}T09:00:00` with no offset, which `Date.parse` reads in the host's zone, so two devices would have stored two due dates for one choice. A chosen day now becomes 09:00 in the account's zone with that zone's offset on that day through `instantForDay` in simulator-core, and the engine refuses an offset-less `due_at` on `TASK_CREATED` and `TASK_UPDATED`. Nine regressions cover canonicalisation, device-zone independence, DST, display, refusal, replay, reload and sync.
+- **Several saved CRM accounts are now offered, as D-096 said (D-099).** The Lab showed only a notice; it now offers a "Working in" selector, switches through the existing `switchRun`, records the choice on the device record, and the CRM exercise runtime grades that same run. Switching touches no run.
+- The stage editor used a raw `<textarea>` inside `<Field>`, so its label pointed at nothing; it now uses the `Textarea` primitive and names its pipeline.
+- Tag chips were 34 px on a coarse pointer; they are 44 px there now (A11Y-007).
+- Two GlowHaus dropdown custom fields had no options; the content was fixed rather than the rule weakened.
+- CRM screen files no longer export non-components (a `fullName` helper, a stray `Stack` re-export), which broke fast refresh; `fullName` lives in `crm/words.ts`.
+
 ### Added — Phase 10 · Simulator Core
 
 - `@bloomlab/simulator-core` is the shared deterministic GoHighLevel engine: pure TypeScript importing nothing outside its own modules, with a source-level test enforcing no React, DOM, IndexedDB, Dexie, Cloudflare, `fetch`, Claude, `Math.random()`, `Date.now()` or any read of the machine's timezone. One simulated account across twenty-one id-addressed collections plus the run's event log, scheduled queue, execution records, clock and generator position — the twenty-two domains §43 names — transitioned by `State + Event + Configuration → New State + Generated Events + Execution Records`.

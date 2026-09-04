@@ -19,6 +19,10 @@ import {
   opportunityUpdated,
   pipelineStageChanged,
 } from './reducers/opportunities.ts';
+import { contactAssigned, opportunityAssigned } from './reducers/assignment.ts';
+import { fieldDefined, fieldUpdated } from './reducers/fields.ts';
+import { pipelineCreated, pipelineUpdated } from './reducers/pipelines.ts';
+import { noteAdded, taskCompleted, taskCreated, taskUpdated } from './reducers/crm.ts';
 import { paymentFailed, paymentReceived, refundIssued } from './reducers/payments.ts';
 import { result, type Reducer, type ReducerResult } from './reducers/shared.ts';
 import { workflowEnrolled, workflowExited, workflowStepCompleted } from './reducers/workflows.ts';
@@ -72,6 +76,16 @@ const REDUCERS: Record<SimulatorEventType, Reducer> = {
   WORKFLOW_EXITED: workflowExited,
   WEBHOOK_RECEIVED: webhookReceived,
   WEBHOOK_RESPONSE: webhookResponse,
+  CONTACT_ASSIGNED: contactAssigned,
+  OPPORTUNITY_ASSIGNED: opportunityAssigned,
+  FIELD_DEFINED: fieldDefined,
+  FIELD_UPDATED: fieldUpdated,
+  PIPELINE_CREATED: pipelineCreated,
+  PIPELINE_UPDATED: pipelineUpdated,
+  NOTE_ADDED: noteAdded,
+  TASK_CREATED: taskCreated,
+  TASK_UPDATED: taskUpdated,
+  TASK_COMPLETED: taskCompleted,
 };
 
 /** Every catalogue type has a reducer; the type system proves it and this exposes it to tests. */

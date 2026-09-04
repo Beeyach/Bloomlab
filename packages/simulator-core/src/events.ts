@@ -32,6 +32,19 @@ export const SIMULATOR_EVENT_TYPES = [
   'WORKFLOW_EXITED',
   'WEBHOOK_RECEIVED',
   'WEBHOOK_RESPONSE',
+  // CRM Lab (Phase 11). These are Bloomlab's own account events, not GoHighLevel workflow
+  // triggers: HighLevel exposes no "Task Created" trigger, and nothing here should be read as
+  // claiming it does. The registry is the only place that says what GHL exposes (D-092).
+  'CONTACT_ASSIGNED',
+  'OPPORTUNITY_ASSIGNED',
+  'FIELD_DEFINED',
+  'FIELD_UPDATED',
+  'PIPELINE_CREATED',
+  'PIPELINE_UPDATED',
+  'NOTE_ADDED',
+  'TASK_CREATED',
+  'TASK_UPDATED',
+  'TASK_COMPLETED',
 ] as const;
 
 export type SimulatorEventType = (typeof SIMULATOR_EVENT_TYPES)[number];
@@ -53,6 +66,21 @@ export const contentEventName = (type: SimulatorEventType): string =>
 const BY_CONTENT_NAME = new Map<string, SimulatorEventType>(
   SIMULATOR_EVENT_TYPES.map((type) => [contentEventName(type), type]),
 );
+
+// `contentEventName` replaces only the first underscore, so `A_B_C` and `A_B` + `_C` could both
+// land on `a.b_c` and silently overwrite each other in the lookup above — an authored name would
+// then resolve to whichever was declared last. One collision is one catalogue entry nobody can
+// address, so it is refused at module load rather than found later by a puzzled author.
+if (BY_CONTENT_NAME.size !== SIMULATOR_EVENT_TYPES.length) {
+  const seen = new Set<string>();
+  const clash = SIMULATOR_EVENT_TYPES.filter((type) => {
+    const name = contentEventName(type);
+    if (seen.has(name)) return true;
+    seen.add(name);
+    return false;
+  });
+  throw new Error(`Two simulator event types share one content name: ${clash.join(', ')}`);
+}
 
 /** The catalogue type an authored event name refers to, or `null` when content names nothing. */
 export const eventTypeFromContent = (name: string): SimulatorEventType | null =>
@@ -158,6 +186,33 @@ export function requireString(
 export function optionalString(payload: EventPayload, field: string): string | null {
   const value = payload[field];
   return typeof value === 'string' && value.length > 0 ? value : null;
+}
+
+/** Reads a required boolean field. Nothing is coerced: `"true"` is not `true`. */
+export function requireBoolean(
+  payload: EventPayload,
+  field: string,
+  type: SimulatorEventType,
+): boolean {
+  const value = payload[field];
+  if (typeof value !== 'boolean') {
+    fail('INVALID_PAYLOAD', `${type} needs ${field} to be true or false`, { field, payload, type });
+  }
+  return value as boolean;
+}
+
+/** Reads an optional list of names, refusing a list that is not one. */
+export function optionalStringList(
+  payload: EventPayload,
+  field: string,
+  type: SimulatorEventType,
+): string[] | null {
+  const value = payload[field];
+  if (value === undefined || value === null) return null;
+  if (!Array.isArray(value) || value.some((entry) => typeof entry !== 'string' || entry === '')) {
+    fail('INVALID_PAYLOAD', `${type} needs ${field} to be a list of names`, { field, payload });
+  }
+  return value as string[];
 }
 
 export function requireNumber(

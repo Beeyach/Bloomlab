@@ -34,9 +34,13 @@ PAYMENT_RECEIVED  PAYMENT_FAILED  REFUND_ISSUED
 TIME_ADVANCED
 WORKFLOW_ENROLLED  WORKFLOW_STEP_COMPLETED  WORKFLOW_EXITED
 WEBHOOK_RECEIVED  WEBHOOK_RESPONSE
+CONTACT_ASSIGNED  OPPORTUNITY_ASSIGNED
+FIELD_DEFINED  FIELD_UPDATED
+PIPELINE_CREATED  PIPELINE_UPDATED
+NOTE_ADDED  TASK_CREATED  TASK_UPDATED  TASK_COMPLETED
 ```
 
-`EMAIL_OPENED` is included per TA§21 (D-006). Where the UI represents a real GHL feature it uses exact real GHL terminology (GHL-010).
+`EMAIL_OPENED` is included per TA§21 (D-006). The last ten are Phase 11's CRM events: Bloomlab's internal record of what happened in the account, never a HighLevel workflow trigger or action, and nothing may imply one is unless the registry verifies it (D-092). Where the UI represents a real GHL feature it uses exact real GHL terminology (GHL-010).
 
 ## 5. Clock, scheduler, Time Machine (SIM-006 … SIM-008)
 
@@ -102,6 +106,8 @@ Visuals: dark ink workspace, light clean nodes, aqua/blue active execution; not 
 ### CRM Lab (CRM-001 … CRM-005)
 
 Contacts · fields · tags · opportunities · pipelines · assignments · activity history · notes · tasks; companies and custom objects later; smart lists later. Poor architectural choices are allowed when technically possible so later consequences teach why they were poor. High density on desktop; stage view / deliberate local horizontal scroller on mobile.
+
+Phase 11 built it at `/crm` over the Phase 10 run: one command layer turns intent into events (D-094), activity is derived from the log (D-095), the Lab resumes the newest run (D-096), and the CRM is the first exercise runtime (D-097). See §15 and `docs/reviews/phase-11-crm-lab.md`.
 
 ### Funnel Lab (FUN-001 … FUN-004)
 
@@ -202,7 +208,7 @@ existing local-first sync path (D-082).
 **Grading.** A translation-only adapter in the app supplies state, events and references, never
 architecture (D-083).
 
-### Phase boundary
+### Phase boundary (Phase 10)
 
 Phase 10 owns the account, the clock, the queue, the catalogue, the log and the run. It does not
 execute workflows: enrolment, step completion, exit and refused re-entry are recorded as entities
@@ -211,3 +217,47 @@ That is the Workflow Lab (Phase 12), which is also where the Playground (SIM-015
 Worker (SIM-014) belong. The realistic-failure library (SIM-011) is Phase 15; the two failure
 conditions Phase 10 enforces — a contact with no phone, and do-not-disturb — are properties of an
 outbound message, not of that library.
+
+## 15. CRM additions (Phase 11)
+
+**Owners.** `users: Record<string, User>` is a first-class collection; `Contact.owner_id` and
+`Opportunity.owner_id` are references into it, or null. An unknown user is refused. A new
+opportunity starts with its contact's owner and the two may then differ (D-089).
+
+**Custom fields.** `CustomField { key, label, type, object, options }` with `type` from
+`text · number · date · checkbox · dropdown · phone · email`, `object` from `contact · opportunity`,
+and `options` required for `dropdown` and refused otherwise. A value for an undefined field, or
+for the wrong object, is refused (D-090).
+
+**Opportunities.** Gain `name`, `status` (`open · won · lost · abandoned`), `custom_fields` and
+`owner_id`. `PIPELINE_STAGE_CHANGED` is scoped to the deal's pipeline.
+
+**Pipelines.** `PIPELINE_CREATED { id, name, stages }`. `PIPELINE_UPDATED { pipeline_id, name?,
+stages?, migrate? }` refuses to strand an opportunity: a stage holding deals may leave only when
+`migrate` maps it onto a stage that stays (D-093).
+
+**Notes and tasks.** Both carry `CrmTarget { contact_id, opportunity_id }` with one required
+(D-091). A task's `due_at` must carry its offset; an offset-less datetime is refused with
+`INVALID_TIME`. A calendar day becomes an instant only through `instantForDay(day, timeZone)`,
+which is 09:00 on that day in the account's zone with that zone's offset on that day (D-098). `NOTE_ADDED { id, body, author_id?, contact_id | opportunity_id }`. `TASK_CREATED { id,
+title, description?, due_at?, assigned_to?, contact_id | opportunity_id }`, `TASK_UPDATED`,
+`TASK_COMPLETED { task_id, completed }`.
+
+**Assignment.** `CONTACT_ASSIGNED { contact_id, owner_id | null }`, `OPPORTUNITY_ASSIGNED {
+opportunity_id, owner_id | null }`.
+
+**Command layer.** Outside the core, `apps/web/src/crm/commands.ts` is the only path from a
+screen to the account: build the event, `processEvent`, persist, return the run or the refusal.
+It holds no business rule (D-094). Any later Lab can call it without importing a screen.
+
+**Activity.** `apps/web/src/crm/activity.ts` derives a record's history from the log in
+simulator sequence; `words.ts` phrases it at render (D-095).
+
+**Exercise runtime.** `apps/web/src/crm/exerciseRuntime.ts` registers the CRM run as a source of
+`state`, `events` and `references` for exercises authored against the CRM scenario, never
+`architecture` (D-097).
+
+### Phase boundary (Phase 11)
+
+Phase 11 owns the CRM Lab and these events. It does not execute workflows, move a deal between
+pipelines, delete anything, or edit companies, custom objects, Smart Lists or Custom Values.

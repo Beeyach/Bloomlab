@@ -6,10 +6,12 @@ feature_type: entity
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
+last_verified: 2026-09-03
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000005055-getting-started-create-and-manage-contacts
 known_limitations:
   - Duplicate detection follows the simulator's rule (same email or phone); GHL's merge tooling is not reproduced.
+  - DND is one flag on the contact. HighLevel applies Do Not Disturb globally or per channel (Email, SMS, Calls, Facebook Messenger, GMB, WhatsApp) and per direction; Bloomlab's flag means "all channels, outbound".
+  - The owner field is called Assigned User on the contact-creation form and Contact Owner elsewhere; Bloomlab shows one name for it.
 skills:
   - SK-ARCHITECT-tags-vs-custom-fields
 supported_configs:
@@ -19,4 +21,9 @@ supported_configs:
     - Custom fields
     - DND
     - Owner
-verification_note: Name and standard-field set confirmed on the help-center article, 2026-09-02.
+verification_note: >-
+  Name and standard-field set confirmed on the help-center article, 2026-09-02. Re-checked
+  2026-09-03 for Phase 11: Business Name, Contact Source, Phone, Email and Assigned User are
+  standard fields, and DND is global or per channel. That re-check went through indexed search
+  summaries because direct fetch of help.gohighlevel.com is blocked by the build environment's
+  egress proxy.
