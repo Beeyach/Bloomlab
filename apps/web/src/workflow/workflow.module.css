@@ -1,0 +1,533 @@
+/*
+ * The Workflow Lab (WFL-001, WFL-006, WFL-007).
+ *
+ * A dark ink workspace with light nodes and aqua execution — the one place in the product that is
+ * not a light page, because a canvas needs contrast under the objects on it. Nothing glows. The
+ * tool areas around the canvas (palette, inspector, timeline, test) are quiet light panels.
+ *
+ * Desktop and tablet compose a canvas with panels beside and below it; phones recompose to a
+ * vertical step editor with a tabbed lower area (RSP-004). Nothing is removed at 320.
+ */
+
+.screen {
+  --bl-density-row: var(--bl-density-high);
+}
+
+.header {
+  display: grid;
+  gap: var(--bl-space-2);
+  max-width: 44rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-2xl);
+  font-weight: var(--bl-font-weight-bold);
+  letter-spacing: var(--bl-font-tracking-display);
+  line-height: var(--bl-font-leading-tight);
+}
+
+.lead,
+.muted {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+}
+
+.small {
+  font-size: var(--bl-font-size-sm);
+}
+
+/* ---- the account bar ------------------------------------------------------------------- */
+
+.accountBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bl-space-2) var(--bl-space-4);
+  padding-bottom: var(--bl-space-3);
+  border-bottom: 1px solid var(--bl-color-border);
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-1) var(--bl-space-4);
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+}
+
+.facts dt {
+  display: inline;
+  color: var(--bl-color-text-soft);
+}
+
+.facts dd {
+  display: inline;
+  margin: 0 0 0 var(--bl-space-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.barActions,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2);
+}
+
+.accountChoice {
+  display: grid;
+  gap: var(--bl-space-2);
+  max-width: 40rem;
+}
+
+/* ---- which workflow --------------------------------------------------------------------- */
+
+.workflowBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--bl-space-2) var(--bl-space-4);
+}
+
+.workflowChoice {
+  flex: 1 1 16rem;
+  max-width: 28rem;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2);
+}
+
+.dirty {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+/* ---- the workspace grid ------------------------------------------------------------------ */
+
+.workspace {
+  display: grid;
+  gap: var(--bl-space-4);
+  align-items: start;
+}
+
+.canvasColumn {
+  display: grid;
+  gap: var(--bl-space-3);
+  min-width: 0;
+}
+
+.sideColumn {
+  display: grid;
+  gap: var(--bl-space-3);
+  min-width: 0;
+}
+
+.lower {
+  display: grid;
+  gap: var(--bl-space-4);
+}
+
+@media (min-width: 768px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
+  }
+
+  .lower {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+    gap: var(--bl-space-6);
+  }
+}
+
+/* ---- the canvas -------------------------------------------------------------------------- */
+
+.canvas {
+  position: relative;
+  min-height: 24rem;
+  border-radius: var(--bl-radius-lg);
+  overflow: auto;
+  /* The ink workspace is a composited layer: node moves are transforms on it (PERF-002). */
+  contain: layout paint;
+}
+
+.canvasInner {
+  position: relative;
+  min-width: 100%;
+  min-height: 24rem;
+  background-image: radial-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.canvasInner:focus-visible {
+  outline: 2px solid var(--bl-color-aqua);
+  outline-offset: -2px;
+}
+
+.edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.edge {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.32);
+  stroke-width: 2;
+}
+
+.edgeActive {
+  stroke: var(--bl-color-aqua);
+  stroke-width: 3;
+}
+
+.edgeLabel {
+  fill: rgb(255 255 255 / 0.8);
+  font-size: 12px;
+  font-family: var(--bl-font-ui);
+}
+
+.placed {
+  position: absolute;
+  width: 15rem;
+  /* Transforms, not top/left, so a drag never reflows the canvas (PERF-002). */
+  will-change: transform;
+  touch-action: none;
+}
+
+.placed[data-dragging='true'] {
+  cursor: grabbing;
+  z-index: 2;
+}
+
+.placedNode {
+  cursor: grab;
+}
+
+.placedNode[data-status='running'] {
+  box-shadow:
+    0 0 0 2px var(--bl-color-execution),
+    0 6px 16px rgb(16 13 34 / 0.35);
+}
+
+.triggerCard {
+  position: absolute;
+  width: 15rem;
+}
+
+.emptyCanvas {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--bl-space-6);
+  color: rgb(255 255 255 / 0.72);
+  text-align: center;
+}
+
+.canvasHint {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+/* ---- palette ----------------------------------------------------------------------------- */
+
+.paletteList {
+  display: grid;
+  gap: var(--bl-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paletteItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bl-space-1) var(--bl-space-2);
+  min-height: 44px;
+  padding: var(--bl-space-1) var(--bl-space-2);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface);
+}
+
+.paletteName {
+  flex: 1 1 8rem;
+  min-width: 0;
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.paletteNote {
+  flex: 1 1 100%;
+  margin: 0;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-xs);
+}
+
+.practised {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-xs);
+  font-style: italic;
+}
+
+/* ---- inspector -------------------------------------------------------------------------- */
+
+.formGrid {
+  display: grid;
+  gap: var(--bl-space-3);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2);
+}
+
+.problems {
+  display: grid;
+  gap: var(--bl-space-1);
+  margin: 0;
+  padding: 0 0 0 var(--bl-space-4);
+  color: var(--bl-color-text);
+  font-size: var(--bl-font-size-sm);
+}
+
+.issue {
+  border-left: 3px solid var(--bl-color-warning, var(--bl-color-ink));
+}
+
+.conditionRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: var(--bl-space-1);
+  align-items: end;
+}
+
+@media (max-width: 767px) {
+  .conditionRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.groupBox {
+  display: grid;
+  gap: var(--bl-space-2);
+  padding: var(--bl-space-2);
+  border: 1px dashed var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+}
+
+.branchBox {
+  display: grid;
+  gap: var(--bl-space-2);
+  padding: var(--bl-space-2) 0;
+  border-top: 1px solid var(--bl-color-border);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--bl-space-2);
+  min-height: 44px;
+}
+
+/* ---- timeline ---------------------------------------------------------------------------- */
+
+.timeline {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timelineTools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2);
+}
+
+.timelineRow[data-current='true'] {
+  outline: 2px solid var(--bl-color-execution);
+  outline-offset: -2px;
+  border-radius: var(--bl-radius-sm);
+}
+
+.runList {
+  display: grid;
+  gap: var(--bl-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.runItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bl-space-1) var(--bl-space-2);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--bl-space-1) var(--bl-space-2);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.runItem[aria-pressed='true'] {
+  border-color: var(--bl-color-ink);
+}
+
+.runItem:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}
+
+/* ---- history ----------------------------------------------------------------------------- */
+
+.history {
+  display: grid;
+  gap: var(--bl-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--bl-font-size-sm);
+}
+
+.history li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--bl-space-2);
+  padding: var(--bl-space-1) 0;
+  border-bottom: 1px solid var(--bl-color-border);
+}
+
+/* ---- the responsiveness readout ---------------------------------------------------------- */
+
+.timing {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- mobile: vertical editor ------------------------------------------------------------- */
+
+.steps {
+  display: grid;
+  gap: var(--bl-space-2);
+  margin: 0;
+  padding: var(--bl-space-3);
+  list-style: none;
+  border-radius: var(--bl-radius-lg);
+}
+
+.step {
+  display: grid;
+  gap: var(--bl-space-1);
+}
+
+.stepBranch {
+  margin: 0;
+  color: rgb(255 255 255 / 0.78);
+  font-size: var(--bl-font-size-sm);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.stepActions {
+  display: flex;
+  justify-content: center;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--bl-color-border);
+}
+
+.tab {
+  min-height: 44px;
+  padding: 0 var(--bl-space-3);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  font: inherit;
+  color: var(--bl-color-text-soft);
+  cursor: pointer;
+}
+
+.tab[aria-selected='true'] {
+  border-bottom-color: var(--bl-color-ink);
+  color: var(--bl-color-text);
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: -2px;
+}
+
+/* ---- refusals ---------------------------------------------------------------------------- */
+
+.refusal {
+  border-left: 3px solid var(--bl-color-warning, var(--bl-color-ink));
+}
+
+.refusalTitle {
+  margin: 0;
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.refusalBody {
+  margin: var(--bl-space-1) 0 0;
+  color: var(--bl-color-text-soft);
+  overflow-wrap: anywhere;
+}
+
+/* ---- the signature moment ---------------------------------------------------------------- */
+
+.travelling {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--bl-radius-full);
+  background: var(--bl-color-execution);
+  box-shadow: 0 0 0 4px rgb(117 230 222 / 0.25);
+  pointer-events: none;
+  will-change: transform;
+  transition: transform 480ms var(--bl-motion-ease-standard, ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .travelling {
+    transition: none;
+  }
+}

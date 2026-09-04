@@ -6,6 +6,7 @@ import {
   IconHome,
   IconInfo,
   IconMap,
+  IconMore,
   IconRecords,
   VisuallyHidden,
   cx,
@@ -23,19 +24,20 @@ interface Area {
 }
 
 /**
- * The compact rail (spec §73, DES-009): the areas that exist today. Simulator, Clients,
- * Portfolio and Playground join it with their phases — nothing inert stands in for them.
+ * The compact rail (spec §73, DES-009): the areas that exist today. Clients, Portfolio and
+ * Playground join it with their phases — nothing inert stands in for them.
  */
 const AREAS: Area[] = [
   { to: '/', label: 'Home', icon: IconHome, end: true },
   { to: '/campaign', label: 'Campaign', icon: IconCampaign },
   { to: '/skills', label: 'Skill Map', icon: IconMap },
   { to: '/crm', label: 'CRM', icon: IconRecords },
+  { to: '/workflow', label: 'Workflow', icon: IconBolt },
 ];
 
 const DEVELOPER: Area[] = [
   { to: '/system', label: 'System', icon: IconInfo },
-  { to: '/design', label: 'Design', icon: IconBolt },
+  { to: '/design', label: 'Design', icon: IconMore },
 ];
 
 function Item({ area }: { area: Area }) {

@@ -27,6 +27,8 @@ import {
  * the one operation in flight. It is recreated on the next call.
  */
 
+export type { EngineOp, EngineRefusal, EngineStats } from './engineOps';
+
 export type ExecutionMode = 'auto' | 'direct' | 'worker';
 
 export interface ExecutionTiming extends EngineStats {
