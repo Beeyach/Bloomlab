@@ -6,7 +6,7 @@ import {
   type SimulatorEvent,
   type SimulatorEventType,
 } from './events.ts';
-import { executionRecord, type ExecutionRecord } from './execution.ts';
+import { executionRecord, type ExecutionDraft, type ExecutionRecord } from './execution.ts';
 import {
   initialState,
   resolveEventType,
@@ -15,6 +15,7 @@ import {
 } from './scenario.ts';
 import { compareScheduled, partitionDue, peek, type ScheduledEvent } from './scheduler.ts';
 import type { SimulatorDiagnostic, SimulatorState } from './state.ts';
+import { workflowReactions } from './workflow/reactions.ts';
 import { addDays, addHours, addMinutes, instant, isAfter, toZone } from './time.ts';
 
 /**
@@ -100,11 +101,46 @@ export function processEvent(state: SimulatorState, pending: PendingEvent): Simu
     const outcome = applyEvent(current.account, event, current);
 
     let sequence = current.sequence + 1;
+    // An event a workflow step caused carries its attribution in the payload; every record that
+    // event produces inherits it, so a timeline can answer "which step sent this" for records a
+    // domain reducer wrote without knowing about workflows (WFL-010).
     const records: ExecutionRecord[] = outcome.records.map((draft) => {
-      const record = executionRecord(current.run_id, sequence, draft);
+      const record = executionRecord(current.run_id, sequence, attributed(draft, event));
       sequence += 1;
       return record;
     });
+
+    // Wakes a reducer asked for enter the queue here, with ids from the queue sequence, so a
+    // replay's reducer queues the very same entry (D-101). Wakes it no longer wants are dropped.
+    const dropped = new Set(outcome.unschedule ?? []);
+    let queue = dropped.size
+      ? current.queue.filter((entry) => !dropped.has(String(entry.payload.resume_token ?? '')))
+      : current.queue;
+    let queueSequence = current.queue_sequence;
+    for (const draft of outcome.scheduled ?? []) {
+      const at = toZone(draft.at, current.clock.timezone);
+      if (instant(at) < instant(event.at)) {
+        fail('INVALID_TIME', `Cannot schedule ${draft.type} before the event that scheduled it`, {
+          at,
+          now: event.at,
+        });
+      }
+      const id = `sc-${current.run_id}-${queueSequence}`;
+      queue = [
+        ...queue,
+        {
+          id,
+          at,
+          sequence: queueSequence,
+          type: draft.type,
+          payload: { ...draft.payload },
+          origin: 'scheduled' as const,
+          source: { kind: 'scheduled' as const, id },
+          description: draft.description ?? null,
+        },
+      ].sort(compareScheduled);
+      queueSequence += 1;
+    }
 
     current = {
       ...current,
@@ -112,8 +148,13 @@ export function processEvent(state: SimulatorState, pending: PendingEvent): Simu
       log,
       execution: [...current.execution, ...records],
       sequence,
+      queue,
+      queue_sequence: queueSequence,
     };
     frontier.push(...outcome.generated);
+    // The account's workflows react to what just happened: triggers fire and waits release, as
+    // generated events after this event's own consequences (WFL-010).
+    frontier.push(...workflowReactions(event, current.account, current));
   }
 
   return current;
@@ -345,3 +386,15 @@ function resolveRelativeTimes(
   }
   return payload;
 }
+
+const attributed = (draft: ExecutionDraft, event: SimulatorEvent): ExecutionDraft => {
+  const payload = event.payload;
+  const pick = (key: 'workflow_id' | 'workflow_run_id' | 'node_id') =>
+    typeof payload[key] === 'string' ? (payload[key] as string) : null;
+  return {
+    ...draft,
+    workflow_id: draft.workflow_id ?? pick('workflow_id'),
+    workflow_run_id: draft.workflow_run_id ?? pick('workflow_run_id'),
+    node_id: draft.node_id ?? pick('node_id'),
+  };
+};

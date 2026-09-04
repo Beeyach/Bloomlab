@@ -154,10 +154,10 @@ describe('rewind is a real operation (SIM-013)', () => {
 });
 
 describe('the catalogue is exercised, not merely declared', () => {
-  it('names 36 event types and no duplicates', () => {
+  it('names 42 event types and no duplicates', () => {
     expect(new Set<SimulatorEventType>(SIMULATOR_EVENT_TYPES).size).toBe(
       SIMULATOR_EVENT_TYPES.length,
     );
-    expect(SIMULATOR_EVENT_TYPES).toHaveLength(36);
+    expect(SIMULATOR_EVENT_TYPES).toHaveLength(42);
   });
 });

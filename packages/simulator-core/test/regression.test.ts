@@ -11,7 +11,7 @@ import {
   schedule,
   type SimulatorState,
 } from '../src/index.ts';
-import { NOW, event, scenario } from './fixtures.ts';
+import { NOW, event, scenario, withWaitBefore } from './fixtures.ts';
 import { isImplemented, type RegressionFixture } from './fixtures/registry.ts';
 
 /**
@@ -165,10 +165,12 @@ const FIXTURES: RegressionFixture[] = [
             contact_id: 'maria',
           }),
         );
-      return enrol(enrol(createRun(authored)));
+      // The wait keeps the first run active; without it the walk finishes in the same tick.
+      return enrol(enrol(createRun(withWaitBefore(authored))));
     },
     expect: (state) => {
       expect(Object.values(state.account.workflow_runs)).toHaveLength(1);
+      expect(Object.values(state.account.workflow_runs)[0]?.status).toBe('waiting');
       expect(only(state, 'exit')[0]?.reason).toBe('duplicate_enrolment');
     },
   },

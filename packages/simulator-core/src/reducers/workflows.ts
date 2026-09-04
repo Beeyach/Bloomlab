@@ -1,6 +1,8 @@
 import { fail } from '../errors.ts';
 import { optionalString, requireString, type SimulatorEvent } from '../events.ts';
-import type { AccountState, WorkflowRun } from '../state.ts';
+import { canonical, fnv1a } from '../hash.ts';
+import type { AccountState, WorkflowRun, WorkflowRunContext } from '../state.ts';
+import { behaviouralWorkflow } from '../workflow.ts';
 import { entity, put, result, type ReducerResult } from './shared.ts';
 
 /**
@@ -47,6 +49,7 @@ export function workflowEnrolled(account: AccountState, event: SimulatorEvent): 
   }
 
   const id = runId(workflowId, contactId, event.sequence);
+  const context = readContext(event.payload.context);
   const run: WorkflowRun = {
     id,
     workflow_id: workflowId,
@@ -57,22 +60,53 @@ export function workflowEnrolled(account: AccountState, event: SimulatorEvent): 
     enrolled_at: event.at,
     exit_reason: null,
     exited_at: null,
+    wait: null,
+    context: { ...context, trigger_event_id: optionalString(event.payload, 'trigger_event_id') },
+    definition_version: workflow.version,
+    definition_hash: fnv1a(canonical(behaviouralWorkflow(workflow))),
   };
-  return result({ ...account, workflow_runs: put(account.workflow_runs, id, run) }, [
-    {
-      kind: 'trigger',
-      at: event.at,
-      workflow_id: workflowId,
-      workflow_run_id: id,
-      contact_id: contactId,
-      event_id: event.id,
-      data: {
-        trigger_feature: workflow.trigger.ghl_feature_id,
-        filters: workflow.trigger.filters,
-        reentry: Boolean(active),
+  return result(
+    { ...account, workflow_runs: put(account.workflow_runs, id, run) },
+    [
+      {
+        kind: 'trigger',
+        at: event.at,
+        workflow_id: workflowId,
+        workflow_run_id: id,
+        contact_id: contactId,
+        event_id: event.id,
+        data: {
+          trigger_feature: workflow.trigger.ghl_feature_id,
+          filters: workflow.trigger.filters,
+          trigger_values: event.payload.trigger_values ?? null,
+          reentry: Boolean(active),
+          definition_version: workflow.version,
+        },
       },
-    },
-  ]);
+    ],
+    // Enrolment starts the walk: the first WORKFLOW_ADVANCED finds the entry node (D-101).
+    [
+      {
+        type: 'WORKFLOW_ADVANCED',
+        at: event.at,
+        origin: 'generated',
+        source: { kind: 'workflow_trigger', id: workflowId, caused_by: event.id },
+        payload: { workflow_run_id: id, from_node_id: null },
+      },
+    ],
+  );
+}
+
+/** What enrolled the contact, from the trigger's match; anything missing is simply null. */
+function readContext(raw: unknown): Omit<WorkflowRunContext, 'trigger_event_id'> {
+  const source = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {};
+  const id = (key: string) => (typeof source[key] === 'string' ? (source[key] as string) : null);
+  return {
+    appointment_id: id('appointment_id'),
+    opportunity_id: id('opportunity_id'),
+    form_id: id('form_id'),
+    message_id: id('message_id'),
+  };
 }
 
 export function workflowStepCompleted(account: AccountState, event: SimulatorEvent): ReducerResult {
@@ -129,18 +163,29 @@ export function workflowExited(account: AccountState, event: SimulatorEvent): Re
     status: reason === 'completed' ? 'completed' : 'exited',
     exit_reason: reason,
     exited_at: event.at,
+    wait: null,
   };
-  return result({ ...account, workflow_runs: put(account.workflow_runs, id, updated) }, [
-    {
-      kind: 'exit',
-      at: event.at,
-      workflow_id: run.workflow_id,
-      workflow_run_id: id,
-      node_id: run.current_node_id,
-      contact_id: run.contact_id,
-      event_id: event.id,
-      data: { completed: run.completed_node_ids.length },
-      reason,
-    },
-  ]);
+  return result(
+    { ...account, workflow_runs: put(account.workflow_runs, id, updated) },
+    [
+      {
+        kind: 'exit',
+        at: event.at,
+        workflow_id: run.workflow_id,
+        workflow_run_id: id,
+        node_id: run.current_node_id,
+        contact_id: run.contact_id,
+        event_id: event.id,
+        data: {
+          completed: run.completed_node_ids.length,
+          removed_by: optionalString(event.payload, 'workflow_id') ?? null,
+          was_waiting: run.status === 'waiting',
+        },
+        reason,
+      },
+    ],
+    [],
+    // A run that leaves while waiting no longer needs its wake.
+    run.wait ? { unschedule: [run.wait.token] } : {},
+  );
 }

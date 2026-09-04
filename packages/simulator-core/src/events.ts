@@ -45,6 +45,16 @@ export const SIMULATOR_EVENT_TYPES = [
   'TASK_CREATED',
   'TASK_UPDATED',
   'TASK_COMPLETED',
+  // Workflow Lab (Phase 12). Bloomlab's own record of a workflow being defined and walked:
+  // a definition saved, a run moving past a node, a parked run waking, an internal notification
+  // logged. None of these is a HighLevel trigger or action either (D-092, D-101).
+  'WORKFLOW_CREATED',
+  'WORKFLOW_UPDATED',
+  'WORKFLOW_ADVANCED',
+  'WORKFLOW_RESUMED',
+  'NOTIFICATION_SENT',
+  /** An inbound email reply (CONV-001). SMS_RECEIVED has had this counterpart since Phase 12. */
+  'EMAIL_RECEIVED',
 ] as const;
 
 export type SimulatorEventType = (typeof SIMULATOR_EVENT_TYPES)[number];
@@ -99,13 +109,26 @@ export const EVENT_ORIGINS = [
   'generated',
   /** Emitted by the clock itself when the Time Machine moves (SIM-007). */
   'clock',
+  /**
+   * Fired by the queue from something the run itself scheduled — a workflow wake, a timeout.
+   * A root event for replay: it is replayed from the log at its instant, and the reducer that
+   * scheduled it re-queues the same entry, so the two meet exactly (D-101).
+   */
+  'scheduled',
 ] as const;
 
 export type EventOrigin = (typeof EVENT_ORIGINS)[number];
 
 /** What produced a generated event, so a log line can be traced back to its cause. */
 export interface EventSource {
-  kind: 'workflow_node' | 'injector_action' | 'scheduled' | 'time_machine' | 'reducer';
+  kind:
+    | 'workflow_node'
+    | 'workflow_trigger'
+    | 'workflow_wait'
+    | 'injector_action'
+    | 'scheduled'
+    | 'time_machine'
+    | 'reducer';
   id: string;
   /** The event this one came out of, when it came out of one. */
   caused_by?: string;

@@ -7,7 +7,13 @@ import {
   appointmentStatusChanged,
 } from './reducers/appointments.ts';
 import { contactCreated, contactUpdated, tagAdded, tagRemoved } from './reducers/contacts.ts';
-import { emailOpened, emailSent, smsReceived, smsSent } from './reducers/conversations.ts';
+import {
+  emailOpened,
+  emailReceived,
+  emailSent,
+  smsReceived,
+  smsSent,
+} from './reducers/conversations.ts';
 import {
   formSubmitted,
   surveySubmitted,
@@ -25,7 +31,10 @@ import { pipelineCreated, pipelineUpdated } from './reducers/pipelines.ts';
 import { noteAdded, taskCompleted, taskCreated, taskUpdated } from './reducers/crm.ts';
 import { paymentFailed, paymentReceived, refundIssued } from './reducers/payments.ts';
 import { result, type Reducer, type ReducerResult } from './reducers/shared.ts';
+import { workflowCreated, workflowUpdated } from './reducers/definitions.ts';
+import { notificationSent } from './reducers/notifications.ts';
 import { workflowEnrolled, workflowExited, workflowStepCompleted } from './reducers/workflows.ts';
+import { workflowAdvanced, workflowResumed } from './workflow/traverse.ts';
 
 /**
  * The transition (spec §42, SIM-003):
@@ -86,6 +95,12 @@ const REDUCERS: Record<SimulatorEventType, Reducer> = {
   TASK_CREATED: taskCreated,
   TASK_UPDATED: taskUpdated,
   TASK_COMPLETED: taskCompleted,
+  WORKFLOW_CREATED: workflowCreated,
+  WORKFLOW_UPDATED: workflowUpdated,
+  WORKFLOW_ADVANCED: workflowAdvanced,
+  WORKFLOW_RESUMED: workflowResumed,
+  NOTIFICATION_SENT: notificationSent,
+  EMAIL_RECEIVED: emailReceived,
 };
 
 /** Every catalogue type has a reducer; the type system proves it and this exposes it to tests. */

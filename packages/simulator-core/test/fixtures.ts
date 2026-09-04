@@ -174,3 +174,36 @@ export const event = (
 ): PendingEvent => ({ type, at, payload, origin: 'injected' });
 
 export const NOW = '2026-09-03T09:00:00-05:00';
+
+/**
+ * The same clinic, with a one-day wait in front of the confirmation SMS. Enrolment now runs a
+ * workflow to its end in the same tick (Phase 12), so a test that needs a run that is still
+ * *active* — re-entry refusals, manual step and exit events — parks it here first.
+ */
+export function withWaitBefore(base: SimulatorScenario = scenario()): SimulatorScenario {
+  return {
+    ...base,
+    initial_account_state: {
+      ...base.initial_account_state,
+      workflows: (base.initial_account_state.workflows ?? []).map((workflow) =>
+        workflow.id === 'wf-booking-confirmation'
+          ? {
+              ...workflow,
+              nodes: [
+                {
+                  id: 'n0',
+                  type: 'wait' as const,
+                  ghl_feature_id: 'GHL-WF-WAIT',
+                  label: 'Wait a day',
+                  config: { wait_type: 'period', days: 1 },
+                  position: { x: 0, y: 60 },
+                },
+                ...workflow.nodes,
+              ],
+              edges: [{ from: 'n0', to: 'n1' }, ...workflow.edges],
+            }
+          : workflow,
+      ),
+    },
+  };
+}

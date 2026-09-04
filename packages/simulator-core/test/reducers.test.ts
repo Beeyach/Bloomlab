@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { SimulatorError, createRun, processEvent, type SimulatorState } from '../src/index.ts';
-import { NOW, event, scenario } from './fixtures.ts';
+import { NOW, event, scenario, withWaitBefore } from './fixtures.ts';
 
 /** Real state transitions for every event Phase 10 owns (SIM-004, SIM-005). */
 
@@ -489,25 +489,46 @@ describe('workflow runs', () => {
       }),
     );
 
-  it('records an enrolment against the shared account', () => {
+  it('records an enrolment against the shared account and runs the workflow to its end', () => {
     const state = enrol(run());
     const [run_] = Object.values(state.account.workflow_runs);
-    expect(run_?.status).toBe('active');
+    expect(run_?.status).toBe('completed');
     expect(run_?.contact_id).toBe('maria');
+    expect(run_?.completed_node_ids).toEqual(['n1', 'n2', 'n3']);
     expect(records(state, 'trigger')[0]?.data).toMatchObject({
       trigger_feature: 'GHL-WF-CUSTOMER-BOOKED-APPOINTMENT',
     });
+    // The walk changed the shared account, not a private copy.
+    expect(state.account.contacts.maria?.tags).toContain('booked');
+    expect(state.account.conversations.maria?.messages.map((m) => m.body)).toEqual([
+      'You are booked.',
+    ]);
+  });
+
+  it('parks a run at a wait, so it is still active afterwards', () => {
+    const state = enrol(createRun(withWaitBefore()));
+    const [run_] = Object.values(state.account.workflow_runs);
+    expect(run_?.status).toBe('waiting');
+    expect(run_?.wait?.kind).toBe('period');
+    expect(run_?.wait?.wake_at).toBe('2026-09-04T09:00:00-05:00');
+    expect(state.queue.some((row) => row.type === 'WORKFLOW_RESUMED')).toBe(true);
   });
 
   it('refuses a second active enrolment when re-entry is off, and says why', () => {
-    const twice = enrol(enrol(run()));
+    const twice = enrol(enrol(createRun(withWaitBefore())));
     expect(Object.values(twice.account.workflow_runs)).toHaveLength(1);
     const exit = records(twice, 'exit')[0];
     expect(exit?.reason).toBe('duplicate_enrolment');
   });
 
+  it('allows a second enrolment once the first run has finished', () => {
+    const twice = enrol(enrol(run()));
+    expect(Object.values(twice.account.workflow_runs)).toHaveLength(2);
+    expect(records(twice, 'trigger')[1]?.data).toMatchObject({ reentry: false });
+  });
+
   it('records a completed step against a node the workflow actually has', () => {
-    const enrolled = enrol(run());
+    const enrolled = enrol(createRun(withWaitBefore()));
     const [id] = Object.keys(enrolled.account.workflow_runs);
     const state = processEvent(
       enrolled,
@@ -517,7 +538,7 @@ describe('workflow runs', () => {
   });
 
   it('refuses a step for a node the workflow does not have', () => {
-    const enrolled = enrol(run());
+    const enrolled = enrol(createRun(withWaitBefore()));
     const [id] = Object.keys(enrolled.account.workflow_runs);
     expect(
       refusal(() =>
@@ -529,8 +550,21 @@ describe('workflow runs', () => {
     ).toBe('UNKNOWN_ENTITY');
   });
 
-  it('exits a run with a reason, and refuses to exit it twice', () => {
-    const enrolled = enrol(run());
+  it('refuses a step on a run that has already finished', () => {
+    const finished = enrol(run());
+    const [id] = Object.keys(finished.account.workflow_runs);
+    expect(
+      refusal(() =>
+        processEvent(
+          finished,
+          event('WORKFLOW_STEP_COMPLETED', NOW, { workflow_run_id: id, node_id: 'n1' }),
+        ),
+      ),
+    ).toBe('INVALID_PAYLOAD');
+  });
+
+  it('exits a waiting run with a reason, drops its wake, and refuses to exit it twice', () => {
+    const enrolled = enrol(createRun(withWaitBefore()));
     const [id] = Object.keys(enrolled.account.workflow_runs);
     const exited = processEvent(
       enrolled,
@@ -538,6 +572,8 @@ describe('workflow runs', () => {
     );
     expect(exited.account.workflow_runs[id as string]?.status).toBe('exited');
     expect(exited.account.workflow_runs[id as string]?.exit_reason).toBe('goal_met');
+    expect(exited.account.workflow_runs[id as string]?.wait).toBeNull();
+    expect(exited.queue.some((row) => row.type === 'WORKFLOW_RESUMED')).toBe(false);
     expect(
       refusal(() => processEvent(exited, event('WORKFLOW_EXITED', NOW, { workflow_run_id: id }))),
     ).toBe('INVALID_PAYLOAD');

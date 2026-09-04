@@ -128,6 +128,7 @@ const inbound = (
   };
 
 export const smsReceived = inbound('sms');
+export const emailReceived = inbound('email');
 
 /** An open is stamped on the message it belongs to; opening twice keeps the first instant. */
 export function emailOpened(account: AccountState, event: SimulatorEvent): ReducerResult {

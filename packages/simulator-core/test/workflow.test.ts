@@ -53,27 +53,24 @@ describe('layout is not behaviour (SIM-016)', () => {
   });
 
   it('a moved node still runs the same enrolment and the same steps', () => {
-    const enrol = (base: SimulatorScenario) => {
-      let state = createRun(base);
-      state = processEvent(
-        state,
+    const enrol = (base: SimulatorScenario) =>
+      processEvent(
+        createRun(base),
         event('WORKFLOW_ENROLLED', NOW, {
           workflow_id: 'wf-booking-confirmation',
           contact_id: 'maria',
         }),
       );
-      const [id] = Object.keys(state.account.workflow_runs);
-      return processEvent(
-        state,
-        event('WORKFLOW_STEP_COMPLETED', NOW, { workflow_run_id: id, node_id: 'n1' }),
-      );
-    };
     const left = enrol(moveNode(scenario(), 100));
     const right = enrol(moveNode(scenario(), 900));
     expect(left.log.map((row) => ({ type: row.type, at: row.at }))).toEqual(
       right.log.map((row) => ({ type: row.type, at: row.at })),
     );
     expect(left.execution.map((row) => row.kind)).toEqual(right.execution.map((row) => row.kind));
+    expect(left.execution.filter((row) => row.kind === 'step_completed')).toHaveLength(3);
+    expect(Object.values(left.account.workflow_runs)[0]?.definition_hash).toBe(
+      Object.values(right.account.workflow_runs)[0]?.definition_hash,
+    );
   });
 
   it('sees two workflows as different when their behaviour differs', () => {

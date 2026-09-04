@@ -187,9 +187,46 @@ export interface Conversation {
 
 export type WorkflowRunStatus = 'active' | 'waiting' | 'completed' | 'exited' | 'failed';
 
+/** The wait types the simulator runs (registry GHL-WF-WAIT, fidelity B; D-100). */
+export const WAIT_KINDS = ['period', 'date', 'appointment', 'reply', 'condition'] as const;
+export type WaitKind = (typeof WAIT_KINDS)[number];
+
 /**
- * One contact's passage through one workflow. Phase 10 records enrolment, step completion and
- * exit as history; Phase 12's Workflow Lab is what actually walks a contact from node to node.
+ * What a parked run is waiting for (WFL-008). Plain data: it survives `structuredClone`,
+ * IndexedDB, sync, a snapshot, replay and a Worker transfer. `token` is the one identity a wake
+ * must present — a wake carrying an older token (the run has since moved on or exited) is stale
+ * and is recorded as such rather than resuming anything.
+ */
+export interface WorkflowWait {
+  node_id: string;
+  kind: WaitKind;
+  /** Simulator instant the run wakes at, for time-based waits and for the timeout of the others. */
+  wake_at: string | null;
+  /** Why the wake is scheduled: the wait's own instant, or a timeout on an event/condition wait. */
+  wake_reason: 'due' | 'timeout' | null;
+  /** The appointment an appointment-relative wait measured against. */
+  appointment_id: string | null;
+  /** For a reply wait: which channel releases it. */
+  reply_channel: 'sms' | 'email' | 'any' | null;
+  /** For a condition wait: the condition groups re-evaluated when the contact changes. */
+  condition: ConditionGroup[] | null;
+  token: string;
+  started_at: string;
+}
+
+/** What enrolled the contact, so appointment-relative waits and merge values have a subject. */
+export interface WorkflowRunContext {
+  trigger_event_id: string | null;
+  appointment_id: string | null;
+  opportunity_id: string | null;
+  form_id: string | null;
+  message_id: string | null;
+}
+
+/**
+ * One contact's passage through one workflow. Phase 10 recorded enrolment, step completion and
+ * exit as history; Phase 12 walks the contact from node to node (D-101), so a run now also
+ * carries what it is waiting for, what enrolled it, and which version of the definition it ran.
  */
 export interface WorkflowRun {
   id: string;
@@ -202,6 +239,59 @@ export interface WorkflowRun {
   /** A machine token (`goal_met`, `removed`, `completed`), never a sentence. */
   exit_reason: string | null;
   exited_at: string | null;
+  wait: WorkflowWait | null;
+  context: WorkflowRunContext;
+  /**
+   * The definition this run executed against: its version number and the hash of its behaviour
+   * at enrolment (D-104). A later edit to the workflow bumps the version, so history stays
+   * readable as history rather than looking like it ran through nodes that did not exist yet.
+   */
+  definition_version: number;
+  definition_hash: string;
+}
+
+/** One comparison inside an If/Else or a condition wait (WFL-009). Data, never an expression. */
+export interface Condition {
+  /** A dotted address into the run's context: `contact.phone`, `contact.tags`, `appointment.status`. */
+  field: string;
+  operator: ConditionOperator;
+  /** Static, or a merge value such as `{{contact.first_name}}` resolved at evaluation. */
+  value?: string | number | boolean;
+}
+
+export const CONDITION_OPERATORS = [
+  'is',
+  'is_not',
+  'contains',
+  'not_contains',
+  'exists',
+  'not_exists',
+  'gt',
+  'lt',
+] as const;
+export type ConditionOperator = (typeof CONDITION_OPERATORS)[number];
+
+/** Conditions inside a group are ANDed; groups inside a branch are ORed (registry GHL-WF-IF-ELSE). */
+export interface ConditionGroup {
+  conditions: Condition[];
+}
+
+/** One named path out of an If/Else. Evaluated top-down; the first that matches wins. */
+export interface BranchDefinition {
+  name: string;
+  groups: ConditionGroup[];
+}
+
+/**
+ * A learner-facing "send only during these hours" rule (D-102). Modelled after HighLevel's
+ * workflow time window: an outbound message that falls outside the window is held until the
+ * window next opens, in the workflow's zone. Days use ISO numbering (1 = Monday … 7 = Sunday).
+ */
+export interface TimeWindow {
+  days: number[];
+  /** `HH:MM` in the workflow's zone. */
+  start: string;
+  end: string;
 }
 
 /**
@@ -285,13 +375,23 @@ export interface WorkflowTriggerFilter {
   value?: string | number | boolean;
 }
 
+export interface WorkflowSettings {
+  allow_reentry: boolean;
+  timezone: string | null;
+  notes: string | null;
+  /** Business-hours rule for outbound messages; null means send any time (D-102). */
+  time_window: TimeWindow | null;
+}
+
 export interface Workflow {
   id: string;
   name: string;
   trigger: { ghl_feature_id: string; filters: WorkflowTriggerFilter[] };
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
-  settings: { allow_reentry: boolean; timezone: string | null; notes: string | null };
+  settings: WorkflowSettings;
+  /** Bumped by every definition edit, so a run can say which version it executed (D-104). */
+  version: number;
 }
 
 export interface AccountState {

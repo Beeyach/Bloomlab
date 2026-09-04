@@ -102,6 +102,7 @@ export interface ScenarioWorkflow {
         allow_reentry?: boolean | undefined;
         timezone?: string | undefined;
         notes?: string | undefined;
+        time_window?: { days: readonly number[]; start: string; end: string } | null | undefined;
       }
     | undefined;
 }
@@ -609,7 +610,15 @@ export function initialAccount(scenario: SimulatorScenario): AccountState {
       allow_reentry: workflow.settings?.allow_reentry ?? false,
       timezone: workflow.settings?.timezone ?? null,
       notes: workflow.settings?.notes ?? null,
+      time_window: workflow.settings?.time_window
+        ? {
+            days: [...workflow.settings.time_window.days],
+            start: workflow.settings.time_window.start,
+            end: workflow.settings.time_window.end,
+          }
+        : null,
     },
+    version: 1,
   }));
 
   return {
