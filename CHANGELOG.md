@@ -4,6 +4,22 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 13 · Funnel Lab
+
+- Funnels in the shared account (D-118): `AccountState` gains `funnels`, a versioned definition of steps, the ordered blocks inside them and the account object a capture block uses. No styling, no layout, no pixel position anywhere in the model. Two events join the catalogue (44): `FUNNEL_CREATED` and `FUNNEL_UPDATED`, validated, logged and replayable like a workflow definition (D-119).
+- `packages/simulator-core/src/funnel/`: validation that names what would stop a visitor and where, reading order and reachability, where a completed step sends someone, and what a visitor may do on a step with the account object behind it. Booking slots are computed from the run's own clock, never the device's.
+- `/funnel`, the Funnel Lab: a step list, a block editor with eleven roles, a contextual inspector, a live rendering of the step being built, and a problem list — three columns on desktop, two on tablet, one column with labelled sheets on phones. Add, configure, connect, reorder, remove, undo, redo, save as one account event. Every reorder is a button, so there is no drag-only path.
+- BUILD, PREVIEW and SIMULATE, with the mode and the preview width kept as device preferences (D-120) so a reload comes back where the learner left. Preview renders the built funnel at 1200 / 768 / 390 with real reflow inside a local scroller — nothing is scaled.
+- SIMULATE walks a visitor through the learner's own architecture with the same renderer Preview uses. Every action is the account event it means through the Phase 12 execution door: `FORM_SUBMITTED`, `SURVEY_SUBMITTED`, `APPOINTMENT_BOOKED` and `PAYMENT_RECEIVED`. What the account did is read from the run's own log, in the run's order, with the generated events marked as caused.
+- The funnel exercise runtime (D-121) and funnel architecture assertions in `packages/exercise-engine` (D-122): `funnel_step_exists`, `funnel_step_order`, `funnel_block_exists`, `funnel_block_absent`, `funnel_block_order`, `funnel_reference_connected`, `funnel_step_count_max` — partial-order and existence rules, never an expected sequence. Grader `2026.09.08-r1`.
+- Content: `SC-glowhaus-funnel` (the pieces a funnel connects to and no funnel), `EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel`, registry records `GHL-FUNNEL-FUNNELS`, `GHL-FORM-SURVEYS` and `GHL-PAY-PRODUCTS` verified 2026-09-04 through search summaries of the official articles, scenario support for surveys, products and funnels, content version 2026.09.08.
+- Four regression fixtures with stable ids (FORM-002, FORM-003, FORM-004, FUNNEL-001) and 92 new tests (1032 total).
+- `npm run review:funnel` (16 sections across five widths with keyboard, touch and reduced motion), PASS.
+
+### Fixed — Phase 13
+
+- **A form submitted by someone the account had never met now fires its trigger (D-123).** The workflow matcher asked whether the contact existed at a moment when the submission's own generated `CONTACT_CREATED` had not been processed yet, so a brand-new lead enrolled in nothing — the whole of FUN-003 for the case that matters most. Reactions are now told which contacts the event is about to create, and the enrolment stays behind the creation on the same frontier, so the run never walks a contact that is not there. Pinned by regression fixture `FORM-002`. This is a Phase 12 behaviour corrected, not a Phase 13 workaround.
+
 ### Added — Phase 12 · Workflow Lab
 
 - The workflow engine in `packages/simulator-core`: capability adapters keyed by `ghl_feature_id` for 21 runnable triggers and actions (D-105), trigger matching with data-only filters, one-node-per-event traversal with effects before continuation (D-101), five wait kinds (D-100), the Time Window hold on outbound messages (D-102), If/Else with ordered branches, AND within a group, OR between groups and an automatic None (D-103), re-entry, Remove From Workflow, appointment-scoped exits on cancellation and reschedule, graph validation (D-106), definition versioning (D-104), merge fields without `eval`. Six events join the catalogue (42): `WORKFLOW_CREATED`, `WORKFLOW_UPDATED`, `WORKFLOW_ADVANCED`, `WORKFLOW_RESUMED`, `NOTIFICATION_SENT`, `EMAIL_RECEIVED`, plus the `scheduled` origin.

@@ -444,6 +444,18 @@ export default function FunnelLab() {
                 if (narrow) setSheet('inspector');
               }}
             />
+            {step && step.blocks.length > 0 && (
+              <ToolPanel title="What this step looks like" density="high">
+                <div className={styles.buildPreview}>
+                  <p className={styles.muted}>
+                    The same rendering Preview and Simulate use. The selected block is outlined.
+                  </p>
+                  <div className={styles.buildPreviewFrame} data-testid="funnel-build-preview">
+                    <FunnelPage step={step} account={account} selectedBlockId={blockId} inert />
+                  </div>
+                </div>
+              </ToolPanel>
+            )}
             <ProblemPanel problems={problems} onGo={(id) => setParam({ step: id, block: null })} />
           </div>
 
