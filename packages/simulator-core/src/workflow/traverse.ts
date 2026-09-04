@@ -287,7 +287,16 @@ export function workflowAdvanced(
     case 'wait':
       return waitNode(account, current, next, event, workflow, view, records, state);
     case 'action':
-      return actionNode(account, current, next, event, workflow, view, records);
+      return actionNode(
+        account,
+        current,
+        next,
+        event,
+        workflow,
+        view,
+        records,
+        state.clock.timezone,
+      );
   }
 }
 
@@ -301,6 +310,7 @@ function actionNode(
   workflow: Workflow,
   view: RunView,
   records: ExecutionDraft[],
+  runZone: string,
 ): ReducerResult {
   const capability = actionCapabilityFor(node.ghl_feature_id);
   if (!capability || !capability.execute || capability.nodeType !== 'action') {
@@ -325,6 +335,7 @@ function actionNode(
       node,
       event,
       workflow,
+      runZone,
       {
         kind: 'period',
         wake_at: wakeAt,
@@ -443,11 +454,21 @@ function waitNode(
         return failRun(account, run, node, event, workflow, 'invalid_wait', { config, ...facts });
       }
       const wakeAt = addMinutes(event.at, minutes, zone);
-      return park(account, run, node, event, workflow, plan('period', wakeAt, 'due'), records, {
-        minutes,
-        wake_at: wakeAt,
-        ...facts,
-      });
+      return park(
+        account,
+        run,
+        node,
+        event,
+        workflow,
+        state.clock.timezone,
+        plan('period', wakeAt, 'due'),
+        records,
+        {
+          minutes,
+          wake_at: wakeAt,
+          ...facts,
+        },
+      );
     }
     case 'date': {
       const at = typeof config.at === 'string' ? config.at : '';
@@ -461,10 +482,20 @@ function waitNode(
           ...facts,
         });
       }
-      return park(account, run, node, event, workflow, plan('date', wakeAt, 'due'), records, {
-        wake_at: wakeAt,
-        ...facts,
-      });
+      return park(
+        account,
+        run,
+        node,
+        event,
+        workflow,
+        state.clock.timezone,
+        plan('date', wakeAt, 'due'),
+        records,
+        {
+          wake_at: wakeAt,
+          ...facts,
+        },
+      );
     }
     case 'appointment': {
       const appointment = view.appointment;
@@ -498,6 +529,7 @@ function waitNode(
         node,
         event,
         workflow,
+        state.clock.timezone,
         { ...plan('appointment', wakeAt, 'due'), appointment_id: appointment.id },
         records,
         detail,
@@ -512,6 +544,7 @@ function waitNode(
         node,
         event,
         workflow,
+        state.clock.timezone,
         { ...plan('reply', timeoutAt, timeoutAt ? 'timeout' : null), reply_channel: channel },
         records,
         { channel, timeout_at: timeoutAt, ...facts },
@@ -535,6 +568,7 @@ function waitNode(
         node,
         event,
         workflow,
+        state.clock.timezone,
         { ...plan('condition', timeoutAt, timeoutAt ? 'timeout' : null), condition: groups },
         records,
         { timeout_at: timeoutAt, ...facts },
@@ -601,6 +635,7 @@ function park(
   node: WorkflowNode,
   event: SimulatorEvent,
   workflow: Workflow,
+  runZone: string,
   planned: WaitPlan,
   records: ExecutionDraft[],
   detail: Record<string, unknown>,
@@ -608,7 +643,16 @@ function park(
   resumeInto: 'next_node' | 'same_node' = 'next_node',
 ): ReducerResult {
   const token = waitToken(run.id, node.id, event.sequence);
-  const wait: WorkflowWait = { ...planned, node_id: node.id, token, started_at: event.at };
+  // The wake is computed in the workflow's zone; the run reads it in the run's, the same way the
+  // queue does, so the two never disagree about when a wait ends.
+  const wakeAt = planned.wake_at ? toZone(planned.wake_at, runZone) : null;
+  const wait: WorkflowWait = {
+    ...planned,
+    wake_at: wakeAt,
+    node_id: node.id,
+    token,
+    started_at: event.at,
+  };
   const parked: WorkflowRun = { ...run, status: 'waiting', current_node_id: node.id, wait };
   const scheduled: ScheduledDraft[] = wait.wake_at
     ? [

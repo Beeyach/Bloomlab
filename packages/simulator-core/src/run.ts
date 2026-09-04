@@ -153,8 +153,13 @@ export function processEvent(state: SimulatorState, pending: PendingEvent): Simu
     };
     frontier.push(...outcome.generated);
     // The account's workflows react to what just happened: triggers fire and waits release, as
-    // generated events after this event's own consequences (WFL-010).
-    frontier.push(...workflowReactions(event, current.account, current));
+    // generated events after this event's own consequences (WFL-010). An event that changed
+    // nothing — a tag the contact already had, a removal of one they never had — is not a
+    // change, so it fires no trigger; that is also what stops a tag-triggered workflow that adds
+    // its own tag from enrolling itself forever (D-101).
+    const changedNothing =
+      outcome.records.length > 0 && outcome.records.every((row) => row.kind === 'action_skipped');
+    if (!changedNothing) frontier.push(...workflowReactions(event, current.account, current));
   }
 
   return current;

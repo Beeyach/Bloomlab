@@ -64,6 +64,16 @@ export function subjectOpportunity(
   return open[0] ?? null;
 }
 
+/** The message that enrolled the contact (Customer Replied), looked up in their conversation. */
+export function subjectMessage(
+  account: AccountState,
+  contactId: string,
+  messageId: string | null,
+): Message | null {
+  if (!messageId) return null;
+  return account.conversations[contactId]?.messages.find((row) => row.id === messageId) ?? null;
+}
+
 export function viewFor(
   account: AccountState,
   workflow: Workflow,
@@ -80,7 +90,7 @@ export function viewFor(
     contact,
     appointment: subjectAppointment(account, run.contact_id, run.context.appointment_id),
     opportunity: subjectOpportunity(account, run.contact_id, run.context.opportunity_id),
-    message,
+    message: message ?? subjectMessage(account, run.contact_id, run.context.message_id),
     zone: workflowZone(workflow, runZone),
     now,
   };

@@ -52,7 +52,7 @@ const contactTags = (account: AccountState, contactId: string): string[] =>
 
 const str = (value: unknown): string | null => (typeof value === 'string' ? value : null);
 
-const TRIGGERS: TriggerCapability[] = [
+const TRIGGER_CAPABILITIES: TriggerCapability[] = [
   {
     kind: 'trigger',
     feature: 'GHL-WF-FORM-SUBMITTED',
@@ -294,7 +294,7 @@ const attribution = (context: ActionContext) => ({
 
 const STANDARD_CONTACT_FIELDS = ['first_name', 'last_name', 'email', 'phone', 'source', 'timezone'];
 
-const ACTIONS: ActionCapability[] = [
+const ACTION_CAPABILITIES: ActionCapability[] = [
   {
     kind: 'action',
     feature: 'GHL-WF-SEND-SMS',
@@ -387,12 +387,12 @@ const ACTIONS: ActionCapability[] = [
     validate: (config) =>
       list(config, 'tag').length > 0 ? [] : ['Remove Contact Tag needs a tag'],
     execute: (context) => {
-      // Removing a tag the contact does not carry is a no-op in GHL; the engine's reducer would
-      // refuse it, so only the tags actually present are removed and the rest are reported.
+      // Removing a tag the contact does not carry is a no-op in GHL. The event still goes out so
+      // the reducer records the step as skipped (`tag_not_present`) against this node, rather
+      // than the step quietly vanishing from the timeline.
       const wanted = list(context.node.config, 'tag');
-      const present = wanted.filter((tag) => context.view.contact.tags.includes(tag));
       return {
-        generated: present.map((tag) => ({
+        generated: wanted.map((tag) => ({
           type: 'TAG_REMOVED' as const,
           at: context.event.at,
           origin: 'generated' as const,
@@ -401,8 +401,7 @@ const ACTIONS: ActionCapability[] = [
         })),
         data: {
           tags: wanted,
-          removed: present,
-          absent: wanted.filter((tag) => !present.includes(tag)),
+          absent: wanted.filter((tag) => !context.view.contact.tags.includes(tag)),
         },
       };
     },
@@ -865,7 +864,10 @@ const ACTIONS: ActionCapability[] = [
 /* ---- lookup -------------------------------------------------------------------------- */
 
 const BY_FEATURE = new Map<string, TriggerCapability | ActionCapability>(
-  [...TRIGGERS, ...ACTIONS].map((capability) => [capability.feature, capability]),
+  [...TRIGGER_CAPABILITIES, ...ACTION_CAPABILITIES].map((capability) => [
+    capability.feature,
+    capability,
+  ]),
 );
 
 export type Capability = TriggerCapability | ActionCapability;

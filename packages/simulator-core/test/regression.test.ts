@@ -13,6 +13,7 @@ import {
 } from '../src/index.ts';
 import { NOW, event, scenario, withWaitBefore } from './fixtures.ts';
 import { isImplemented, type RegressionFixture } from './fixtures/registry.ts';
+import { WORKFLOW_FIXTURES } from './fixtures/workflow-fixtures.ts';
 
 /**
  * The regression suite (SIM-017). Each fixture executes real simulator behaviour and is pinned by
@@ -210,48 +211,8 @@ const FIXTURES: RegressionFixture[] = [
 
   // ---- Reserved. The ids are claimed now so the behaviours land under their own names, but the
   // behaviour behind each belongs to the Workflow Lab in Phase 12, and none of these is asserted.
-  {
-    id: 'WAIT-001',
-    behaviour: 'A fixed Wait releases a contact at the authored delay.',
-    covers: 'WFL-006',
-    status: 'reserved',
-    owner: 'Phase 12 (Workflow Lab)',
-  },
-  {
-    id: 'WAIT-002',
-    behaviour: 'An appointment-relative Wait releases relative to the appointment, not enrolment.',
-    covers: 'WFL-006',
-    status: 'reserved',
-    owner: 'Phase 12 (Workflow Lab)',
-  },
-  {
-    id: 'WAIT-003',
-    behaviour: 'A contact enrolled after the wait window has passed does not wait again.',
-    covers: 'WFL-006',
-    status: 'reserved',
-    owner: 'Phase 12 (Workflow Lab)',
-  },
-  {
-    id: 'WAIT-004',
-    behaviour: 'Cancelling an appointment during a wait stops what the wait was leading to.',
-    covers: 'WFL-006',
-    status: 'reserved',
-    owner: 'Phase 12 (Workflow Lab)',
-  },
-  {
-    id: 'BRANCH-001',
-    behaviour: 'An If/Else with AND and OR conditions takes the branch the values imply.',
-    covers: 'WFL-007',
-    status: 'reserved',
-    owner: 'Phase 12 (Workflow Lab)',
-  },
-  {
-    id: 'REM-002',
-    behaviour: 'A cancelled appointment receives no reminder from a running reminder workflow.',
-    covers: 'WFL-006, SIM-011',
-    status: 'reserved',
-    owner: 'Phase 12 (Workflow Lab), with the failure library in Phase 15',
-  },
+  // Workflow Lab behaviours (Phase 12) live beside their builders.
+  ...WORKFLOW_FIXTURES,
 ];
 
 describe('simulator regression fixtures (SIM-017)', () => {
