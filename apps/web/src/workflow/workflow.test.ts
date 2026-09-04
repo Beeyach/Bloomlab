@@ -670,8 +670,10 @@ describe('the default test fires the configured trigger, and the engine decides 
     });
   });
 
-  it('reports a trigger that matched but was blocked by re-entry separately from a filter miss', async () => {
-    let run = await startRun(scenario, database);
+  it(
+    'reports a trigger that matched but was blocked by re-entry separately from a filter miss',
+    async () => {
+      let run = await startRun(scenario, database);
     run = ok(await saveWorkflow(run, scenario, waitingReplyWorkflow(), direct()));
     run = ok(
       await fireTriggerEvent(
@@ -701,12 +703,13 @@ describe('the default test fires the configured trigger, and the engine decides 
       kind: 'blocked_reentry',
       existing_run_id: active.id,
     });
-    expect(
-      after.state.execution.some(
-        (row) => row.reason === 'duplicate_enrolment' && row.workflow_run_id === active.id,
-      ),
-    ).toBe(true);
-  });
+      expect(
+        after.state.execution.some(
+          (row) => row.reason === 'duplicate_enrolment' && row.workflow_run_id === active.id,
+        ),
+      ).toBe(true);
+    },
+  );
 
   it('does not claim a second direct start when the re-entry rule refused it', async () => {
     let run = await startRun(scenario, database);
@@ -721,13 +724,7 @@ describe('the default test fires the configured trigger, and the engine decides 
       await enrolTestContact(run, scenario, 'wf-reply-wait', 'maria', {}, direct()),
     );
     expect(
-      directStartOutcome(
-        beforeRunIds,
-        beforeLogLength,
-        after.state,
-        'wf-reply-wait',
-        'maria',
-      ),
+      directStartOutcome(beforeRunIds, beforeLogLength, after.state, 'wf-reply-wait', 'maria'),
     ).toEqual({ kind: 'blocked_reentry', existing_run_id: existing.id });
     expect(
       Object.values(after.state.account.workflow_runs).filter(

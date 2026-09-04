@@ -296,7 +296,6 @@ export function enrolledByEvent(
     .sort((a, b) => a.id.localeCompare(b.id));
 }
 
-
 /**
  * What the exact root event made the tested workflow do.
  *
