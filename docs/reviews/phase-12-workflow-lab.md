@@ -15,7 +15,7 @@ request. Phase 13 was not started.
 Spec Phase 12 is the flagship Workflow Lab with extensive testing. The requirement rows are
 WFL-001 to WFL-012, SIM-014, SIM-015, EXR-023, CONV-001, A11Y-006, PERF-002 and the workflow half
 of RSP-004. The phase also re-evaluates SIM-001, SIM-010, EXR-004 to EXR-007, EXR-019, EXR-024
-and CUR-036 against what now runs, and corrects the app rail (DES-009) to the 80 px the spec
+and CUR-036 against what now runs. D-117 later widens the app rail (DES-009) to 104 px after
 names. The Funnel Lab, Calendar Lab, realistic-failure library, AI grading and every later phase
 were out of scope and none were touched.
 
@@ -51,7 +51,7 @@ were out of scope and none were touched.
 | EXR-019 | PASSED | REBUILD BLIND: a reminder system built through the command layer and graded from the two texts the engine sent 24 h and 2 h before the appointment. |
 | EXR-024 | PARTIAL | No stub was added. The requirement spans the product and stays open. |
 | CUR-036 | PASSED | The Academy's inline simulation runs the engine in memory and lists its execution records; a test asserts the rows are engine output (`academy.test.tsx`). |
-| DES-009 | PARTIAL | The rail is 80 px from one token at 768 px and up with the page starting beside it. On phones the bar shows four named areas and a labelled More that opens the rest; nothing is icon-only. Verified at five widths by the rail probe. Clients and Portfolio join with Phases 23 and 24. REAL TABLET RAIL CHECK: PENDING. |
+| DES-009 | PARTIAL | D-117 widens the rail to 104 px from one token and adds more internal spacing so full labels no longer crowd the edge. The page still starts beside the same token. Phones retain the four named areas plus labelled More composition. The previous five-width probe covered the 80 px revision; the 104 px visual re-check is pending. Clients and Portfolio join with Phases 23 and 24. |
 
 ## 4. Architecture
 
@@ -361,7 +361,7 @@ enforces the first two across the app.
 
 ## 38. Rail correction (DES-009)
 
-The rail is drawn from `--bl-size-rail: 80px` and `--bl-size-rail-bar: 64px`. `RootLayout` offsets
+The rail is drawn from `--bl-size-rail: 104px` after D-117 and `--bl-size-rail-bar: 64px`. `RootLayout` offsets
 the page by the same token, so the page starts beside the rail. Seven areas: Home, Campaign, Skill
 Map, Workflow, CRM, Inbox, Playground. Tablet and desktop keep one labelled column of all seven.
 
@@ -372,9 +372,9 @@ are on). Every area keeps its accessible name in every composition; nothing is i
 is dropped, the list closes on Escape, on an outside press and on navigation, and More reads as
 active when the page is one of the areas it holds. No label is hidden to avoid layout work.
 
-`npm run review:rail` measures all five widths (§49). The holographic cards are unaffected.
+`npm run review:rail` measures all five widths (§49). The previous recorded pass was at 80 px; D-117 requires a fresh visual pass at 104 px. The holographic cards are otherwise unaffected.
 
-**REAL TABLET RAIL CHECK: PENDING.** The rail was a user-reported design issue; the user will
+**RAIL VISUAL RE-CHECK: PENDING.** The rail was widened again from the user’s screenshot; the user will
 inspect the new preview on the real tablet. This review does not mark it passed.
 
 ## 39. Conversations (CONV-001)
@@ -514,7 +514,7 @@ wait released by the time machine, conversations, playground, 1024, 768, 390, 32
 | Phones (390, 320) | both test paths present, a run moves to the Timeline tab and the trace plays there |
 | Canvas / node luminance | 0.06 / 1.00 |
 
-`npm run review:rail` (PASS): rail 80 px wide and full height at 768, 1024 and 1440 with the page
+`npm run review:rail` (prior PASS, superseded by D-117): rail 80 px wide and full height at 768, 1024 and 1440 with the page
 starting at x = 80; a 64 px bottom bar at 390 and 320 with four named areas and a labelled More,
 every bar item's wording visible, More opening a labelled list inside the viewport with 44 px
 rows, all seven destinations reachable, Escape closing it, no horizontal overflow with the list
@@ -525,7 +525,7 @@ Holographic probe re-run on the Skill Map on the same build: follow t63 60 ms, s
 tracking cleared at 880 ms, reduced motion tokens 0, touch `pan-y`, no regression from Phase 11.
 The holo-touch probe reports PASS. The CRM review probe (`review:crm-review`) reports PASS.
 
-REAL TABLET RAIL CHECK: PENDING (the user inspects the preview; not marked by this review).
+D-117 104 px RAIL VISUAL RE-CHECK: PENDING (the previous 80 px screenshots are historical evidence, not the new-width sign-off).
 
 ## 50. Known limitations
 

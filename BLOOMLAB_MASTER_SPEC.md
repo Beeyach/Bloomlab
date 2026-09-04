@@ -2914,7 +2914,7 @@ Do not use one design density everywhere.
 
 Desktop:
 
-compact left rail around 68–80px.
+compact left rail around 96–112px, currently 104px, with enough room for full labels.
 
 Primary areas:
 

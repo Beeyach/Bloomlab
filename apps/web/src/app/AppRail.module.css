@@ -1,4 +1,4 @@
-/* Compact rail (spec §73): an 80 px column on tablet and desktop (--bl-size-rail), a bottom bar on phones. */
+/* Roomy compact rail (D-117): a 104 px column from 768 px up, a bottom bar on phones. */
 .rail {
   position: fixed;
   z-index: var(--bl-z-sticky);
@@ -23,10 +23,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: var(--bl-space-1);
   min-width: 44px;
   min-height: 44px;
-  padding: var(--bl-space-1);
+  padding: var(--bl-space-2) var(--bl-space-1);
   border: 0;
   border-radius: var(--bl-radius-md);
   background: none;
@@ -53,8 +53,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 28px;
+  width: 40px;
+  height: 32px;
   border-radius: var(--bl-radius-full);
   transition: background var(--bl-motion-fast) var(--bl-motion-ease-standard);
 }
@@ -71,8 +71,7 @@
 .label {
   font-size: var(--bl-font-size-xs);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -179,16 +178,17 @@
     width: var(--bl-size-rail);
     flex-direction: column;
     align-items: stretch;
-    padding: var(--bl-space-4) var(--bl-space-2);
+    padding: var(--bl-space-5) var(--bl-space-3);
     border-right: 1px solid;
   }
 
   .brand {
     display: block;
-    margin: 0 0 var(--bl-space-5);
+    margin: 0 0 var(--bl-space-6);
     font-family: var(--bl-font-display);
-    font-size: var(--bl-font-size-xs);
+    font-size: 0.8125rem;
     font-weight: var(--bl-font-weight-bold);
+    line-height: var(--bl-font-leading-tight);
     letter-spacing: var(--bl-font-tracking-display);
     text-align: center;
     text-transform: uppercase;
@@ -196,11 +196,11 @@
 
   .list {
     flex-direction: column;
-    gap: var(--bl-space-2);
+    gap: var(--bl-space-3);
   }
 
   .item {
-    min-height: 56px;
+    min-height: 64px;
   }
 
   .moreItem {
