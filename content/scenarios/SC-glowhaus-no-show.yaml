@@ -7,6 +7,10 @@ summary: >-
   Consultations are booked on the Consultation calendar and confirmed by SMS, then nothing
   happens until the appointment. Two of five booked leads do not show, and nobody follows up.
 initial_account_state:
+  users:
+    - id: dana
+      name: Dana Whitfield
+      role: user
   contacts:
     - id: maria
       first_name: Maria
@@ -97,6 +101,7 @@ initial_account_state:
           label: Confirmation SMS
           config:
             template: "Hi {{contact.first_name}}, you're booked at Glowhaus on {{appointment.start_time}}. Reply CHANGE to reschedule."
+            purpose: confirmation
           position: { x: 0, y: 120 }
         - id: n2
           type: action

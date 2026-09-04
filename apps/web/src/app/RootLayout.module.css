@@ -10,7 +10,8 @@
   max-width: 72rem;
   margin: 0 auto;
   /* Top: clear of the sync status pill. Bottom: room for the bottom rail on phones. */
-  padding: calc(var(--bl-space-8) + 44px) var(--bl-space-5) calc(var(--bl-space-16) + 64px);
+  padding: calc(var(--bl-space-8) + 44px) var(--bl-space-5)
+    calc(var(--bl-space-16) + var(--bl-size-rail-bar));
   outline: none;
 }
 
@@ -42,8 +43,8 @@
 
 @media (min-width: 768px) {
   .frame {
-    /* The rail is a fixed 72 px column; the page flows beside it. */
-    padding-left: 72px;
+    /* The rail is a fixed column of --bl-size-rail; the page flows beside it. */
+    padding-left: var(--bl-size-rail);
   }
 
   .main {

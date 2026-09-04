@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { Button, MasteryBadge, StatusPill, Surface, cx } from '@bloomlab/design-system';
 import {
   ASSERTION_TIERS,
+  SCORING_DIMENSIONS,
   type AssertionResult,
   type AssertionTier,
 } from '@bloomlab/exercise-engine';
@@ -13,7 +14,13 @@ import { content } from '../content/bundle';
 import { sessionContentOf, type LearnerSnapshot } from '../data/learning';
 import type { ExerciseAttemptRecord } from '../data/types';
 import { describeStep, skillTitle, stepDestination } from '../screens/learningCopy';
-import { ASSISTANCE_WORDS, OUTCOME_WORDS, reasonSentence, TIER_WORDS } from './runnerCopy';
+import {
+  ASSISTANCE_WORDS,
+  DIMENSION_WORDS,
+  OUTCOME_WORDS,
+  reasonSentence,
+  TIER_WORDS,
+} from './runnerCopy';
 import styles from './ExerciseRunner.module.css';
 
 /** One check, with what was expected beside what actually happened (EXR-002). */
@@ -172,6 +179,30 @@ export function ResultView({
             </div>
           ))}
         </Surface>
+      )}
+
+      {report?.dimensions && (
+        <section aria-labelledby="dimensions-title" className={styles.tier}>
+          <h3 id="dimensions-title" className={styles.tierTitle}>
+            How the score was weighted
+          </h3>
+          <ul className={styles.dimensions} data-testid="dimensions">
+            {SCORING_DIMENSIONS.map((dimension) => {
+              const row = report.dimensions?.[dimension];
+              if (!row) return null;
+              return (
+                <li key={dimension} className={styles.dimension}>
+                  <span>{DIMENSION_WORDS[dimension]}</span>
+                  <span className={styles.help}>
+                    {row.total === 0
+                      ? `weight ${row.weight}% · no checks, not counted`
+                      : `weight ${row.weight}% · ${row.passed} of ${row.total} passed`}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       )}
 
       {report &&

@@ -4,6 +4,7 @@ import {
   SIMULATOR_EVENT_TYPES,
   advanceTo,
   createRun,
+  eventTypeFromContent,
   historyHash,
   initialAccount,
   injectAction,
@@ -105,9 +106,17 @@ describe('every injectable action the spec lists can be injected (SIM-009)', () 
       ],
     };
     const state = injectAction(createRun(authored), authored, 'action');
-    expect(state.log).toHaveLength(type === 'form.submitted' ? 2 : 1);
     expect(state.log[0]?.origin).toBe('injected');
+    expect(state.log[0]?.type).toBe(eventTypeFromContent(type));
     expect(state.execution.length).toBeGreaterThan(0);
+    // A form submission creates the contact; a reschedule is a new booking to the scenario's
+    // confirmation workflow, which enrols and runs (Phase 12). Everything else stands alone.
+    if (type === 'appointment.rescheduled') {
+      expect(state.log.map((row) => row.type)).toContain('WORKFLOW_ENROLLED');
+      expect(state.log.filter((row) => row.origin === 'injected')).toHaveLength(1);
+    } else {
+      expect(state.log).toHaveLength(type === 'form.submitted' ? 2 : 1);
+    }
   });
 });
 
@@ -154,10 +163,10 @@ describe('rewind is a real operation (SIM-013)', () => {
 });
 
 describe('the catalogue is exercised, not merely declared', () => {
-  it('names 36 event types and no duplicates', () => {
+  it('names 42 event types and no duplicates', () => {
     expect(new Set<SimulatorEventType>(SIMULATOR_EVENT_TYPES).size).toBe(
       SIMULATOR_EVENT_TYPES.length,
     );
-    expect(SIMULATOR_EVENT_TYPES).toHaveLength(36);
+    expect(SIMULATOR_EVENT_TYPES).toHaveLength(42);
   });
 });

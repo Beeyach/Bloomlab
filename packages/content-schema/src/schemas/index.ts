@@ -1,5 +1,13 @@
 export { JUDGMENT_COMPETENCIES, TIERS, type JudgmentCompetency, type Tier } from './common.ts';
 export {
+  BranchSchema,
+  CONDITION_OPERATORS,
+  ConditionGroupSchema,
+  ConditionSchema,
+  IfElseConfigSchema,
+  TimeWindowSchema,
+  WAIT_TYPES,
+  WaitConfigSchema,
   WORKFLOW_NODE_TYPES,
   WorkflowDefinitionSchema,
   type WorkflowDefinition,

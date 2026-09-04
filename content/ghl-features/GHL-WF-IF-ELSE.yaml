@@ -11,6 +11,8 @@ last_verified: 2026-09-02
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000002471-workflow-action-if-else
 known_limitations:
   - Appointment-specific filter options and dynamic custom values inside conditions are simplified to field comparisons.
+  - >-
+    A missing value fails every comparison except "not exists": "appointment status is not cancelled" does not match a contact with no live appointment. The record shows the missing value so the branch result can be read.
 skills:
   - SK-AUTOMATE-workflow-foundations
   - SK-AUTOMATE-no-show-recovery
@@ -19,7 +21,9 @@ supported_configs:
     - name: branches
       type: json
       required: true
-      description: Ordered condition groups (AND / OR segments); the first matching branch wins.
+      description: >-
+        Ordered branches, each a list of condition groups: conditions inside a group are ANDed,
+        groups are ORed, the first matching branch wins, None is the fallback.
   options:
     - None branch (automatic fallback)
 aliases:

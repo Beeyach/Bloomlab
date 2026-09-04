@@ -1,5 +1,6 @@
 # Verified 2026-09-02 against "Workflow Wait Action Setup and Options in HighLevel". The
-# list page calls it "Wait Step"; the article and builder call it "Wait".
+# list page calls it "Wait Step"; the article and builder call it "Wait". Re-checked 2026-09-04
+# through search summaries (the build environment cannot open help.gohighlevel.com directly).
 id: GHL-WF-WAIT
 official_name: Wait
 area: Workflows
@@ -7,11 +8,15 @@ feature_type: action
 implementation_type: native_ghl
 status: current
 simulation_fidelity: B
-last_verified: 2026-09-02
+last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000002470-workflow-action-wait
 known_limitations:
   - Simulated wait types — a set period of time, a specific date and time, an upcoming appointment or booking (at / before / after), the contact to reply, specific conditions to be met.
   - Not simulated — a recurring schedule, the contact to take an action, a user to reply, the Advance Window; these are practised in GHL.
+  - An appointment wait measures from the appointment the run is about — the one that enrolled the contact, else their next live appointment. When that appointment is cancelled, marked invalid or no-show, or rescheduled, a run the appointment's own trigger started is pulled out of the workflow (see GHL-WF-APPOINTMENT-STATUS); a run started by anything else keeps waiting and wakes as scheduled.
+  - >-
+    A wait whose target has already passed when the contact reaches it (a booking forty minutes out meeting "24 hours before") is over at once: the run proceeds and the record says the target had passed.
+  - Business hours are not a wait type. They are the workflow's Time Window setting (GHL-WF-WORKFLOW-SETTINGS), applied to outbound messages.
 skills:
   - SK-AUTOMATE-workflow-foundations
   - SK-AUTOMATE-appointment-reminders
@@ -30,14 +35,35 @@ supported_configs:
       type: select
       required: true
       options: [period, date, appointment, reply, condition]
+    - name: days
+      type: duration
+      required: false
+      description: For a set period of time.
+    - name: hours
+      type: duration
+      required: false
+      description: For a set period of time, or the offset of a before/after appointment wait.
+    - name: minutes
+      type: duration
+      required: false
+    - name: at
+      type: string
+      required: false
+      description: For a specific date and time — an instant with an explicit offset.
     - name: relative
       type: select
       required: false
       options: [at, before, after]
       description: For appointment waits.
-    - name: hours
-      type: duration
+    - name: channel
+      type: select
       required: false
+      options: [sms, email, any]
+      description: For a reply wait — which channel releases it.
+    - name: groups
+      type: json
+      required: false
+      description: For a condition wait — the condition groups, in the same shape as If/Else.
     - name: timeout_hours
       type: duration
       required: false
@@ -45,4 +71,4 @@ supported_configs:
 approximation_note: Training approximation — five of the eight wait types run in the simulator; recurring schedules, contact actions and user replies are practised in GHL.
 aliases:
   - Wait Step
-verification_note: Name and the eight wait types confirmed on the help-center article, 2026-09-02.
+verification_note: Name and the eight wait types confirmed on the help-center article, 2026-09-02. Cancellation and reschedule behaviour taken from search summaries of "Appointment scenarios in Workflow" on 2026-09-04 (the article could not be opened directly from the build environment).

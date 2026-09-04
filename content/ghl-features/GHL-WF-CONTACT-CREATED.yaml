@@ -6,7 +6,7 @@ feature_type: trigger
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
+last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000002486-workflow-trigger-contact-created
 known_limitations: []
 skills:
@@ -16,4 +16,8 @@ supported_configs:
     - Created by
     - Has tag
   notes: Fires whenever a contact record is created, whatever created it.
-verification_note: Name confirmed on the help-center article, 2026-09-02.
+verification_note: >-
+  Name confirmed on the help-center article, 2026-09-02. Re-checked 2026-09-04 through search
+  summaries of the official article (the build environment's proxy blocks the help centre): the
+  trigger fires however the contact is created (manually, by a form, by an integration) and
+  filters narrow who enters.

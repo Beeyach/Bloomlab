@@ -224,7 +224,7 @@ export default function ExerciseRunner() {
       // The learner's work is untouched: the draft is only cleared once the attempt is recorded.
       setFailure(
         error instanceof RuntimeUnavailableError
-          ? 'This one is graded from your CRM account, and there is no account on this device yet. Open the CRM, do the work there, then come back.'
+          ? 'This one is graded from a Lab account, and this device has no account for its scenario yet. Open the CRM Lab or the Workflow Lab, do the work there, then come back.'
           : 'This attempt could not be saved on this device. Your work is still here.',
       );
     } finally {

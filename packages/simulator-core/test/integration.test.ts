@@ -18,9 +18,10 @@ import { event, scenario } from './fixtures.ts';
  * changes lands in the *same* account and the *same* history. This is the property every later
  * Lab depends on: CRM, Conversations, Calendar, Payments and Reporting read this one state.
  *
- * What this test does not do is pretend a workflow ran. Enrolment is recorded because Phase 10
- * owns that entity; the walk from node to node belongs to Phase 12, and faking it here would put
- * execution records in the log that no engine produced.
+ * The confirmation SMS is not injected by hand. Booking the appointment fires the workflow's
+ * trigger, the engine walks the workflow, and the message in the conversation is the one the
+ * Send SMS step produced (Phase 12). Nothing in the log was written by the test pretending to be
+ * an engine.
  */
 
 const at = (state: SimulatorState, minutes: number) => {
@@ -63,32 +64,8 @@ function fullJourney(): SimulatorState {
     }),
   );
 
-  // 3. A workflow enrols the contact. Phase 10 records the enrolment, not the walk.
-  state = processEvent(
-    state,
-    event('WORKFLOW_ENROLLED', state.clock.now, {
-      workflow_id: 'wf-booking-confirmation',
-      contact_id: 'nina',
-    }),
-  );
-
-  // 4. A confirmation SMS goes out and the lead replies.
-  state = processEvent(
-    state,
-    event('SMS_SENT', state.clock.now, {
-      contact_id: 'nina',
-      body: 'You are booked.',
-      workflow_id: 'wf-booking-confirmation',
-      node_id: 'n1',
-    }),
-  );
-  state = advanceTo(state, at(state, 20));
-  state = processEvent(
-    state,
-    event('SMS_RECEIVED', state.clock.now, { contact_id: 'nina', body: 'See you then' }),
-  );
-
-  // 5. The appointment is booked on the shared calendar, then attended.
+  // 3. The appointment is booked on the shared calendar. That fires the Booking Confirmation
+  //    workflow, which sends the confirmation SMS and tags the contact.
   state = processEvent(
     state,
     event('APPOINTMENT_BOOKED', state.clock.now, {
@@ -98,6 +75,15 @@ function fullJourney(): SimulatorState {
       starts_at: '2026-09-05T15:00:00-05:00',
     }),
   );
+
+  // 4. The lead replies to the confirmation.
+  state = advanceTo(state, at(state, 20));
+  state = processEvent(
+    state,
+    event('SMS_RECEIVED', state.clock.now, { contact_id: 'nina', body: 'See you then' }),
+  );
+
+  // 5. The appointment is attended.
   state = advanceTo(state, '2026-09-05T15:45:00-05:00');
   state = processEvent(
     state,
@@ -133,12 +119,18 @@ describe('one shared simulated account (SIM-001)', () => {
   it('holds every domain the journey touched in one account', () => {
     expect(state.account.contacts.nina?.email).toBe('nina@example.com');
     expect(state.account.contacts.nina?.tags).toContain('meta-lead');
+    expect(state.account.contacts.nina?.tags).toContain('booked');
     expect(state.account.contacts.nina?.custom_fields.treatment_interest).toBe('Membership');
     expect(state.account.opportunities['opp-nina']?.stage).toBe('Showed');
     expect(state.account.conversations.nina?.messages).toHaveLength(2);
     expect(state.account.appointments['appt-nina']?.status).toBe('showed');
     expect(state.account.payments['pay-nina']?.status).toBe('received');
     expect(Object.values(state.account.workflow_runs)).toHaveLength(1);
+    expect(Object.values(state.account.workflow_runs)[0]?.status).toBe('completed');
+    expect(state.account.conversations.nina?.messages[0]).toMatchObject({
+      body: 'You are booked.',
+      workflow_id: 'wf-booking-confirmation',
+    });
   });
 
   it('reports from what actually happened, not from invented analytics', () => {

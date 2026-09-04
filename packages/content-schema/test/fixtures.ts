@@ -32,7 +32,7 @@ export const skillA = {
   tier: 'field_ready',
   summary: 'The first skill in the fixture graph, with no prerequisites at all.',
   prerequisites: [],
-  ghl_features: ['GHL-WF-TRIGGER'],
+  ghl_features: ['GHL-WF-CONTACT-CREATED'],
   mastery_requirements: {
     independent_evidence: 1,
     pressure_test: false,
@@ -94,13 +94,13 @@ export const client = {
 export const workflow = {
   id: 'wf-welcome',
   name: 'Welcome',
-  trigger: { ghl_feature_id: 'GHL-WF-TRIGGER', filters: [] },
+  trigger: { ghl_feature_id: 'GHL-WF-CONTACT-CREATED', filters: [] },
   nodes: [
     {
       id: 'n1',
       type: 'action',
-      ghl_feature_id: 'GHL-WF-ACTION',
-      config: {},
+      ghl_feature_id: 'GHL-WF-ADD-CONTACT-TAG',
+      config: { tag: 'welcome' },
       position: { x: 0, y: 0 },
     },
     { id: 'n2', type: 'end', position: { x: 0, y: 100 } },
@@ -132,7 +132,7 @@ export const exercise = {
   skills: ['SK-AUTOMATE-alpha'],
   scenario: 'SC-acme-welcome',
   instructions: 'Build a welcome workflow.',
-  allowed_features: ['GHL-WF-TRIGGER', 'GHL-WF-ACTION'],
+  allowed_features: ['GHL-WF-CONTACT-CREATED', 'GHL-WF-ADD-CONTACT-TAG'],
   expected_outcomes: [
     {
       id: 'a1',
@@ -225,7 +225,7 @@ summary: A short unit that embeds the welcome exercise and one feature card.
 
 Because speed matters.
 
-<Feature id="GHL-WF-ACTION" />
+<Feature id="GHL-WF-ADD-CONTACT-TAG" />
 
 <Depth title="More">
   Extra depth.
@@ -240,10 +240,13 @@ export function baseSources(): ContentSources {
       'content.yaml': yaml({ content_version: '2026.09.01', schema_version: 1 }),
       'skills/SK-AUTOMATE-alpha.yaml': yaml(skillA),
       'skills/SK-DIAGNOSE-beta.yaml': yaml(skillB),
-      'ghl-features/GHL-WF-TRIGGER.yaml': yaml(
-        feature('GHL-WF-TRIGGER', { feature_type: 'trigger', skills: ['SK-AUTOMATE-alpha'] }),
+      'ghl-features/GHL-WF-CONTACT-CREATED.yaml': yaml(
+        feature('GHL-WF-CONTACT-CREATED', {
+          feature_type: 'trigger',
+          skills: ['SK-AUTOMATE-alpha'],
+        }),
       ),
-      'ghl-features/GHL-WF-ACTION.yaml': yaml(feature('GHL-WF-ACTION', {})),
+      'ghl-features/GHL-WF-ADD-CONTACT-TAG.yaml': yaml(feature('GHL-WF-ADD-CONTACT-TAG', {})),
       'ghl-features/GHL-SNAP-REAL.yaml': yaml(
         feature('GHL-SNAP-REAL', {
           area: 'Snapshots',

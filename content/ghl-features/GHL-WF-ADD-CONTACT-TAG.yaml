@@ -6,7 +6,7 @@ feature_type: action
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
+last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000003111-workflow-action-add-contact-tag
 known_limitations: []
 skills:
@@ -18,4 +18,7 @@ supported_configs:
       type: reference
       required: true
       description: One or more existing tags.
-verification_note: Name confirmed on the help-center article, 2026-09-02.
+verification_note: >-
+  Name confirmed on the help-center article, 2026-09-02. Re-checked 2026-09-04 through search
+  summaries of the official article (the build environment's proxy blocks the help centre): the
+  action applies one or more existing or newly created tags from the Tags dropdown.

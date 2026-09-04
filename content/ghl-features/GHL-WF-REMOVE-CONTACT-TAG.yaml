@@ -6,8 +6,8 @@ feature_type: action
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
-source_url: https://help.gohighlevel.com/support/solutions/articles/155000002294-what-are-workflow-actions-complete-list-
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003266-workflow-action-remove-contact-tag
 known_limitations: []
 skills:
   - SK-ARCHITECT-tags-vs-custom-fields
@@ -16,4 +16,7 @@ supported_configs:
     - name: tag
       type: reference
       required: true
-verification_note: Name confirmed on the actions list page, 2026-09-02.
+verification_note: >-
+  Name confirmed on the actions list page, 2026-09-02. Re-checked 2026-09-04 through search
+  summaries of the official article (the build environment's proxy blocks the help centre): the
+  action removes the chosen tag from the contact.

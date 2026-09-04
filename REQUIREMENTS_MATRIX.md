@@ -1,4 +1,4 @@
-# REQUIREMENTS MATRIPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEPASSEIMPLEMENTED_UNVERIFIEPARTIAPARTIAL
+# REQUIREMENTS MATRIX
 
 Authoritative requirement register for Bloomlab. Derived from `BLOOMLAB_MASTER_SPEC.md` (§ refs) and `docs/reference/BLOOMLAB_TECHNICAL_ARCHITECTURE_v1.md` (TA§ refs).
 
@@ -77,7 +77,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | CUR-033 | Content coverage matrix (Skill × Learn / Guided / Practice / Fix / Independent / Pressure / Fieldwork / Sales Use) generated from content data, not maintained by hand. | P1 | 5 | PASSED | §137 |
 | CUR-034 | Minimum curriculum: one master graph, Field Ready path, practical work for every core skill, independent assessment, retrieval, pricing, negotiation, calls, written sales, proposals, prospecting, real GHL fieldwork. | P0 | 24 | NOT_STARTED | §144 |
 | CUR-035 | Field Ready content complete from placement through capstone before advanced curriculum; no hundreds of shallow lessons before the learning loop works. | P1 | 24 | NOT_STARTED | PHASE 24 |
-| CUR-036 | Academy behaves like an interactive editorial publication: strong typography, short sections, diagrams, inline simulations, interaction, expandable depth. Not "video + paragraph + next lesson". | P1 | 8 | PARTIAL | §76 |
+| CUR-036 | Academy behaves like an interactive editorial publication: strong typography, short sections, diagrams, inline simulations, interaction, expandable depth. Not "video + paragraph + next lesson". Phase 12: the `<Simulation>` embed runs the engine in memory and lists its execution records (`academy.test.tsx`). | P1 | 8 | PASSED | §76 |
 
 ## MAS — Mastery
 
@@ -102,10 +102,10 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-001 | Exercises are data-driven (`exercise_id, type, title, skills, scenario, instructions, allowed_features, starting_state, expected_outcomes, critical_failures, grading, hints, fieldwork, portfolio`). A new exercise usually requires content, not a new React page. | P0 | 9 | PASSED | TA§31 |
 | EXR-002 | Deterministic grading via code assertions: state, event, timing, architecture, negative, sequence. | P0 | 9 | PASSED | §27, TA§32 |
 | EXR-003 | Rubric tiers: critical, required, quality, bonus. | P0 | 9 | PASSED | TA§33 |
-| EXR-004 | BUILD IT: objective given, learner constructs solution with real GHL concepts, deterministic grading where possible. | P1 | 9 | PARTIAL | §27 |
-| EXR-005 | FIX IT: broken system with symptoms shown ("Maria received two reminder messages. Expected one."); faulty node not revealed immediately. | P1 | 9 | PARTIAL | §27 |
-| EXR-006 | RUN THE LEAD: learner predicts execution of a contact through a workflow, then actual execution is animated. | P1 | 9 | PARTIAL | §27 |
-| EXR-007 | EDGE CASE: one important variable changed (late booking, cancelled, missing phone, timezone, second location, duplicate); learner judges whether the system still works. | P1 | 9 | PARTIAL | §27 |
+| EXR-004 | BUILD IT: objective given, learner constructs solution with real GHL concepts, deterministic grading where possible. Phase 12: the learner builds in the Workflow Lab and the exercise is graded from that run with architecture from their saved definition (D-112, `exerciseRuntime.test.ts`). | P1 | 9 | PASSED | §27 |
+| EXR-005 | FIX IT: broken system with symptoms shown ("Maria received two reminder messages. Expected one."); faulty node not revealed immediately. Phase 12: the double reminder reproduces from the broken account, the logs are read in the Lab, and the grade fails before the fix and passes after (`exerciseRuntime.test.ts`). | P1 | 9 | PASSED | §27 |
+| EXR-006 | RUN THE LEAD: learner predicts execution of a contact through a workflow, then actual execution is animated. Phase 12: the prediction is captured and the real run is graded; the animation is the Lab's Replay rather than inside the runner page. | P1 | 9 | PARTIAL | §27 |
+| EXR-007 | EDGE CASE: one important variable changed (late booking, cancelled, missing phone, timezone, second location, duplicate); learner judges whether the system still works. Phase 12: cancelled and missing-phone edge cases are judged from real runs; the late-booking exercise's `after:` clause is not evaluable (KNOWN_LIMITATIONS). | P1 | 9 | PARTIAL | §27 |
 | EXR-008 | WHAT WOULD YOU BUILD?: business problem without naming the GHL feature under test; multiple valid architectures accepted; AI used only where open-ended reasoning requires it. | P1 | 9 | PARTIAL | §27 |
 | EXR-009 | ARCHITECTURE DECISION: tag vs custom field vs custom value vs opportunity field vs custom object; multiple-choice support removed at later levels. | P1 | 9 | PARTIAL | §27 |
 | EXR-010 | FUNNEL AUTOPSY: simulated page plus data; inspect traffic source, conversion rate, scroll behavior, form completion, booking rate, drop-off; learner must separate problem from hypothesis. | P1 | 15 | NOT_STARTED | §27 |
@@ -117,18 +117,18 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-016 | PRICE IT: learner sets project price, deposit, recurring, rush fee, timeline, revisions, inclusions, exclusions; hidden economics and risk revealed after submission. | P1 | 17 | NOT_STARTED | §27 |
 | EXR-017 | NEGOTIATE IT: client pushes back; learner may clarify, hold price, reduce scope, phase, concede, or walk away; winning is not the only success. | P1 | 18 | NOT_STARTED | §27 |
 | EXR-018 | EXPLAIN IT: technical explanation for different audiences (business owner, another GHL builder). | P1 | 16 | NOT_STARTED | §27 |
-| EXR-019 | REBUILD BLIND: no lesson, no step-by-step support; hints reduce independence evidence. | P1 | 9 | PARTIAL | §27 |
+| EXR-019 | REBUILD BLIND: no lesson, no step-by-step support; hints reduce independence evidence. Phase 12: a reminder system built through the command layer and graded from the two texts the engine sent 24 h and 2 h before the appointment (`exerciseRuntime.test.ts`). | P1 | 9 | PASSED | §27 |
 | EXR-020 | FIELDWORK: real GHL work; Bloomlab collects screenshots, configuration answers, explanation, test results, then questions reasoning. | P1 | 22 | NOT_STARTED | §27 |
 | EXR-021 | BOSS CLIENT: persistent multi-stage engagement (audit → discovery → architecture → pricing → negotiation → proposal → implementation → QA → launch → reporting → change request); earlier decisions affect later consequences. | P1 | 24 | NOT_STARTED | §27 |
 | EXR-022 | Hint system: Nudge, Concept Reminder, Worked Example; assistance tracked per attempt. | P1 | 9 | PASSED | §28 |
-| EXR-023 | Workflow scoring example (correctness 45%, edge cases 20%, architecture 15%, maintainability 10%, explanation 10%) with critical-failure override. | P1 | 12 | NOT_STARTED | §31 |
-| EXR-024 | No stub / no static replacement: a requirement that logs to console, shows fake success, is a static placeholder, says "coming soon", works only for a screenshot, or opens a nonfunctional modal stays PARTIAL. Interactive simulation is never replaced by a diagram, negotiation by an article, Funnel Autopsy by a quiz. | P0 | all | PARTIAL | §129, §130 |
+| EXR-023 | Workflow scoring example (correctness 45%, edge cases 20%, architecture 15%, maintainability 10%, explanation 10%) with critical-failure override. Phase 12: weighted dimensions with critical override in `packages/exercise-engine` (D-113, `grade.test.ts`) and applied to the authored workflow exercises (`authoredGrading.test.ts`). | P1 | 12 | PASSED | §31 |
+| EXR-024 | No stub / no static replacement: a requirement that logs to console, shows fake success, is a static placeholder, says "coming soon", works only for a screenshot, or opens a nonfunctional modal stays PARTIAL. Interactive simulation is never replaced by a diagram, negotiation by an article, Funnel Autopsy by a quiz. Phase 12: no stub added; every Lab surface runs the engine. | P0 | all | PARTIAL | §129, §130 |
 
 ## SIM — Simulator Core
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| SIM-001 | One shared simulated GHL account model across all labs. A form submitted in Funnel Lab can create a contact, populate fields, fire a workflow, create an opportunity, send simulated SMS, create an appointment and affect reporting. Labs are not separate mini-games. Phase 10: one shared account exists and cross-domain transitions land in it — the integration test drives form → contact → tag → opportunity → SMS → appointment → payment → reporting counters through a single state and a single history. PARTIAL because the "fire a workflow" link in that chain needs a workflow to execute, which is the Workflow Lab (Phase 12); Phase 10 records enrolment, step completion and exit as entities and events but never walks a contact from node to node. Phase 11 adds the CRM half of the same chain — contact, tag, field, owner, opportunity, owner, stage, note, task — in one state and one log, worked from a learner-facing Lab. | P0 | 10 | PARTIAL | §41, §145 |
+| SIM-001 | One shared simulated GHL account model across all labs. A form submitted in Funnel Lab can create a contact, populate fields, fire a workflow, create an opportunity, send simulated SMS, create an appointment and affect reporting. Labs are not separate mini-games. Phase 10: one shared account exists and cross-domain transitions land in it — the integration test drives form → contact → tag → opportunity → SMS → appointment → payment → reporting counters through a single state and a single history. PARTIAL because the "fire a workflow" link in that chain needs a workflow to execute, which is the Workflow Lab (Phase 12); Phase 10 records enrolment, step completion and exit as entities and events but never walks a contact from node to node. Phase 11 adds the CRM half of the same chain — contact, tag, field, owner, opportunity, owner, stage, note, task — in one state and one log, worked from a learner-facing Lab. Phase 12 closes the chain: a booking fires Booking Confirmation and a no-show fires the recovery in the same account and log, and the CRM, Workflow and Conversations Labs work the same run (D-108). | P0 | 10 | PASSED | §41, §145 |
 | SIM-002 | Deterministic TypeScript package `packages/simulator-core`; no simulation logic inside React components. | P0 | 10 | PASSED | §42, TA§19 |
 | SIM-003 | Transition model `State + Event → Transition → New State + Events (+ execution records)` via pure reducers that never call Claude, mutate globals, read system time, use uncontrolled randomness, or perform network requests. | P0 | 10 | PASSED | §42, TA§22 |
 | SIM-004 | Simulated account model supports progressively: account, users, contacts, companies, tags, custom fields, custom values, opportunities, pipelines, appointments, calendars, forms, surveys, products, payments, conversations, workflows, workflow runs, tasks, notes, analytics, event log. | P0 | 10 | PASSED | §43, TA§20 |
@@ -137,12 +137,12 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | SIM-007 | Time Machine: +1 minute, +1 hour, +1 day, Next Event; current simulated date/time always clearly shown. | P1 | 10 | PASSED | §46 |
 | SIM-008 | Event scheduler is a priority queue of future events; Next Event advances the clock to the earliest queued event with no AI. | P0 | 10 | PASSED | TA§24 |
 | SIM-009 | Event Injector allows scenario-defined events: contact reply, tag added, appointment cancellation, appointment reschedule, payment, form submission, opportunity movement. | P1 | 10 | PASSED | §47 |
-| SIM-010 | Execution log stores trigger, data, step, start, completion, branch result, skipped action, waiting, failure, exit reason. Phase 10: one structured execution-log model with stable ids and deterministic order, storing data rather than display strings. It records trigger, input, step completion, skipped action (missing phone, do-not-disturb, tag already present), failure and exit (including a refused duplicate enrolment) for behaviour that exists. PARTIAL because branch results and waiting are produced by workflow execution (Phase 12); the kinds are defined and typed but nothing emits them yet. | P0 | 10 | PARTIAL | §48 |
+| SIM-010 | Execution log stores trigger, data, step, start, completion, branch result, skipped action, waiting, failure, exit reason. Phase 10: one structured execution-log model with stable ids and deterministic order, storing data rather than display strings. It records trigger, input, step completion, skipped action (missing phone, do-not-disturb, tag already present), failure and exit (including a refused duplicate enrolment) for behaviour that exists. PARTIAL because branch results and waiting are produced by workflow execution (Phase 12); the kinds are defined and typed but nothing emits them yet. Phase 12: `branch_result` and `waiting` now have producers, so every kind named here is emitted by the engine and read by the timeline. | P0 | 10 | PASSED | §48 |
 | SIM-011 | Realistic failures simulated: missing phone, DND, invalid webhook auth, missing field, unavailable appointment, duplicate enrollment, bad condition, workflow loop, integration failure. Observable symptoms shown before fixes. | P1 | 15 | NOT_STARTED | §49 |
 | SIM-012 | Seeded deterministic randomness; scenario specifies `seed`; identical inputs give identical grading results. | P0 | 10 | PASSED | TA§25 |
 | SIM-013 | Snapshots: initial scenario + event log + periodic checkpoints provide undo, rewind, replay, troubleshooting, reproducible grading. Full state is not serialised after every event. | P0 | 10 | PASSED | TA§26, §145 |
-| SIM-014 | Heavy simulation runs in a browser Web Worker where beneficial; UI never blocks during large workflow executions. | P1 | 12 | NOT_STARTED | §97, TA§27 |
-| SIM-015 | Playground: once a feature is unlocked it stays available for free experimentation without an assigned exercise. | P1 | 12 | NOT_STARTED | §61 |
+| SIM-014 | Heavy simulation runs in a browser Web Worker where beneficial; UI never blocks during large workflow executions. Phase 12: one execution door on a stateless Web Worker with the same handler as the direct path (D-109); parity and crash tests; 504 events in the probe at p95 43.5 ms per frame with no long task over 100 ms. | P1 | 12 | PASSED | §97, TA§27 |
+| SIM-015 | Playground: once a feature is unlocked it stays available for free experimentation without an assigned exercise. Phase 12: `/playground` lists every unlocked feature by the D-111 rule on a sandbox with no exercise (`unlocks.test.ts`, `playgroundScreen.test.tsx`, probe `playground`). | P1 | 12 | PASSED | §61 |
 | SIM-016 | Workflow definition schema: `id, name, trigger, trigger_filters, nodes[], edges[], settings`; node `id, type, ghl_feature_id, config, position`. Layout is separate from behavior — moving a node never changes automation. | P0 | 10 | PASSED | TA§28 |
 | SIM-017 | Simulator regression suite with fixture IDs (e.g. WAIT-001 fixed wait, WAIT-002 appointment-relative, WAIT-003 late enrollment, WAIT-004 cancellation during wait). Every bug fix adds a regression fixture. CI fails on regression. | P0 | 10 | PASSED | §133, TA§74 |
 | SIM-018 | Replay and reset of any scenario. | P0 | 10 | PASSED | §145 |
@@ -152,18 +152,18 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| WFL-001 | Desktop Workflow Lab has canvas, toolbar, inspector and execution timeline. | P0 | 12 | NOT_STARTED | §50 |
-| WFL-002 | Supports add trigger, filter, action, Wait, If/Else, branches, reorder, connect, undo, redo, run test, inspect history. | P0 | 12 | NOT_STARTED | §50 |
-| WFL-003 | Every displayed trigger/action (Appointment Status, Send SMS, Wait, …) maps to a real current GHL function via the registry or is clearly marked as an approximation. No made-up native GHL actions. | P0 | 12 | NOT_STARTED | §51 |
-| WFL-004 | Test contact: use existing simulated contact or generate one; run visibly through the workflow showing current node, current values, branch result, timeline events. | P0 | 12 | NOT_STARTED | §52 |
-| WFL-005 | Node shows action type, real feature name, concise configuration, status; full settings live in a contextual inspector, not on the canvas. | P1 | 12 | NOT_STARTED | §53 |
-| WFL-006 | Mobile Workflow Lab is a structured vertical / drill-down editor (not a shrunken canvas) supporting configuring steps, inspecting branches, testing, reviewing execution, editing. | P0 | 12 | NOT_STARTED | §54, §131 |
-| WFL-007 | Visuals: dark ink workspace, light clean nodes, aqua/blue active execution; not neon hacker software. | P1 | 12 | NOT_STARTED | §77 |
-| WFL-008 | Wait logic: fixed delay, appointment-relative wait, time/date, business hours, event waiting, timezone, late enrollment. | P0 | 12 | NOT_STARTED | §16 |
-| WFL-009 | Branching: If/Else, AND/OR, comparisons, dynamic values, fallback, multiple paths. | P0 | 12 | NOT_STARTED | §16 |
-| WFL-010 | Re-entry semantics: duplicate enrollment, repeated triggers, overlapping workflows, duplicate messages, exits (race conditions later). | P0 | 12 | NOT_STARTED | §16 |
-| WFL-011 | Available actions are sourced from the GHL feature registry, never hardcoded in the Lab. | P0 | 12 | NOT_STARTED | TA§29 |
-| WFL-012 | First Workflow Execution signature moment: watch the contact travel through the system. | P2 | 12 | NOT_STARTED | §161 |
+| WFL-001 | Desktop Workflow Lab has canvas, toolbar, inspector and execution timeline. Phase 12: canvas, toolbar, inspector and execution timeline at `/workflow` from 1024 px (probe sections `desktop-present`, `width-1024`). | P0 | 12 | PASSED | §50 |
+| WFL-002 | Supports add trigger, filter, action, Wait, If/Else, branches, reorder, connect, undo, redo, run test, inspect history. Phase 12: all twelve operations by pointer and keyboard (`graphEdit.test.ts`, `workflow.test.ts`, probe `desktop-edit-undo-redo-save`, `keyboard-move`, `drag-move`, `run-and-replay`). | P0 | 12 | PASSED | §50 |
+| WFL-003 | Every displayed trigger/action (Appointment Status, Send SMS, Wait, …) maps to a real current GHL function via the registry or is clearly marked as an approximation. No made-up native GHL actions. Phase 12: every palette item is a registry record; fidelity C records are marked not runnable and refuse to run; all 21 runnable records re-verified 2026-09-04 (search summaries, stated in each record). | P0 | 12 | PASSED | §51 |
+| WFL-004 | Test contact: use existing simulated contact or generate one; run visibly through the workflow showing current node, current values, branch result, timeline events. Phase 12: the default test fires the configured trigger for real and the engine's matcher decides who enrols (a non-matching filter enrols nobody and says so); a labelled Start at the first step is recorded as a direct enrolment and never reads as the trigger firing (D-114; fixtures TRIGGER-003/004, `workflow.test.ts`, `workflowScreen.test.tsx`, probe `first-execution-autoplay`). Current node lit, travelling dot, branch result and timeline rows from the engine. | P0 | 12 | PASSED | §52 |
+| WFL-005 | Node shows action type, real feature name, concise configuration, status; full settings live in a contextual inspector, not on the canvas. Phase 12: node shows feature name, one-line configuration and status; settings only in the inspector (`workflowScreen.test.tsx`). | P1 | 12 | PASSED | §53 |
+| WFL-006 | Mobile Workflow Lab is a structured vertical / drill-down editor (not a shrunken canvas) supporting configuring steps, inspecting branches, testing, reviewing execution, editing. Phase 12: vertical step editor with sheet inspector, add-from-sheet, branch paths and a Timeline tab at 390 and 320 (probe `width-390`, `width-320`, 8 checks each). | P0 | 12 | PASSED | §54, §131 |
+| WFL-007 | Visuals: dark ink workspace, light clean nodes, aqua/blue active execution; not neon hacker software. Phase 12: canvas luminance 0.06, node luminance 1.0, aqua execution, no eyebrow, no monospace (`designRules.test.ts`, probe `desktop-present`). | P1 | 12 | PASSED | §77 |
+| WFL-008 | Wait logic: fixed delay, appointment-relative wait, time/date, business hours, event waiting, timezone, late enrollment. Phase 12: fixtures WAIT-001..004, TIME-001/002, REPLY-001/002 and the wait tests: fixed, appointment-relative, date, time window, reply, condition, timezone, late enrolment, cancellation during a wait (D-100, D-102). | P0 | 12 | PASSED | §16 |
+| WFL-009 | Branching: If/Else, AND/OR, comparisons, dynamic values, fallback, multiple paths. Phase 12: fixtures BRANCH-001..005 and the dynamic-value test: AND/OR, eight operators, dynamic values, None fallback, multiple paths (D-103). | P0 | 12 | PASSED | §16 |
+| WFL-010 | Re-entry semantics: duplicate enrollment, repeated triggers, overlapping workflows, duplicate messages, exits (race conditions later). Phase 12: fixtures ENROLL-001/002, OVERLAP-001, MSG-003, EXIT-001/002, REM-002, TRIGGER-001/002 (re-entry, repeated triggers, overlapping workflows, duplicate messages, exits). | P0 | 12 | PASSED | §16 |
+| WFL-011 | Available actions are sourced from the GHL feature registry, never hardcoded in the Lab. Phase 12: `palette.ts` derives from `content.ghl_features` plus the adapter table (D-105); a source test refuses literal action or trigger lists; a record added in a test appears without code. | P0 | 12 | PASSED | TA§29 |
+| WFL-012 | First Workflow Execution signature moment: watch the contact travel through the system. Phase 12: the first successful test plays its recorded trace on its own — rows, node statuses, connectors and the travelling dot revealed from execution records, Pause, Skip, then Replay; reduced motion shows the whole trace at once; skipping never touches the account (D-115; screen tests, probe `first-execution-autoplay`, `run-and-replay`, `reduced-motion`, phone sections). | P2 | 12 | PASSED | §161 |
 
 ## CRM — CRM Lab
 
@@ -196,7 +196,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| CONV-001 | Conversations Lab simulates SMS and email (call events and other channels later); replies can affect workflows. | P1 | 12 | NOT_STARTED | §58 |
+| CONV-001 | Conversations Lab simulates SMS and email (call events and other channels later); replies can affect workflows. Phase 12: `/conversations` shows SMS and email; a reply as the contact releases reply waits and fires Customer Replied (REPLY-001/002, `conversationsScreen.test.tsx`, probe `conversations`). Calls and other channels later. | P1 | 12 | PASSED | §58 |
 | CONV-002 | Written sales simulation: persistent inbox-like conversations where client messages react to the learner's answer; conversation continues naturally instead of always showing "Correct." | P1 | 16 | NOT_STARTED | §120 |
 
 ## PAY — Payments Lab
@@ -293,7 +293,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DES-006 | No AI-slop patterns: giant gradient hero, purple SaaS gradient, gradient text, glassmorphism everywhere, random blobs, icon beside every heading, endless three-column cards, every section in a card, giant useless stats, fake analytics, emoji navigation, trophy spam, rocket graphics, stock SaaS art, generic AI avatar, huge shadows, random confetti, excessive pills, identical layouts everywhere, generic "Welcome back" dashboard. | P0 | all | IN_PROGRESS | §70 |
 | DES-007 | Semantic components (SkillCard, ClientCaseCover, WorkflowNode, ExercisePrompt, MasteryBadge, ContactRow, PipelineCard, HoloTerritory, CallParticipant, PricingScopeItem, ExecutionEvent) sharing tokens; no single universal Card component. | P0 | 2 | PASSED | §71, TA§3 |
 | DES-008 | Information density varies by environment: Academy low-medium, Workflow Lab medium-high, CRM high, Call Room very low, Pricing Arena medium, Skill Map high visual / low text. | P1 | 7 | IN_PROGRESS | §72 |
-| DES-009 | App shell: compact left rail ~68–80 px with Home, Campaign, Skill Map, Simulator, Clients, Portfolio, Playground; minimal top context; no giant sidebar. | P1 | 7 | PARTIAL | §73 |
+| DES-009 | App shell: compact labelled left rail, widened by D-117 to 104 px so full labels have breathing room; Home, Campaign, Skill Map, Workflow, CRM, Inbox and Playground are present today, with Clients and Portfolio arriving in Phases 23–24. The page offsets from the same `--bl-size-rail` token. Phones keep the separate 64 px four-plus-More composition from D-116. Phase 12 visual re-check at the new width is pending. | P1 | 7 | PARTIAL | §73, D-117 |
 | DES-010 | Command Center answers "What should I do next?"; main object is Continue (campaign, gate, current topic, progress); supporting: active client, due retrieval, recent mastery, Build My Session. No meaningless metrics. | P1 | 7 | PARTIAL | §74 |
 | DES-011 | Skill Map signature screen: nine territories plus Judgment as holographic regions / collectible objects, not tiny LMS nodes; skill states unseen → needs refresh change the visual material. | P1 | 7 | PASSED | §75 |
 | DES-012 | Client case covers feel collectible and premium using abstract identity/material treatment; no mandatory stock photos. | P2 | 24 | IN_PROGRESS | §78 |
@@ -334,7 +334,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | RSP-001 | Required review widths: 1440, 1024, 768, 390, 320. | P0 | all | IN_PROGRESS | §82 |
 | RSP-002 | Tablet is first class; mobile is recomposed, not shrunk. | P0 | all | IN_PROGRESS | §82 |
 | RSP-003 | No critical desktop feature disappears on mobile because responsive work is difficult; recompose instead. | P0 | all | IN_PROGRESS | §82, §131 |
-| RSP-004 | Mobile recompositions: Workflow → vertical step editor; CRM → stage view / local horizontal scroller; Academy → editorial reading; Call Room → mobile-first voice; Inbox → natural conversation flow; Skill Map → territory-first. | P1 | 12 | PARTIAL | §83 |
+| RSP-004 | Mobile recompositions: Workflow → vertical step editor; CRM → stage view / local horizontal scroller; Academy → editorial reading; Call Room → mobile-first voice; Inbox → natural conversation flow; Skill Map → territory-first. Phase 12: Workflow → vertical step editor holds at 390 and 320 (probe). Call Room and Inbox recompositions belong to Phase 21 and later. | P1 | 12 | PARTIAL | §83 |
 | RSP-005 | Preview deployments for substantial branches/PRs inspectable on a phone before merge. | P2 | 1 | PASSED | TA§76 |
 
 ## A11Y — Accessibility
@@ -346,7 +346,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | A11Y-003 | Accessible labels on controls and inputs. | P0 | 2 | PASSED | §84 |
 | A11Y-004 | Sufficient contrast, including text over holographic surfaces. | P0 | 2 | PASSED | §84 |
 | A11Y-005 | Status never conveyed by colour alone. | P0 | 2 | PASSED | §84 |
-| A11Y-006 | Drag interactions have non-drag alternatives. | P0 | 12 | NOT_STARTED | §84 |
+| A11Y-006 | Drag interactions have non-drag alternatives. Phase 12: arrow keys move a node, the inspector connects and reorders, the palette adds after the selected step (probe `keyboard-move`). | P0 | 12 | PASSED | §84 |
 | A11Y-007 | Touch targets ≈ 44 px. | P0 | 2 | PASSED | §84 |
 | A11Y-008 | Mobile input font size ≥ 16 px. | P0 | 2 | PASSED | §84 |
 | A11Y-009 | No critical information is hover-only. | P0 | 2 | PASSED | §84 |
@@ -443,7 +443,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
 | PERF-001 | Fast app shell; route-level code splitting; heavy simulators lazy-loaded; only likely next content preloaded; Workflow Lab does not load while reading Academy. | P0 | 7 | PARTIAL | §148, TA§78 |
-| PERF-002 | Simulator interaction ≈ 60 fps where feasible using CSS transforms and composited layers. | P1 | 12 | NOT_STARTED | §148 |
+| PERF-002 | Simulator interaction ≈ 60 fps where feasible using CSS transforms and composited layers. Phase 12: drag mean 16.5 ms per frame (max 17), playback mean 16.7 ms over 221 frames, transforms and opacity only (probe `drag-move`, `run-and-replay`). | P1 | 12 | PASSED | §148 |
 | PERF-003 | Off-screen animations pause; holographic richness never harms usability. | P1 | 2 | PASSED | §148 |
 
 ## SEC — Security

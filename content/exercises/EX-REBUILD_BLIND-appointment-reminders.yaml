@@ -18,7 +18,9 @@ allowed_features:
   - GHL-WF-SEND-SMS
   - GHL-WF-IF-ELSE
   - GHL-WF-REMOVE-FROM-WORKFLOW
-starting_state: {}
+starting_state:
+  # The contact whose appointment the timing checks measure against (appointment.start).
+  contact_id: maria
 expected_outcomes:
   - id: a1
     type: timing

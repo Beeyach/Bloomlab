@@ -1,0 +1,217 @@
+/*
+ * Conversations (CONV-001). A quiet inbox: a thread list and one open thread, recomposed to a
+ * natural single conversation flow on phones (RSP-004). Messages are attributed in words — which
+ * workflow, which step, or staff — never only by colour.
+ */
+
+.screen {
+  --bl-density-row: var(--bl-density-high);
+}
+
+.header {
+  display: grid;
+  gap: var(--bl-space-2);
+  max-width: 44rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-2xl);
+  font-weight: var(--bl-font-weight-bold);
+  letter-spacing: var(--bl-font-tracking-display);
+  line-height: var(--bl-font-leading-tight);
+}
+
+.lead,
+.muted {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+}
+
+.link {
+  color: inherit;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-1) var(--bl-space-4);
+  margin: 0;
+  padding-bottom: var(--bl-space-3);
+  border-bottom: 1px solid var(--bl-color-border);
+  font-size: var(--bl-font-size-sm);
+}
+
+.facts dt {
+  display: inline;
+  color: var(--bl-color-text-soft);
+}
+
+.facts dd {
+  display: inline;
+  margin: 0 0 0 var(--bl-space-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2);
+}
+
+.refusal {
+  border-left: 3px solid var(--bl-color-warning, var(--bl-color-ink));
+}
+
+.refusalTitle {
+  margin: 0;
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.refusalBody {
+  margin: var(--bl-space-1) 0 0;
+  color: var(--bl-color-text-soft);
+}
+
+.workspace {
+  display: grid;
+  gap: var(--bl-space-4);
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .workspace[data-thread='open'] {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: var(--bl-space-6);
+  }
+}
+
+.listPane,
+.threadPane {
+  display: grid;
+  gap: var(--bl-space-3);
+  min-width: 0;
+}
+
+.threads {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--bl-color-border);
+}
+
+.threadRow {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-height: 56px;
+  padding: var(--bl-space-2) var(--bl-space-2);
+  border: 0;
+  border-bottom: 1px solid var(--bl-color-border);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.threadRow:hover {
+  background: var(--bl-color-mist);
+}
+
+.threadRow[aria-pressed='true'] {
+  background: var(--bl-color-tint);
+}
+
+.threadRow:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: -2px;
+}
+
+.threadName {
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.threadMeta,
+.meta {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-xs);
+}
+
+.threadPreview {
+  overflow: hidden;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.threadTitle {
+  margin: 0;
+  font-size: var(--bl-font-size-lg);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.messages {
+  display: grid;
+  gap: var(--bl-space-3);
+  margin: 0;
+  padding: var(--bl-space-3);
+  list-style: none;
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-lg);
+  background: var(--bl-color-surface);
+}
+
+.message {
+  display: grid;
+  gap: var(--bl-space-1);
+  max-width: 34rem;
+}
+
+.message[data-direction='outbound'] {
+  justify-self: end;
+  text-align: right;
+}
+
+.bubble {
+  display: inline-grid;
+  gap: 2px;
+  padding: var(--bl-space-2) var(--bl-space-3);
+  border-radius: var(--bl-radius-lg);
+  background: var(--bl-color-mist);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.message[data-direction='outbound'] .bubble {
+  background: var(--bl-color-ink);
+  color: var(--bl-color-text-inverse);
+}
+
+.message[data-channel='email'] .bubble {
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+}
+
+.subject {
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.composer {
+  display: grid;
+  gap: var(--bl-space-2);
+}
+
+.composerRow {
+  display: grid;
+  gap: var(--bl-space-2);
+}
+
+@media (min-width: 768px) {
+  .composerRow {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}

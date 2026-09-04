@@ -6,9 +6,10 @@ feature_type: action
 implementation_type: native_ghl
 status: current
 simulation_fidelity: B
-last_verified: 2026-09-02
-source_url: https://help.gohighlevel.com/support/solutions/articles/155000002294-what-are-workflow-actions-complete-list-
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003202-workflow-action-internal-notification
 known_limitations:
+  - WhatsApp is a fourth notification type in HighLevel and is not offered here; the simulator delivers email, SMS and in-app only.
   - The simulator records the notification in the log; it does not deliver to a user's email, SMS or app.
 skills:
   - SK-AUTOMATE-no-show-recovery
@@ -25,4 +26,8 @@ supported_configs:
       type: template
       required: true
 approximation_note: Training approximation — internal notifications are logged, not delivered.
-verification_note: Name confirmed on the actions list page, 2026-09-02; channel list not individually verified.
+verification_note: >-
+  Name confirmed on the actions list page, 2026-09-02; channel list not individually verified.
+  Re-checked 2026-09-04 through search summaries of the official article (the build environment's
+  proxy blocks the help centre): the notification types are Email, In-App Notification, SMS and
+  WhatsApp, sent to a user, a role or a team.

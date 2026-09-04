@@ -6,8 +6,8 @@ feature_type: trigger
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
-source_url: https://help.gohighlevel.com/support/solutions/articles/155000002292-a-list-of-workflow-triggers
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003252-workflow-trigger-opportunity-status-changed
 known_limitations: []
 skills:
   - SK-ARCHITECT-pipeline-design
@@ -20,4 +20,8 @@ supported_configs:
     - Won
     - Lost
     - Abandoned
-verification_note: Name confirmed on the triggers list page, 2026-09-02; status options from the opportunities guide.
+verification_note: >-
+  Name confirmed on the triggers list page, 2026-09-02; status options from the opportunities
+  guide. Re-checked 2026-09-04 through search summaries of the official article (the build
+  environment's proxy blocks the help centre): the trigger fires when an opportunity's status
+  changes (open, won, lost).

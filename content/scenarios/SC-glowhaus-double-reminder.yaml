@@ -61,6 +61,7 @@ initial_account_state:
           label: Reminder SMS
           config:
             template: 'Reminder: your Glowhaus consultation is tomorrow at {{appointment.start_time}}.'
+            purpose: reminder_24h
           position: { x: 0, y: 240 }
         - id: n3
           type: end
@@ -98,6 +99,7 @@ initial_account_state:
           label: Reminder SMS (copied from the old workflow)
           config:
             template: 'Reminder: your Glowhaus consultation is tomorrow at {{appointment.start_time}}.'
+            purpose: reminder_24h
           position: { x: 0, y: 360 }
         - id: n4
           type: end

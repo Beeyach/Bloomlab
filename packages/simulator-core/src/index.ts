@@ -83,7 +83,65 @@ export {
   type WorkflowRun,
   type WorkflowRunStatus,
   type WorkflowTriggerFilter,
+  CONDITION_OPERATORS,
+  WAIT_KINDS,
+  type BranchDefinition,
+  type Condition,
+  type ConditionGroup,
+  type ConditionOperator,
+  type TimeWindow,
+  type WaitKind,
+  type WorkflowRunContext,
+  type WorkflowSettings,
+  type WorkflowWait,
 } from './state.ts';
+
+export {
+  RUNNABLE_FEATURES,
+  actionCapabilityFor,
+  capabilityFor,
+  triggerCapabilityFor,
+  type ActionCapability,
+  type Capability,
+  type TriggerCapability,
+  type TriggerFilterField,
+  type TriggerMatch,
+} from './workflow/capabilities.ts';
+export {
+  CONDITION_FIELDS,
+  chooseBranch,
+  customFieldConditionFields,
+  evaluateCondition,
+  isConditionField,
+  readBranches,
+  readField,
+  type BranchChoice,
+  type ConditionEvaluation,
+} from './workflow/conditions.ts';
+export {
+  entryNodes,
+  isRunnable,
+  outgoing,
+  validateWorkflowGraph,
+  type GraphIssue,
+} from './workflow/graph.ts';
+export {
+  mergeDate,
+  mergeTime,
+  mergeValue,
+  renderTemplate,
+  type Rendered,
+} from './workflow/merge.ts';
+export { nextWindowOpening, readTimeWindow, withinWindow } from './workflow/timewindow.ts';
+export {
+  subjectAppointment,
+  subjectOpportunity,
+  viewFor,
+  workflowZone,
+  type RunView,
+} from './workflow/view.ts';
+export { waitToken } from './workflow/traverse.ts';
+export { readDefinition } from './reducers/definitions.ts';
 
 export {
   MINUTE_MS,

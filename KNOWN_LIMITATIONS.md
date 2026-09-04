@@ -2,11 +2,11 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-05 (end of Phase 10)
+Last updated: 2026-09-07 (end of Phase 12)
 
 ## Current state
 
-- The product has curriculum content compiled in (Phase 5), a working learning engine over it (Phase 6), the Command Center, Campaign and Skill Map (Phase 7), the Academy (Phase 8) and the exercise runner (Phase 9). Two exercise families can be finished end to end; the five that need a simulated account, an execution log or a workflow build wait for Phases 10 and 12. Evidence that no runnable family produces still enters through the diagnostic form on `/system`.
+- The product has curriculum content compiled in (Phase 5), a working learning engine over it (Phase 6), the Command Center, Campaign and Skill Map (Phase 7), the Academy (Phase 8), the exercise runner (Phase 9), the simulator core (Phase 10), the CRM Lab (Phase 11) and the Workflow Lab with Conversations and the Playground (Phase 12). Five exercise families are graded from real runs; Run the Lead and Edge Case still carry the gaps recorded under Phase 12. Evidence that no runnable family produces still enters through the diagnostic form on `/system`.
 - `/system` (diagnostics) and `/design` (gallery) exist only in local and preview environments; both are off in production by flag.
 - The semantic components are presentational: Phase 7 wires SkillCard, HoloTerritory, MasteryBadge and StatusPill to the learning engine; the simulator components are wired by their phases. Prop shapes may still change when those data models land; they share tokens, so the visual language will not.
 - Deployment is live: every push to `main` deploys the `bloomlab` Worker (https://bloomlab.cool-sunset-2169.workers.dev) and every pull request redeploys the single shared `bloomlab-preview` Worker (D-020). Both hosts are public `workers.dev` URLs serving the foundation app with no learner data. D1 databases and R2 buckets do not exist yet (Phase 4).
@@ -17,21 +17,7 @@ Last updated: 2026-09-05 (end of Phase 10)
 
 ## Phase 10 — simulator core
 
-- **No workflow executes yet, and that is the single largest gap.** The engine records enrolment,
-  step completion, exit and a refused duplicate enrolment as real entities and events, but nothing
-  walks a contact from node to node, evaluates an If/Else, serves a Wait or sends what a node
-  configures. That is the Workflow Lab (Phase 12). Everything downstream of it follows: SIM-001 is
-  PARTIAL for the "fire a workflow" link of its chain, SIM-010 is PARTIAL because `branch_result`
-  and `waiting` have no producer, and the five Phase 9 exercise families that need a run
-  (Build It, Fix It, Run the Lead, Edge Case, Rebuild Blind) are **no more runnable than they were
-  before this phase**. `EXERCISE_RUNTIMES` is deliberately still empty: registering a runtime that
-  cannot produce the expected messages, tags and branches would fail a learner for a phase that
-  has not shipped (D-083).
-- **The Academy's inline simulation still does not run a workflow.** It now shows the account the
-  simulator actually compiles — the contact as the engine loads it, its tags, whether a phone is on
-  file, do-not-disturb, the appointment instant, the run's clock and zone — instead of describing
-  what a later phase will do. Stepping a contact through the workflow needs Phase 12, so CUR-036
-  stays PARTIAL and the embed says so in those words.
+- **Workflow execution arrived in Phase 12.** The two bullets that stood here (no workflow executes; the Academy embed does not run a workflow) are closed: the engine walks a contact node to node, `EXERCISE_RUNTIMES` holds the CRM and Workflow runtimes, and the embed runs the engine. What remains is under Phase 12 below.
 - **Simulator runs sync, and two devices produce two runs.** `sim_projects`, `sim_events` and
   `sim_snapshots` ride the existing sync path (D-082), and a run id is minted per run rather than
   per scenario, so a learner who starts the same scenario on two devices gets two runs rather than
@@ -51,7 +37,7 @@ Last updated: 2026-09-05 (end of Phase 10)
   property of the workflow definition.
 - **The harness is a developer surface.** `/system/simulator` is behind the `system_diagnostics`
   flag and unreachable in production, by URL as well as by navigation. It is deliberately plain:
-  it is not a Lab, and the dark workspace belongs to Phase 12.
+  it is not a Lab; the dark workspace is the Workflow Lab (Phase 12).
 - **`Intl` is a dependency of the clock.** Calendar-day arithmetic and zone offsets use
   `Intl.DateTimeFormat` with an explicit `timeZone`. That is deterministic and never reads the
   device's zone, but it does mean the engine relies on the runtime's IANA database being present
@@ -82,9 +68,9 @@ Last updated: 2026-09-05 (end of Phase 10)
 
 ## Phase 9 — exercise runner
 
-- **Two of the seven Phase 9 families can be finished by a learner today.** Architecture Decision and What Would You Build read only what the learner chooses and writes, so they run, grade and record. Build It, Fix It, Run the Lead, Edge Case and Rebuild Blind have their brief, work capture, hint ladder, attempt lifecycle and grading contract, but their checks need the simulator core (Phase 10) and, for building, the Workflow Lab (Phase 12). The runner names the missing runtime and offers no submit; it never grades a description as if it were a build.
+- **(Superseded in Phase 12: five families are graded from real runs; see Phase 12.) Two of the seven Phase 9 families could be finished by a learner at the end of Phase 9.** Architecture Decision and What Would You Build read only what the learner chooses and writes, so they run, grade and record. Build It, Fix It, Run the Lead, Edge Case and Rebuild Blind have their brief, work capture, hint ladder, attempt lifecycle and grading contract, but their checks need the simulator core (Phase 10) and, for building, the Workflow Lab (Phase 12). The runner names the missing runtime and offers no submit; it never grades a description as if it were a build.
 - **Both runnable families end in `partial`, not `passed`.** Each names a rubric, and rubric grading is the AI gateway (Phase 19). The deterministic checks run and are reported, the written work is preserved, and the evidence result is `partial` — which the mastery engine treats as not a pass, so a skill reaches LEARNING and no further. Nothing fabricates a rubric score.
-- **The score is the share of required and quality checks passed** (D-067). Bonus checks are reported and excluded from the denominator; critical checks are a gate, never a number. The authored per-dimension weights (correctness, edge cases, architecture, maintainability, explanation) are **not** applied, because no authored assertion says which dimension it belongs to; EXR-023 owns that model in Phase 12.
+- **The score is the share of required and quality checks passed** (D-067). Bonus checks are reported and excluded from the denominator; critical checks are a gate, never a number. The authored per-dimension weights were not applied until Phase 12, which assigns every assertion a dimension (D-113); this bullet stands as the Phase 9 record.
 - **Written work is reduced only by an authored vocabulary** (D-070). `response_markers` in the exercise file lists the phrases that count as naming a fact; the runner matches them case-insensitively and exposes `decision.reasoning_mentions` and `answer.<marker>`. It decides one authored marker, never the quality of an argument, and the compiler refuses an assertion on written work with no vocabulary to decide it.
 - **Active attempts are device-local.** The draft (attempt id, start time, revealed hints, response) lives in the local workspace and does not sync: a half-written attempt on a phone is not a fact about the learner. Finished attempts and their evidence sync normally.
 - **Attempt timing is learner activity metadata only.** The start and completion timestamps come from the device clock; deterministic grading never reads a clock, and simulator-backed grading will use simulator time.
@@ -181,6 +167,23 @@ Last updated: 2026-09-05 (end of Phase 10)
 - **Physical two-device testing did not happen.** Cross-device behaviour is proved with two simulated devices in tests and the existing sync semantics; no CRM-specific sync protocol exists.
 - **The consequence exercise is one exercise.** CRM-003's consequence is `EX-FIX_IT-jordan-treatment-interest`; other consequences the spec lists (merge-field output, a filter that cannot answer, an automation depending on one value) arrive with the Labs that produce them (Phases 12–15).
 
+## Phase 12 — Workflow Lab
+
+- **The whole run crosses to the Worker on every operation.** The Worker is stateless (D-109), so each op sends the run and receives it back. At 500 events the transfer is a few hundred kilobytes and the probe stays responsive (p95 43.5 ms per frame), but the cost grows with the run. A run of many thousands of events would need incremental transfer, which is Phase 26 polish work.
+- **`EX-EDGE_CASE-late-booking-reminder`'s `after:` where-clause is still not evaluable.** The grader matches `where` as field equality and no event carries a field named `after`. EXR-007 stays PARTIAL for that exercise; the cancelled and missing-phone edge cases are judged from real runs.
+- **Run the Lead's animation is the Lab's Replay, not the runner page.** The prediction is captured and the real run is graded, but the runner sends the learner to the Lab to watch it rather than animating inside the exercise. EXR-006 stays PARTIAL.
+- **The help centre could not be read directly.** Every workflow registry record was re-verified on 2026-09-04 through search-engine summaries of the official articles because the build environment's proxy denies `help.gohighlevel.com`; each `verification_note` says so. Re-verify by direct read when a machine with access next touches them.
+- **Conversations carries SMS and email only.** Calls, WhatsApp, Facebook and Instagram channels are not simulated and the surface does not pretend to show them.
+- **The Playground has one sandbox scenario.** Every unlocked feature can be placed and run on it; a second sandbox with different starting data is content work.
+- **Two of HighLevel's eight wait types are not modelled.** Trigger Link Clicked and Email Event waits need funnel and email tracking events that arrive with Phases 13 and 15.
+- **Assign To User rotates by current load, not by HighLevel's split-traffic percentages.** The record says so.
+- **Create/Update Opportunity keeps its combined name.** HighLevel states the combined action is being phased out for separate Create and Update actions; the registry record notes it and the palette shows the name learners still see in accounts today.
+- **Touch, reduced motion and the frame timings were measured in headless Chromium on the build machine**, not on a physical phone or tablet. The rail and holographic checks were re-run on the same build.
+- **REAL TABLET RAIL CHECK: PENDING.** The phone bar now shows four named areas and a labelled More; the rail was a user-reported design issue and the user inspects the new preview on the real tablet. Nothing here marks that check passed.
+- **The trigger test covers the events the panel can make.** Every runnable trigger's events have a producer (bookings, status changes, reschedules, tags, replies, forms, surveys, deals, new contacts). Payment Received and Inbound Webhook are fidelity C: the panel says they cannot fire in the simulator and offers only the direct start.
+- **Autoplay reveals the trace at a fixed cadence (650 ms a row).** A long trace can be skipped at any time; there is no speed control.
+- **Positions are layout only.** Moving a node is a draft edit, never an event, so a node's position is not synced until the next save. That is D-107 working as intended, recorded here because a learner who moves nodes and leaves will find them where they were at the last save.
+
 ## Simulator approximations versus real GHL
 
 | Feature | Fidelity | What differs | Why |
@@ -191,3 +194,14 @@ Last updated: 2026-09-05 (end of Phase 10)
 | `GHL-CRM-CONTACTS` do-not-disturb | A (one gap) | One global flag; HighLevel also allows DND per channel. | A per-channel model arrives when the Conversations Lab needs it. |
 | `GHL-CRM-OPPORTUNITIES` | A (one gap) | One contact per opportunity; no followers or additional contacts. | Phase 11 acceptance needs the contact link preserved, nothing more. |
 | `GHL-CRM-CUSTOM-FIELDS` | A | Seven types (text, number, date, checkbox, dropdown, phone, email) with dropdown options; no file, textarea, radio or multi-select types, no folders. | Unsupported types are not shown as supported (D-090). |
+| `GHL-WF-WAIT` | B | Five engine kinds: period, date, appointment, reply, condition. No Trigger Link Clicked or Email Event wait. A wait whose target has passed proceeds at once and says so. | The Lab teaches timing and design; link and email tracking events are later phases. |
+| `GHL-WF-WORKFLOW-SETTINGS` Time Window | B | A hold on outbound messages until the next opening, as documented. Other settings (sender address, stop on response, mark as read) are not modelled. | Phase 12 needs business hours, not the whole settings page. |
+| `GHL-WF-IF-ELSE` | A | Eight operators over contact, tag, custom field, appointment, opportunity and message values. No date-relative or numeric-range operators. | The authored exercises need equality, containment, existence and simple comparison. |
+| `GHL-WF-CUSTOMER-REPLIED` | B | Contains Phrase and Reply Channel filters. No intent detection. | Those are the documented filters. |
+| `GHL-WF-APPOINTMENT-STATUS` and `GHL-WF-CUSTOMER-BOOKED-APPOINTMENT` | A | A run started by either is ended when the appointment is cancelled, marked no-show or invalid, or rescheduled, and a reschedule fires them again as a new booking. Runs started any other way are not touched. | That is the documented platform behaviour; the difference is what WAIT-004 teaches. |
+| `GHL-WF-SEND-SMS` and `GHL-WF-SEND-EMAIL` | A | Recorded with rendered body and subject; no delivery, templates, attachments or tracking. Skipped for no phone, no email or do-not-disturb. | Deliverability is Phase 15. |
+| `GHL-WF-ASSIGN-TO-USER` | A | One user, or equal rotation by current load among the listed users with an only-if-unassigned option. No percentage split. | Enough to teach assignment. |
+| `GHL-WF-SEND-INTERNAL-NOTIFICATION` | B | Email, SMS and in-app, recorded as `NOTIFICATION_SENT`; no WhatsApp, no delivery. | The log is what the learner reads. |
+| `GHL-WF-WEBHOOK` | B | Recorded with a simulated 200 response; nothing is sent. | The build environment has no egress and a learner's sandbox should not either. |
+| `GHL-WF-CREATE-UPDATE-OPPORTUNITY` | A | Creates or moves the contact's opportunity in a pipeline and stage. HighLevel is phasing the combined action out. | The name learners still see. |
+| `GHL-WF-REMOVE-FROM-WORKFLOW` | A | This workflow, all workflows, or a named one. The exact option labels could not be confirmed. | Stated in the record. |

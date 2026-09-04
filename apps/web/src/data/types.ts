@@ -171,6 +171,11 @@ export interface DeviceRecord {
    * lives in `sim_projects`. Absent or stale means "the most recently updated run".
    */
   crm_run_id?: string | null;
+  /**
+   * The run this device is working in, per scenario (D-108): the same preference as `crm_run_id`
+   * for every Lab, so the CRM Lab and the Workflow Lab opened on one scenario share one run.
+   */
+  lab_runs?: Record<string, string>;
 }
 
 /** The last server-confirmed state of a record: what a push declares as its base (TA§14). */

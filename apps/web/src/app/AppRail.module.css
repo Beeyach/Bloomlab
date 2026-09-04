@@ -1,4 +1,4 @@
-/* Compact rail (spec §73): 72 px column on tablet and desktop, a bottom bar on phones. */
+/* Roomy compact rail (D-117): a 104 px column from 768 px up, a bottom bar on phones. */
 .rail {
   position: fixed;
   z-index: var(--bl-z-sticky);
@@ -23,13 +23,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: var(--bl-space-1);
   min-width: 44px;
   min-height: 44px;
-  padding: var(--bl-space-1);
+  padding: var(--bl-space-2) var(--bl-space-1);
+  border: 0;
   border-radius: var(--bl-radius-md);
+  background: none;
   color: var(--bl-color-text-soft);
+  font: inherit;
   text-decoration: none;
+  cursor: pointer;
   transition:
     color var(--bl-motion-fast) var(--bl-motion-ease-standard),
     background var(--bl-motion-fast) var(--bl-motion-ease-standard);
@@ -49,8 +53,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 28px;
+  width: 40px;
+  height: 32px;
   border-radius: var(--bl-radius-full);
   transition: background var(--bl-motion-fast) var(--bl-motion-ease-standard);
 }
@@ -67,18 +71,29 @@
 .label {
   font-size: var(--bl-font-size-xs);
   font-weight: var(--bl-font-weight-semibold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
-/* Phones: bottom bar, thumb reach, every area still present. */
+/* The More list: phone only; a labelled list of the remaining areas above the bar. */
+.moreMenu {
+  display: none;
+}
+
+.moreMenu[hidden] {
+  display: none;
+}
+
+/*
+ * Phones: a bottom bar in thumb reach. Four areas show with their names; the rest are one tap
+ * away behind a labelled More, so nothing is icon-only and nothing is dropped (RSP-003).
+ */
 @media (max-width: 767px) {
   .rail {
     right: 0;
     bottom: 0;
     left: 0;
-    height: 64px;
+    height: var(--bl-size-rail-bar);
     padding: 0 var(--bl-space-2);
     border-top: 1px solid;
     justify-content: center;
@@ -86,37 +101,94 @@
 
   .list {
     flex: 1;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     align-items: center;
   }
 
+  .list > li {
+    min-width: 0;
+  }
+
+  .item {
+    width: 100%;
+    min-width: 0;
+    padding: var(--bl-space-1) 0;
+  }
+
+  .label {
+    max-width: 100%;
+    font-size: 0.6875rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .secondary,
   .developer {
-    flex: 0 0 auto;
+    display: none;
+  }
+
+  .moreMenu {
+    position: fixed;
+    right: var(--bl-space-2);
+    bottom: calc(var(--bl-size-rail-bar) + var(--bl-space-2));
+    z-index: var(--bl-z-overlay);
+    display: block;
+    min-width: 12rem;
+    max-width: calc(100vw - 2 * var(--bl-space-2));
+    padding: var(--bl-space-2);
+    border: 1px solid var(--bl-color-border);
+    border-radius: var(--bl-radius-lg);
+    background: var(--bl-color-snow);
+    box-shadow: var(--bl-shadow-md);
+  }
+
+  .moreMenu[hidden] {
+    display: none;
+  }
+
+  .moreList {
+    display: grid;
     gap: var(--bl-space-1);
-    padding-left: var(--bl-space-2);
-    border-left: 1px solid var(--bl-color-border);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moreEntry .item {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--bl-space-3);
+    min-height: 48px;
+    padding: 0 var(--bl-space-3);
+  }
+
+  .moreEntry .label {
+    font-size: var(--bl-font-size-sm);
+    font-weight: var(--bl-font-weight-medium);
   }
 }
 
-/* Tablet and desktop: 72 px left column (spec: 68–80 px). */
+/* Wider screens: the 104 px rail column, from the same token the page uses for its offset. */
 @media (min-width: 768px) {
   .rail {
     top: 0;
     bottom: 0;
     left: 0;
-    width: 72px;
+    width: var(--bl-size-rail);
     flex-direction: column;
     align-items: stretch;
-    padding: var(--bl-space-4) var(--bl-space-2);
+    padding: var(--bl-space-5) var(--bl-space-3);
     border-right: 1px solid;
   }
 
   .brand {
     display: block;
-    margin: 0 0 var(--bl-space-5);
+    margin: 0 0 var(--bl-space-6);
     font-family: var(--bl-font-display);
-    font-size: var(--bl-font-size-xs);
+    font-size: 0.8125rem;
     font-weight: var(--bl-font-weight-bold);
+    line-height: var(--bl-font-leading-tight);
     letter-spacing: var(--bl-font-tracking-display);
     text-align: center;
     text-transform: uppercase;
@@ -124,42 +196,20 @@
 
   .list {
     flex-direction: column;
-    gap: var(--bl-space-2);
+    gap: var(--bl-space-3);
   }
 
   .item {
-    min-height: 56px;
+    min-height: 64px;
+  }
+
+  .moreItem {
+    display: none;
   }
 
   .developer {
     margin-top: auto;
     padding-top: var(--bl-space-3);
     border-top: 1px solid var(--bl-color-border);
-  }
-}
-
-/*
- * Narrowest phones: every item keeps its name for assistive tech but shows an icon only, so the
- * bar fits 320 px without overflow. The developer links dropped their labels here first; CRM made
- * the main list a sixth item, and six labelled items do not fit, so the same treatment now covers
- * both lists rather than letting the rail scroll or clip.
- */
-@media (max-width: 359px) {
-  .rail {
-    padding: 0 var(--bl-space-1);
-  }
-
-  .developer {
-    gap: 0;
-    padding-left: var(--bl-space-1);
-  }
-
-  .label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
   }
 }

@@ -1,3 +1,5 @@
+import type { ComponentPropsWithoutRef } from 'react';
+
 import { cx } from '../utils/cx';
 import { StatusPill, type StatusGlyph, type StatusTone } from './StatusPill';
 import styles from './ExecutionEvent.module.css';
@@ -15,7 +17,7 @@ const STATUS: Record<
   info: { label: 'Info', tone: 'info', glyph: 'dot' },
 };
 
-export interface ExecutionEventProps {
+export interface ExecutionEventProps extends Omit<ComponentPropsWithoutRef<'li'>, 'children'> {
   /** Simulated time, already formatted (spec §45: never wall-clock). */
   time: string;
   /** Event or step name, in real GHL terminology where it represents a real feature. */
@@ -35,10 +37,11 @@ export function ExecutionEvent({
   status = 'info',
   branch,
   className,
+  ...rest
 }: ExecutionEventProps) {
   const s = STATUS[status];
   return (
-    <li className={cx(styles.event, className)} data-status={status}>
+    <li className={cx(styles.event, className)} data-status={status} {...rest}>
       <span className={styles.time}>{time}</span>
       <span className={styles.main}>
         <span className={styles.name}>{name}</span>

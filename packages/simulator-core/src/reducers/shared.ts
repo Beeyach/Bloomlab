@@ -13,6 +13,21 @@ export interface ReducerResult {
   account: AccountState;
   records: ExecutionDraft[];
   generated: PendingEvent[];
+  /**
+   * Entries the run should queue for later — a workflow wake, a timeout. The runner mints their
+   * ids from the queue sequence, so the same reducer in a replay queues the same entry (D-101).
+   */
+  scheduled?: ScheduledDraft[];
+  /** Queue entries to drop, matched by the resume token in their payload: a wake nobody needs. */
+  unschedule?: string[];
+}
+
+export interface ScheduledDraft {
+  at: string;
+  type: PendingEvent['type'];
+  payload: Record<string, unknown>;
+  source?: PendingEvent['source'];
+  description?: string;
 }
 
 export type Reducer = (
@@ -25,7 +40,8 @@ export const result = (
   account: AccountState,
   records: ExecutionDraft[] = [],
   generated: PendingEvent[] = [],
-): ReducerResult => ({ account, records, generated });
+  extra: Pick<ReducerResult, 'scheduled' | 'unschedule'> = {},
+): ReducerResult => ({ account, records, generated, ...extra });
 
 /**
  * An entity an event names must already exist. The engine does not invent one to make an event

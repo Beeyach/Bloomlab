@@ -83,6 +83,8 @@ node:     id, type, ghl_feature_id, config, position
 
 Layout (`position`) is separate from behavior. Moving a node never changes automation.
 
+**Phase 12 additions (`packages/content-schema/src/schemas/workflow.ts`):** `trigger.filters[] { field, operator, value }`; node `type` from `trigger · action · wait · branch · end · goal`; a Wait config `{ wait_type: period | date | appointment | reply | condition, … }` validated per type; an If/Else config `{ branches[] { name, groups[] { conditions[] { field, operator, value } } } }` with operators `is · is_not · contains · not_contains · exists · not_exists · gt · lt`; `settings.time_window { days[1..7], start, end }` and `settings.timezone`; edges may name a `branch`. The compiler builds the scenario's initial account and runs `validateWorkflowGraph` over every authored workflow, so a graph the engine could not walk fails the build (`WORKFLOW_GRAPH_INVALID`). Exercise assertions may carry `dimension` (EXR-023).
+
 ## 4. Validation rules (CNT-005, CNT-011)
 
 The compiler fails the build when any of the following is violated:

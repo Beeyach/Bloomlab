@@ -6,8 +6,8 @@ feature_type: action
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
-source_url: https://help.gohighlevel.com/support/solutions/articles/155000002294-what-are-workflow-actions-complete-list-
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002472-workflow-action-send-email
 known_limitations:
   - Deliverability, open tracking and email-builder templates are not simulated; the send is recorded with subject and body.
 skills:
@@ -24,4 +24,8 @@ supported_configs:
     - name: from_name
       type: string
       required: false
-verification_note: Name confirmed on the actions list page, 2026-09-02; fields not individually verified.
+verification_note: >-
+  Name confirmed on the actions list page, 2026-09-02; fields not individually verified.
+  Re-checked 2026-09-04 through search summaries of the official article (the build environment's
+  proxy blocks the help centre): the action carries Subject, From Name and body with merge
+  fields, and the action's own sender takes precedence over the workflow-level sender address.

@@ -6,8 +6,8 @@ feature_type: action
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
-source_url: https://help.gohighlevel.com/support/solutions/articles/155000002294-what-are-workflow-actions-complete-list-
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003300-workflow-action-assign-to-user
 known_limitations:
   - Round-robin weighting between users is simplified to equal rotation.
 skills:
@@ -20,4 +20,8 @@ supported_configs:
     - name: only_if_unassigned
       type: boolean
       required: false
-verification_note: Name confirmed on the actions list page, 2026-09-02; fields not individually verified.
+verification_note: >-
+  Name confirmed on the actions list page, 2026-09-02; fields not individually verified.
+  Re-checked 2026-09-04 through search summaries of the official article (the build environment's
+  proxy blocks the help centre): the action assigns to one user or rotates between several (round
+  robin, or Split Traffic equally or by custom shares).

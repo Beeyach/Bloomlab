@@ -491,3 +491,31 @@ describe('Phase 7 navigation into the Academy', () => {
     expect(screen.getByText('Read')).toBeInTheDocument();
   });
 });
+
+describe('the inline simulation is the engine running (CUR-036, WFL-010)', () => {
+  it('walks Maria through Booking Confirmation and lists what the engine did', async () => {
+    const WORKFLOW_UNIT = 'LU-workflow-foundations';
+    const workflowUnit = content.learning_units.find((row) => row.id === WORKFLOW_UNIT)!;
+    renderAt(`/academy/${WORKFLOW_UNIT}?skill=SK-AUTOMATE-workflow-foundations`);
+    await screen.findByRole('heading', { level: 1, name: workflowUnit.title });
+    await screen.findByRole('heading', { level: 2, name: 'Predict, then watch' });
+    const simulation = document.querySelector('[data-embed="simulation"]') as HTMLElement;
+    expect(simulation).toHaveTextContent('Run Booking Confirmation for Maria Delgado');
+    // Every row is an execution record from the real engine, in order: enrolled, the confirmation
+    // text, the booked tag, exit. Nothing here is narrated from the YAML.
+    const rows = within(simulation).getByRole('list', { name: 'What the engine did' });
+    const items = within(rows).getAllByRole('listitem');
+    expect(items.length).toBeGreaterThanOrEqual(4);
+    expect(rows).toHaveTextContent('Enrolled by Customer Booked Appointment');
+    expect(rows).toHaveTextContent('SMS sent');
+    expect(rows).toHaveTextContent('Tag: booked');
+    expect(rows).toHaveTextContent('Run completed');
+    expect(items.every((item) => item.getAttribute('data-status') !== 'failure')).toBe(true);
+    expect(
+      within(simulation).getByRole('link', { name: /Open this scenario in the Workflow Lab/ }),
+    ).toHaveAttribute(
+      'href',
+      '/workflow?scenario=SC-glowhaus-no-show&workflow=wf-booking-confirmation',
+    );
+  });
+});

@@ -7,7 +7,7 @@ feature_type: action
 implementation_type: native_ghl
 status: current
 simulation_fidelity: B
-last_verified: 2026-09-02
+last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000003299-workflow-action-webhook-outbound-
 known_limitations:
   - Cannot send files or images.
@@ -31,4 +31,8 @@ supported_configs:
 approximation_note: Training approximation — the simulator shows the outgoing payload it would send and the response code; no request leaves the sandbox.
 aliases:
   - Custom Webhook
-verification_note: Name, default method, custom data and the three limitations confirmed on the help-center article, 2026-09-02.
+verification_note: >-
+  Name, default method, custom data and the three limitations confirmed on the help-center
+  article, 2026-09-02. Re-checked 2026-09-04 through search summaries of the official article
+  (the build environment's proxy blocks the help centre): the outbound webhook posts a
+  context-dependent payload to a URL with optional Custom Data key/value rows.

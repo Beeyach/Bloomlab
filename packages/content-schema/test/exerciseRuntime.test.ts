@@ -27,7 +27,7 @@ const secondBuildIt = {
       id: 'a1',
       type: 'architecture',
       requirement: 'trigger_exists',
-      ghl_feature: 'GHL-WF-TRIGGER',
+      ghl_feature: 'GHL-WF-CONTACT-CREATED',
       description: 'The workflow starts from the authored trigger.',
     },
     {

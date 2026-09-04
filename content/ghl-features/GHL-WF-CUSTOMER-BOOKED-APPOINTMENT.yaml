@@ -6,10 +6,12 @@ feature_type: trigger
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
+last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000002675-workflow-trigger-customer-booked-appointment
 known_limitations:
   - Fires for bookings the customer makes; staff-made bookings use Appointment Status instead. The simulator follows the same split.
+  - >-
+    A run this trigger starts is about that appointment: it is pulled out when the appointment is cancelled, marked invalid or no-show, or rescheduled, and a reschedule fires the trigger again as a new booking (see GHL-WF-APPOINTMENT-STATUS).
 skills:
   - SK-BUILD-consultation-calendar
   - SK-AUTOMATE-appointment-reminders
@@ -17,4 +19,4 @@ supported_configs:
   filters:
     - In Calendar
     - Has tag
-verification_note: Name confirmed on the help-center article, 2026-09-02.
+verification_note: Name confirmed on the help-center article, 2026-09-02. Appointment-scoped exit behaviour from search summaries of "Appointment scenarios in Workflow", 2026-09-04.

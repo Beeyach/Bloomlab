@@ -2,11 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import {
   EXERCISE_GRADER_VERSION,
+  dimensionOf,
   gradeExercise,
   isFullyGradable,
   requiredSources,
 } from '../src/index.ts';
-import { assertion, context, events, exercise, providing } from './fixtures.ts';
+import { architecture, assertion, context, events, exercise, providing } from './fixtures.ts';
 
 /** `n` state assertions against a state tree of flags, so a score is easy to reason about. */
 const flags = (passing: number, failing: number) => ({
@@ -376,5 +377,103 @@ describe('determinism', () => {
     });
     expect(backward.score).toBe(forward.score);
     expect(backward.outcome).toBe(forward.outcome);
+  });
+});
+
+describe('weighted dimensions (EXR-023, D-113)', () => {
+  const weights = {
+    correctness: 45,
+    edge_cases: 20,
+    architecture: 15,
+    maintainability: 10,
+    explanation: 10,
+  };
+
+  it('places assertions by type when no dimension is authored', () => {
+    expect(dimensionOf(assertion({ type: 'architecture', requirement: 'trigger_exists' }))).toBe(
+      'architecture',
+    );
+    expect(dimensionOf(assertion({ type: 'negative', event: 'sms.sent' }))).toBe('edge_cases');
+    expect(dimensionOf(assertion({ type: 'state', path: 'prediction.tag' }))).toBe('explanation');
+    expect(dimensionOf(assertion({ type: 'state', path: 'contacts.maria.tags' }))).toBe(
+      'correctness',
+    );
+    expect(dimensionOf(assertion({ type: 'event', event: 'sms.sent' }))).toBe('correctness');
+    expect(
+      dimensionOf(assertion({ type: 'event', event: 'sms.sent', dimension: 'maintainability' })),
+    ).toBe('maintainability');
+  });
+
+  it('weights each present dimension by its share and ignores dimensions with no check', () => {
+    // correctness: 1 of 2 · architecture: 1 of 1 · explanation: 0 of 1 · no edge or maintainability
+    const report = gradeExercise({
+      exercise: exercise({
+        expected_outcomes: [
+          assertion({ id: 'c1', type: 'state', path: 'f.a', operator: 'equals', value: true }),
+          assertion({ id: 'c2', type: 'state', path: 'f.b', operator: 'equals', value: true }),
+          assertion({
+            id: 'ar',
+            type: 'architecture',
+            requirement: 'trigger_exists',
+            ghl_feature: 'GHL-WF-APPOINTMENT-STATUS',
+          }),
+          assertion({
+            id: 'ex',
+            type: 'state',
+            path: 'prediction.tag',
+            operator: 'equals',
+            value: 'booked',
+          }),
+        ],
+        grading: { mode: 'deterministic', pass_threshold: 70, weights },
+      }),
+      context: context({
+        state: { f: { a: true, b: false }, prediction: { tag: 'other' } },
+        architecture: architecture(),
+      }),
+    });
+    // (45·0.5 + 15·1 + 10·0) / (45 + 15 + 10) = 37.5 / 70 = 53.57 → 54
+    expect(report.score).toBe(54);
+    expect(report.dimensions?.correctness).toMatchObject({
+      weight: 45,
+      total: 2,
+      passed: 1,
+      ratio: 0.5,
+    });
+    expect(report.dimensions?.edge_cases).toMatchObject({ total: 0, ratio: null });
+    expect(report.dimensions?.maintainability).toMatchObject({ total: 0, ratio: null });
+    expect(report.outcome).toBe('failed');
+    expect(report.reason).toBe('below_threshold');
+  });
+
+  it('a critical failure overrides a perfect weighted score', () => {
+    const report = gradeExercise({
+      exercise: exercise({
+        expected_outcomes: [
+          assertion({ id: 'c1', type: 'state', path: 'f.a', operator: 'equals', value: true }),
+        ],
+        critical_failures: [assertion({ id: 'k1', type: 'negative', event: 'sms.sent' })],
+        grading: { mode: 'deterministic', pass_threshold: 70, weights },
+      }),
+      context: context({
+        state: { f: { a: true } },
+        events: events([{ type: 'sms.sent', at: '2026-09-03T09:00:00Z' }]),
+      }),
+    });
+    expect(report.score).toBe(100);
+    expect(report.outcome).toBe('failed');
+    expect(report.reason).toBe('critical_failure');
+    expect(report.failed_critical).toEqual(['k1']);
+    expect(report.tiers.critical[0]?.dimension).toBe('edge_cases');
+  });
+
+  it('without weights the flat share still applies, and no dimension table is reported', () => {
+    const { assertions, state } = flags(3, 1);
+    const report = gradeExercise({
+      exercise: exercise({ expected_outcomes: assertions }),
+      context: context({ state }),
+    });
+    expect(report.score).toBe(75);
+    expect(report.dimensions).toBeNull();
   });
 });

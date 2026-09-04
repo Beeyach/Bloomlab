@@ -187,7 +187,7 @@ describe('ExerciseSchema (EXR-001 … EXR-003)', () => {
         id: 'a',
         type: 'architecture',
         requirement: 'trigger_exists',
-        ghl_feature: 'GHL-WF-TRIGGER',
+        ghl_feature: 'GHL-WF-CONTACT-CREATED',
         description: 'architecture check',
       },
       {
@@ -268,5 +268,112 @@ describe('WorkflowDefinitionSchema (SIM-016)', () => {
         nodes: [{ id: 'n1', type: 'action', position: { x: 0, y: 0 } }],
       }).success,
     ).toBe(false);
+  });
+});
+
+describe('structured workflow configs (WFL-008, WFL-009)', () => {
+  const at = { x: 0, y: 0 };
+  const withNodes = (nodes: unknown[], settings: Record<string, unknown> = {}) => ({
+    id: 'wf-shaped',
+    name: 'Shaped',
+    trigger: { ghl_feature_id: 'GHL-WF-CONTACT-CREATED', filters: [] },
+    nodes,
+    edges: [],
+    settings: { allow_reentry: false, ...settings },
+  });
+  const waitNode = (config: Record<string, unknown>) => ({
+    id: 'w1',
+    type: 'wait',
+    ghl_feature_id: 'GHL-WF-WAIT',
+    config,
+    position: at,
+  });
+  const branchNode = (config: Record<string, unknown>) => ({
+    id: 'b1',
+    type: 'branch',
+    ghl_feature_id: 'GHL-WF-IF-ELSE',
+    config,
+    position: at,
+  });
+  const messages = (candidate: unknown) => {
+    const result = WorkflowDefinitionSchema.safeParse(candidate);
+    return result.success ? [] : result.error.issues.map((issue) => issue.message);
+  };
+
+  it('accepts every wait type with the fields it needs', () => {
+    for (const config of [
+      { wait_type: 'period', days: 1 },
+      { wait_type: 'period', minutes: 30 },
+      { wait_type: 'date', at: '2026-09-10T09:00:00-05:00' },
+      { wait_type: 'appointment', relative: 'before', hours: 24 },
+      { wait_type: 'appointment' },
+      { wait_type: 'reply', channel: 'sms', timeout_hours: 24 },
+      {
+        wait_type: 'condition',
+        groups: [{ conditions: [{ field: 'contact.tags', operator: 'contains', value: 'paid' }] }],
+      },
+    ]) {
+      expect(messages(withNodes([waitNode(config)]))).toEqual([]);
+    }
+  });
+
+  it('refuses a wait with no duration, a bare local date, and an unknown wait type', () => {
+    expect(messages(withNodes([waitNode({ wait_type: 'period' })]))).toEqual([
+      'Node w1: A period wait needs days, hours or minutes',
+    ]);
+    expect(
+      messages(withNodes([waitNode({ wait_type: 'date', at: '2026-09-10T09:00:00' })]))[0],
+    ).toMatch(/offset/);
+    expect(messages(withNodes([waitNode({ wait_type: 'business_hours' })])).length).toBeGreaterThan(
+      0,
+    );
+  });
+
+  it('refuses a branch called None, an operator without a value, and duplicate branch names', () => {
+    const branches = (list: unknown[]) => messages(withNodes([branchNode({ branches: list })]));
+    expect(
+      branches([
+        {
+          name: 'None',
+          groups: [{ conditions: [{ field: 'contact.email', operator: 'exists' }] }],
+        },
+      ]),
+    ).toEqual(['Node b1: None is the automatic fallback branch']);
+    expect(
+      branches([
+        {
+          name: 'Hot',
+          groups: [{ conditions: [{ field: 'contact.tags', operator: 'contains' }] }],
+        },
+      ]),
+    ).toEqual(['Node b1: contains compares against a value; give one']);
+    expect(
+      branches([
+        { name: 'Hot', groups: [{ conditions: [{ field: 'contact.email', operator: 'exists' }] }] },
+        { name: 'hot', groups: [{ conditions: [{ field: 'contact.phone', operator: 'exists' }] }] },
+      ]).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it('accepts a time window and refuses one that ends before it starts', () => {
+    const tag = {
+      id: 't1',
+      type: 'action',
+      ghl_feature_id: 'GHL-WF-ADD-CONTACT-TAG',
+      config: { tag: 'x' },
+      position: at,
+    };
+    expect(
+      messages(
+        withNodes([tag], { time_window: { days: [1, 2, 3, 4, 5], start: '09:00', end: '17:00' } }),
+      ),
+    ).toEqual([]);
+    expect(
+      messages(withNodes([tag], { time_window: { days: [1], start: '17:00', end: '09:00' } })),
+    ).toEqual(['A time window must end after it starts']);
+    expect(
+      messages(withNodes([tag], { time_window: { days: [8], start: '09:00', end: '17:00' } }))
+        .length,
+    ).toBeGreaterThan(0);
   });
 });

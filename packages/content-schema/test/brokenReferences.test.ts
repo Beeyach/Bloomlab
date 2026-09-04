@@ -185,7 +185,7 @@ describe('the build fails on (CNT-005, GHL-004)', () => {
               {
                 id: 'n1',
                 type: 'action',
-                ghl_feature_id: 'GHL-WF-TRIGGER',
+                ghl_feature_id: 'GHL-WF-CONTACT-CREATED',
                 position: { x: 0, y: 0 },
               },
               { id: 'n2', type: 'end', position: { x: 0, y: 100 } },
@@ -200,9 +200,9 @@ describe('the build fails on (CNT-005, GHL-004)', () => {
 
   it('a removed feature still referenced', async () => {
     const removed = withFile(
-      'ghl-features/GHL-WF-ACTION.yaml',
+      'ghl-features/GHL-WF-ADD-CONTACT-TAG.yaml',
       yaml({
-        id: 'GHL-WF-ACTION',
+        id: 'GHL-WF-ADD-CONTACT-TAG',
         official_name: 'Old action',
         area: 'Workflows',
         feature_type: 'action',
@@ -254,7 +254,10 @@ describe('the build fails on (CNT-005, GHL-004)', () => {
 
   it('an enum value outside the allowed set', async () => {
     const codes = await failsWith(
-      withFile('ghl-features/GHL-WF-ACTION.yaml', yaml({ id: 'GHL-WF-ACTION', status: 'active' })),
+      withFile(
+        'ghl-features/GHL-WF-ADD-CONTACT-TAG.yaml',
+        yaml({ id: 'GHL-WF-ADD-CONTACT-TAG', status: 'active' }),
+      ),
     );
     expect(codes).toContain('SCHEMA');
   });

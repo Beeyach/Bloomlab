@@ -18,4 +18,5 @@ supported_configs:
       type: reference
       required: true
       description: This workflow, all workflows, or a specific one.
-verification_note: Name confirmed on the actions list page, 2026-09-02.
+verification_note: >-
+  Name confirmed on the actions list page, 2026-09-02. Re-checked 2026-09-04: search summaries confirm the action "stops a contact from moving through the remaining steps of the current workflow"; the exact labels of the this-workflow / all-workflows / named-workflow options could not be confirmed and the simulator's `workflow` field carries them as this, all, or a workflow id.

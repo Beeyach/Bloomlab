@@ -29,7 +29,10 @@ const STATUS_COUNTER = {
 } as const;
 
 export function appointmentBooked(account: AccountState, event: SimulatorEvent): ReducerResult {
-  const id = requireString(event.payload, 'appointment_id', event.type);
+  // A booking that names no id gets one from the event, which is deterministic and unique within
+  // the run — so an authored injectable like "Jordan books 40 minutes from now" can be replayed
+  // without the scenario having to invent an id for a record that does not exist yet.
+  const id = optionalString(event.payload, 'appointment_id') ?? `appt-${event.id}`;
   if (account.appointments[id]) {
     fail('DUPLICATE_ENTITY', `An appointment ${id} already exists`, { appointment_id: id });
   }
@@ -122,6 +125,20 @@ export function appointmentStatusChanged(
   const id = requireString(event.payload, 'appointment_id', event.type);
   const existing = entity(account.appointments, id, 'appointment', event.type);
   const status = readStatus(event.payload.status, event.type);
+  if (existing.status === status) {
+    // Marking an appointment with the status it already has changes nothing, so it fires no
+    // trigger and ends no run — the same rule as re-adding a tag a contact already carries.
+    return result(account, [
+      {
+        kind: 'action_skipped',
+        at: event.at,
+        contact_id: existing.contact_id,
+        event_id: event.id,
+        data: { appointment_id: id, status },
+        reason: 'status_unchanged',
+      },
+    ]);
+  }
   const updated: Appointment = { ...existing, status, updated_at: event.at };
   const counter = STATUS_COUNTER[status as keyof typeof STATUS_COUNTER];
   const next = bumpAnalytics(

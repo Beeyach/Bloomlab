@@ -1,0 +1,118 @@
+/* The Playground (SIM-015): a launcher and an honest list of what is unlocked. Quiet, light. */
+
+.screen {
+  --bl-density-row: var(--bl-density-medium);
+}
+
+.header {
+  display: grid;
+  gap: var(--bl-space-2);
+  max-width: 44rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-2xl);
+  font-weight: var(--bl-font-weight-bold);
+  letter-spacing: var(--bl-font-tracking-display);
+  line-height: var(--bl-font-leading-tight);
+}
+
+.lead,
+.muted {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+}
+
+.scenarioRow {
+  display: grid;
+  gap: var(--bl-space-2);
+  margin-bottom: var(--bl-space-3);
+}
+
+.scenarioChoice {
+  max-width: 28rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2);
+}
+
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 var(--bl-space-3);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  color: var(--bl-color-text);
+  font-size: var(--bl-font-size-sm);
+  font-weight: var(--bl-font-weight-medium);
+  text-decoration: none;
+}
+
+.linkButton:hover {
+  background: var(--bl-color-mist);
+}
+
+.linkButton:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}
+
+.refusal {
+  margin: var(--bl-space-2) 0 0;
+  padding-left: var(--bl-space-2);
+  border-left: 3px solid var(--bl-color-warning, var(--bl-color-ink));
+}
+
+.section {
+  display: grid;
+  gap: var(--bl-space-2);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--bl-font-size-lg);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.features {
+  display: grid;
+  gap: var(--bl-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--bl-space-1) var(--bl-space-3);
+  align-items: center;
+  min-height: 44px;
+  padding: var(--bl-space-2);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface);
+}
+
+@media (min-width: 768px) {
+  .feature {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr) auto minmax(0, 1.4fr);
+  }
+}
+
+.featureName {
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.featureArea,
+.featureVia {
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}

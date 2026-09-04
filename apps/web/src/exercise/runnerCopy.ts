@@ -144,3 +144,12 @@ export const TIER_WORDS = {
   quality: 'Quality checks',
   bonus: 'Bonus checks',
 } as const;
+
+/** The five scoring dimensions of a workflow build (EXR-023), in the learner's words. */
+export const DIMENSION_WORDS = {
+  correctness: 'Does it work',
+  edge_cases: 'Edge cases handled',
+  architecture: 'How it is built',
+  maintainability: 'Easy to maintain',
+  explanation: 'Your explanation',
+} as const;

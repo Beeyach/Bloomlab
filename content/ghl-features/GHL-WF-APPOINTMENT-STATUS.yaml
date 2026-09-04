@@ -1,5 +1,6 @@
 # Verified 2026-09-02 against "Workflow Trigger - Appointment Status". Statuses: New, Confirmed,
-# Cancelled, Showed, No-show, Invalid. A reschedule arrives as a new appointment.
+# Cancelled, Showed, No-show, Invalid. A reschedule arrives as a new appointment. Re-checked
+# 2026-09-04 through search summaries of "Appointment scenarios in Workflow".
 id: GHL-WF-APPOINTMENT-STATUS
 official_name: Appointment Status
 area: Workflows
@@ -7,10 +8,12 @@ feature_type: trigger
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
+last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000002619-workflow-trigger-appointment-status
 known_limitations:
-  - Rescheduled appointments are treated as new appointments, not as a distinct status — in GHL and in the simulator.
+  - Rescheduled appointments are treated as new appointments, not as a distinct status — in GHL and in the simulator. Some third-party summaries mention a "Rescheduled" filter value; it could not be confirmed on the official article and is not offered.
+  - Platform behaviour the simulator reproduces (from "Appointment scenarios in Workflow") — a contact this trigger or Customer Booked Appointment enrolled is pulled out of that workflow when the appointment becomes Cancelled, Invalid or No-show, or is rescheduled, and nothing further runs; the reschedule then fires the appointment triggers again as a new booking. The exit is recorded with the reason.
+  - A contact enrolled by any other trigger (a tag, a form) is not pulled out when an appointment changes; that is the workflow's own job.
   - Calendar-group and "Modified By" filters are accepted but not evaluated by the simulator.
 skills:
   - SK-AUTOMATE-appointment-reminders
@@ -31,4 +34,4 @@ supported_configs:
     - Showed
     - No-show
     - Invalid
-verification_note: Name, the six statuses and the filter list confirmed on the help-center article, 2026-09-02.
+verification_note: Name, the six statuses and the filter list confirmed on the help-center article, 2026-09-02. Cancellation and reschedule scenarios confirmed from search summaries of "Appointment scenarios in Workflow" (help-center article 155000002697) on 2026-09-04; the article could not be opened directly from the build environment.

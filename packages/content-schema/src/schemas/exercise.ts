@@ -55,10 +55,21 @@ export const SALES_EXERCISE_TYPES: readonly ExerciseType[] = [
 export const ASSERTION_TIERS = ['required', 'quality', 'bonus'] as const;
 export type AuthorableAssertionTier = (typeof ASSERTION_TIERS)[number];
 
+/** The five scored dimensions of a workflow build (EXR-023, spec §31). */
+export const SCORING_DIMENSIONS = [
+  'correctness',
+  'edge_cases',
+  'architecture',
+  'maintainability',
+  'explanation',
+] as const;
+
 const assertionBase = {
   id: z.string().regex(/^a[0-9]+$|^[a-z][a-z0-9_]*$/, 'Assertion IDs are short lower-case tokens'),
   description: z.string().trim().min(5),
   tier: z.enum(ASSERTION_TIERS).optional(),
+  /** Which weighted dimension the check counts toward; placed by type when absent (EXR-023). */
+  dimension: z.enum(SCORING_DIMENSIONS).optional(),
 };
 
 /** The six deterministic assertion types (TA§32, EXR-002). */
