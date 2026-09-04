@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { applyEvent } from '../src/apply.ts';
 import { isSimulatorError, type SimulatorError } from '../src/errors.ts';
 import {
+  SLOT_COUNT,
   bookableSlots,
   canCreateContact,
   firstStep,
@@ -498,20 +499,26 @@ describe('reading order and progression are the engine’s, not a screen’s', (
   });
 });
 
-describe('booking slots come from the run’s clock, never the device’s', () => {
-  it('offers three openings inside the working day, on the hour, an hour out', () => {
+describe('booking slots come from the run’s clock and the shared calendar engine (D-129)', () => {
+  it('offers the calendar’s real openings, honouring its minimum notice', () => {
     const slots = bookableSlots(account(), 'consultation', '2026-09-08T09:20:00-05:00');
-    expect(slots).toHaveLength(3);
-    expect(slots).toEqual([
+    expect(slots).toHaveLength(SLOT_COUNT);
+    // 30-minute appointments on a 09:00–17:00 Tuesday, an hour's notice from 09:20.
+    expect(slots.map((slot) => slot.starts_at)).toEqual([
+      '2026-09-08T10:30:00-05:00',
       '2026-09-08T11:00:00-05:00',
+      '2026-09-08T11:30:00-05:00',
       '2026-09-08T12:00:00-05:00',
+      '2026-09-08T12:30:00-05:00',
       '2026-09-08T13:00:00-05:00',
     ]);
+    expect(slots[0]?.ends_at).toBe('2026-09-08T11:00:00-05:00');
+    expect(slots[0]?.duration_minutes).toBe(30);
   });
 
   it('rolls to the next working day when the run’s clock is past closing', () => {
     const slots = bookableSlots(account(), 'consultation', '2026-09-08T21:00:00-05:00');
-    expect(slots[0]).toBe('2026-09-09T09:00:00-05:00');
+    expect(slots[0]?.starts_at).toBe('2026-09-09T09:00:00-05:00');
   });
 
   it('gives the same answer every time it is asked', () => {

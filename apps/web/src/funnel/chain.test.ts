@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   contentEventName,
   initialAccount,
+  slotsForCalendar,
   validateScenario,
   type Funnel,
   type SimulatorScenario,
@@ -276,14 +277,30 @@ describe('FUN-003: a submission in SIMULATE reaches the CRM and the workflow', (
   });
 });
 
+/** A slot the shared engine actually offers, so the Lab books what the visitor was shown. */
+const firstSlot = (calendarId: string) => {
+  const slots = slotsForCalendar(run.state.account, calendarId, run.state.clock.now, { limit: 1 });
+  return (
+    slots[0] ?? {
+      starts_at: run.state.clock.now,
+      ends_at: run.state.clock.now,
+      duration_minutes: 30,
+      eligible_staff_ids: [],
+      host_id: null,
+      host_reason: 'no_staff' as const,
+    }
+  );
+};
+
 describe('the rest of the visitor’s funnel reaches the same account', () => {
   it('books a real appointment on the account calendar', async () => {
+    const slot = firstSlot('consultation');
     const result = await bookFromFunnel(
       run,
       scenario(),
       { contact_id: 'nadia', is_new: false },
       'consultation',
-      '2026-09-09T11:00:00-05:00',
+      slot,
       options(),
     );
     expect(result.ok).toBe(true);
@@ -293,6 +310,10 @@ describe('the rest of the visitor’s funnel reaches the same account', () => {
     expect(booked[0]).toMatchObject({
       contact_id: 'nadia',
       calendar_id: 'consultation',
+      starts_at: slot.starts_at,
+      duration_minutes: slot.duration_minutes,
+      host_id: slot.host_id,
+      booked_by: 'customer',
       status: 'booked',
     });
     expect(result.run.state.account.analytics.appointments_booked).toBe(1);
@@ -328,7 +349,7 @@ describe('the rest of the visitor’s funnel reaches the same account', () => {
       scenario(),
       { contact_id: 'nadia', is_new: false },
       'no-such-calendar',
-      '2026-09-09T11:00:00-05:00',
+      firstSlot('consultation'),
       options(),
     );
     expect(result.ok).toBe(false);

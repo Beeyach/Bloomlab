@@ -209,6 +209,219 @@ export function withWaitBefore(base: SimulatorScenario = scenario()): SimulatorS
 }
 
 /**
+ * The Calendar Lab's shape of account (Phase 14).
+ *
+ * Three calendars covering the three families Phase 14 simulates, two team members so round robin
+ * has something to distribute, one existing booking that gets in the way, and four workflows: two
+ * appointment-scoped ones, a cancellation recovery filtered to Cancelled, and a form-triggered
+ * one that must survive a cancellation untouched.
+ *
+ * Deliberately not pre-solved. `consultation` is the calendar the learner configures; it starts
+ * with hours, a host and a thirty-minute duration and nothing else, so buffers, notice, services
+ * and locations are work rather than decoration.
+ *
+ * The clock is Tuesday 8 September 2026, 09:00 America/Chicago. `nadia` is owned by Nia and
+ * hosted by Theo, which is the pair that proves contact owner and appointment host are different
+ * things (D-130).
+ */
+export function calendarScenario(overrides: Partial<SimulatorScenario> = {}): SimulatorScenario {
+  const weekdays = [1, 2, 3, 4, 5].map((day) => ({ day, start: '09:00', end: '17:00' }));
+  return {
+    id: 'SC-test-calendar',
+    title: 'Test calendar account',
+    simulation_time: '2026-09-08T09:00:00-05:00',
+    timezone: 'America/Chicago',
+    seed: 4114,
+    initial_account_state: {
+      users: [
+        { id: 'nia', name: 'Nia Okafor', role: 'admin' as const },
+        { id: 'theo', name: 'Theo Marsh' },
+        { id: 'ivy', name: 'Ivy Chen' },
+      ],
+      contacts: [
+        {
+          id: 'nadia',
+          first_name: 'Nadia',
+          last_name: 'Haddad',
+          email: 'nadia@example.com',
+          phone: '+15125550188',
+          owner_id: 'nia',
+          timezone: 'America/Chicago',
+        },
+        { id: 'priya', first_name: 'Priya', phone: '+15125550190' },
+      ],
+      tags: ['booked', 'win-back', 'confirmed-soon'],
+      calendars: [
+        {
+          id: 'consultation',
+          name: 'Consultation',
+          type: 'personal' as const,
+          duration_minutes: 30,
+          slot_interval_minutes: 30,
+          timezone: 'America/Chicago',
+          availability: weekdays,
+          staff_ids: ['theo'],
+          locations: [
+            { id: 'studio', kind: 'address' as const, value: '18 Rue Sainte, Marseille' },
+            { id: 'phone-line', kind: 'phone' as const, value: '+15125550100' },
+          ],
+          default_location_id: 'studio',
+        },
+        {
+          id: 'team-intro',
+          name: 'Team Intro',
+          type: 'round_robin' as const,
+          duration_minutes: 30,
+          slot_interval_minutes: 30,
+          timezone: 'America/Chicago',
+          availability: [1, 2, 3, 4, 5].map((day) => ({ day, start: '09:00', end: '12:00' })),
+          staff_ids: ['theo', 'ivy'],
+          assignment: 'optimize_availability' as const,
+        },
+        {
+          id: 'treatments',
+          name: 'Treatments',
+          type: 'service' as const,
+          duration_minutes: 30,
+          slot_interval_minutes: 15,
+          timezone: 'America/Chicago',
+          availability: [{ day: 2, start: '10:00', end: '16:00' }],
+          staff_ids: ['ivy', 'nia'],
+          locations: [
+            { id: 'room-1', kind: 'address' as const, value: '18 Rue Sainte, Marseille' },
+            { id: 'call', kind: 'phone' as const, value: '+15125550100' },
+          ],
+          default_location_id: 'room-1',
+          services: [
+            {
+              id: 'facial',
+              name: 'Signature Facial',
+              duration_minutes: 45,
+              staff_ids: ['ivy'],
+              location_id: 'room-1',
+            },
+            { id: 'consult-call', name: 'Consult Call', duration_minutes: 15, location_id: 'call' },
+          ],
+        },
+      ],
+      appointments: [
+        {
+          id: 'appt-nadia',
+          contact_id: 'nadia',
+          calendar_id: 'consultation',
+          starts_at: '2026-09-08T11:00:00-05:00',
+          host_id: 'theo',
+        },
+      ],
+      forms: [{ id: 'enquiry', name: 'Enquiry', fields: ['first_name', 'phone'] }],
+      workflows: [
+        {
+          id: 'wf-booking-confirmation',
+          name: 'Booking Confirmation',
+          trigger: {
+            ghl_feature_id: 'GHL-WF-CUSTOMER-BOOKED-APPOINTMENT',
+            filters: [{ field: 'calendar', operator: 'is' as const, value: 'consultation' }],
+          },
+          nodes: [
+            {
+              id: 'w1',
+              type: 'wait' as const,
+              ghl_feature_id: 'GHL-WF-WAIT',
+              label: 'The day before',
+              config: { wait_type: 'appointment', relative: 'before', hours: 24 },
+              position: { x: 0, y: 60 },
+            },
+            {
+              id: 'n1',
+              type: 'action' as const,
+              ghl_feature_id: 'GHL-WF-SEND-SMS',
+              label: 'Reminder',
+              config: { template: 'See you at {{appointment.start_time}}.' },
+              position: { x: 0, y: 180 },
+            },
+            { id: 'n2', type: 'end' as const, position: { x: 0, y: 300 } },
+          ],
+          edges: [
+            { from: 'w1', to: 'n1' },
+            { from: 'n1', to: 'n2' },
+          ],
+          settings: { allow_reentry: true, timezone: 'America/Chicago' },
+        },
+        {
+          id: 'wf-cancellation-recovery',
+          name: 'Cancellation Recovery',
+          trigger: {
+            ghl_feature_id: 'GHL-WF-APPOINTMENT-STATUS',
+            filters: [{ field: 'appointment_status', operator: 'is' as const, value: 'cancelled' }],
+          },
+          nodes: [
+            {
+              id: 'c1',
+              type: 'action' as const,
+              ghl_feature_id: 'GHL-WF-ADD-CONTACT-TAG',
+              config: { tag: 'win-back' },
+              position: { x: 0, y: 120 },
+            },
+            { id: 'c2', type: 'end' as const, position: { x: 0, y: 240 } },
+          ],
+          edges: [{ from: 'c1', to: 'c2' }],
+          settings: { allow_reentry: true, timezone: 'America/Chicago' },
+        },
+        {
+          id: 'wf-confirmed-prep',
+          name: 'Confirmed Prep',
+          trigger: {
+            ghl_feature_id: 'GHL-WF-APPOINTMENT-STATUS',
+            filters: [{ field: 'appointment_status', operator: 'is' as const, value: 'confirmed' }],
+          },
+          nodes: [
+            {
+              id: 'p1',
+              type: 'action' as const,
+              ghl_feature_id: 'GHL-WF-ADD-CONTACT-TAG',
+              config: { tag: 'confirmed-soon' },
+              position: { x: 0, y: 120 },
+            },
+            { id: 'p2', type: 'end' as const, position: { x: 0, y: 240 } },
+          ],
+          edges: [{ from: 'p1', to: 'p2' }],
+          settings: { allow_reentry: true, timezone: 'America/Chicago' },
+        },
+        {
+          id: 'wf-enquiry-nurture',
+          name: 'Enquiry Nurture',
+          trigger: { ghl_feature_id: 'GHL-WF-FORM-SUBMITTED', filters: [] },
+          nodes: [
+            {
+              id: 'e1',
+              type: 'wait' as const,
+              ghl_feature_id: 'GHL-WF-WAIT',
+              label: 'Three days',
+              config: { wait_type: 'period', days: 3 },
+              position: { x: 0, y: 60 },
+            },
+            {
+              id: 'e2',
+              type: 'action' as const,
+              ghl_feature_id: 'GHL-WF-SEND-SMS',
+              config: { template: 'Still thinking it over?' },
+              position: { x: 0, y: 180 },
+            },
+            { id: 'e3', type: 'end' as const, position: { x: 0, y: 300 } },
+          ],
+          edges: [
+            { from: 'e1', to: 'e2' },
+            { from: 'e2', to: 'e3' },
+          ],
+          settings: { allow_reentry: false, timezone: 'America/Chicago' },
+        },
+      ],
+    },
+    ...overrides,
+  };
+}
+
+/**
  * The Funnel Lab's shape of account (Phase 13): the pieces a funnel connects to — a form, a
  * survey, a calendar, a product — one contact the account already knows, and a workflow triggered
  * by a form submission. No funnel: what the learner builds is the thing under test.
@@ -254,6 +467,14 @@ export function funnelScenario(overrides: Partial<SimulatorScenario> = {}): Simu
           name: 'Consultation',
           duration_minutes: 30,
           timezone: 'America/Chicago',
+          minimum_notice_minutes: 60,
+          availability: [
+            { day: 1, start: '09:00', end: '17:00' },
+            { day: 2, start: '09:00', end: '17:00' },
+            { day: 3, start: '09:00', end: '17:00' },
+            { day: 4, start: '09:00', end: '17:00' },
+            { day: 5, start: '09:00', end: '17:00' },
+          ],
         },
       ],
       forms: [

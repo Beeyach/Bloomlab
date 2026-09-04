@@ -53,10 +53,25 @@ initial_account_state:
       name: Consultations
       stages: [New Lead, Booked, Showed, Won, Lost]
   calendars:
+    # Configured enough that a funnel visitor can actually book: Phase 14 made availability real,
+    # so a calendar with no working hours would offer a visitor nothing at all.
     - id: consultation
       name: Consultation
+      type: personal
       duration_minutes: 30
+      slot_interval_minutes: 30
+      minimum_notice_minutes: 60
       timezone: America/Chicago
+      staff_ids: [priya]
+      availability:
+        - { day: 1, start: '09:00', end: '17:00' }
+        - { day: 2, start: '09:00', end: '17:00' }
+        - { day: 3, start: '09:00', end: '17:00' }
+        - { day: 4, start: '09:00', end: '17:00' }
+        - { day: 5, start: '09:00', end: '17:00' }
+      locations:
+        - { id: studio, kind: address, value: '2400 South Lamar, Austin' }
+      default_location_id: studio
   forms:
     - id: consult-request
       name: Consultation Request

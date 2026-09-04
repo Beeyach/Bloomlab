@@ -1,0 +1,269 @@
+# The Calendar Lab's training account (Phase 14, CAL-001, CAL-003).
+#
+# Glowhaus is opening a second room and has started taking consultations for it, and the booking
+# side of the account has not caught up. The consultation calendar is the one a learner has to
+# fix: it has hours and a duration and nothing else — no buffer between appointments even though
+# the room needs turning over, no minimum notice even though somebody can book eleven minutes
+# from now, and one host even though two people take consultations. That is the work.
+#
+# The two workflows are the reason it matters. `wf-consult-reminder` is triggered by Customer
+# Booked Appointment and waits until the day before, so a booking someone makes really does park
+# a run against that appointment's own time. `wf-cancellation-recovery` is triggered by
+# Appointment Status filtered to Cancelled — before Phase 14 that workflow could never run,
+# because the cancellation event never reached the trigger.
+#
+# Deliberately not pre-solved. Nothing here is a finished calendar the learner admires.
+id: SC-glowhaus-calendar
+title: Glowhaus — bookings the diary cannot keep up with
+client: CL-glowhaus-medspa
+summary: >-
+  Glowhaus has opened a second treatment room and two people now take consultations, but the
+  booking calendar still behaves as if there were one of everything: no gap between appointments,
+  no notice before somebody can book, one host, and a treatments calendar whose services are
+  nothing but names. The reminder and the recovery workflows are already built and waiting for a
+  calendar that can feed them.
+initial_account_state:
+  users:
+    - id: priya
+      name: Priya Raman
+      role: admin
+    - id: theo
+      name: Theo Marsh
+    - id: ivy
+      name: Ivy Chen
+  contacts:
+    # Nadia is owned by Priya and hosted by Theo. Contact owner and appointment host are two
+    # different things, and this is the pair that shows it.
+    - id: nadia
+      first_name: Nadia
+      last_name: Haddad
+      email: nadia.haddad@example.com
+      phone: '+15125550188'
+      tags: [returning]
+      timezone: America/Chicago
+      owner_id: priya
+    - id: marcus
+      first_name: Marcus
+      last_name: Bell
+      email: marcus.bell@example.com
+      phone: '+15125550143'
+      tags: [meta-lead]
+      owner_id: theo
+    - id: soraya
+      first_name: Soraya
+      last_name: Nasser
+      phone: '+15125550166'
+      tags: [meta-lead]
+  tags: [returning, meta-lead, booked, win-back, confirmed]
+  custom_values:
+    - key: front_desk_phone
+      value: '+15125550100'
+  calendars:
+    # The calendar the learner fixes. Hours and a length; nothing that protects the room, the
+    # front desk or the second host.
+    - id: consultation
+      name: Consultation
+      type: personal
+      duration_minutes: 30
+      slot_interval_minutes: 30
+      timezone: America/Chicago
+      staff_ids: [theo]
+      availability:
+        - { day: 1, start: '09:00', end: '17:00' }
+        - { day: 2, start: '09:00', end: '17:00' }
+        - { day: 3, start: '09:00', end: '17:00' }
+        - { day: 4, start: '09:00', end: '17:00' }
+        - { day: 5, start: '09:00', end: '17:00' }
+      locations:
+        - { id: studio, kind: address, value: '2400 South Lamar, Austin' }
+        - { id: front-desk, kind: phone, value: '+15125550100' }
+      default_location_id: studio
+    # The treatments calendar has services with no lengths and nobody assigned, so today it is
+    # three words on a screen rather than three different bookings.
+    - id: treatments
+      name: Treatments
+      type: service
+      duration_minutes: 60
+      slot_interval_minutes: 30
+      timezone: America/Chicago
+      staff_ids: [ivy, theo]
+      availability:
+        - { day: 2, start: '10:00', end: '18:00' }
+        - { day: 4, start: '10:00', end: '18:00' }
+        - { day: 6, start: '10:00', end: '15:00' }
+      locations:
+        - { id: room-1, kind: address, value: '2400 South Lamar, Austin — room 1' }
+        - { id: room-2, kind: address, value: '2400 South Lamar, Austin — room 2' }
+      default_location_id: room-1
+      services:
+        - { id: signature-facial, name: Signature Facial }
+        - { id: laser-consult, name: Laser Consult }
+        - { id: membership-review, name: Membership Review }
+  appointments:
+    # Two consultations already in the diary, back to back, which is exactly the problem: there is
+    # no gap between them and the room has to be turned over.
+    - id: appt-nadia
+      contact_id: nadia
+      calendar_id: consultation
+      starts_at: '2026-09-08T11:00:00-05:00'
+      host_id: theo
+    - id: appt-marcus
+      contact_id: marcus
+      calendar_id: consultation
+      starts_at: '2026-09-08T11:30:00-05:00'
+      host_id: theo
+      status: confirmed
+  forms:
+    - id: consult-request
+      name: Consultation Request
+      fields: [first_name, last_name, email, phone]
+  workflows:
+    - id: wf-consult-reminder
+      name: Consultation Reminder
+      trigger:
+        ghl_feature_id: GHL-WF-CUSTOMER-BOOKED-APPOINTMENT
+        filters:
+          - field: calendar
+            operator: is
+            value: consultation
+      nodes:
+        - id: w1
+          type: wait
+          ghl_feature_id: GHL-WF-WAIT
+          label: The day before
+          config:
+            wait_type: appointment
+            relative: before
+            hours: 24
+          position: { x: 0, y: 60 }
+        - id: n1
+          type: action
+          ghl_feature_id: GHL-WF-SEND-SMS
+          label: Reminder text
+          config:
+            template: 'Hi {{contact.first_name}}, your Glowhaus consultation is {{appointment.date}} at {{appointment.time}}. Reply here if anything changes.'
+            purpose: reminder
+          position: { x: 0, y: 180 }
+        - id: n2
+          type: end
+          position: { x: 0, y: 300 }
+      edges:
+        - { from: w1, to: n1 }
+        - { from: n1, to: n2 }
+      settings:
+        allow_reentry: true
+        timezone: America/Chicago
+    - id: wf-cancellation-recovery
+      name: Cancellation Recovery
+      trigger:
+        ghl_feature_id: GHL-WF-APPOINTMENT-STATUS
+        filters:
+          - field: appointment_status
+            operator: is
+            value: cancelled
+      nodes:
+        - id: c1
+          type: action
+          ghl_feature_id: GHL-WF-ADD-CONTACT-TAG
+          label: Mark for follow-up
+          config:
+            tag: win-back
+          position: { x: 0, y: 120 }
+        - id: c2
+          type: action
+          ghl_feature_id: GHL-WF-SEND-SMS
+          label: Offer another time
+          config:
+            template: 'No problem {{contact.first_name}}. When you are ready, here are the next open times at Glowhaus.'
+            purpose: recovery
+          position: { x: 0, y: 240 }
+        - id: c3
+          type: end
+          position: { x: 0, y: 360 }
+      edges:
+        - { from: c1, to: c2 }
+        - { from: c2, to: c3 }
+      settings:
+        allow_reentry: true
+        timezone: America/Chicago
+    - id: wf-confirmed-prep
+      name: Confirmed Prep
+      trigger:
+        ghl_feature_id: GHL-WF-APPOINTMENT-STATUS
+        filters:
+          - field: appointment_status
+            operator: is
+            value: confirmed
+      nodes:
+        - id: p1
+          type: action
+          ghl_feature_id: GHL-WF-ADD-CONTACT-TAG
+          label: Tag as confirmed
+          config:
+            tag: confirmed
+          position: { x: 0, y: 120 }
+        - id: p2
+          type: end
+          position: { x: 0, y: 240 }
+      edges:
+        - { from: p1, to: p2 }
+      settings:
+        allow_reentry: true
+        timezone: America/Chicago
+    - id: wf-enquiry-nurture
+      name: Enquiry Nurture
+      trigger:
+        ghl_feature_id: GHL-WF-FORM-SUBMITTED
+        filters:
+          - field: form
+            operator: is
+            value: consult-request
+      nodes:
+        - id: e1
+          type: wait
+          ghl_feature_id: GHL-WF-WAIT
+          label: Three days
+          config:
+            wait_type: period
+            days: 3
+          position: { x: 0, y: 60 }
+        - id: e2
+          type: action
+          ghl_feature_id: GHL-WF-SEND-SMS
+          label: Nudge
+          config:
+            template: 'Still thinking about a consultation, {{contact.first_name}}?'
+            purpose: nurture
+          position: { x: 0, y: 180 }
+        - id: e3
+          type: end
+          position: { x: 0, y: 300 }
+      edges:
+        - { from: e1, to: e2 }
+        - { from: e2, to: e3 }
+      settings:
+        allow_reentry: false
+        timezone: America/Chicago
+simulation_time: '2026-09-08T09:00:00-05:00'
+timezone: America/Chicago
+seed: 4114
+scheduled_events: []
+injectable_events:
+  - id: soraya-books
+    type: appointment.booked
+    description: Soraya books a consultation for two hours from now, straight from the booking page.
+    payload: { contact_id: soraya, calendar_id: consultation, minutes_from_now: 120 }
+  - id: nadia-cancels
+    type: appointment.cancelled
+    description: Nadia cancels the morning of.
+    payload: { appointment_id: appt-nadia }
+hidden_facts:
+  room_turnover_minutes: 15
+  front_desk_notice_wanted_hours: 4
+  consultations_per_week: 18
+  second_host_started: '2026-08-24'
+failure_modes:
+  - late_booking
+  - unavailable_appointment
+  - cancelled_appointment
+  - second_location

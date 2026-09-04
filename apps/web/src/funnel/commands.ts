@@ -3,6 +3,7 @@ import type {
   PendingEvent,
   SimulatorEventType,
   SimulatorScenario,
+  Slot,
 } from '@bloomlab/simulator-core';
 
 import type { BloomlabDatabase } from '../data/db';
@@ -186,14 +187,17 @@ export const submitSurvey = (
 /**
  * A booking from a calendar block. The event is HighLevel's own Appointment Booked, so a workflow
  * triggered by Customer Booked Appointment reacts to it exactly as it would to any other booking.
- * Configuring the calendar itself — availability, buffers, notice, staff — is Phase 14's.
+ *
+ * The slot comes from the shared availability engine, so what the visitor books carries the host
+ * that engine assigned and the length the calendar was configured for (D-129). A funnel visitor
+ * is a customer, which is the distinction Customer Booked Appointment turns on.
  */
 export const bookFromFunnel = (
   run: StoredRun,
   scenario: SimulatorScenario,
   visitor: Visitor,
   calendarId: string,
-  startsAt: string,
+  slot: Slot,
   options?: Options,
 ) =>
   execute(
@@ -205,7 +209,10 @@ export const bookFromFunnel = (
         appointment_id: newAppointmentId(),
         contact_id: visitor.contact_id,
         calendar_id: calendarId,
-        starts_at: startsAt,
+        starts_at: slot.starts_at,
+        duration_minutes: slot.duration_minutes,
+        host_id: slot.host_id,
+        booked_by: 'customer',
       }),
     },
     options,

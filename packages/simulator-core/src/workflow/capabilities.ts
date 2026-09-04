@@ -87,13 +87,15 @@ const TRIGGER_CAPABILITIES: TriggerCapability[] = [
       { key: 'tag', label: 'Has tag', kind: 'list', reference: 'tags' },
     ],
     // Fires for bookings the customer makes; a staff booking uses Appointment Status instead,
-    // which is the split the registry records.
+    // which is the split the registry records. How the booking was made is remembered on the
+    // appointment, so a reschedule of a staff booking is still a staff booking (CAL-003).
     match: (event, account) => {
-      if (event.payload.booked_by === 'staff') return null;
       const appointmentId = str(event.payload.appointment_id);
       if (!appointmentId) return null;
       // A reschedule names only the appointment; the contact and calendar come from the record.
       const appointment = account.appointments[appointmentId];
+      const madeBy = str(event.payload.booked_by) ?? appointment?.booked_by ?? 'customer';
+      if (madeBy === 'staff') return null;
       const contactId = str(event.payload.contact_id) ?? appointment?.contact_id ?? null;
       if (!contactId) return null;
       return {
@@ -109,7 +111,15 @@ const TRIGGER_CAPABILITIES: TriggerCapability[] = [
   {
     kind: 'trigger',
     feature: 'GHL-WF-APPOINTMENT-STATUS',
-    events: ['APPOINTMENT_BOOKED', 'APPOINTMENT_RESCHEDULED', 'APPOINTMENT_STATUS_CHANGED'],
+    // Cancellation is one of this trigger's own statuses, so the event that cancels has to reach
+    // it. Before Phase 14 it did not, and a workflow filtered to Cancelled could never run —
+    // the whole no-show recovery skill was unreachable through the shared engine (CAL-003, D-131).
+    events: [
+      'APPOINTMENT_BOOKED',
+      'APPOINTMENT_RESCHEDULED',
+      'APPOINTMENT_CANCELLED',
+      'APPOINTMENT_STATUS_CHANGED',
+    ],
     filters: [
       {
         key: 'appointment_status',
@@ -125,11 +135,15 @@ const TRIGGER_CAPABILITIES: TriggerCapability[] = [
       if (!appointmentId) return null;
       const appointment = account.appointments[appointmentId];
       if (!appointment) return null;
-      // A new booking is the status "New"; a change carries its own status.
+      // A new booking is the status "New"; a cancellation is "Cancelled"; a change carries its
+      // own status. A reschedule arrives as a new appointment, which is what the official
+      // Appointment Status article says and what the registry records.
       const status =
         event.type === 'APPOINTMENT_STATUS_CHANGED'
           ? (str(event.payload.status) ?? appointment.status)
-          : 'new';
+          : event.type === 'APPOINTMENT_CANCELLED'
+            ? 'cancelled'
+            : 'new';
       return {
         contact_id: appointment.contact_id,
         context: { appointment_id: appointmentId },

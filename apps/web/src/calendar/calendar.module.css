@@ -1,0 +1,523 @@
+/*
+ * The Calendar Lab (CAL-001, CAL-003).
+ *
+ * The object here is time, so the screen is a schedule. A run of days across the top of the
+ * working area, each with what is already booked and what is still open; the configuration beside
+ * it as one group at a time, never five boxes competing for attention. Deliberately not the
+ * Funnel Lab's three permanent panels: a different job wants a different composition.
+ *
+ * Desktop is schedule and configuration side by side, with booking and appointments under them.
+ * Tablet keeps that split and narrows the configuration. Phones are one column with the
+ * configuration in a sheet — recomposed, never reduced: every setting and every action stays
+ * reachable, and the schedule stays readable rather than being squeezed into seven columns.
+ */
+
+.screen {
+  --bl-density-row: var(--bl-density-high);
+  display: grid;
+  gap: var(--bl-space-5);
+}
+
+.header {
+  display: grid;
+  gap: var(--bl-space-2);
+  max-width: 44rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-2xl);
+  font-weight: var(--bl-font-weight-bold);
+  letter-spacing: var(--bl-font-tracking-display);
+  line-height: var(--bl-font-leading-tight);
+}
+
+.panelHeading {
+  margin: 0 0 var(--bl-space-2);
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-lg);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.groupHeading {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-md);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.lead,
+.muted,
+.note,
+.rowNote,
+.dayEmpty {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+}
+
+.note,
+.rowNote,
+.dayEmpty {
+  font-size: var(--bl-font-size-sm);
+}
+
+.refusal {
+  margin: 0;
+  padding: var(--bl-space-3);
+  border: 1px solid var(--bl-color-error);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface-2);
+  color: var(--bl-color-text);
+}
+
+.notice {
+  margin: 0 0 var(--bl-space-3);
+  padding: var(--bl-space-2) var(--bl-space-3);
+  border-left: 2px solid var(--bl-color-warning);
+  background: var(--bl-color-surface-2);
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+/* ---- the account bar ------------------------------------------------------------------- */
+
+.accountBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--bl-space-2) var(--bl-space-4);
+  padding-bottom: var(--bl-space-3);
+  border-bottom: 1px solid var(--bl-color-border);
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-4);
+  margin: 0;
+}
+
+.facts div {
+  display: grid;
+  gap: 2px;
+}
+
+.facts dt {
+  font-size: var(--bl-font-size-xs);
+  color: var(--bl-color-text-soft);
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.runControls,
+.calendarBar,
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2);
+}
+
+.saveState {
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+/* ---- issues ---------------------------------------------------------------------------- */
+
+.issues {
+  display: grid;
+  gap: var(--bl-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.issues li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--bl-space-2);
+  font-size: var(--bl-font-size-sm);
+}
+
+.issueWhere {
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+/* ---- layout ---------------------------------------------------------------------------- */
+
+.layout {
+  display: grid;
+  gap: var(--bl-space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.lower {
+  display: grid;
+  gap: var(--bl-space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 768px) {
+  .lower {
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+    align-items: start;
+  }
+}
+
+.schedulePanel,
+.settingsPanel,
+.bookingPanel,
+.appointmentPanel {
+  min-width: 0;
+}
+
+/* ---- the schedule ---------------------------------------------------------------------- */
+
+.workspace {
+  display: grid;
+  gap: var(--bl-space-3);
+}
+
+.summary {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+.empty {
+  margin: 0;
+  padding: var(--bl-space-3);
+  border: 1px dashed var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  color: var(--bl-color-text-soft);
+}
+
+.week {
+  display: grid;
+  gap: var(--bl-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 1024px) {
+  .week {
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: var(--bl-space-2);
+  }
+}
+
+.day {
+  display: grid;
+  gap: var(--bl-space-2);
+  align-content: start;
+  padding-top: var(--bl-space-2);
+  border-top: 1px solid var(--bl-color-border);
+}
+
+.dayHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--bl-space-2);
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.dayDate {
+  font-weight: var(--bl-font-weight-regular);
+  color: var(--bl-color-text-soft);
+}
+
+.slots,
+.booked {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 1024px) {
+  .slots,
+  .booked {
+    display: grid;
+  }
+}
+
+.slot {
+  display: grid;
+  gap: 0;
+  min-height: 44px;
+  width: 100%;
+  text-align: left;
+}
+
+.slotTime {
+  font-variant-numeric: tabular-nums;
+}
+
+.slotHost {
+  font-size: var(--bl-font-size-xs);
+  font-weight: var(--bl-font-weight-regular);
+  opacity: 0.75;
+}
+
+.bookedRow {
+  display: flex;
+  align-items: center;
+  gap: var(--bl-space-2);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--bl-space-1) var(--bl-space-2);
+  border: 0;
+  border-left: 2px solid var(--bl-color-border-strong);
+  border-radius: 0;
+  background: var(--bl-color-surface-2);
+  color: var(--bl-color-text);
+  font: inherit;
+  font-size: var(--bl-font-size-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.bookedRow[aria-pressed='true'] {
+  border-left-color: var(--bl-color-link);
+}
+
+.bookedRow:focus-visible,
+.appointmentHead:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}
+
+.bookedTime {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.bookedWho {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chosen {
+  margin: 0;
+  padding: var(--bl-space-2) var(--bl-space-3);
+  border-left: 2px solid var(--bl-color-link);
+  background: var(--bl-color-surface-2);
+  font-size: var(--bl-font-size-sm);
+}
+
+/* ---- settings -------------------------------------------------------------------------- */
+
+.groupTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-1);
+  margin-bottom: var(--bl-space-3);
+  padding-bottom: var(--bl-space-2);
+  border-bottom: 1px solid var(--bl-color-border);
+}
+
+.groupTab {
+  min-height: 44px;
+  padding: var(--bl-space-1) var(--bl-space-2);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--bl-color-text-soft);
+  font: inherit;
+  font-size: var(--bl-font-size-sm);
+  cursor: pointer;
+}
+
+.groupTabOn {
+  border-bottom-color: var(--bl-color-link);
+  color: var(--bl-color-text);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.groupTab:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}
+
+.rows {
+  display: grid;
+  gap: var(--bl-space-3);
+}
+
+.row {
+  display: grid;
+  gap: var(--bl-space-2);
+  padding-bottom: var(--bl-space-3);
+  border-bottom: 1px solid var(--bl-color-border);
+}
+
+.row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.rowName {
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0;
+  font-size: var(--bl-font-size-xs);
+  color: var(--bl-color-text-soft);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--bl-space-2);
+  min-height: 44px;
+  font-size: var(--bl-font-size-sm);
+}
+
+/* ---- booking and appointments ----------------------------------------------------------- */
+
+.booking {
+  display: grid;
+  gap: var(--bl-space-3);
+}
+
+.bookingWhat {
+  margin: 0;
+  padding: var(--bl-space-2) var(--bl-space-3);
+  border-left: 2px solid var(--bl-color-border-strong);
+  background: var(--bl-color-surface-2);
+  font-size: var(--bl-font-size-sm);
+}
+
+.appointments {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.appointment {
+  display: grid;
+  gap: var(--bl-space-1);
+  padding: var(--bl-space-2) 0;
+  border-bottom: 1px solid var(--bl-color-border);
+  border-left: 2px solid transparent;
+  padding-left: var(--bl-space-2);
+}
+
+.appointmentOn {
+  border-left-color: var(--bl-color-link);
+  background: var(--bl-color-surface-2);
+}
+
+.appointmentHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bl-space-2);
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--bl-color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.appointmentWho {
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.appointmentWhen {
+  color: var(--bl-color-text-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.appointmentFacts {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+.appointmentActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-2);
+  padding-top: var(--bl-space-2);
+}
+
+/* ---- what the account did --------------------------------------------------------------- */
+
+.chain {
+  display: grid;
+  gap: var(--bl-space-2);
+  padding-top: var(--bl-space-4);
+  border-top: 1px solid var(--bl-color-border);
+}
+
+.chainList {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chainRow {
+  display: grid;
+  gap: var(--bl-space-1) var(--bl-space-3);
+  grid-template-columns: minmax(0, 1fr);
+  padding: var(--bl-space-2) 0;
+  border-bottom: 1px solid var(--bl-color-border);
+  font-size: var(--bl-font-size-sm);
+}
+
+@media (min-width: 768px) {
+  .chainRow {
+    grid-template-columns: 14rem 9rem minmax(0, 1fr) 6rem;
+    align-items: baseline;
+  }
+}
+
+.chainType {
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.chainOrigin,
+.chainAt,
+.chainDetail {
+  color: var(--bl-color-text-soft);
+}
+
+.chainAt {
+  font-variant-numeric: tabular-nums;
+}
