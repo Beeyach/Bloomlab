@@ -174,7 +174,7 @@ export { MAX_NODE_VISITS_PER_RUN, waitToken } from './workflow/traverse.ts';
 export { answerFor, endpointFor, readHeaders, type WebhookAnswer } from './workflow/endpoints.ts';
 export { arrivingContacts, workflowReactions } from './workflow/reactions.ts';
 export { readDefinition } from './reducers/definitions.ts';
-export { MAX_ENROLMENTS_AT_ONE_INSTANT } from './reducers/workflows.ts';
+export { MAX_ENROLMENTS_IN_ONE_CHAIN } from './reducers/workflows.ts';
 export { readFunnel } from './reducers/funnels.ts';
 export {
   firstStep,

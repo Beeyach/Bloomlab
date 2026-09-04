@@ -489,6 +489,14 @@ function Logs({
                   <td>{String(record.data.node_label ?? record.node_id ?? '—')}</td>
                   <td className={styles.reason} data-testid={`log-reason-${record.id}`}>
                     {record.reason ? words(record.reason) : detailOf(record)}
+                    {/*
+                      A failed call says what came back as well as what went wrong. 401 and 503
+                      are the difference between a credential to fix and a service to wait for,
+                      so the status belongs beside the reason rather than behind a click.
+                    */}
+                    {typeof record.data.status === 'number' && record.reason && (
+                      <span className={styles.detail}> · {String(record.data.status)}</span>
+                    )}
                   </td>
                 </tr>
               ))}

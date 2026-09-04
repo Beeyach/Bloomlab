@@ -44,6 +44,12 @@ export interface SourceRow {
   showed: number;
   sold: number;
   revenue: number;
+  /**
+   * Leads over visits for this source, or null when it had no visits to convert. Carried here
+   * rather than divided again by whatever is drawing the table: one place computes a rate, and a
+   * screen that did its own arithmetic could disagree with the report beside it (REP-003).
+   */
+  conversion: number | null;
   contact_ids: string[];
   visit_ids: string[];
 }
@@ -425,6 +431,7 @@ function buildSources(
       showed: 0,
       sold: 0,
       revenue: 0,
+      conversion: null,
       contact_ids: [],
       visit_ids: [],
     };
@@ -459,9 +466,9 @@ function buildSources(
     target.revenue += revenueByContact.get(contactId) ?? 0;
   }
   // Ordered by size, then by name, so the table is stable across runs and readable at a glance.
-  return [...rows.values()].sort(
-    (a, b) => b.visits - a.visits || b.leads - a.leads || a.source.localeCompare(b.source),
-  );
+  return [...rows.values()]
+    .map((row) => ({ ...row, conversion: row.visits === 0 ? null : row.leads / row.visits }))
+    .sort((a, b) => b.visits - a.visits || b.leads - a.leads || a.source.localeCompare(b.source));
 }
 
 /** The definition behind one metric, for a surface that wants to show the rule beside the number. */

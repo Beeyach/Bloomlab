@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import {
-  MAX_ENROLMENTS_AT_ONE_INSTANT,
+  MAX_ENROLMENTS_IN_ONE_CHAIN,
   bookableSlots,
   contentEventName,
   validateCalendar,
@@ -480,14 +480,14 @@ describe('LOOP-001 · two workflows passing the same lead back and forth', () =>
     const failures = records(state, 'failure').filter((row) => row.reason === 'workflow_loop');
     expect(failures.length).toBeGreaterThan(0);
     const failure = failures[0] as ExecutionRecord;
-    expect(failure.data.limit).toBe(MAX_ENROLMENTS_AT_ONE_INSTANT);
-    expect(failure.data.enrolments_at_this_instant).toBe(MAX_ENROLMENTS_AT_ONE_INSTANT);
+    expect(failure.data.limit).toBe(MAX_ENROLMENTS_IN_ONE_CHAIN);
+    expect(failure.data.enrolments_in_this_chain).toBe(MAX_ENROLMENTS_IN_ONE_CHAIN);
     expect(failure.contact_id).toBe('linus');
     expect(typeof failure.workflow_id).toBe('string');
 
     // Bounded: the runs it did create all sit at one instant, and there are not hundreds.
     const runs = Object.values(state.account.workflow_runs);
-    expect(runs.length).toBeLessThanOrEqual(MAX_ENROLMENTS_AT_ONE_INSTANT * 2 + 1);
+    expect(runs.length).toBeLessThanOrEqual(MAX_ENROLMENTS_IN_ONE_CHAIN * 2 + 1);
     expect(new Set(runs.map((row) => row.enrolled_at)).size).toBeLessThanOrEqual(2);
 
     // Unrelated account state survives: the contact is there, with a tag, and the run that

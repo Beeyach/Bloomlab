@@ -10,7 +10,12 @@ import type {
 import type { BloomlabDatabase } from '../data/db';
 import { randomId } from '../data/envelope';
 import { resetStoredRun, type StoredRun } from '../simulator/store';
-import { execute, type ExecutionOptions, type ExecutionResult } from '../workflow/execution';
+import {
+  execute,
+  type EngineRefusal,
+  type ExecutionOptions,
+  type ExecutionResult,
+} from '../workflow/execution';
 
 /**
  * The Funnel Lab command layer (FUN-001 … FUN-003, D-119, D-120).
@@ -195,6 +200,20 @@ export const VISIT_SOURCES = ['meta-ads', 'google-search', 'instagram-bio', 'Unk
  * and only the answers the visitor gave — an unknown field is refused by the reducer rather than
  * dropped, which is what makes a broken form block visible instead of silently harmless.
  */
+export const formSubmission = (
+  run: StoredRun,
+  visitor: Visitor,
+  formId: string,
+  values: SubmissionValues,
+  visitId?: string | null,
+): PendingEvent =>
+  injected(run, 'FORM_SUBMITTED', {
+    form_id: formId,
+    contact_id: visitor.contact_id,
+    values,
+    ...(visitId ? { visit_id: visitId } : {}),
+  });
+
 export const submitForm = (
   run: StoredRun,
   scenario: SimulatorScenario,
@@ -207,17 +226,23 @@ export const submitForm = (
   execute(
     run,
     scenario,
-    {
-      kind: 'process',
-      event: injected(run, 'FORM_SUBMITTED', {
-        form_id: formId,
-        contact_id: visitor.contact_id,
-        values,
-        ...(visitId ? { visit_id: visitId } : {}),
-      }),
-    },
+    { kind: 'process', event: formSubmission(run, visitor, formId, values, visitId) },
     options,
   );
+
+export const surveySubmission = (
+  run: StoredRun,
+  visitor: Visitor,
+  surveyId: string,
+  values: SubmissionValues,
+  visitId?: string | null,
+): PendingEvent =>
+  injected(run, 'SURVEY_SUBMITTED', {
+    survey_id: surveyId,
+    contact_id: visitor.contact_id,
+    values,
+    ...(visitId ? { visit_id: visitId } : {}),
+  });
 
 export const submitSurvey = (
   run: StoredRun,
@@ -231,15 +256,7 @@ export const submitSurvey = (
   execute(
     run,
     scenario,
-    {
-      kind: 'process',
-      event: injected(run, 'SURVEY_SUBMITTED', {
-        survey_id: surveyId,
-        contact_id: visitor.contact_id,
-        values,
-        ...(visitId ? { visit_id: visitId } : {}),
-      }),
-    },
+    { kind: 'process', event: surveySubmission(run, visitor, surveyId, values, visitId) },
     options,
   );
 
@@ -251,6 +268,43 @@ export const submitSurvey = (
  * that engine assigned and the length the calendar was configured for (D-129). A funnel visitor
  * is a customer, which is the distinction Customer Booked Appointment turns on.
  */
+/**
+ * The slot the visitor picked, revalidated against the engine now (D-133). Returns the booking
+ * event, or the refusal to show instead: a time that was offered a moment ago and has since been
+ * taken is refused rather than booked over.
+ */
+export const funnelBooking = (
+  run: StoredRun,
+  visitor: Visitor,
+  calendarId: string,
+  slot: Slot,
+): { event: PendingEvent } | { refusal: EngineRefusal } => {
+  const calendar = run.state.account.calendars[calendarId];
+  if (calendar) {
+    const current = slotAt(run.state.account, calendar, run.state.clock.now, slot.starts_at);
+    if (!current || !sameSlot(current, slot)) {
+      return {
+        refusal: {
+          code: 'INVALID_PAYLOAD',
+          message: 'That time is no longer available. Choose another opening.',
+          detail: { calendar_id: calendarId, starts_at: slot.starts_at },
+        },
+      };
+    }
+  }
+  return {
+    event: injected(run, 'APPOINTMENT_BOOKED', {
+      appointment_id: newAppointmentId(),
+      contact_id: visitor.contact_id,
+      calendar_id: calendarId,
+      starts_at: slot.starts_at,
+      duration_minutes: slot.duration_minutes,
+      host_id: slot.host_id,
+      booked_by: 'customer',
+    }),
+  };
+};
+
 export const bookFromFunnel = (
   run: StoredRun,
   scenario: SimulatorScenario,
@@ -259,38 +313,11 @@ export const bookFromFunnel = (
   slot: Slot,
   options?: Options,
 ) => {
-  const calendar = run.state.account.calendars[calendarId];
-  if (calendar) {
-    const current = slotAt(run.state.account, calendar, run.state.clock.now, slot.starts_at);
-    if (!current || !sameSlot(current, slot)) {
-      return Promise.resolve<ExecutionResult>({
-        ok: false,
-        run,
-        refusal: {
-          code: 'INVALID_PAYLOAD',
-          message: 'That time is no longer available. Choose another opening.',
-          detail: { calendar_id: calendarId, starts_at: slot.starts_at },
-        },
-      });
-    }
+  const outcome = funnelBooking(run, visitor, calendarId, slot);
+  if ('refusal' in outcome) {
+    return Promise.resolve<ExecutionResult>({ ok: false, run, refusal: outcome.refusal });
   }
-  return execute(
-    run,
-    scenario,
-    {
-      kind: 'process',
-      event: injected(run, 'APPOINTMENT_BOOKED', {
-        appointment_id: newAppointmentId(),
-        contact_id: visitor.contact_id,
-        calendar_id: calendarId,
-        starts_at: slot.starts_at,
-        duration_minutes: slot.duration_minutes,
-        host_id: slot.host_id,
-        booked_by: 'customer',
-      }),
-    },
-    options,
-  );
+  return execute(run, scenario, { kind: 'process', event: outcome.event }, options);
 };
 
 /**
@@ -299,6 +326,19 @@ export const bookFromFunnel = (
  * no subscription handling, no failed-payment path and no refund here; those are the Payments Lab
  * (PAY-001) and the interface says so where a learner can see it (D-122).
  */
+export const funnelPayment = (
+  run: StoredRun,
+  visitor: Visitor,
+  productId: string,
+  amount: number,
+): PendingEvent =>
+  injected(run, 'PAYMENT_RECEIVED', {
+    payment_id: newPaymentId(),
+    contact_id: visitor.contact_id,
+    product_id: productId,
+    amount,
+  });
+
 export const payFromFunnel = (
   run: StoredRun,
   scenario: SimulatorScenario,
@@ -310,15 +350,7 @@ export const payFromFunnel = (
   execute(
     run,
     scenario,
-    {
-      kind: 'process',
-      event: injected(run, 'PAYMENT_RECEIVED', {
-        payment_id: newPaymentId(),
-        contact_id: visitor.contact_id,
-        product_id: productId,
-        amount,
-      }),
-    },
+    { kind: 'process', event: funnelPayment(run, visitor, productId, amount) },
     options,
   );
 

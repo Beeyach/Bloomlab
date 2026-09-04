@@ -492,7 +492,80 @@ try {
     await screenshot(page, resolve(OUT, `funnel-${width}.png`), null, false);
   }
 
-  /* ---- 12. reduced motion (MOT-002) ------------------------------------------------------ */
+  /* ---- 12. the Autopsy lens (FUN-004) ---------------------------------------------------- */
+  // Not a fourth mode: a lens over whichever funnel is open, on a scenario that carries three
+  // weeks of its own traffic. Every view has to be data, and an empty one has to say so.
+  await setViewport(page, 1440, 950, { mobile: false });
+  await openPage(page, `${BASE}/reporting`);
+  await waitFor(page, `document.body.textContent.includes('Reporting')`, { timeout: 15000 });
+  await sleep(500);
+  if (await exists(page, '[data-testid="run-window"]')) {
+    await click(page, '[data-testid="run-window"]');
+    await waitFor(page, `!${q('[data-testid="reporting-empty"]')}`, { timeout: 60000 });
+  }
+  await openPage(page, `${BASE}/funnel?scenario=SC-glowhaus-reporting&funnel=fn-consult`);
+  await waitFor(page, READY, { timeout: 15000 });
+  await sleep(600);
+  const lensClosed = !(await exists(page, '[data-testid="autopsy"]'));
+  await click(page, '[data-testid="funnel-autopsy-toggle"]');
+  const lensOpened = await waitFor(page, `Boolean(${q('[data-testid="autopsy"]')})`, {
+    timeout: 8000,
+  });
+  await sleep(400);
+  const autopsy = await text(page, '[data-testid="autopsy"]');
+  const views = {};
+  for (const view of ['traffic', 'conversion', 'reach', 'forms', 'booking', 'dropoff']) {
+    views[view] = await exists(page, `[data-testid="autopsy-${view}"]`);
+  }
+  // The numbers have to be the shared projection's, not something this screen worked out: the
+  // Reporting Lab is reading the same run, so its conversion counts must be these counts.
+  const conversionWorkings = await text(page, '[data-testid="autopsy-conversion"]');
+  section(
+    'autopsy-lens',
+    {
+      startsClosed: lensClosed,
+      opens: lensOpened,
+      ...views,
+      readsRealTraffic: autopsy.includes('meta-ads') && autopsy.includes('google-search'),
+      carriesItsCounts: conversionWorkings.includes(' of '),
+      // Reach is measured in the step's own blocks, and says so rather than pretending to pixels.
+      reachIsSemantic: autopsy.includes("step's own blocks"),
+      // Where sessions ended, never why they ended.
+      dropOffIsWhereNotWhy: autopsy.includes('Where, not why'),
+      noFakeHeatmap: !/heatmap|heat map/i.test(autopsy),
+      stillThreeModes:
+        (await exists(page, '[data-testid="funnel-mode-build"]')) &&
+        (await exists(page, '[data-testid="funnel-mode-preview"]')) &&
+        (await exists(page, '[data-testid="funnel-mode-simulate"]')) &&
+        !(await exists(page, '[data-testid="funnel-mode-autopsy"]')),
+    },
+    { conversionWorkings: conversionWorkings.slice(0, 120) },
+  );
+  await screenshot(page, resolve(OUT, 'funnel-autopsy.png'), null, false);
+
+  /* ---- 13. a funnel with no traffic invents none ------------------------------------------- */
+  await openPage(page, LAB);
+  await waitFor(page, READY, { timeout: 15000 });
+  await sleep(600);
+  let emptyAutopsy = '';
+  if (await exists(page, '[data-testid="funnel-autopsy-toggle"]')) {
+    await click(page, '[data-testid="funnel-autopsy-toggle"]');
+    await sleep(500);
+    emptyAutopsy = await page.evaluate(
+      `(${q('[data-testid="autopsy-empty"]')}?.textContent ?? ${q('[data-testid="autopsy"]')}?.textContent ?? '')`,
+    );
+  }
+  section('autopsy-empty', {
+    saysSoOrHasItsOwnTraffic: emptyAutopsy.length > 0,
+    // Either it has no traffic and says there is nothing to divide, or the learner has walked a
+    // visitor through it and the counts are theirs. Never a fabricated zero.
+    noFabricatedRate:
+      emptyAutopsy.includes('nothing to divide') ||
+      !emptyAutopsy.includes('0%') ||
+      emptyAutopsy.includes(' of '),
+  });
+
+  /* ---- 14. reduced motion (MOT-002) ------------------------------------------------------ */
   await setViewport(page, 1440, 950, { mobile: false });
   await page.send('Emulation.setEmulatedMedia', {
     features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],

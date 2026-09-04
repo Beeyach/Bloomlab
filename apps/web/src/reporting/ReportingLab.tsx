@@ -442,8 +442,7 @@ function SourceDetail({ row }: { row: SourceRow }) {
       <p className={styles.detailTitle}>{row.source}</p>
       <p className={styles.muted}>
         {row.visits} {row.visits === 1 ? 'visit' : 'visits'} became {row.leads}{' '}
-        {row.leads === 1 ? 'lead' : 'leads'} —{' '}
-        {row.visits === 0 ? NOT_ENOUGH : percent(row.leads / row.visits, { precise: true })}.
+        {row.leads === 1 ? 'lead' : 'leads'} — {percent(row.conversion, { precise: true })}.
         {row.visits < 10 && ' On a sample this small, one more visit moves that a long way.'}
       </p>
       {row.contact_ids.length > 0 && (

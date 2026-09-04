@@ -16,6 +16,7 @@
 
 .screen {
   --bl-density-row: var(--bl-density-high);
+  min-width: 0;
   display: grid;
   gap: var(--bl-space-6);
   max-width: 76rem;
@@ -62,6 +63,7 @@
 }
 
 .panel {
+  min-width: 0;
   padding: var(--bl-space-5);
   border: 1px solid var(--bl-color-border);
   border-radius: var(--bl-radius-lg);
@@ -99,7 +101,13 @@
  * here because the rows hold their own focusable controls, which is what carries keyboard
  * users through the data.
  */
+/*
+ * A grid item is `min-width: auto` by default, so a wide table inside one pushes the whole page
+ * sideways however carefully the wrapper is told to scroll. `min-width: 0` is what actually makes
+ * `overflow-x` bite, and it is why the report reads at 320 without losing a column.
+ */
 .tableWrap {
+  min-width: 0;
   overflow-x: auto;
 }
 
@@ -200,6 +208,7 @@
 }
 
 .metric {
+  min-width: 0;
   display: grid;
   gap: var(--bl-space-1);
   padding: var(--bl-space-3) 0;
@@ -207,6 +216,7 @@
 }
 
 .metricHead {
+  min-width: 0;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -380,12 +390,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Record ids and instants are long unbreakable strings; they wrap rather than widen the sheet. */
 .recordList {
   display: grid;
   gap: var(--bl-space-1);
   margin: 0;
   padding-left: var(--bl-space-5);
   font-size: var(--bl-font-size-sm);
+  overflow-wrap: anywhere;
 }
 
 /* ---- odds and ends ----------------------------------------------------------------------------------- */

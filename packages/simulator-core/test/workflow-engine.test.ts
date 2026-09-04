@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  MAX_ENROLMENTS_IN_ONE_CHAIN,
   RUNNABLE_FEATURES,
   SimulatorError,
   actionCapabilityFor,
@@ -838,5 +839,44 @@ describe('dynamic values in conditions (WFL-009)', () => {
         { groups: [{ conditions: [{ expected: 'Laser', actual: 'Laser', passed: true }] }] },
       ],
     });
+  });
+});
+
+/**
+ * D-148. The Workflow Lab's Test Contact runs never move the account clock and every one of them
+ * enrols through a generated event, so neither the instant nor the origin separates ninety tests
+ * from a loop. The bound counts enrolments in one chain of `caused_by`, and a test's chain has
+ * one, so testing the same workflow over and over is never refused.
+ */
+describe('testing the same workflow over and over is not a loop', () => {
+  const INSTANT = workflow({
+    id: 'wf-test-again',
+    name: 'Instant workflow',
+    trigger: { ghl_feature_id: 'GHL-WF-CUSTOMER-BOOKED-APPOINTMENT' },
+    nodes: [tag('t1', 'tested'), end('e1')],
+    settings: { allow_reentry: true },
+  });
+  const times = MAX_ENROLMENTS_IN_ONE_CHAIN * 2 + 5;
+
+  it('enrols a hand-started run every time at one instant, past the loop bound', () => {
+    let state = createRun(clinicWith([INSTANT]));
+    for (let i = 0; i < times; i += 1) {
+      state = processEvent(state, enrol('wf-test-again', 'maria'));
+    }
+    expect(runsOf(state, 'wf-test-again')).toHaveLength(times);
+    expect(records(state, 'failure').filter((row) => row.reason === 'workflow_loop')).toEqual([]);
+    expect(new Set(runsOf(state, 'wf-test-again').map((run) => run.enrolled_at)).size).toBe(1);
+  });
+
+  it('does the same when the Lab fires the trigger, which is how a Test Contact run works', () => {
+    let state = createRun(clinicWith([INSTANT]));
+    for (let i = 0; i < times; i += 1) {
+      state = processEvent(state, booked('maria', `appt-test-${i}`, '2026-09-10T15:00:00-05:00'));
+    }
+    expect(runsOf(state, 'wf-test-again')).toHaveLength(times);
+    expect(records(state, 'failure').filter((row) => row.reason === 'workflow_loop')).toEqual([]);
+    // Every one of them enrolled through a generated event at the same account instant: what
+    // stops the bound firing is the chain, which is one enrolment long each time.
+    expect(state.log.filter((row) => row.type === 'WORKFLOW_ENROLLED').length).toBe(times);
   });
 });

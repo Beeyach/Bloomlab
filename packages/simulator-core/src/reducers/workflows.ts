@@ -1,7 +1,7 @@
 import { fail } from '../errors.ts';
 import { optionalString, requireString, type SimulatorEvent } from '../events.ts';
 import { canonical, fnv1a } from '../hash.ts';
-import type { AccountState, WorkflowRun, WorkflowRunContext } from '../state.ts';
+import type { AccountState, SimulatorState, WorkflowRun, WorkflowRunContext } from '../state.ts';
 import { behaviouralWorkflow } from '../workflow.ts';
 import { entity, put, result, type ReducerResult } from './shared.ts';
 
@@ -24,8 +24,8 @@ const runId = (workflowId: string, contactId: string, sequence: number) =>
 const ACTIVE: WorkflowRun['status'][] = ['active', 'waiting'];
 
 /**
- * How many times one contact may enter one workflow at a single simulator instant before the
- * engine calls it a loop (SIM-011, D-141).
+ * How many enrolments one chain of consequences may contain before the engine calls it a loop
+ * (SIM-011, D-141, D-148).
  *
  * HighLevel's builder has no edge back to an earlier step, and Bloomlab's graph validation
  * refuses one for the same reason — so the workflow loop a real account actually suffers is not
@@ -33,19 +33,49 @@ const ACTIVE: WorkflowRun['status'][] = ['active', 'waiting'];
  * enrols the contact in that one, which adds a tag that enrols them back here, and neither ever
  * changes anything that would stop it.
  *
- * That loop runs entirely at one instant, because nothing in it waits. So the bound is on
- * enrolments sharing an instant rather than on enrolments ever: a learner who tests the same
- * workflow on the same contact twenty times across a week is doing ordinary work and is not
- * stopped, and ten enrolments at one moment is not ordinary work at all.
+ * What tells that apart from a learner testing the same workflow ninety times is the causation
+ * chain, not the clock and not the origin. A Test Contact run fires a trigger event the learner
+ * put in, and the enrolment it generates is one link from that root; the account clock does not
+ * move between tests, and every test enrolment is a generated event, so neither of those can
+ * separate the two. A loop's tenth enrolment, on the other hand, is ten enrolments deep in a
+ * single chain of `caused_by`. So the bound is on the chain.
  *
  * Catching it here rather than at the engine's global cascade limit is what makes it teachable.
  * A `CASCADE_LIMIT` refusal abandons the whole operation and leaves a diagnostic; this refuses
  * one enrolment, records the failure with the count and the workflow on it, and leaves the
  * account — the contact, their tags, the runs that already completed — exactly as it was.
  */
-export const MAX_ENROLMENTS_AT_ONE_INSTANT = 10;
+export const MAX_ENROLMENTS_IN_ONE_CHAIN = 10;
 
-export function workflowEnrolled(account: AccountState, event: SimulatorEvent): ReducerResult {
+/**
+ * How many times this contact has already been enrolled inside the chain of consequences that
+ * led to this event. Walks `caused_by` back through the log, which is what makes a loop's tenth
+ * enrolment distinguishable from a learner's tenth test: the test's chain has one.
+ */
+function enrolmentsInChain(
+  state: SimulatorState,
+  event: SimulatorEvent,
+  contactId: string,
+): number {
+  const byId = new Map(state.log.map((entry) => [entry.id, entry]));
+  const seen = new Set<string>();
+  let cause = event.source?.caused_by;
+  let found = 0;
+  while (cause && !seen.has(cause)) {
+    seen.add(cause);
+    const prior = byId.get(cause);
+    if (!prior) break;
+    if (prior.type === 'WORKFLOW_ENROLLED' && prior.payload.contact_id === contactId) found += 1;
+    cause = prior.source?.caused_by;
+  }
+  return found;
+}
+
+export function workflowEnrolled(
+  account: AccountState,
+  event: SimulatorEvent,
+  state: SimulatorState,
+): ReducerResult {
   const workflowId = requireString(event.payload, 'workflow_id', event.type);
   const workflow = entity(account.workflows, workflowId, 'workflow', event.type);
   const contactId = requireString(event.payload, 'contact_id', event.type);
@@ -53,13 +83,8 @@ export function workflowEnrolled(account: AccountState, event: SimulatorEvent): 
 
   // A loop is stopped before it starts a run, so the cascade ends here rather than at the
   // engine's last-resort limit, and the record says exactly what was going round.
-  const atThisInstant = Object.values(account.workflow_runs).filter(
-    (run) =>
-      run.workflow_id === workflowId &&
-      run.contact_id === contactId &&
-      run.enrolled_at === event.at,
-  );
-  if (atThisInstant.length >= MAX_ENROLMENTS_AT_ONE_INSTANT) {
+  const inChain = enrolmentsInChain(state, event, contactId);
+  if (inChain >= MAX_ENROLMENTS_IN_ONE_CHAIN) {
     return result(account, [
       {
         kind: 'failure',
@@ -68,8 +93,8 @@ export function workflowEnrolled(account: AccountState, event: SimulatorEvent): 
         contact_id: contactId,
         event_id: event.id,
         data: {
-          enrolments_at_this_instant: atThisInstant.length,
-          limit: MAX_ENROLMENTS_AT_ONE_INSTANT,
+          enrolments_in_this_chain: inChain,
+          limit: MAX_ENROLMENTS_IN_ONE_CHAIN,
           trigger_feature: workflow.trigger.ghl_feature_id,
           caused_by: event.source?.caused_by ?? null,
         },

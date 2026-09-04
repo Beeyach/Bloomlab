@@ -7,4 +7,4 @@
  * Same shape as the other engines' rule versions (`2026.09.03-r4` for mastery, `2026.09.04-r1`
  * for the exercise grader): the date the behaviour was authored, then a revision within it.
  */
-export const SIMULATOR_VERSION = '2026.09.09-r1';
+export const SIMULATOR_VERSION = '2026.09.11-r1';
