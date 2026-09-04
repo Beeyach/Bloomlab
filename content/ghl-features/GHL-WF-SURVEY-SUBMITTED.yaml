@@ -6,8 +6,8 @@ feature_type: trigger
 implementation_type: native_ghl
 status: current
 simulation_fidelity: B
-last_verified: 2026-09-02
-source_url: https://help.gohighlevel.com/support/solutions/articles/155000002292-a-list-of-workflow-triggers
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003259-workflow-trigger-survey-submitted
 known_limitations:
   - Multi-page survey logic, scoring and disqualification pages are not simulated; the trigger delivers the final answers only.
 skills:
@@ -16,4 +16,8 @@ supported_configs:
   filters:
     - Survey is
 approximation_note: Training approximation — the simulator treats a survey as a single submission with its answers; real survey branching is practised in GHL.
-verification_note: Name confirmed on the triggers list page, 2026-09-02; filters not individually verified.
+verification_note: >-
+  Name confirmed on the triggers list page, 2026-09-02; filters not individually verified.
+  Re-checked 2026-09-04 through search summaries of the official article (the build environment's
+  proxy blocks the help centre): the trigger fires when a contact submits a survey; the "Survey
+  is" filter may be left blank for any survey; answers are not evaluated by the trigger itself.

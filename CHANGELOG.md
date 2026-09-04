@@ -4,6 +4,26 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 12 · Workflow Lab
+
+- The workflow engine in `packages/simulator-core`: capability adapters keyed by `ghl_feature_id` for 21 runnable triggers and actions (D-105), trigger matching with data-only filters, one-node-per-event traversal with effects before continuation (D-101), five wait kinds (D-100), the Time Window hold on outbound messages (D-102), If/Else with ordered branches, AND within a group, OR between groups and an automatic None (D-103), re-entry, Remove From Workflow, appointment-scoped exits on cancellation and reschedule, graph validation (D-106), definition versioning (D-104), merge fields without `eval`. Six events join the catalogue (42): `WORKFLOW_CREATED`, `WORKFLOW_UPDATED`, `WORKFLOW_ADVANCED`, `WORKFLOW_RESUMED`, `NOTIFICATION_SENT`, `EMAIL_RECEIVED`, plus the `scheduled` origin.
+- Twenty-three regression fixtures with stable ids (WAIT-001..004, RESCHED-001, BRANCH-001..005, TIME-001/002, REPLY-001/002, ENROLL-001/002, OVERLAP-001, MSG-003, EXIT-001/002, REM-002, TRIGGER-001/002, REPLAY-002) and 37 engine tests.
+- `/workflow`, the Workflow Lab: canvas, palette, inspector, test panel, execution timeline with Replay on desktop; two columns on tablet; a vertical step editor with sheets on phones. Add, filter, configure, connect, reorder, undo, redo (D-110), save as an account event (D-107), enrol a contact, move time, watch the run travel. Every drag has a keyboard or menu path.
+- One execution door with a stateless Web Worker and the same handler on both paths, crash-safe (D-109); one current-run rule shared with the CRM Lab (D-108).
+- `/conversations`: SMS and email threads with workflow attribution; a reply as the contact releases reply waits and fires Customer Replied.
+- `/playground`: every unlocked feature, by a stated rule (D-111), on a sandbox with no exercise.
+- The workflow exercise runtime (D-112) and EXR-023 weighted scoring with critical override in `packages/exercise-engine` (D-113), grader `2026.09.07-r1`; BUILD IT, FIX IT and REBUILD BLIND are graded from real runs.
+- The Academy's `<Simulation>` embed runs the engine and lists its execution records.
+- Content: workflow config schemas, compile-time graph validation, assertion `dimension`, registry record `GHL-WF-WORKFLOW-SETTINGS`, all 21 runnable workflow records re-verified 2026-09-04 through search summaries of the official articles, content version 2026.09.07.
+- `npm run review:workflow` (14 sections incl. frame timing over 500 events) and `npm run review:rail` (five widths), both PASS.
+
+### Fixed — Phase 12
+
+- The primary rail is 80 px from one token (`--bl-size-rail`) with the page offset by the same token, as DES-009 names; it was 72 px with a separate hard-coded offset. Labels hide below 480 px so seven areas fit at 320 px.
+- Reordering the entry step downward in the Lab refused because the entry has nothing above it; it now moves the step after it up.
+- The `ExecutionEvent` component dropped data attributes passed to it; it now spreads them onto the list item.
+- The `REQUIREMENTS_MATRIX.md` heading carried a stray run of status words from an earlier edit; restored to `# REQUIREMENTS MATRIX`.
+
 ### Added — Phase 11 · CRM Lab
 
 - `/crm`, a lazy route where the learner works one real training account: contacts as dense rows with a record inspector (standard fields as one form, do-not-disturb, owner, tags, custom fields, opportunities, activity, notes, tasks), the pipeline as a board with a stage picker on the deal, and Setup for custom fields and pipeline stages. CRM joins the rail with its own icon.

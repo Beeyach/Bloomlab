@@ -7,7 +7,7 @@ feature_type: trigger
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
+last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000002482-workflow-trigger-contact-tag
 known_limitations: []
 skills:
@@ -19,4 +19,8 @@ supported_configs:
     - Tag Removed
     - Tag
   notes: The workflow fires after the tag update is actually applied.
-verification_note: Name, Added/Removed and tag filter confirmed on the help-center article, 2026-09-02.
+verification_note: >-
+  Name, Added/Removed and tag filter confirmed on the help-center article, 2026-09-02. Re-checked
+  2026-09-04 through search summaries of the official article (the build environment's proxy
+  blocks the help centre): the trigger fires on a tag being added or removed, both unless the
+  Added/Removed filter is set, for the chosen tag.

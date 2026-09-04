@@ -6,7 +6,7 @@ feature_type: action
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
+last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000002474-workflow-action-send-sms
 known_limitations:
   - Carrier delivery, number registration and message-segment cost are not simulated; a send either succeeds, is skipped for DND, or fails for a missing phone.
@@ -23,4 +23,8 @@ supported_configs:
     - name: from_number
       type: reference
       required: false
-verification_note: Name confirmed on the help-center article, 2026-09-02.
+verification_note: >-
+  Name confirmed on the help-center article, 2026-09-02. Re-checked 2026-09-04 through search
+  summaries of the official article (the build environment's proxy blocks the help centre): the
+  action sends a text with merge fields in double curly braces such as {{contact.first_name}}; a
+  malformed merge field makes the action fail rather than send.

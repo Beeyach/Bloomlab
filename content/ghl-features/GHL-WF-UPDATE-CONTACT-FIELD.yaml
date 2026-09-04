@@ -6,8 +6,8 @@ feature_type: action
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
-source_url: https://help.gohighlevel.com/support/solutions/articles/48001214441-workflow-action-update-contact-field
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002688-workflow-action-update-contact-field
 known_limitations: []
 skills:
   - SK-ARCHITECT-tags-vs-custom-fields
@@ -22,4 +22,8 @@ supported_configs:
       type: template
       required: true
       description: Static value or a dynamic value from a merge field.
-verification_note: Name and dynamic-value support confirmed on the help-center article, 2026-09-02.
+verification_note: >-
+  Name and dynamic-value support confirmed on the help-center article, 2026-09-02. Re-checked
+  2026-09-04 through search summaries of the official article (the build environment's proxy
+  blocks the help centre): the action has Update field data and Clear field data modes, updates
+  several fields in one action, and accepts dynamic values.

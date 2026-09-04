@@ -6,7 +6,7 @@ feature_type: action
 implementation_type: native_ghl
 status: current
 simulation_fidelity: A
-last_verified: 2026-09-02
+last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000002476-workflow-action-create-update-opportunity
 known_limitations:
   - The separate "Create Opportunity" action (always creates a new record) is not in the registry yet.
@@ -28,4 +28,10 @@ supported_configs:
     - name: value
       type: number
       required: false
-verification_note: Name confirmed on the help-center article, 2026-09-02.
+verification_note: >-
+  Name confirmed on the help-center article, 2026-09-02. Re-checked 2026-09-04 through search
+  summaries of the official article (the build environment's proxy blocks the help centre): the
+  action names a pipeline, a stage, an opportunity name, source, lead value and status, with an
+  option allowing a move to a previous stage; HighLevel states the combined action is being
+  phased out in favour of separate Create Opportunity and Update Opportunity actions, and this
+  record keeps the name learners still see.

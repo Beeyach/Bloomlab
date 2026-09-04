@@ -156,6 +156,8 @@ Never one density everywhere.
 
 Desktop: compact left rail ≈ 68–80 px. Primary areas: Home · Campaign · Skill Map · Simulator · Clients · Portfolio · Playground. Minimal top context. No giant sidebar.
 
+**Implementation (Phase 12):** the rail is drawn from one token, `--bl-size-rail: 80px` (a 64 px bottom bar from `--bl-size-rail-bar` below 768 px), and `RootLayout` offsets the page by the same token, so the page starts beside the rail and never under it. Areas today: Home · Campaign · Skill Map · CRM · Workflow · Inbox · Playground; Clients and Portfolio join with Phases 23 and 24. Labels hide below 480 px so seven items fit at 320 px. `npm run review:rail` measures all five widths.
+
 ### Command Center (DES-010)
 
 Primary question: "What should I do next?" Main object: **Continue** (campaign, gate, current topic, progress). Supporting: active client · due retrieval · recent mastery · Build My Session. Home is never filled with meaningless metrics.
@@ -171,6 +173,8 @@ An interactive editorial publication: strong typography, short sections, diagram
 ### Workflow Lab (WFL-007)
 
 Dark ink workspace. Light clean nodes. Active execution in aqua/blue. Not neon hacker software.
+
+**Implementation (Phase 12):** the canvas is an `InkSurface` (`rgb(16, 13, 34)`, luminance 0.06); nodes are white surfaces (luminance 1.0) with the feature name, one line of configuration and a status word; the running node, the travelling dot and the chosen branch use `--bl-color-aqua`; waits use the execution token at rest. No eyebrow labels, no monospace, no glow. Desktop: palette · canvas · inspector with the test panel and timeline below. Tablet: canvas beside the inspector, test panel beside the timeline. Phone: a vertical step editor, the inspector and palette as bottom sheets, the timeline as a tab, 44 px targets and 16 px inputs. Every drag has a keyboard or menu path (A11Y-006). Measured by `npm run review:workflow`.
 
 ### Client cases (DES-012)
 

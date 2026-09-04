@@ -213,8 +213,8 @@ architecture (D-083).
 Phase 10 owns the account, the clock, the queue, the catalogue, the log and the run. It does not
 execute workflows: enrolment, step completion, exit and refused re-entry are recorded as entities
 and events, but nothing walks a contact from node to node, evaluates a branch or serves a wait.
-That is the Workflow Lab (Phase 12), which is also where the Playground (SIM-015) and the Web
-Worker (SIM-014) belong. The realistic-failure library (SIM-011) is Phase 15; the two failure
+That was the Workflow Lab (Phase 12, §16), which is also where the Playground (SIM-015) and the
+Web Worker (SIM-014) landed. The realistic-failure library (SIM-011) is Phase 15; the two failure
 conditions Phase 10 enforces — a contact with no phone, and do-not-disturb — are properties of an
 outbound message, not of that library.
 
@@ -261,3 +261,62 @@ simulator sequence; `words.ts` phrases it at render (D-095).
 
 Phase 11 owns the CRM Lab and these events. It does not execute workflows, move a deal between
 pipelines, delete anything, or edit companies, custom objects, Smart Lists or Custom Values.
+
+## 16. Workflow execution (Phase 12)
+
+**Adapters.** `src/workflow/capabilities.ts` holds one adapter per runnable `ghl_feature_id`
+(D-105). A trigger adapter lists the internal events it listens to, its filter fields and a pure
+`match(event, account)`; an action adapter validates a node config against the account and
+`execute`s it into effect events. `RUNNABLE_FEATURES` is derived from that table. A registry
+record without an adapter, or with fidelity C, is not runnable and a node using it fails the run
+with `unsupported_feature` rather than pretending.
+
+**Definitions.** `Workflow { id, name, trigger { ghl_feature_id, filters[] }, nodes[], edges[],
+settings { allow_reentry, timezone, time_window }, version }`. `WORKFLOW_CREATED` stores version 1,
+`WORKFLOW_UPDATED` adds one (D-104). `validateWorkflowGraph(workflow, account)` returns coded
+issues and is run at save and at content compile (D-106).
+
+**Reactions.** After every processed event, `workflowReactions` asks each published workflow's
+trigger adapter whether the event matches and the filters pass (`compareValues`, D-103), then
+generates `WORKFLOW_ENROLLED` with `trigger_values` and a context (appointment, opportunity, form,
+message). Re-entry is judged at enrolment. An event whose records are all `action_skipped` fires
+no reactions (D-101). Appointment-scoped runs are ended when the appointment is cancelled, marked
+no-show or invalid, or rescheduled, and a reschedule fires the appointment triggers again.
+
+**Traversal.** `WORKFLOW_ADVANCED { workflow_run_id, node_id }` moves a run to one node: effects
+first, continuation second. `end` completes; `branch` writes `branch_result` and advances down the
+chosen branch; `wait` parks; `action` executes through its adapter and the effect reducer records
+`step_completed`. Attribution (`workflow_id`, `node_id`, `workflow_run_id`) is filled in `run.ts`
+from the effect's payload.
+
+**Waits.** `WorkflowWait { kind, wake_at, wake_reason, appointment_id, reply_channel, condition,
+token, started_at }` on the run, `kind` from `period · date · appointment · reply · condition`
+(D-100). A timed wait schedules `WORKFLOW_RESUMED { resume_token }` with origin `scheduled`;
+`unschedule` withdraws it by token when the run exits. A late target proceeds at once with
+`waiting` reason `wait_target_passed`. Reply waits are released by `SMS_RECEIVED` or
+`EMAIL_RECEIVED` for the contact on the chosen channel; condition waits are re-evaluated on every
+event that touches the contact. `settings.time_window` holds outbound messages until the next
+opening and resumes into the same node (D-102).
+
+**View and merge.** `viewFor(account, workflow, run, zone, now)` resolves the contact, subject
+appointment, opportunity and message once; `renderTemplate` substitutes merge fields from it and
+reports unresolved names; conditions read the same view (D-103). No `eval`, no `Function`.
+
+**Events added.** `WORKFLOW_CREATED`, `WORKFLOW_UPDATED`, `WORKFLOW_ADVANCED`, `WORKFLOW_RESUMED`,
+`NOTIFICATION_SENT`, `EMAIL_RECEIVED`. Catalogue: 42. Origins gain `scheduled`; sources gain
+`workflow_trigger` and `workflow_wait`.
+
+**Outside the core.** `apps/web/src/workflow/commands.ts` is the only path from a screen to the
+account; `execution.ts` is the one door, direct or Web Worker, with the same `engineOps.ts`
+handler on both and a stateless request/response so a crash leaves the saved run untouched
+(D-109). `apps/web/src/simulator/currentRun.ts` is the one current-run rule for every Lab
+(D-108). `workflow/exerciseRuntime.ts` supplies state, events, references and the learner's
+architecture to the grader (D-112).
+
+### Phase boundary (Phase 12)
+
+Phase 12 owns workflow definitions, execution, waits, branches, re-entry, exits, the Worker, the
+Lab, Conversations (SMS and email) and the Playground. It does not build forms or pages (Phase 13),
+calendars beyond booking and status (Phase 14), the realistic-failure library (Phase 15), calls or
+other channels (Phase 21), or AI grading (Phase 19). Two HighLevel wait types (Trigger Link Clicked,
+Email Event) are not modelled and are listed as such.
