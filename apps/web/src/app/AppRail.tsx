@@ -3,11 +3,13 @@ import { NavLink } from 'react-router';
 import {
   IconBolt,
   IconCampaign,
+  IconChat,
   IconHome,
   IconInfo,
   IconMap,
   IconMore,
   IconRecords,
+  IconSandbox,
   VisuallyHidden,
   cx,
   type IconProps,
@@ -24,8 +26,8 @@ interface Area {
 }
 
 /**
- * The compact rail (spec §73, DES-009): the areas that exist today. Clients, Portfolio and
- * Playground join it with their phases — nothing inert stands in for them.
+ * The compact rail (spec §73, DES-009): the areas that exist today. Clients and Portfolio join
+ * it with their phases — nothing inert stands in for them.
  */
 const AREAS: Area[] = [
   { to: '/', label: 'Home', icon: IconHome, end: true },
@@ -33,6 +35,8 @@ const AREAS: Area[] = [
   { to: '/skills', label: 'Skill Map', icon: IconMap },
   { to: '/crm', label: 'CRM', icon: IconRecords },
   { to: '/workflow', label: 'Workflow', icon: IconBolt },
+  { to: '/conversations', label: 'Inbox', icon: IconChat },
+  { to: '/playground', label: 'Playground', icon: IconSandbox },
 ];
 
 const DEVELOPER: Area[] = [

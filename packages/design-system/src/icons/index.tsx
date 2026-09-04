@@ -174,3 +174,15 @@ export const IconMap = (p: IconProps) => (
     <path d="M9 4v14M15 6v14" />
   </Icon>
 );
+export const IconChat = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-5 4z" />
+    <path d="M8 9h8M8 12.5h5" />
+  </Icon>
+);
+export const IconSandbox = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M9 3h6M10 3v6.5L4.8 18.2A1.5 1.5 0 0 0 6.1 20.5h11.8a1.5 1.5 0 0 0 1.3-2.3L14 9.5V3" />
+    <path d="M7.5 15h9" />
+  </Icon>
+);
