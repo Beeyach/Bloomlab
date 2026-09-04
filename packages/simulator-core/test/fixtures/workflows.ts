@@ -127,11 +127,33 @@ export const REMINDER = workflow({
   ],
 });
 
-/** The same reminder, designed well: after the wait it checks the appointment is still on. */
+/**
+ * The same reminder started by the `booked` tag instead of the booking. A tag-started run is not
+ * about any one appointment, so the platform does not end it when an appointment is cancelled —
+ * which is how a reminder ends up going to a cancelled appointment.
+ */
+export const TAG_REMINDER = workflow({
+  id: 'wf-tag-reminder',
+  name: 'Reminder (from tag)',
+  trigger: {
+    ghl_feature_id: 'GHL-WF-CONTACT-TAG',
+    filters: [
+      { field: 'change', operator: 'is', value: 'added' },
+      { field: 'tag', operator: 'is', value: 'booked' },
+    ],
+  },
+  nodes: [
+    wait('w1', { wait_type: 'appointment', relative: 'before', hours: 1 }),
+    sms('s1', 'See you at {{appointment.start_time}}, {{contact.first_name}}.', 'reminder_1h'),
+    end('e1'),
+  ],
+});
+
+/** The tag-started reminder, designed well: after the wait it checks the appointment is still on. */
 export const CAREFUL_REMINDER = workflow({
-  id: 'wf-reminder',
-  name: 'Appointment Reminder',
-  trigger: { ghl_feature_id: 'GHL-WF-CUSTOMER-BOOKED-APPOINTMENT' },
+  id: 'wf-tag-reminder',
+  name: 'Reminder (from tag)',
+  trigger: TAG_REMINDER.trigger,
   nodes: [
     wait('w1', { wait_type: 'appointment', relative: 'before', hours: 1 }),
     ifElse('b1', [
@@ -159,7 +181,7 @@ export const CAREFUL_REMINDER = workflow({
   ],
 });
 
-/** A cancellation handler that pulls the contact out of the reminder. */
+/** A cancellation handler that pulls the contact out of the tag-started reminder. */
 export const CANCELLATION = workflow({
   id: 'wf-cancellation',
   name: 'Cancellation Handler',
@@ -167,7 +189,25 @@ export const CANCELLATION = workflow({
     ghl_feature_id: 'GHL-WF-APPOINTMENT-STATUS',
     filters: [{ field: 'appointment_status', operator: 'is', value: 'cancelled' }],
   },
-  nodes: [removeFrom('r1', 'wf-reminder'), tag('t1', 'cancelled'), end('e1')],
+  nodes: [removeFrom('r1', 'wf-tag-reminder'), tag('t1', 'cancelled'), end('e1')],
+});
+
+export const tagged = (contactId: string, name: string, when: string = NOW): PendingEvent => ({
+  type: 'TAG_ADDED',
+  at: when,
+  origin: 'injected',
+  payload: { contact_id: contactId, tag: name },
+});
+
+export const rescheduled = (
+  appointmentId: string,
+  startsAt: string,
+  when: string,
+): PendingEvent => ({
+  type: 'APPOINTMENT_RESCHEDULED',
+  at: when,
+  origin: 'injected',
+  payload: { appointment_id: appointmentId, starts_at: startsAt },
 });
 
 /** Enrol a contact by hand, the way a Test Contact run does, with an optional appointment. */

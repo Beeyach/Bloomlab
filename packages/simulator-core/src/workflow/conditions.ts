@@ -16,7 +16,9 @@ import type { RunView } from './view.ts';
  * are ORed and the conditions inside a group are ANDed; when nothing matches the None branch is
  * taken. That is the registry's description of the real action (GHL-WF-IF-ELSE, fidelity A),
  * and it is all structured data: a condition is a field address, an operator and a value, never
- * an expression. A missing value is explicit — `exists` is the only operator that is true for it.
+ * an expression. A missing value is explicit: only `not_exists` is true for it. Every comparison —
+ * `is_not` and `not_contains` included — needs a value to compare, so a branch written as
+ * "status is not cancelled" does not match a contact who has no appointment at all.
  */
 
 export type FieldValue = string | number | boolean | string[] | null;
@@ -201,7 +203,7 @@ export function compareValues(
     case 'is':
       return has && (Array.isArray(asText) ? asText.includes(targetText) : asText === targetText);
     case 'is_not':
-      return !has || (Array.isArray(asText) ? !asText.includes(targetText) : asText !== targetText);
+      return has && (Array.isArray(asText) ? !asText.includes(targetText) : asText !== targetText);
     case 'contains':
       return (
         has &&
@@ -211,7 +213,7 @@ export function compareValues(
       );
     case 'not_contains':
       return (
-        !has ||
+        has &&
         (Array.isArray(asText)
           ? !asText.some((entry) => entry.includes(targetText))
           : !asText.includes(targetText))

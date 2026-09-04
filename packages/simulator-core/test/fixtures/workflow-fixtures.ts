@@ -14,6 +14,7 @@ import {
   CANCELLATION,
   CAREFUL_REMINDER,
   REMINDER,
+  TAG_REMINDER,
   booked,
   cancelled,
   clinicWith,
@@ -27,9 +28,11 @@ import {
   records,
   removeFrom,
   reply,
+  rescheduled,
   runsOf,
   sms,
   tag,
+  tagged,
   wait,
   workflow,
 } from './workflows.ts';
@@ -136,17 +139,29 @@ export const WORKFLOW_FIXTURES: RegressionFixture[] = [
   {
     id: 'WAIT-004',
     behaviour:
-      'Cancelling an appointment during a wait does not stop the run by itself: the wake still fires, records the cancelled status, and a reminder with no check still sends. Stopping it is the workflow’s job (REM-002, EXIT-002).',
+      'Cancelling an appointment during a wait ends the run the booking started (platform behaviour: the contact is pulled out, nothing more runs). A reminder started by a tag is not about that appointment, is not pulled out, and with no status check still sends.',
     covers: 'WFL-006, SIM-011',
     status: 'implemented',
     run: () => {
       let state = processEvent(
-        createRun(clinicWith([REMINDER])),
+        // Without Maria's authored Friday appointment, Saturday's is the one a tag-started
+        // run finds; the booking-started run is about Saturday's regardless.
+        createRun(clinicWith([REMINDER, TAG_REMINDER], { appointments: [] })),
         booked('maria', 'appt-sat', SATURDAY_APPOINTMENT),
       );
+      state = processEvent(state, tagged('maria', 'booked'));
+      expect(runsOf(state).map((run) => [run.workflow_id, run.status])).toEqual([
+        ['wf-reminder', 'waiting'],
+        ['wf-tag-reminder', 'waiting'],
+      ]);
       state = processEvent(state, cancelled('appt-sat', '2026-09-04T10:00:00-05:00'));
-      // Still waiting: the platform does not pull the run when the appointment goes.
-      expect(onlyRun(state).status).toBe('waiting');
+      // The booking-started run is gone with its wake; the tag-started run is still parked.
+      expect(onlyRun(state, 'wf-reminder')).toMatchObject({
+        status: 'exited',
+        exit_reason: 'appointment_cancelled',
+      });
+      expect(onlyRun(state, 'wf-tag-reminder').status).toBe('waiting');
+      expect(state.queue.filter((row) => row.type === 'WORKFLOW_RESUMED')).toHaveLength(1);
       return advanceTo(state, AN_HOUR_BEFORE);
     },
     expect: (state) => {
@@ -155,9 +170,41 @@ export const WORKFLOW_FIXTURES: RegressionFixture[] = [
         appointment_id: 'appt-sat',
         appointment_status: 'cancelled',
       });
-      // The naive reminder goes out anyway — the failure a learner has to be able to see.
-      expect(messagesTo(state, 'maria')).toHaveLength(1);
-      expect(state.account.appointments['appt-sat']?.status).toBe('cancelled');
+      // One reminder went out, from the tag-started run, to a cancelled appointment — with the
+      // time blank, because there is no live appointment left to merge.
+      const messages = messagesTo(state, 'maria');
+      expect(messages.map((m) => m.workflow_id)).toEqual(['wf-tag-reminder']);
+      expect(messages[0]?.body).toBe('See you at , Maria.');
+      expect(
+        records(state, 'exit').find((row) => row.reason === 'appointment_cancelled')?.data,
+      ).toMatchObject({ was_waiting: true });
+    },
+  },
+  {
+    id: 'RESCHED-001',
+    behaviour:
+      'Rescheduling ends the run the old booking started and starts a fresh one against the new time, so the reminder moves with the appointment.',
+    covers: 'WFL-006, WFL-010',
+    status: 'implemented',
+    run: () => {
+      let state = processEvent(
+        createRun(clinicWith([REMINDER])),
+        booked('maria', 'appt-sat', SATURDAY_APPOINTMENT),
+      );
+      state = processEvent(
+        state,
+        rescheduled('appt-sat', '2026-09-06T16:00:00-05:00', '2026-09-04T10:00:00-05:00'),
+      );
+      return advanceTo(state, '2026-09-06T15:00:00-05:00');
+    },
+    expect: (state) => {
+      const runs = runsOf(state, 'wf-reminder');
+      expect(runs.map((run) => [run.status, run.exit_reason])).toEqual([
+        ['exited', 'appointment_rescheduled'],
+        ['completed', 'completed'],
+      ]);
+      expect(messagesTo(state, 'maria').map((m) => m.at)).toEqual(['2026-09-06T15:00:00-05:00']);
+      expect(messagesTo(state, 'maria')[0]?.body).toBe('See you at 4:00 pm, Maria.');
     },
   },
 
@@ -659,18 +706,19 @@ export const WORKFLOW_FIXTURES: RegressionFixture[] = [
     status: 'implemented',
     run: () => {
       let state = processEvent(
-        createRun(clinicWith([REMINDER, CANCELLATION])),
+        createRun(clinicWith([TAG_REMINDER, CANCELLATION], { appointments: [] })),
         booked('maria', 'appt-sat', SATURDAY_APPOINTMENT),
       );
-      expect(onlyRun(state, 'wf-reminder').status).toBe('waiting');
+      state = processEvent(state, tagged('maria', 'booked'));
+      expect(onlyRun(state, 'wf-tag-reminder').status).toBe('waiting');
       state = processEvent(state, cancelled('appt-sat', '2026-09-04T10:00:00-05:00'));
-      expect(onlyRun(state, 'wf-reminder').status).toBe('exited');
+      expect(onlyRun(state, 'wf-tag-reminder').status).toBe('exited');
       expect(state.queue.filter((row) => row.type === 'WORKFLOW_RESUMED')).toHaveLength(0);
       return advanceTo(state, AN_HOUR_BEFORE);
     },
     expect: (state) => {
       expect(messagesTo(state, 'maria')).toHaveLength(0);
-      expect(onlyRun(state, 'wf-reminder').exit_reason).toBe('removed');
+      expect(onlyRun(state, 'wf-tag-reminder').exit_reason).toBe('removed');
       expect(onlyRun(state, 'wf-cancellation').status).toBe('completed');
       expect(state.account.contacts.maria?.tags).toContain('cancelled');
       // The removal is attributed to the step that did it.
@@ -683,14 +731,15 @@ export const WORKFLOW_FIXTURES: RegressionFixture[] = [
   {
     id: 'REM-002',
     behaviour:
-      'A cancelled appointment receives no reminder from a reminder workflow that checks the status after its wait.',
+      'A cancelled appointment receives no reminder from a tag-started reminder that checks the appointment status after its wait.',
     covers: 'WFL-006, WFL-007, SIM-011',
     status: 'implemented',
     run: () => {
       let state = processEvent(
-        createRun(clinicWith([CAREFUL_REMINDER])),
+        createRun(clinicWith([CAREFUL_REMINDER], { appointments: [] })),
         booked('maria', 'appt-sat', SATURDAY_APPOINTMENT),
       );
+      state = processEvent(state, tagged('maria', 'booked'));
       state = processEvent(state, cancelled('appt-sat', '2026-09-04T10:00:00-05:00'));
       return advanceTo(state, AN_HOUR_BEFORE);
     },
@@ -699,6 +748,8 @@ export const WORKFLOW_FIXTURES: RegressionFixture[] = [
       expect(onlyRun(state).status).toBe('completed');
       const [result] = records(state, 'branch_result');
       expect(result?.data).toMatchObject({ chosen: 'None', fallback: true });
+      // With no live appointment left, the status reads as missing: `is_not cancelled` fails
+      // on a missing value, which is the explicit-missing rule the branch is built on.
       expect(result?.data).toMatchObject({
         branches: [
           {
@@ -709,15 +760,13 @@ export const WORKFLOW_FIXTURES: RegressionFixture[] = [
                     field: 'appointment.status',
                     operator: 'is_not',
                     expected: 'cancelled',
-                    actual: 'cancelled',
-                    passed: false,
+                    actual: null,
                   },
                   {
                     field: 'appointment.status',
                     operator: 'is_not',
                     expected: 'no_show',
-                    actual: 'cancelled',
-                    passed: true,
+                    actual: null,
                   },
                 ],
               },
@@ -833,7 +882,10 @@ export const WORKFLOW_FIXTURES: RegressionFixture[] = [
       expect(eventsOf(state, 'WORKFLOW_RESUMED').some((row) => row.origin === 'scheduled')).toBe(
         true,
       );
-      expect(onlyRun(state, 'wf-reminder').status).toBe('exited');
+      expect(onlyRun(state, 'wf-reminder')).toMatchObject({
+        status: 'exited',
+        exit_reason: 'appointment_cancelled',
+      });
       // Lena's follow-up ran its day; the cancellation's tag enrolled Maria in the same follow-up,
       // and hers is still waiting — workflows reacting to each other is exactly what replay
       // has to reproduce.

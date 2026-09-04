@@ -36,13 +36,68 @@ function passesFilters(filters: WorkflowTriggerFilter[], match: TriggerMatch): b
   });
 }
 
+/** Triggers whose enrolments are about one appointment, and end with it (see `appointmentExits`). */
+const APPOINTMENT_TRIGGERS: ReadonlySet<string> = new Set([
+  'GHL-WF-CUSTOMER-BOOKED-APPOINTMENT',
+  'GHL-WF-APPOINTMENT-STATUS',
+]);
+
+/** Statuses that end an appointment-scoped run when the appointment reaches them. */
+const ENDING_STATUSES: ReadonlySet<string> = new Set(['cancelled', 'invalid', 'no_show']);
+
+/**
+ * Platform behaviour, from HighLevel's "Appointment scenarios in Workflow": a contact enrolled by
+ * an appointment trigger is pulled out of that workflow when the appointment is cancelled,
+ * marked invalid or no-show, or rescheduled, and no further actions run. A run enrolled by any
+ * other trigger (a tag, a form) is untouched — telling those two apart is what a reminder that
+ * fires for a cancelled appointment teaches. The exit reason says which it was.
+ */
+function appointmentExits(event: SimulatorEvent, account: AccountState): PendingEvent[] {
+  let reason: 'appointment_cancelled' | 'appointment_rescheduled' | null = null;
+  if (event.type === 'APPOINTMENT_CANCELLED') reason = 'appointment_cancelled';
+  else if (event.type === 'APPOINTMENT_RESCHEDULED') reason = 'appointment_rescheduled';
+  else if (
+    event.type === 'APPOINTMENT_STATUS_CHANGED' &&
+    ENDING_STATUSES.has(String(event.payload.status ?? ''))
+  ) {
+    reason = 'appointment_cancelled';
+  }
+  const appointmentId =
+    typeof event.payload.appointment_id === 'string' ? event.payload.appointment_id : null;
+  if (!reason || !appointmentId) return [];
+  const exitReason = reason;
+  return Object.values(account.workflow_runs)
+    .filter(
+      (run) =>
+        (run.status === 'active' || run.status === 'waiting') &&
+        run.context.appointment_id === appointmentId &&
+        APPOINTMENT_TRIGGERS.has(account.workflows[run.workflow_id]?.trigger.ghl_feature_id ?? ''),
+    )
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .map((run) => ({
+      type: 'WORKFLOW_EXITED' as const,
+      at: event.at,
+      origin: 'generated' as const,
+      source: { kind: 'workflow_trigger' as const, id: run.workflow_id, caused_by: event.id },
+      payload: {
+        workflow_run_id: run.id,
+        reason: exitReason,
+        appointment_id: appointmentId,
+        appointment_status: String(
+          event.payload.status ?? account.appointments[appointmentId]?.status ?? '',
+        ),
+      },
+    }));
+}
+
 export function workflowReactions(
   event: SimulatorEvent,
   account: AccountState,
   state: SimulatorState,
 ): PendingEvent[] {
   if (INTERNAL.has(event.type)) return [];
-  const reactions: PendingEvent[] = [];
+  // 0. Appointment-scoped runs the platform ends, before anything new starts from this event.
+  const reactions: PendingEvent[] = appointmentExits(event, account);
 
   // 1. Triggers, in workflow-id order so two matching workflows always enrol in the same order.
   const workflows = Object.values(account.workflows).sort((a, b) => a.id.localeCompare(b.id));

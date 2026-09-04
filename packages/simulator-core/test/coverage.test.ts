@@ -4,6 +4,7 @@ import {
   SIMULATOR_EVENT_TYPES,
   advanceTo,
   createRun,
+  eventTypeFromContent,
   historyHash,
   initialAccount,
   injectAction,
@@ -105,9 +106,17 @@ describe('every injectable action the spec lists can be injected (SIM-009)', () 
       ],
     };
     const state = injectAction(createRun(authored), authored, 'action');
-    expect(state.log).toHaveLength(type === 'form.submitted' ? 2 : 1);
     expect(state.log[0]?.origin).toBe('injected');
+    expect(state.log[0]?.type).toBe(eventTypeFromContent(type));
     expect(state.execution.length).toBeGreaterThan(0);
+    // A form submission creates the contact; a reschedule is a new booking to the scenario's
+    // confirmation workflow, which enrols and runs (Phase 12). Everything else stands alone.
+    if (type === 'appointment.rescheduled') {
+      expect(state.log.map((row) => row.type)).toContain('WORKFLOW_ENROLLED');
+      expect(state.log.filter((row) => row.origin === 'injected')).toHaveLength(1);
+    } else {
+      expect(state.log).toHaveLength(type === 'form.submitted' ? 2 : 1);
+    }
   });
 });
 

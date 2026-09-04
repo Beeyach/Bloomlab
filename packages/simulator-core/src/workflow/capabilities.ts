@@ -80,7 +80,8 @@ const TRIGGER_CAPABILITIES: TriggerCapability[] = [
   {
     kind: 'trigger',
     feature: 'GHL-WF-CUSTOMER-BOOKED-APPOINTMENT',
-    events: ['APPOINTMENT_BOOKED'],
+    // A reschedule is treated as a new booking (registry: GHL-WF-APPOINTMENT-STATUS).
+    events: ['APPOINTMENT_BOOKED', 'APPOINTMENT_RESCHEDULED'],
     filters: [
       { key: 'calendar', label: 'In Calendar', kind: 'text', reference: 'calendars' },
       { key: 'tag', label: 'Has tag', kind: 'list', reference: 'tags' },
@@ -89,14 +90,17 @@ const TRIGGER_CAPABILITIES: TriggerCapability[] = [
     // which is the split the registry records.
     match: (event, account) => {
       if (event.payload.booked_by === 'staff') return null;
-      const contactId = str(event.payload.contact_id);
       const appointmentId = str(event.payload.appointment_id);
-      if (!contactId || !appointmentId) return null;
+      if (!appointmentId) return null;
+      // A reschedule names only the appointment; the contact and calendar come from the record.
+      const appointment = account.appointments[appointmentId];
+      const contactId = str(event.payload.contact_id) ?? appointment?.contact_id ?? null;
+      if (!contactId) return null;
       return {
         contact_id: contactId,
         context: { appointment_id: appointmentId },
         values: {
-          calendar: str(event.payload.calendar_id),
+          calendar: str(event.payload.calendar_id) ?? appointment?.calendar_id ?? null,
           tag: contactTags(account, contactId),
         },
       };
@@ -105,7 +109,7 @@ const TRIGGER_CAPABILITIES: TriggerCapability[] = [
   {
     kind: 'trigger',
     feature: 'GHL-WF-APPOINTMENT-STATUS',
-    events: ['APPOINTMENT_BOOKED', 'APPOINTMENT_STATUS_CHANGED'],
+    events: ['APPOINTMENT_BOOKED', 'APPOINTMENT_RESCHEDULED', 'APPOINTMENT_STATUS_CHANGED'],
     filters: [
       {
         key: 'appointment_status',
@@ -123,9 +127,9 @@ const TRIGGER_CAPABILITIES: TriggerCapability[] = [
       if (!appointment) return null;
       // A new booking is the status "New"; a change carries its own status.
       const status =
-        event.type === 'APPOINTMENT_BOOKED'
-          ? 'new'
-          : (str(event.payload.status) ?? appointment.status);
+        event.type === 'APPOINTMENT_STATUS_CHANGED'
+          ? (str(event.payload.status) ?? appointment.status)
+          : 'new';
       return {
         contact_id: appointment.contact_id,
         context: { appointment_id: appointmentId },
