@@ -1,4 +1,5 @@
-# Name verified 2026-09-02 on "A List of Workflow Triggers" (Events group).
+# Name verified 2026-09-02 on "A List of Workflow Triggers" (Events group). Filters confirmed
+# 2026-09-04 from search summaries of "Workflow Trigger - Customer Replied" (article 155000002677).
 id: GHL-WF-CUSTOMER-REPLIED
 official_name: Customer Replied
 area: Workflows
@@ -6,10 +7,12 @@ feature_type: trigger
 implementation_type: native_ghl
 status: current
 simulation_fidelity: B
-last_verified: 2026-09-02
-source_url: https://help.gohighlevel.com/support/solutions/articles/155000002292-a-list-of-workflow-triggers
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002677-workflow-trigger-customer-replied
 known_limitations:
   - The simulator models SMS and email replies only; social and chat channels are not simulated.
+  - The Intent Type and tag filters the article lists are not offered; Reply Channel and Contains Phrase are.
+  - An inbound reply also releases a "wait for the contact to reply" step in any run that contact has; the trigger and the release are two different things and both are recorded.
 skills:
   - SK-AUTOMATE-workflow-foundations
 supported_configs:
@@ -17,4 +20,4 @@ supported_configs:
     - Reply channel
     - Contains phrase
 approximation_note: Training approximation — replies arrive on SMS or email in the simulator; other channels are practised in GHL.
-verification_note: Name confirmed on the triggers list page, 2026-09-02; filters not individually verified.
+verification_note: Name confirmed on the triggers list page, 2026-09-02. "Contains Phrase" ("runs only when the reply includes specific words or phrases") and "Reply Channel" ("runs only when the reply came from a selected channel") confirmed from search summaries of the dedicated article on 2026-09-04; the article could not be opened directly from the build environment.

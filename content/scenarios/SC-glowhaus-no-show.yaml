@@ -97,6 +97,7 @@ initial_account_state:
           label: Confirmation SMS
           config:
             template: "Hi {{contact.first_name}}, you're booked at Glowhaus on {{appointment.start_time}}. Reply CHANGE to reschedule."
+            purpose: confirmation
           position: { x: 0, y: 120 }
         - id: n2
           type: action

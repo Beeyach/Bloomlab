@@ -1,5 +1,11 @@
 import type { ZodType } from 'zod';
 
+import {
+  initialAccount,
+  validateWorkflowGraph,
+  type SimulatorScenario,
+} from '@bloomlab/simulator-core';
+
 import type { ContentIssue, IssueCode } from '../bundle.ts';
 import { CONTENT_TYPES, type ContentType, territoryOfSkillId } from '../ids.ts';
 import {
@@ -710,6 +716,30 @@ export function crossValidate(parsed: ParsedContent, issues: IssueList): GraphRe
     scenario.initial_account_state.workflows.forEach((workflow, index) =>
       checkWorkflow(workflow, scenario, `initial_account_state.workflows.${index}`),
     );
+    // An authored workflow must be one the engine will run: the same graph validation the
+    // Workflow Lab applies before a test contact enters, applied at compile time against the
+    // account the scenario itself builds (WFL-003). A scenario that authors a broken workflow on
+    // purpose has no way to say so yet; when one does, it will need a flag here, not a bypass.
+    try {
+      const account = initialAccount(scenario as unknown as SimulatorScenario);
+      for (const workflow of Object.values(account.workflows)) {
+        for (const problem of validateWorkflowGraph(workflow, account)) {
+          issues.error(
+            'WORKFLOW_GRAPH_INVALID',
+            fileOf(scenario.id),
+            `${scenario.id}: workflow ${workflow.id}${problem.node_id ? ` step ${problem.node_id}` : ''} — ${problem.message} (${problem.code})`,
+            { id: scenario.id, path: `initial_account_state.workflows.${workflow.id}` },
+          );
+        }
+      }
+    } catch (error) {
+      issues.error(
+        'WORKFLOW_GRAPH_INVALID',
+        fileOf(scenario.id),
+        `${scenario.id}: the simulator cannot build this account — ${error instanceof Error ? error.message : String(error)}`,
+        { id: scenario.id, path: 'initial_account_state' },
+      );
+    }
   }
 
   // ---- projects and portfolio

@@ -1,0 +1,42 @@
+# Verified 2026-09-04 against "Workflow Settings - Overview" through search-engine summaries of
+# the help-center article; the article itself was not fetchable from the build environment (the
+# network proxy blocks help.gohighlevel.com), so the wording below is what the summaries quoted.
+id: GHL-WF-WORKFLOW-SETTINGS
+official_name: Workflow Settings
+area: Workflows
+feature_type: setting
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-04
+source_url: https://help.gohighlevel.com/support/solutions/articles/48001239875-workflow-settings-overview
+known_limitations:
+  - Simulated — Allow Re-Entry (a contact already active in the workflow is refused a second run when it is off), Time Window (an outbound message outside the window is held and sent when the window next opens), Timezone as the workflow's own zone.
+  - Not simulated — Contact Timezone (the simulator always uses the workflow's or the account's zone), Stop on Response, Allow Multiple Opportunity, Sender Details, Mark as Read. These are practised in GHL.
+skills:
+  - SK-AUTOMATE-workflow-foundations
+  - SK-AUTOMATE-reentry-and-duplicates
+supported_configs:
+  config_fields:
+    - name: allow_reentry
+      type: boolean
+      required: false
+      description: Allow Re-Entry. Off refuses a second active run for the same contact; on starts another.
+    - name: timezone
+      type: string
+      required: false
+      description: The zone the workflow's waits and Time Window are read in. Falls back to the account's.
+    - name: time_window
+      type: json
+      required: false
+      description: 'Time Window: weekdays (1–7) and a start/end time. Messages outside it wait for the next opening.'
+  options:
+    - Allow Re-Entry
+    - Stop on Response
+    - Time Window
+    - Timezone (Account Timezone / Contact Timezone)
+    - Allow Multiple Opportunity
+approximation_note: Training approximation — Allow Re-Entry, Time Window and the workflow timezone run in the simulator; Stop on Response, Contact Timezone and Allow Multiple Opportunity are practised in GHL.
+aliases:
+  - Sending Window
+verification_note: Setting names and the Time Window rule ("if a message is set to be sent outside the specified Time Window … it will wait and be sent at the start of the next Time Window") confirmed from search summaries of the help-center article, 2026-09-04. The article could not be opened directly from the build environment.
