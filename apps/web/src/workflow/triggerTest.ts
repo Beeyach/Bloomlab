@@ -2,6 +2,7 @@ import {
   triggerCapabilityFor,
   type AccountState,
   type SimulatorEventType,
+  type SimulatorState,
   type Workflow,
   type WorkflowRun,
 } from '@bloomlab/simulator-core';
@@ -293,4 +294,87 @@ export function enrolledByEvent(
         typeof run.context.trigger_event_id === 'string',
     )
     .sort((a, b) => a.id.localeCompare(b.id));
+}
+
+
+/**
+ * What the exact root event made the tested workflow do.
+ *
+ * This is stricter than looking for "some new run": one engine operation may cascade through
+ * several workflows. A test only counts as a direct trigger match when the WORKFLOW_ENROLLED
+ * event names the root event the panel just injected. If that match is refused because the
+ * contact already has a live run and re-entry is off, that is reported separately from a filter
+ * miss (WFL-004, WFL-010).
+ */
+export type TriggerFireOutcome =
+  | { kind: 'enrolled'; run: WorkflowRun; root_event_id: string }
+  | { kind: 'blocked_reentry'; existing_run_id: string | null; root_event_id: string }
+  | { kind: 'not_matched'; root_event_id: string | null };
+
+export function triggerOutcomeFor(
+  beforeLogLength: number,
+  after: SimulatorState,
+  workflowId: string,
+): TriggerFireOutcome {
+  const root = after.log[beforeLogLength] ?? null;
+  if (!root) return { kind: 'not_matched', root_event_id: null };
+
+  const enrolment = after.log.slice(beforeLogLength + 1).find(
+    (event) =>
+      event.type === 'WORKFLOW_ENROLLED' &&
+      event.payload.workflow_id === workflowId &&
+      event.payload.trigger_event_id === root.id &&
+      event.source?.caused_by === root.id,
+  );
+  if (!enrolment) return { kind: 'not_matched', root_event_id: root.id };
+
+  const run = Object.values(after.account.workflow_runs).find(
+    (candidate) =>
+      candidate.workflow_id === workflowId && candidate.context.trigger_event_id === root.id,
+  );
+  if (run) return { kind: 'enrolled', run, root_event_id: root.id };
+
+  const refusal = after.execution.find(
+    (record) => record.event_id === enrolment.id && record.reason === 'duplicate_enrolment',
+  );
+  return {
+    kind: 'blocked_reentry',
+    existing_run_id:
+      typeof refusal?.data.existing_run_id === 'string' ? refusal.data.existing_run_id : null,
+    root_event_id: root.id,
+  };
+}
+
+/** The direct diagnostic path either creates one new run or is refused by the re-entry rule. */
+export type DirectStartOutcome =
+  | { kind: 'started'; run: WorkflowRun }
+  | { kind: 'blocked_reentry'; existing_run_id: string | null };
+
+export function directStartOutcome(
+  beforeRunIds: ReadonlySet<string>,
+  beforeLogLength: number,
+  after: SimulatorState,
+  workflowId: string,
+  contactId: string,
+): DirectStartOutcome {
+  const run = Object.values(after.account.workflow_runs).find(
+    (candidate) =>
+      !beforeRunIds.has(candidate.id) &&
+      candidate.workflow_id === workflowId &&
+      candidate.contact_id === contactId &&
+      candidate.context.trigger_event_id === null,
+  );
+  if (run) return { kind: 'started', run };
+
+  const root = after.log[beforeLogLength] ?? null;
+  const refusal = root
+    ? after.execution.find(
+        (record) => record.event_id === root.id && record.reason === 'duplicate_enrolment',
+      )
+    : null;
+  return {
+    kind: 'blocked_reentry',
+    existing_run_id:
+      typeof refusal?.data.existing_run_id === 'string' ? refusal.data.existing_run_id : null,
+  };
 }

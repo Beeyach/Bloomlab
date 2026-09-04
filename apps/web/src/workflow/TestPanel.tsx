@@ -25,7 +25,8 @@ import { featureName, referenceOptions } from './palette';
 import {
   buildTriggerEvent,
   defaultTriggerInput,
-  enrolledByEvent,
+  directStartOutcome,
+  triggerOutcomeFor,
   triggerTestOptions,
   type TriggerEventOption,
   type TriggerField,
@@ -69,8 +70,10 @@ export interface TestPanelProps {
 
 type Outcome =
   | { kind: 'enrolled'; contact: string; feature: string }
+  | { kind: 'trigger_blocked'; contact: string; feature: string }
   | { kind: 'not_enrolled'; contact: string; feature: string; filters: string[] }
-  | { kind: 'direct'; contact: string };
+  | { kind: 'direct'; contact: string }
+  | { kind: 'direct_blocked'; contact: string };
 
 function TestPanelInner({
   run,
@@ -139,19 +142,21 @@ function TestPanelInner({
 
   const fireTrigger = async () => {
     if (!workflow || !option || !built?.ok || !triggerName) return;
-    const before = run.state.account.workflow_runs;
+    const beforeLogLength = run.state.log.length;
     setOutcome(null);
     const result = await perform((current) =>
       fireTriggerEvent(current, scenario, built.event.type, built.event.payload),
     );
     if (!result?.ok) return;
-    const enrolled = enrolledByEvent(before, result.run.state.account.workflow_runs, workflow.id);
+    const triggerOutcome = triggerOutcomeFor(beforeLogLength, result.run.state, workflow.id);
     const subject =
       (built.event.contact_id && result.run.state.account.contacts[built.event.contact_id]) || null;
     const who = subject ? subject.first_name : 'the contact';
-    if (enrolled.length > 0) {
+    if (triggerOutcome.kind === 'enrolled') {
       setOutcome({ kind: 'enrolled', contact: who, feature: triggerName });
-      onRan(enrolled[0]!.id);
+      onRan(triggerOutcome.run.id);
+    } else if (triggerOutcome.kind === 'blocked_reentry') {
+      setOutcome({ kind: 'trigger_blocked', contact: who, feature: triggerName });
     } else {
       setOutcome({
         kind: 'not_enrolled',
@@ -165,17 +170,26 @@ function TestPanelInner({
 
   const startAtFirstStep = async () => {
     if (!workflow || !chosen) return;
+    const beforeRunIds = new Set(Object.keys(run.state.account.workflow_runs));
+    const beforeLogLength = run.state.log.length;
     setOutcome(null);
     const context = appointmentId ? { appointment_id: appointmentId } : {};
     const result = await perform((current) =>
       enrolTestContact(current, scenario, workflow.id, chosen.id, context),
     );
-    if (result?.ok) {
-      const latest = Object.values(result.run.state.account.workflow_runs)
-        .filter((row) => row.workflow_id === workflow.id && row.contact_id === chosen.id)
-        .sort((a, b) => b.enrolled_at.localeCompare(a.enrolled_at) || b.id.localeCompare(a.id))[0];
+    if (!result?.ok) return;
+    const directOutcome = directStartOutcome(
+      beforeRunIds,
+      beforeLogLength,
+      result.run.state,
+      workflow.id,
+      chosen.id,
+    );
+    if (directOutcome.kind === 'started') {
       setOutcome({ kind: 'direct', contact: chosen.first_name });
-      if (latest) onRan(latest.id);
+      onRan(directOutcome.run.id);
+    } else {
+      setOutcome({ kind: 'direct_blocked', contact: chosen.first_name });
     }
   };
 
@@ -540,14 +554,18 @@ function TestPanelInner({
         >
           {outcome.kind === 'enrolled' &&
             `${outcome.feature} fired and enrolled ${outcome.contact}. Watch the run below.`}
+          {outcome.kind === 'trigger_blocked' &&
+            `${outcome.feature} matched for ${outcome.contact}, but they are already active in this workflow and re-entry is off. No second run was started.`}
           {outcome.kind === 'not_enrolled' &&
-            `The event happened, but ${outcome.feature} did not enrol ${outcome.contact}${
+            `The event happened, but ${outcome.feature} did not match this event directly${
               outcome.filters.length > 0
                 ? `: the filters (${outcome.filters.join(', ')}) did not match`
                 : ': the trigger did not match'
             }. Nothing was started by hand.`}
           {outcome.kind === 'direct' &&
             `${outcome.contact} was started at the first step. The trigger was not fired.`}
+          {outcome.kind === 'direct_blocked' &&
+            `${outcome.contact} is already active in this workflow, so Start at the first step did not create another run while re-entry is off.`}
         </p>
       )}
 

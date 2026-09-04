@@ -30,7 +30,13 @@ import {
 import { canRedo, canUndo, edit, isDirty, markSaved, redo, startHistory, undo } from './draft';
 import { handleEngineRequest, runOp, type EngineOp, type EngineRequest } from './engineOps';
 import { execute, resetEngineWorker } from './execution';
-import { buildTriggerEvent, enrolledByEvent, triggerTestOptions } from './triggerTest';
+import {
+  buildTriggerEvent,
+  directStartOutcome,
+  enrolledByEvent,
+  triggerOutcomeFor,
+  triggerTestOptions,
+} from './triggerTest';
 import { timelineRow } from './words';
 
 /**
@@ -561,6 +567,25 @@ describe('the default test fires the configured trigger, and the engine decides 
         ),
       );
 
+  const waitingReplyWorkflow = (): Workflow => ({
+    ...blankWorkflow('wf-reply-wait', 'Reply wait'),
+    trigger: {
+      ghl_feature_id: 'GHL-WF-CUSTOMER-REPLIED',
+      filters: [{ field: 'channel', operator: 'is', value: 'sms' }],
+    },
+    nodes: [
+      {
+        id: 'wait',
+        type: 'wait',
+        ghl_feature_id: 'GHL-WF-WAIT',
+        label: null,
+        config: { wait_type: 'period', days: 1 },
+        position: { x: 0, y: 0 },
+      },
+    ],
+    edges: [],
+  });
+
   it('a matching event enrols through the trigger matcher, and the record names what matched', async () => {
     const before = await saved();
     const option = triggerTestOptions(before.state.account.workflows['wf-no-show-recovery']!).find(
@@ -643,6 +668,72 @@ describe('the default test fires the configured trigger, and the engine decides 
       test: true,
       trigger_values: null,
     });
+  });
+
+  it('reports a trigger that matched but was blocked by re-entry separately from a filter miss', async () => {
+    let run = await startRun(scenario, database);
+    run = ok(await saveWorkflow(run, scenario, waitingReplyWorkflow(), direct()));
+    run = ok(
+      await fireTriggerEvent(
+        run,
+        scenario,
+        'SMS_RECEIVED',
+        { contact_id: 'maria', body: 'first reply' },
+        direct(),
+      ),
+    );
+    const active = Object.values(run.state.account.workflow_runs).find(
+      (row) => row.workflow_id === 'wf-reply-wait',
+    )!;
+    expect(active.status).toBe('waiting');
+
+    const beforeLogLength = run.state.log.length;
+    const after = ok(
+      await fireTriggerEvent(
+        run,
+        scenario,
+        'SMS_RECEIVED',
+        { contact_id: 'maria', body: 'second reply' },
+        direct(),
+      ),
+    );
+    expect(triggerOutcomeFor(beforeLogLength, after.state, 'wf-reply-wait')).toMatchObject({
+      kind: 'blocked_reentry',
+      existing_run_id: active.id,
+    });
+    expect(
+      after.state.execution.some(
+        (row) => row.reason === 'duplicate_enrolment' && row.workflow_run_id === active.id,
+      ),
+    ).toBe(true);
+  });
+
+  it('does not claim a second direct start when the re-entry rule refused it', async () => {
+    let run = await startRun(scenario, database);
+    run = ok(await saveWorkflow(run, scenario, waitingReplyWorkflow(), direct()));
+    run = ok(await enrolTestContact(run, scenario, 'wf-reply-wait', 'maria', {}, direct()));
+    const existing = Object.values(run.state.account.workflow_runs).find(
+      (row) => row.workflow_id === 'wf-reply-wait',
+    )!;
+    const beforeRunIds = new Set(Object.keys(run.state.account.workflow_runs));
+    const beforeLogLength = run.state.log.length;
+    const after = ok(
+      await enrolTestContact(run, scenario, 'wf-reply-wait', 'maria', {}, direct()),
+    );
+    expect(
+      directStartOutcome(
+        beforeRunIds,
+        beforeLogLength,
+        after.state,
+        'wf-reply-wait',
+        'maria',
+      ),
+    ).toEqual({ kind: 'blocked_reentry', existing_run_id: existing.id });
+    expect(
+      Object.values(after.state.account.workflow_runs).filter(
+        (row) => row.workflow_id === 'wf-reply-wait',
+      ),
+    ).toHaveLength(1);
   });
 
   it('a trigger the engine cannot run has no event to fire, and an event is refused until its context exists', async () => {
