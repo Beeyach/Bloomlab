@@ -257,4 +257,51 @@ Last updated: 2026-09-08 (end of Phase 13)
 | `GHL-FUNNEL-FUNNELS` | C | Ordered steps, what each step is for, what is on it in order, and which account object a capture element uses. No page editor, sections, rows, columns, elements, styling, templates, domains, pixels, split tests, AI generation or publishing. | Bloomlab teaches conversion architecture; the builder itself is practised in GHL. |
 | `GHL-FORM-SURVEYS` | B | Ordered questions mapped to contact fields; a submission creates or updates a contact and fires Survey Submitted. No multi-page surveys, conditional logic, scoring, disqualification or styling. | The chain into CRM and workflows is what Phase 13 needs. |
 | `GHL-PAY-PRODUCTS` | C | A named product with one price, one-time or recurring, that a checkout block references and a completed checkout records a payment against. Nothing else about products or payments. | Everything beyond the one event is the Payments Lab (D-124). |
-| `GHL-CAL-CALENDARS` from a funnel | B (narrower here) | Booking from a funnel offers three hourly openings inside a nine-to-five day from the run's clock. Availability, buffers, minimum notice, staff, round robin and service calendars are untouched. | Phase 13 needs a coherent booking; configuring one is Phase 14. |
+| `GHL-CAL-CALENDARS` from a funnel | B | Retired in Phase 14. A funnel's calendar block now asks the shared availability engine, so a visitor is offered the learner's real working hours, duration, buffers, minimum notice and free staff (D-129). | There is one answer to what is bookable. |
+
+## Phase 14 — Calendar Lab
+
+- **The Rescheduled appointment status is not offered, and the sources disagree (D-132).** The
+  official Appointment Status trigger article lists six statuses — New, Confirmed, Cancelled,
+  Showed, No-show, Invalid — and does not include Rescheduled. The Appointment scenarios article
+  describes what happens "if the workflow has a trigger set to fire on Appointment Status =
+  Rescheduled", and there is an open HighLevel feature request asking for a reschedule trigger.
+  The two could not be reconciled from the summaries available, so the simulator keeps the
+  reading both articles agree on: a reschedule is a new appointment, it exits the appointment's
+  run and fires the appointment triggers again as New. Whoever verifies this next should open both
+  articles directly and settle it.
+- **Working hours are weekly windows inside one day.** Date-specific hours, holiday overrides and
+  a window that crosses midnight are not modelled; a night shift is authored as two windows.
+  Windows run from 00:00 to 23:59 in the calendar's own zone.
+- **Not simulated at all, and named in the registry rather than approximated:** linked and conflict
+  calendars, Look Busy, appointments-per-day and per-slot limits, calendar groups, recurring
+  appointments, Class Booking, Collective, Group and Event calendars, rooms, equipment and other
+  resources (Phase 25, CAL-002), and payment at booking (the Payments Lab).
+- **Optimize for Equal Distribution is the documented rule minus one nuance.** Bloomlab counts
+  each team member's bookings on that calendar in the slot's own month and gives the booking to
+  whoever has fewest, ties broken by the order the learner arranged the team. HighLevel
+  additionally limits a member's availability temporarily when they run too far ahead of the team;
+  that part is not simulated and the registry record says so.
+- **Zoom and Google Meet locations store a link.** Bloomlab creates no meeting on either platform
+  and generates no dynamic link; a learner supplies one and the booking carries it. Ask the Booker
+  records that the booker supplies the location, and the simulated booking does not collect it.
+- **The booker's own cancellation and reschedule links are settings, not a surface.** The Lab
+  configures Allow Cancellation, Allow Rescheduling and the cutoff, and those settings are stored
+  on the calendar; there is no simulated booking confirmation page for a visitor to click them
+  from. Somebody on the team can always change an appointment from inside the account, which is
+  what the Lab's own appointment actions are.
+- **The schedule shows the saved calendar, not the draft.** Unsaved edits are held in the editor
+  and the schedule says so rather than previewing them; saving is the moment the account changes.
+  A live preview of an unsaved definition would be a fourth answer to what is bookable.
+- **Registry verification was indirect again.** `GHL-CAL-CALENDARS`,
+  `GHL-WF-CUSTOMER-BOOKED-APPOINTMENT` and `GHL-WF-APPOINTMENT-STATUS` were re-checked on
+  2026-09-04 against search-result summaries of the official help-centre articles, because the
+  build environment's egress proxy rejects `help.gohighlevel.com` with a 403 at the CONNECT. Each
+  record's `verification_note` says exactly that rather than claiming the article was read. Fourth
+  phase running under this constraint.
+- **The Workflow Lab frame-timing probe still misses its ceiling in this container.** Unchanged
+  from Phase 13 and unrelated to Phase 14: `review:workflow` → `five-hundred-events` →
+  `noFrameOver100ms` reported a maximum frame of 165 ms (mean 19 ms, p95 57 ms, engine compute
+  87 ms for 504 events) against a 100 ms ceiling. Phase 13 established that pre-Phase-13 `main`
+  reproduces the same numbers in the same container. PERF-002 must not be claimed for this
+  scenario from container evidence; it needs one run on the reference desktop.

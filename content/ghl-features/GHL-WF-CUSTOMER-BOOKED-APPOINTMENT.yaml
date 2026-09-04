@@ -1,4 +1,6 @@
-# Verified 2026-09-02 against "Workflow Trigger - Customer Booked Appointment".
+# Re-verified 2026-09-04 for Phase 14 through a search-result summary of "Workflow Trigger -
+# Customer Booked Appointment". The build environment's proxy refuses help.gohighlevel.com with a
+# 403, so the article could not be opened directly.
 id: GHL-WF-CUSTOMER-BOOKED-APPOINTMENT
 official_name: Customer Booked Appointment
 area: Workflows
@@ -9,7 +11,8 @@ simulation_fidelity: A
 last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000002675-workflow-trigger-customer-booked-appointment
 known_limitations:
-  - Fires for bookings the customer makes; staff-made bookings use Appointment Status instead. The simulator follows the same split.
+  - >-
+    Fires for bookings the customer makes; staff-made bookings use Appointment Status instead. The simulator follows the same split, and how a booking was made is recorded on the appointment, so a reschedule of a staff booking is still a staff booking.
   - >-
     A run this trigger starts is about that appointment: it is pulled out when the appointment is cancelled, marked invalid or no-show, or rescheduled, and a reschedule fires the trigger again as a new booking (see GHL-WF-APPOINTMENT-STATUS).
 skills:
@@ -19,4 +22,5 @@ supported_configs:
   filters:
     - In Calendar
     - Has tag
-verification_note: Name confirmed on the help-center article, 2026-09-02. Appointment-scoped exit behaviour from search summaries of "Appointment scenarios in Workflow", 2026-09-04.
+verification_note: >-
+  Name confirmed on the help-centre article, 2026-09-02, and re-checked 2026-09-04. Appointment-scoped exit behaviour and the customer/staff split from search-result summaries of "Appointment scenarios in Workflow", 2026-09-04. The articles could not be opened directly from the build environment, whose proxy refuses help.gohighlevel.com with a 403.

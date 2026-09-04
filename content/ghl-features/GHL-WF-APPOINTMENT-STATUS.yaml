@@ -1,6 +1,8 @@
-# Verified 2026-09-02 against "Workflow Trigger - Appointment Status". Statuses: New, Confirmed,
-# Cancelled, Showed, No-show, Invalid. A reschedule arrives as a new appointment. Re-checked
-# 2026-09-04 through search summaries of "Appointment scenarios in Workflow".
+# Re-verified 2026-09-04 for Phase 14 through search-result summaries of "Workflow Trigger -
+# Appointment Status" and "Appointment scenarios in Workflow". Statuses: New, Confirmed,
+# Cancelled, Showed, No-show, Invalid. A reschedule arrives as a new appointment. The build
+# environment's proxy refuses help.gohighlevel.com with a 403, so neither article could be opened
+# directly.
 id: GHL-WF-APPOINTMENT-STATUS
 official_name: Appointment Status
 area: Workflows
@@ -11,9 +13,14 @@ simulation_fidelity: A
 last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000002619-workflow-trigger-appointment-status
 known_limitations:
-  - Rescheduled appointments are treated as new appointments, not as a distinct status — in GHL and in the simulator. Some third-party summaries mention a "Rescheduled" filter value; it could not be confirmed on the official article and is not offered.
-  - Platform behaviour the simulator reproduces (from "Appointment scenarios in Workflow") — a contact this trigger or Customer Booked Appointment enrolled is pulled out of that workflow when the appointment becomes Cancelled, Invalid or No-show, or is rescheduled, and nothing further runs; the reschedule then fires the appointment triggers again as a new booking. The exit is recorded with the reason.
-  - A contact enrolled by any other trigger (a tag, a form) is not pulled out when an appointment changes; that is the workflow's own job.
+  - >-
+    Every appointment event reaches this trigger: a booking arrives as New, a cancellation as Cancelled, a status change as the status it sets, and a reschedule as New. Before Phase 14 a cancellation did not reach it at all, so a workflow filtered to Cancelled could never run.
+  - >-
+    Rescheduled is not offered as a status. The official Appointment Status article lists six — New, Confirmed, Cancelled, Showed, No-show, Invalid — and does not include it, while the Appointment scenarios article describes what happens "if the workflow has a trigger set to fire on Appointment Status = Rescheduled". The two could not be reconciled from the summaries available, and there is an open HighLevel feature request asking for a reschedule trigger, so the simulator keeps the conservative reading: a reschedule is a new appointment. Recorded in KNOWN_LIMITATIONS.md.
+  - >-
+    Platform behaviour the simulator reproduces (from "Appointment scenarios in Workflow") — a contact this trigger or Customer Booked Appointment enrolled is pulled out of that workflow when the appointment becomes Cancelled, Invalid or No-show, or is rescheduled, and nothing further runs; the reschedule then fires the appointment triggers again as a new booking. The exit is recorded with the reason.
+  - >-
+    A contact enrolled by any other trigger (a tag, a form) is not pulled out when an appointment changes; that is the workflow's own job.
   - Calendar-group and "Modified By" filters are accepted but not evaluated by the simulator.
 skills:
   - SK-AUTOMATE-appointment-reminders
@@ -34,4 +41,5 @@ supported_configs:
     - Showed
     - No-show
     - Invalid
-verification_note: Name, the six statuses and the filter list confirmed on the help-center article, 2026-09-02. Cancellation and reschedule scenarios confirmed from search summaries of "Appointment scenarios in Workflow" (help-center article 155000002697) on 2026-09-04; the article could not be opened directly from the build environment.
+verification_note: >-
+  Name, the six statuses and the filter list confirmed on the help-centre article, 2026-09-02, and re-checked 2026-09-04. Cancellation and reschedule behaviour confirmed from search-result summaries of "Appointment scenarios in Workflow" (article 155000002697) on 2026-09-04; that article and the trigger article could not be opened directly from the build environment, whose proxy refuses help.gohighlevel.com with a 403. The Rescheduled status remains unresolved between the two articles and is deliberately not offered.

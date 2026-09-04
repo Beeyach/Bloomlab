@@ -497,15 +497,14 @@ try {
   );
   section('persistence', {
     keptTheSetting: noticeAfterReload === '2880',
-    keptTheVersion: /Saved · version \d+/.test(await text(page, '[data-testid="calendar-save-state"]')),
+    keptTheVersion: /Saved · version \d+/.test(
+      await text(page, '[data-testid="calendar-save-state"]'),
+    ),
   });
 
   /* ---- 16. the keyboard reaches everything (A11Y-001) ------------------------------------ */
   await resetAccount(page);
-  const reachedGroup = await tabUntil(
-    page,
-    `el?.dataset?.testid === 'group-availability'`,
-  );
+  const reachedGroup = await tabUntil(page, `el?.dataset?.testid === 'group-availability'`);
   await pressEnter(page);
   await sleep(300);
   const groupOpened = await exists(page, '[data-testid="calendar-notice"]');

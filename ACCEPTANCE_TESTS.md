@@ -220,7 +220,12 @@ Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine a
 ## Phase 14 — Calendar Lab
 
 - **CAL-001** Each listed capability configurable; fixtures for buffers, minimum notice, round robin, reschedule, cancellation.
+  - **PASSED (Phase 14).** Every capability is a real setting with a real consequence, changed through the Lab's own controls and read back from the schedule: duration and slot interval, weekly working hours, pre and post buffer, minimum scheduling notice, a team with an order, both round-robin distribution methods, staff selection, services that set their own length and eligible staff, meeting locations that reach the booking, and cancellation and reschedule permissions with a cutoff. Confirmation, reschedule and cancellation are real account events, not badge changes.
+  - Fixtures: `SLOT-001`, `BUFFER-001`, `NOTICE-001`, `ROBIN-001`, `ROBIN-002`, `RESCHED-002`, `RESCHED-003`, `CANCEL-001`, `CANCEL-002`, `STATUS-001`, `STATUS-002`, `CALDEF-001`.
+  - Evidence: `packages/simulator-core/test/calendar.test.ts`, `apps/web/src/calendar/*.test.*`, `npm run review:calendar` (22 sections, all PASS).
 - **CAL-003** Booking, reschedule, cancel and status events enroll/exit workflows (fixtures).
+  - **PASSED (Phase 14).** All four families reach `workflowReactions` through the shared engine. `APPOINTMENT_CANCELLED` did not reach the Appointment Status trigger before Phase 14, so a workflow filtered to Cancelled could never run; it does now (D-131). Order is asserted, not assumed: the appointment-scoped run exits before the cancellation workflow enrols, and a form-triggered run is left alone. No test injects `WORKFLOW_ENROLLED`.
+  - Fixtures: `CANCEL-001`, `CANCEL-002`, `STATUS-001`, `STATUS-002`, `RESCHED-002`.
 
 ## Phase 15 — Troubleshooting and reporting
 
