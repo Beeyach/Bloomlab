@@ -80,7 +80,7 @@ appointment. `CALDEF-001` replays a create, an update and a booking and compares
 
 ## Verification
 
-- **1139 tests in 79 files** (was 1036/75). 103 new.
+- **1144 tests in 79 files** (was 1036/75). 108 new.
 - **Twelve new regression fixtures**: `SLOT-001`, `BUFFER-001`, `NOTICE-001`, `ROBIN-001`,
   `ROBIN-002`, `RESCHED-002`, `RESCHED-003`, `CANCEL-001`, `CANCEL-002`, `STATUS-001`,
   `STATUS-002`, `CALDEF-001`.
@@ -130,6 +130,25 @@ appointment. `CALDEF-001` replays a create, an update and a booking and compares
 | Reschedule exits the old run and the new wait uses the new time | `RESCHED-002`, `chain.test.ts` |
 | A cancelled appointment cannot be rescheduled | `RESCHED-003` |
 | Replay rebuilds definitions, appointments and enrolments | `CALDEF-001` |
+
+## The correction Ary made on the branch
+
+A slot the screen was holding could still be booked after the account had moved on — another
+booking taking the time, or a saved calendar edit removing the opening — because the reducer only
+checks references and shapes and the Lab trusted the `Slot` it had rendered. Ary caught it and
+fixed it at both ends (D-133): booking and rescheduling in the Calendar Lab and booking in the
+Funnel Lab now re-ask `slotAt` at the moment of the action and refuse in a plain sentence when the
+answer has changed, and `slotAt` itself is now as strict as the picker — the instant has to sit on
+the interval anchored to its working window's opening and inside the booking window, and a move
+keeps the length the appointment was booked for.
+
+One consequence is deliberate and worth naming: selecting an appointment turns the schedule into
+that appointment's move picker, which ignores its own hold, so its current time is offered back —
+moving it to where it already is has to stay legal. The probe asserts both readings now.
+
+Two things arrived with that push that CI caught: `slotAt` was imported inside an `import type`
+block in two files, so it could not be called at runtime (TS1361), and three files were unformatted.
+Both fixed on the branch.
 
 ## Design
 

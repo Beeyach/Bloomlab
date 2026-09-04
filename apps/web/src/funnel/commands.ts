@@ -1,10 +1,10 @@
+import { slotAt } from '@bloomlab/simulator-core';
 import type {
   Funnel,
   PendingEvent,
   SimulatorEventType,
   SimulatorScenario,
   Slot,
-  slotAt,
 } from '@bloomlab/simulator-core';
 
 import type { BloomlabDatabase } from '../data/db';

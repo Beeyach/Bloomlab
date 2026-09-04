@@ -487,9 +487,7 @@ export default function CalendarLab() {
               selected={selected}
               chosen={chosen}
               busy={busy}
-              onSelect={(id) =>
-                inScope({ selected: id === selected ? null : id, chosen: null })
-              }
+              onSelect={(id) => inScope({ selected: id === selected ? null : id, chosen: null })}
               onConfirm={(id) =>
                 scenario &&
                 void act((current) => setAppointmentStatus(current, scenario, id, 'confirmed'))

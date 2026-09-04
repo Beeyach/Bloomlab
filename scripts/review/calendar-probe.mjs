@@ -396,11 +396,18 @@ try {
     { timeout: 8000 },
   );
   await sleep(400);
+  // While the appointment is still selected the schedule is its move picker, so its own time is
+  // offered back — moving it to where it already is has to stay legal. Deselecting returns the
+  // ordinary booking view, where the time it holds is taken.
+  const timesWhileSelected = await slotTimes(page);
+  await click(page, `[data-testid="appointment-row-${appointmentId}"]`);
+  await sleep(400);
   const timesAfterMove = await slotTimes(page);
   section('reschedule', {
     moved,
     oldTimeIsFree: timesAfterMove.includes('2026-09-10T13:00:00-05:00'),
     newTimeIsTaken: !timesAfterMove.includes('2026-09-11T10:00:00-05:00'),
+    movePickerOffersItsOwnTime: timesWhileSelected.includes('2026-09-11T10:00:00-05:00'),
     listShowsTheNewTime: await page.evaluate(
       `document.querySelector('[data-testid="appointments"]').textContent.includes('11 Sep')`,
     ),

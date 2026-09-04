@@ -327,7 +327,8 @@ export function slotAt(
   const zone = calendarZone(account, calendar);
   const service = serviceOf(calendar, query.service_id);
   const minutes = query.duration_minutes ?? serviceDuration(calendar, service);
-  if (!Number.isInteger(minutes) || minutes <= 0 || calendar.slot_interval_minutes <= 0) return null;
+  if (!Number.isInteger(minutes) || minutes <= 0 || calendar.slot_interval_minutes <= 0)
+    return null;
   const staff = candidateStaff(calendar, service);
   if (staff.length === 0 && !booksWithoutStaff(calendar)) return null;
   const requested = query.staff_id ?? null;

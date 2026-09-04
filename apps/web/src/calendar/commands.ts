@@ -1,10 +1,10 @@
+import { slotAt } from '@bloomlab/simulator-core';
 import type {
   Calendar,
   PendingEvent,
   SimulatorEventType,
   SimulatorScenario,
   Slot,
-  slotAt,
 } from '@bloomlab/simulator-core';
 
 import type { BloomlabDatabase } from '../data/db';
@@ -253,18 +253,12 @@ export const rescheduleAppointment = (
   const appointment = run.state.account.appointments[appointmentId];
   const calendar = appointment ? run.state.account.calendars[appointment.calendar_id] : null;
   if (appointment && calendar) {
-    const current = slotAt(
-      run.state.account,
-      calendar,
-      run.state.clock.now,
-      slot.starts_at,
-      {
-        service_id: appointment.service_id,
-        duration_minutes: appointment.duration_minutes,
-        staff_id: slot.host_reason === 'requested' ? slot.host_id : null,
-        ignore_appointment_id: appointment.id,
-      },
-    );
+    const current = slotAt(run.state.account, calendar, run.state.clock.now, slot.starts_at, {
+      service_id: appointment.service_id,
+      duration_minutes: appointment.duration_minutes,
+      staff_id: slot.host_reason === 'requested' ? slot.host_id : null,
+      ignore_appointment_id: appointment.id,
+    });
     if (!current || !sameSlot(current, slot)) {
       return unavailableSlot(run, appointment.calendar_id, slot.starts_at);
     }
