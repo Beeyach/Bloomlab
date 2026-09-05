@@ -300,7 +300,7 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
           const chosen = slot[action.block_id];
           const picked = action.slots.find((row) => row.starts_at === chosen) ?? action.slots[0];
           if (!picked) throw new Error('This calendar has no openings to book.');
-          const booking = funnelBooking(current, visitor, action.calendar_id, picked);
+          const booking = funnelBooking(current, visitor, action.calendar_id, picked, id);
           if ('refusal' in booking) {
             return { ok: false as const, run: current, refusal: booking.refusal };
           }
@@ -309,7 +309,7 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
         case 'checkout':
           return performEvents(current, scenario, [
             ...telemetry,
-            funnelPayment(current, visitor, action.product_id, action.amount),
+            funnelPayment(current, visitor, action.product_id, action.amount, id),
           ]);
       }
     });

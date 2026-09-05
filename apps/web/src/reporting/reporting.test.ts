@@ -4,6 +4,7 @@ import {
   buildReport,
   contentEventName,
   funnelAutopsy,
+  processEvent,
   validateScenario,
   type Report,
   type SimulatorScenario,
@@ -293,6 +294,32 @@ describe('REP-001: the report survives reset and replay', () => {
   });
 });
 
+describe('REP-001 audit regressions', () => {
+  it('counts a booking whose appointment id was minted by the reducer', () => {
+    const next = processEvent(run.state, {
+      type: 'APPOINTMENT_BOOKED',
+      at: run.state.clock.now,
+      origin: 'injected',
+      source: { kind: 'injector_action', id: 'reporting-audit' },
+      payload: {
+        contact_id: 'lena',
+        calendar_id: 'consultation',
+        starts_at: '2026-09-10T10:00:00-05:00',
+        booked_by: 'staff',
+      },
+    });
+    const booking = next.log.find(
+      (event) => event.type === 'APPOINTMENT_BOOKED' && event.payload.appointment_id === undefined,
+    );
+    if (!booking) throw new Error('The id-less booking did not reach history');
+    expect(next.account.appointments[`appt-${booking.id}`]).toBeDefined();
+
+    const after = buildReport(next);
+    expect(after.metrics.booking_rate.numerator).toBe(12);
+    expect(after.metrics.booking_rate.evidence_event_ids).toContain(booking.id);
+  });
+});
+
 describe('FUN-004: the Funnel Autopsy reads the same traffic', () => {
   it('exposes all six views from the run', () => {
     const autopsy = funnelAutopsy(run.state, 'fn-consult');
@@ -382,4 +409,54 @@ describe('FUN-004: the Funnel Autopsy reads the same traffic', () => {
     expect(funnelAutopsy(withOther, 'fn-consult')?.visits).toBe(40);
     expect(funnelAutopsy(withOther, 'fn-other')?.visits).toBe(1);
   });
+
+  it('does not give this funnel a booking explicitly linked to another funnel visit', () => {
+    const seeded = {
+      ...run.state,
+      account: {
+        ...run.state.account,
+        funnels: {
+          ...run.state.account.funnels,
+          'fn-other': { id: 'fn-other', name: 'Other', steps: [], version: 1 },
+        },
+        funnel_visits: {
+          ...run.state.account.funnel_visits,
+          'v-other-linked': {
+            id: 'v-other-linked',
+            funnel_id: 'fn-other',
+            source: 'meta-ads',
+            started_at: run.state.clock.now,
+            steps: [],
+            forms_started: [],
+            contact_id: 'lena',
+            contact_is_new: false,
+            ended_at: run.state.clock.now,
+            ended_reason: 'completed' as const,
+            last_step_id: null,
+          },
+        },
+      },
+    };
+    const linked = processEvent(seeded, {
+      type: 'APPOINTMENT_BOOKED',
+      at: run.state.clock.now,
+      origin: 'injected',
+      source: { kind: 'injector_action', id: 'autopsy-audit' },
+      payload: {
+        appointment_id: 'ap-other-linked',
+        contact_id: 'lena',
+        calendar_id: 'consultation',
+        starts_at: '2026-09-10T11:00:00-05:00',
+        booked_by: 'staff',
+        visit_id: 'v-other-linked',
+      },
+    });
+
+    expect(funnelAutopsy(linked, 'fn-consult')?.booking.numerator).toBe(11);
+    expect(funnelAutopsy(linked, 'fn-other')?.booking).toMatchObject({
+      numerator: 1,
+      denominator: 1,
+    });
+  });
+
 });

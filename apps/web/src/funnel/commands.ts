@@ -278,6 +278,7 @@ export const funnelBooking = (
   visitor: Visitor,
   calendarId: string,
   slot: Slot,
+  visitId?: string | null,
 ): { event: PendingEvent } | { refusal: EngineRefusal } => {
   const calendar = run.state.account.calendars[calendarId];
   if (calendar) {
@@ -301,6 +302,7 @@ export const funnelBooking = (
       duration_minutes: slot.duration_minutes,
       host_id: slot.host_id,
       booked_by: 'customer',
+      ...(visitId ? { visit_id: visitId } : {}),
     }),
   };
 };
@@ -312,8 +314,9 @@ export const bookFromFunnel = (
   calendarId: string,
   slot: Slot,
   options?: Options,
+  visitId?: string | null,
 ) => {
-  const outcome = funnelBooking(run, visitor, calendarId, slot);
+  const outcome = funnelBooking(run, visitor, calendarId, slot, visitId);
   if ('refusal' in outcome) {
     return Promise.resolve<ExecutionResult>({ ok: false, run, refusal: outcome.refusal });
   }
@@ -331,12 +334,14 @@ export const funnelPayment = (
   visitor: Visitor,
   productId: string,
   amount: number,
+  visitId?: string | null,
 ): PendingEvent =>
   injected(run, 'PAYMENT_RECEIVED', {
     payment_id: newPaymentId(),
     contact_id: visitor.contact_id,
     product_id: productId,
     amount,
+    ...(visitId ? { visit_id: visitId } : {}),
   });
 
 export const payFromFunnel = (
@@ -346,11 +351,12 @@ export const payFromFunnel = (
   productId: string,
   amount: number,
   options?: Options,
+  visitId?: string | null,
 ) =>
   execute(
     run,
     scenario,
-    { kind: 'process', event: funnelPayment(run, visitor, productId, amount) },
+    { kind: 'process', event: funnelPayment(run, visitor, productId, amount, visitId) },
     options,
   );
 

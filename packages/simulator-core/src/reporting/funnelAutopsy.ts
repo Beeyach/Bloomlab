@@ -108,7 +108,8 @@ export function funnelAutopsy(state: SimulatorState, funnelId: string): FunnelAu
 
   /* what the log says these visits achieved ------------------------------------------------ */
   const submittedVisits = new Set<string>();
-  const bookedVisitContacts = new Set<string>();
+  const bookedVisitIds = new Set<string>();
+  const unlinkedBookedContacts = new Set<string>();
   for (const event of state.log) {
     const visitId =
       typeof event.payload.visit_id === 'string' ? (event.payload.visit_id as string) : null;
@@ -117,13 +118,22 @@ export function funnelAutopsy(state: SimulatorState, funnelId: string): FunnelAu
     } else if (event.type === 'APPOINTMENT_BOOKED') {
       const contactId =
         typeof event.payload.contact_id === 'string' ? (event.payload.contact_id as string) : null;
-      if (contactId) bookedVisitContacts.add(contactId);
+      // Live Funnel Lab bookings carry their visit id, so they belong to exactly one funnel.
+      // Older/authored histories predate that linkage; keep their conservative one-booking-per-
+      // contact fallback rather than rewriting those fixtures or pretending to know the visit.
+      if (visitId) bookedVisitIds.add(visitId);
+      else if (contactId) unlinkedBookedContacts.add(contactId);
     }
   }
 
   const leads = visits.filter((visit) => visit.contact_id !== null);
-  const leadContactIds = new Set(leads.map((visit) => visit.contact_id as string));
-  const booked = [...leadContactIds].filter((id) => bookedVisitContacts.has(id));
+  const booked = new Set(
+    leads.filter((visit) => bookedVisitIds.has(visit.id)).map((visit) => visit.id),
+  );
+  for (const contactId of unlinkedBookedContacts) {
+    const first = leads.find((visit) => visit.contact_id === contactId);
+    if (first) booked.add(first.id);
+  }
 
   /* 1. traffic source ---------------------------------------------------------------------- */
   const sourceRows = new Map<string, AutopsySourceRow>();
@@ -194,7 +204,7 @@ export function funnelAutopsy(state: SimulatorState, funnelId: string): FunnelAu
     conversion: asRate(leads.length, visits.length),
     reach,
     form_completion: formCompletion,
-    booking: asRate(booked.length, leads.length),
+    booking: asRate(booked.size, leads.length),
     drop_off: dropOff,
     booking_denominator: BOOKING_DENOMINATOR,
   };

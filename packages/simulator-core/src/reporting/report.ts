@@ -1,3 +1,4 @@
+import { appointmentIdOf } from '../reducers/appointments.ts';
 import type { AccountState, SimulatorState } from '../state.ts';
 import { instant, minutesBetween } from '../time.ts';
 import { METRIC_DEFINITIONS, REPORT_ORDER, type MetricId } from './definitions.ts';
@@ -138,7 +139,10 @@ function walk(state: SimulatorState): Index {
         break;
       }
       case 'APPOINTMENT_BOOKED': {
-        const appointmentId = id('appointment_id');
+        // The reducer may deterministically mint the id when the event does not name one. The
+        // trigger adapters already use this same helper (D-145); reporting must identify that
+        // exact appointment too or a real booking disappears from the booking/show cohorts.
+        const appointmentId = appointmentIdOf(event);
         if (appointmentId && !index.bookedEventByAppointment.has(appointmentId)) {
           index.bookedAppointmentIds.push(appointmentId);
           index.bookedEventByAppointment.set(appointmentId, event.id);
