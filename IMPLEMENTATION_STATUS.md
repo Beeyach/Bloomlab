@@ -221,7 +221,7 @@ Phase 15:
 - FUN-004 — evidence: the same six views inside the Funnel Lab's SIMULATE mode from one projection (`review:funnel` → `autopsy-lens`), and a funnel with no traffic says so instead of showing zeroes (`autopsy-empty`).
 - REP-001 — evidence: all ten metrics computed from `SC-glowhaus-reporting`'s own log after Run the window, each reconciled in tests against the events behind it — 40 visits, 14 leads, 11 bookings, 9 due, 4 showed, 3 won, 1680 collected after a refund, 2160 open pipeline, 12 messaged and 5 replied, median first contact 6 minutes (`reporting.test.ts`).
 - REP-002 — evidence: `EX-FIX_IT-glowhaus-reporting-bottleneck` grades the diagnosis from the same report — show rate passes, close rate is a critical failure — and every metric row opens to its calculation and its evidence rather than standing alone (`review:reporting` → `calculation-disclosure`, `evidence-drawer`).
-- REP-003 — evidence: `noFakeAnalytics.test.ts` scans all learner-facing modules and fails on a percentage or money amount written into markup or a reporting rate computed outside the projection; the two hits it found while being written were a bar-width ratio (kept) and the Lab dividing leads by visits (fixed by carrying `conversion` on the source row).
+- REP-003 — evidence: `noFakeAnalytics.test.ts` scans all learner-facing modules and fails on a percentage or money amount written into markup or a division handed straight to a percentage or currency formatter outside `reporting/` — a regression guard over those shapes rather than a proof about every possible implementation; the two hits it found while being written were a bar-width ratio (kept) and the Lab dividing leads by visits (fixed by carrying `conversion` on the source row).
 
 ## IN PROGRESS
 

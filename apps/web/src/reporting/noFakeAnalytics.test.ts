@@ -8,15 +8,24 @@ import { METRIC_IDS } from '@bloomlab/simulator-core';
 /**
  * REP-003: no fake analytics anywhere in the product.
  *
- * The requirement is cross-cutting and permanent, so it is a test rather than a note in an audit
- * that goes stale the week after it is written. It scans every learner-facing module for the two
- * things a fabricated metric actually looks like in source — a percentage or a money amount
- * written as a literal where a learner will read it — and it fails on either.
+ * The requirement is the invariant, and it is wider than anything a scan can settle: a number a
+ * learner reads has to come from their own evidence or from a simulator run, and the business
+ * arithmetic behind a reporting figure belongs to the projection. This file does not prove that.
+ * It is a regression guard over the two shapes the invariant has actually been broken by here —
+ * a percentage or a money amount written as a literal into learner-facing markup, and a division
+ * handed straight to a percentage or currency formatter outside `reporting/`.
+ *
+ * So read the failures as real and the silence as narrow. A rate assembled over several
+ * statements, or formatted some other way, reads as ordinary code to these patterns. Keeping
+ * REP-003 true still takes reading a reporting change; what this stops is the same mistake
+ * arriving twice, which is what a note in an audit report cannot do.
  *
  * What it deliberately does not object to: numbers derived from the learner's own evidence or
  * from a simulator run. A progress count is a fact about the learner, a contrast ratio is a
  * measurement, an engine timing is a measurement, and a byte size is a byte size. The rule is
  * that a number a learner reads must come from somewhere, not that screens must be numberless.
+ * Authored scenario facts are evidence too: a curriculum file naming the forty visits a fixture
+ * really holds is teaching material, and nothing here scans content.
  *
  * Flag-gated developer surfaces are excluded by name: the design gallery deliberately shows made
  * up figures because it is a swatch board for components, and a learner never sees it.
@@ -51,7 +60,7 @@ describe('REP-003: no fake analytics on any learner-facing screen', () => {
     expect(files.length).toBeGreaterThan(50);
   });
 
-  it('renders no percentage or money amount that came from nowhere', () => {
+  it('finds no percentage or money amount written straight into learner-facing markup', () => {
     const offences: string[] = [];
     for (const file of files) {
       const code = readFileSync(file, 'utf8');
@@ -69,8 +78,13 @@ describe('REP-003: no fake analytics on any learner-facing screen', () => {
    * The other half of REP-003: where reporting numbers do appear, they come from one place. A
    * second implementation of a rate in React is how fake analytics gets in through the front
    * door — the screen and the report would disagree and only one of them would be checked.
+   *
+   * The pattern below is the one that actually appeared: a division passed directly to `percent`,
+   * `money` or `formatCurrency`. That is the shape this catches, not every shape a React-side
+   * rate could take, so a pass here means this regression has not returned rather than that the
+   * projection is provably the only implementation.
    */
-  it('computes no reporting metric outside the projection', () => {
+  it('finds no rate divided and formatted outside the projection', () => {
     const owners = [
       'reporting/report.ts',
       'reporting/funnelAutopsy.ts',
@@ -95,7 +109,7 @@ describe('REP-003: no fake analytics on any learner-facing screen', () => {
     expect(offences).toEqual([]);
   });
 
-  it('names all ten metrics in one place, so nothing can invent an eleventh', () => {
+  it('pins the metric list at ten, so an eleventh cannot be added without saying so', () => {
     expect(METRIC_IDS).toHaveLength(10);
   });
 });
