@@ -21,7 +21,7 @@ Phase 15 — Troubleshooting and Reporting: **a number a learner reads can be op
 ## VERSIONS
 
 - app: 0.1.0
-- content: 2026.09.11 (`content/content.yaml`, locked by `content/content.lock.yaml`)
+- content: 2026.09.12 (`content/content.yaml`, locked by `content/content.lock.yaml`)
 - simulator: 2026.09.11-r2 (`SIMULATOR_VERSION`, carried on every run and saved run and stamped on evidence)
 - mastery rules: 2026.09.03-r4 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
 - exercise grader: 2026.09.08-r2 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)

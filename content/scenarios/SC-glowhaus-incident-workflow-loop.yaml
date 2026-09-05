@@ -19,7 +19,17 @@ summary: >-
 initial_account_state:
   users:
     - { id: priya, name: Priya Raman, role: admin }
-  contacts: []
+  # Linus is already on the books. The incident's Reproduce it action tags him, and an action a
+  # learner can fire at any moment must name somebody the account holds from the first instant
+  # rather than somebody a scheduled event gets round to creating (D-150).
+  contacts:
+    - id: linus
+      first_name: Linus
+      last_name: Ferrand
+      email: 'linus.ferrand@example.com'
+      phone: '+15125550122'
+      timezone: America/Chicago
+      source: Website
   tags: [needs-review, escalated]
   forms:
     - id: consult-request

@@ -217,7 +217,7 @@ REP-003 is enforced by a test rather than by an audit note that goes stale.
 ## Versions
 
 Simulator `2026.09.11-r2` (visit telemetry, external endpoints, loop and node-visit bounds, the
-appointment trigger fix), content `2026.09.11`. App version, mastery rules and the exercise grader
+appointment trigger fix), content `2026.09.12`. App version, mastery rules and the exercise grader
 untouched — `written` is additive, so no previously graded attempt changes.
 
 Phase 16 has not been started.
