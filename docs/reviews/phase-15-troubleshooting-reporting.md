@@ -148,9 +148,18 @@ These corrections are pinned by regression tests, including a reducer-minted app
 booking explicitly linked to another funnel visit, scheduled create-then-reference history, and an
 injectable that wrongly depends on a future creation.
 
+A second audit pass found one more, in the same validator. D-144's walk ordered the scheduled queue
+by comparing the authored `at` strings, and the run orders it by the instant. Those agree only while
+every event in a scenario writes its time the same way, so a scenario that mixed offsets validated
+clean and then dropped its earlier event at runtime with an `UNKNOWN_ENTITY` diagnostic — through
+the check written to catch exactly that. The walk now parses the instant and falls back to the
+authored position, which is the queue's own rule (D-151). No authored scenario was affected: all
+seventeen write one offset throughout. The engine is untouched, so `SIMULATOR_VERSION` does not
+move — this is authoring-time validation, not simulated behaviour.
+
 ## Verification
 
-Tests: **1192 pass**, 48 new. Ten new regression fixtures.
+Tests: **1198 pass** across 82 files, 54 new. Ten new regression fixtures.
 
 | Probe | Result |
 |---|---|
