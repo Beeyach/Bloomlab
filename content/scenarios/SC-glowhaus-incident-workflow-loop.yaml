@@ -1,0 +1,157 @@
+# SIM-011 · workflow_loop. Two workflows that keep handing the same contact back to each other.
+#
+# HighLevel's builder has no edge back to an earlier step, and neither of these workflows contains
+# one — each is a short, straight, perfectly ordinary automation. The loop is between them. Triage
+# hands a lead to Escalation by tagging them, Escalation hands them back the same way, and because
+# each one removes the tag the other adds, every hand-off is a real change and fires the trigger
+# again. Nothing waits, so the whole thing happens at one instant.
+#
+# The engine stops it at the enrolment rather than at its last-resort cascade limit, so what the
+# learner gets is a failure record naming the workflow and the count, with the contact, the tags
+# and every completed run still exactly as they were (D-141).
+id: SC-glowhaus-incident-workflow-loop
+title: Glowhaus — two workflows passing the same lead back and forth
+client: CL-glowhaus-medspa
+summary: >-
+  One lead filled in the consultation form and the account has not stopped moving since. Neither
+  workflow loops on its own. Together they never finish, and the failure record says which one
+  the engine stopped and how many times it had already run.
+initial_account_state:
+  users:
+    - { id: priya, name: Priya Raman, role: admin }
+  # Linus is already on the books. The incident's Reproduce it action tags him, and an action a
+  # learner can fire at any moment must name somebody the account holds from the first instant
+  # rather than somebody a scheduled event gets round to creating (D-150).
+  contacts:
+    - id: linus
+      first_name: Linus
+      last_name: Ferrand
+      email: 'linus.ferrand@example.com'
+      phone: '+15125550122'
+      timezone: America/Chicago
+      source: Website
+  tags: [needs-review, escalated]
+  forms:
+    - id: consult-request
+      name: Consultation Request
+      fields: [first_name, last_name, email, phone]
+  workflows:
+    - id: wf-triage
+      name: Lead Triage
+      trigger:
+        ghl_feature_id: GHL-WF-CONTACT-TAG
+        filters:
+          - { field: tag, operator: is, value: needs-review }
+      nodes:
+        - {
+            id: n1,
+            type: action,
+            ghl_feature_id: GHL-WF-REMOVE-CONTACT-TAG,
+            label: Take it out of review,
+            config: { tag: needs-review },
+            position: { x: 0, y: 100 },
+          }
+        - {
+            id: n2,
+            type: action,
+            ghl_feature_id: GHL-WF-ADD-CONTACT-TAG,
+            label: Send it up,
+            config: { tag: escalated },
+            position: { x: 0, y: 220 },
+          }
+        - { id: n3, type: end, position: { x: 0, y: 340 } }
+      edges:
+        - { from: n1, to: n2 }
+        - { from: n2, to: n3 }
+      settings: { allow_reentry: true, timezone: America/Chicago }
+    - id: wf-escalation
+      name: Escalation
+      trigger:
+        ghl_feature_id: GHL-WF-CONTACT-TAG
+        filters:
+          - { field: tag, operator: is, value: escalated }
+      nodes:
+        - {
+            id: n1,
+            type: action,
+            ghl_feature_id: GHL-WF-REMOVE-CONTACT-TAG,
+            label: Clear the escalation,
+            config: { tag: escalated },
+            position: { x: 0, y: 100 },
+          }
+        - {
+            id: n2,
+            type: action,
+            ghl_feature_id: GHL-WF-ADD-CONTACT-TAG,
+            label: Put it back in review,
+            config: { tag: needs-review },
+            position: { x: 0, y: 220 },
+          }
+        - { id: n3, type: end, position: { x: 0, y: 340 } }
+      edges:
+        - { from: n1, to: n2 }
+        - { from: n2, to: n3 }
+      settings: { allow_reentry: true, timezone: America/Chicago }
+    - id: wf-intake
+      name: New Lead Intake
+      trigger:
+        ghl_feature_id: GHL-WF-FORM-SUBMITTED
+        filters:
+          - { field: form, operator: is, value: consult-request }
+      nodes:
+        - {
+            id: n1,
+            type: action,
+            ghl_feature_id: GHL-WF-ADD-CONTACT-TAG,
+            label: Mark for review,
+            config: { tag: needs-review },
+            position: { x: 0, y: 100 },
+          }
+        - { id: n2, type: end, position: { x: 0, y: 220 } }
+      edges:
+        - { from: n1, to: n2 }
+      settings: { allow_reentry: false, timezone: America/Chicago }
+simulation_time: '2026-09-07T09:00:00-05:00'
+timezone: America/Chicago
+seed: 4108
+scheduled_events:
+  - at: '2026-09-07T09:08:00-05:00'
+    type: form.submitted
+    payload:
+      form_id: consult-request
+      contact_id: linus
+      values:
+        {
+          first_name: Linus,
+          last_name: Ferrand,
+          email: 'linus.ferrand@example.com',
+          phone: '+15125550122',
+        }
+    description: Linus asks about a consultation and is marked for review
+injectable_events:
+  - id: review-again
+    type: tag.added
+    description: Mark Linus for review again and watch what the two workflows do with him.
+    payload: { contact_id: linus, tag: needs-review }
+hidden_facts:
+  when_escalation_was_added: 'Escalation was built last month by somebody who never opened Lead Triage.'
+failure_modes: [workflow_loop]
+incident:
+  title: Two workflows passing the same lead back and forth
+  symptom: >-
+    One form submission produced dozens of workflow runs for a single contact, all of them at the
+    same moment, and then a failure. The failure names the workflow the engine refused to start
+    again and how many times that contact had already entered it at that instant. The contact,
+    their tags and every run that did complete are untouched.
+  client_complaint: >-
+    "Every lead that comes in fills the activity feed with the same two automations over and over.
+    Nobody has actually been contacted."
+  failure_mode: workflow_loop
+  inspect:
+    - The workflow runs the account holds for Linus, and how many of them share one timestamp
+    - The failure record, and which workflow it names
+    - What each of the two workflows does to the contact's tags, read as a pair
+  reproduce:
+    - Run the queued form submission.
+    - Count the runs, then read the failure. Then work out which of the two tags each workflow
+      changes, and what that does to the other one's trigger.

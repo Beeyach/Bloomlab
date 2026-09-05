@@ -1,0 +1,100 @@
+# SIM-011 · unavailable_appointment. A booking page with nothing on it.
+#
+# No second scheduling rule is invented here. The funnel asks the same availability engine the
+# Calendar Lab asks, and that engine offers nothing. Every setting a learner looks at first is
+# right: five working days, a thirty-minute duration, a thirty-minute interval, an hour's notice.
+# What is missing is the team. A round-robin calendar distributes bookings between its members,
+# and this one has none left, so there is nobody to distribute to and no time it can offer.
+id: SC-glowhaus-incident-no-slots
+title: Glowhaus — a booking page with no times on it
+client: CL-glowhaus-medspa
+summary: >-
+  The consultation funnel loads, the booking step renders, and it offers nothing. The calendar has
+  working hours, a host and a duration. The two settings that decide how far ahead it will look
+  are fighting each other.
+initial_account_state:
+  users:
+    - { id: priya, name: Priya Raman, role: admin }
+  contacts:
+    - id: nadia
+      first_name: Nadia
+      last_name: Haddad
+      email: 'nadia.haddad@example.com'
+      phone: '+15125550188'
+      timezone: America/Chicago
+      source: Returning client
+      owner_id: priya
+  tags: [booked]
+  calendars:
+    - id: consultation
+      name: Consultation
+      # A round-robin calendar hands each booking to a member of its team. Priya was taken off
+      # this calendar when the studio reshuffled cover and never put back, so the team is empty.
+      type: round_robin
+      assignment: optimize_availability
+      duration_minutes: 30
+      slot_interval_minutes: 30
+      minimum_notice_minutes: 60
+      booking_window_days: 14
+      timezone: America/Chicago
+      staff_ids: []
+      availability:
+        - { day: 1, start: '09:00', end: '17:00' }
+        - { day: 2, start: '09:00', end: '17:00' }
+        - { day: 3, start: '09:00', end: '17:00' }
+        - { day: 4, start: '09:00', end: '17:00' }
+        - { day: 5, start: '09:00', end: '17:00' }
+      locations:
+        - { id: studio, kind: address, value: '2400 South Lamar, Austin' }
+      default_location_id: studio
+  forms:
+    - id: consult-request
+      name: Consultation Request
+      fields: [first_name, last_name, email, phone]
+  funnels:
+    - id: fn-consult
+      name: Consultation Funnel
+      steps:
+        - id: st-landing
+          name: The offer
+          purpose: offer
+          next_step_id: st-book
+          blocks:
+            - { id: bl-landing-headline, role: headline, headline: 'Book a consultation' }
+            - { id: bl-landing-cta, role: cta, headline: 'Pick a time', target_step_id: st-book }
+        - id: st-book
+          name: Pick a time
+          purpose: booking
+          blocks:
+            - { id: bl-book-headline, role: headline, headline: 'When suits you?' }
+            - { id: bl-book-calendar, role: calendar, reference_id: consultation }
+simulation_time: '2026-09-07T09:00:00-05:00'
+timezone: America/Chicago
+seed: 4106
+scheduled_events: []
+injectable_events:
+  - id: staff-books
+    type: appointment.booked
+    description: Book Nadia in by hand, two days out, to prove the calendar itself still works.
+    payload:
+      { contact_id: nadia, calendar_id: consultation, minutes_from_now: 2880, booked_by: staff }
+hidden_facts:
+  what_changed: 'The studio reshuffled cover a fortnight ago and rebuilt the team on two calendars. This one was missed.'
+failure_modes: [unavailable_appointment]
+incident:
+  title: A booking page with no times on it
+  symptom: >-
+    The booking step of the consultation funnel offers a visitor nothing at all. The calendar has
+    five working days, a thirty-minute duration, a thirty-minute slot interval and an hour's
+    notice, and the availability engine returns an empty list for every day it is asked about.
+  client_complaint: >-
+    "Someone messaged us on Instagram to say the booking page is broken. I opened it myself and
+    there is nothing to click. It was working last month."
+  failure_mode: unavailable_appointment
+  inspect:
+    - The consultation calendar's full configuration, including what kind of calendar it is
+    - Who is on the calendar, and what that kind of calendar does with them
+    - What the availability engine offers for the next few days
+  reproduce:
+    - Open the Calendar Lab on this account and look at the schedule.
+    - Open the Funnel Lab and walk a visitor to the booking step.

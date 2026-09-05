@@ -1,7 +1,9 @@
 import type { PendingEvent, SimulatorEvent, SimulatorEventType } from '../events.ts';
 import type { AccountState, Workflow, WorkflowNode, WorkflowRunContext } from '../state.ts';
 import { hasOffset } from '../time.ts';
+import { appointmentIdOf } from '../reducers/appointments.ts';
 import { readBranches } from './conditions.ts';
+import { answerFor, readHeaders } from './endpoints.ts';
 import { hasMergeFields, renderTemplate } from './merge.ts';
 import type { RunView } from './view.ts';
 
@@ -90,7 +92,9 @@ const TRIGGER_CAPABILITIES: TriggerCapability[] = [
     // which is the split the registry records. How the booking was made is remembered on the
     // appointment, so a reschedule of a staff booking is still a staff booking (CAL-003).
     match: (event, account) => {
-      const appointmentId = str(event.payload.appointment_id);
+      // The id the event produced, which for a booking that named none is the one the reducer
+      // minted from it — otherwise an injected booking would fire nothing at all (D-145).
+      const appointmentId = appointmentIdOf(event);
       if (!appointmentId) return null;
       // A reschedule names only the appointment; the contact and calendar come from the record.
       const appointment = account.appointments[appointmentId];
@@ -131,7 +135,7 @@ const TRIGGER_CAPABILITIES: TriggerCapability[] = [
       { key: 'tag', label: 'Tag', kind: 'list', reference: 'tags' },
     ],
     match: (event, account) => {
-      const appointmentId = str(event.payload.appointment_id);
+      const appointmentId = appointmentIdOf(event);
       if (!appointmentId) return null;
       const appointment = account.appointments[appointmentId];
       if (!appointment) return null;
@@ -760,10 +764,18 @@ const ACTION_CAPABILITIES: ActionCapability[] = [
       if (method && !['POST', 'GET', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase())) {
         problems.push(`${method} is not a webhook method`);
       }
+      const headers = config.headers;
+      if (
+        headers !== undefined &&
+        (typeof headers !== 'object' || headers === null || Array.isArray(headers))
+      ) {
+        problems.push('Headers are key and value pairs');
+      }
       return problems;
     },
-    // No request leaves the sandbox: the simulator records the payload it would have sent and a
-    // 200 response, which is the registry's stated approximation (fidelity B).
+    // No request leaves the sandbox. The simulator records the payload it would have sent and the
+    // answer the scenario says that URL gives — 200 when it describes none, which is what every
+    // scenario before Phase 15 meant and what the registry calls the approximation (D-139).
     execute: (context) => {
       const url = text(context.node.config, 'url') ?? '';
       const custom = context.node.config.custom_data;
@@ -784,6 +796,8 @@ const ACTION_CAPABILITIES: ActionCapability[] = [
         tags: context.view.contact.tags,
         ...rendered,
       };
+      const headers = readHeaders(context.node.config);
+      const answer = answerFor(context.view.account, url, headers);
       return {
         generated: [
           {
@@ -793,15 +807,28 @@ const ACTION_CAPABILITIES: ActionCapability[] = [
             source: nodeSource(context),
             payload: {
               endpoint: url,
-              status: 200,
+              status: answer.status,
               body,
               method: (text(context.node.config, 'method') ?? 'POST').toUpperCase(),
               contact_id: context.view.contact.id,
+              ...(answer.failure ? { failure_kind: answer.failure } : {}),
+              ...(answer.endpoint_id ? { endpoint_id: answer.endpoint_id } : {}),
               ...attribution(context),
             },
           },
         ],
-        data: { url, body, unresolved, simulated: true },
+        data: {
+          url,
+          body,
+          unresolved,
+          simulated: true,
+          // The header names sent, never their values: a log that prints a token is a log that
+          // leaks one, and the learner needs to see which header was sent, not what was in it.
+          header_names: Object.keys(headers).sort(),
+          status: answer.status,
+          ...(answer.failure ? { failure_kind: answer.failure } : {}),
+          ...(answer.expected_header ? { expected_header: answer.expected_header } : {}),
+        },
       };
     },
   },

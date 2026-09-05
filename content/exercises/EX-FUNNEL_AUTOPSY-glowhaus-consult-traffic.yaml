@@ -1,0 +1,179 @@
+# FUNNEL AUTOPSY (spec §27, EXR-010). The learner reads a funnel's own traffic and separates what
+# is observably wrong from what might explain it.
+#
+# A different job from FUNNEL ASSEMBLY: nothing is built here. The funnel already exists and has
+# three weeks of visits behind it, and the work is reading them — where the traffic came from, how
+# far it got, what it started and did not finish, where it stopped.
+#
+# The two answers are graded separately on purpose. A problem is something the data says; a
+# hypothesis is something that would explain it and has not been tested. A learner who writes one
+# in the box for the other has not made the distinction the exercise is about, and the markers
+# below decide that deterministically without judging the prose (D-070, D-143).
+id: EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic
+type: FUNNEL_AUTOPSY
+title: Forty visits, fourteen leads
+mode: practice
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-STRATEGIZE-funnel-math
+  - SK-STRATEGIZE-bottleneck-diagnosis
+scenario: SC-glowhaus-reporting
+instructions: |
+  Glowhaus spent three weeks sending paid traffic to the consultation funnel. Priya wants to know
+  whether the funnel is the problem before she spends anything else.
+
+  Open the funnel in the **Funnel Lab**, run the reporting window if it has not run yet, and read
+  the **Autopsy**: traffic source, conversion, how far down each step the traffic got, form
+  completion, booking rate and drop-off.
+
+  Then write two things down, separately.
+
+  **The problem** is something the data says. A number, a stage, a count. It is not a guess and it
+  contains no "because".
+
+  **The hypothesis** is what might explain it. It is a guess, it is allowed to be wrong, and the
+  only thing that makes it a good one is that you could test it.
+allowed_features: []
+starting_state:
+  funnel_id: fn-consult
+  notes: >-
+    The funnel is built and has already run. Nothing needs building; the window may need running.
+written_fields:
+  - key: problem
+    label: What is the problem?
+    help: One thing the data shows. A stage, a number, a count. No explanation.
+    rows: 4
+  - key: hypothesis
+    label: What might explain it?
+    help: One thing that would account for the problem, and that you could test. It is allowed to be wrong.
+    rows: 4
+response_markers:
+  names_a_stage:
+    - landing
+    - the offer
+    - apply
+    - the form
+    - booking step
+    - pick a time
+    - book
+  names_a_number:
+    - ' of '
+    - '14'
+    - '22'
+    - '26'
+    - '40'
+    - 'per cent'
+    - 'percent'
+  is_an_explanation:
+    - because
+    - probably
+    - might be
+    - may be
+    - suggests
+    - could be
+    - my guess
+    - i think
+  names_a_source:
+    - meta
+    - google
+    - instagram
+    - paid
+    - source
+  is_testable:
+    - test
+    - try
+    - measure
+    - compare
+    - a/b
+    - split
+    - change
+    - remove
+    - shorten
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.problem_answered
+    operator: equals
+    value: true
+    tier: required
+    dimension: correctness
+    description: The problem is written down.
+  - id: a2
+    type: state
+    path: written.hypothesis_answered
+    operator: equals
+    value: true
+    tier: required
+    dimension: correctness
+    description: The hypothesis is written down, separately from the problem.
+  - id: a3
+    type: state
+    path: written.problem_mentions
+    operator: contains
+    value: names_a_number
+    tier: required
+    dimension: correctness
+    description: The problem cites something the data actually says.
+  - id: a4
+    type: state
+    path: written.problem_mentions
+    operator: contains
+    value: names_a_stage
+    tier: quality
+    dimension: architecture
+    description: The problem names where in the funnel it is, not only that something is wrong.
+  - id: a5
+    type: state
+    path: written.hypothesis_mentions
+    operator: contains
+    value: is_an_explanation
+    tier: required
+    dimension: explanation
+    description: The hypothesis is written as an explanation rather than as a second observation.
+  - id: a6
+    type: state
+    path: written.hypothesis_mentions
+    operator: contains
+    value: is_testable
+    tier: quality
+    dimension: explanation
+    description: The hypothesis names something that could be tried or measured.
+  - id: a7
+    type: state
+    path: written.problem_mentions
+    operator: contains
+    value: names_a_source
+    tier: bonus
+    dimension: architecture
+    description: The problem distinguishes between the traffic sources rather than treating them as one.
+critical_failures:
+  - id: c1
+    type: state
+    path: written.problem_mentions
+    operator: not_contains
+    value: is_an_explanation
+    description: >-
+      The problem statement explains rather than observes. Separating what happened from why is
+      the whole exercise, so an explanation in the problem box fails it whatever else is right.
+grading:
+  mode: deterministic
+  weights:
+    correctness: 35
+    edge_cases: 0
+    architecture: 20
+    maintainability: 0
+    explanation: 45
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: Read the six views before you write anything. Two of them disagree about how healthy this funnel is.
+  - level: concept_reminder
+    text: A problem survives being read aloud to the client without an argument. A hypothesis is the sentence after "because", and you should be able to say how you would check it.
+  - level: worked_example
+    text: >-
+      Problem — of the twenty-two visits that started the form, only fourteen submitted it.
+      Hypothesis — the form may be asking for more than somebody who has just arrived is willing
+      to give, which we could test by dropping a field and watching completion.
+fieldwork: null
+portfolio: null

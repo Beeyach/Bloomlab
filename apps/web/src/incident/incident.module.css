@@ -1,0 +1,313 @@
+/*
+ * The Incident Room (SIM-011, DES-013).
+ *
+ * Understated. A broken system in a real business does not flash — what is loud about it is the
+ * client, and that is where the one warning rule goes. There is no alarm animation anywhere in
+ * this file, no siren colour, no neon, no fake terminal and no monospace: the logs are Inter in a
+ * table, exactly as they are in the Workflow Lab's timeline, because they are the same records.
+ *
+ * Bricolage for headings, Inter for everything else, restrained warning and error tokens, and
+ * status said in words rather than in colour alone. A skipped step and a failure are marked by a
+ * left rule and their own wording; a reader who cannot see the tint reads the same thing.
+ *
+ * Two columns on desktop — the case on the left, the evidence on the right — one column below
+ * 1024. Phones keep the symptom, the complaint, the logs, the system state and every action; the
+ * tables scroll inside themselves rather than being cut down (§43).
+ */
+
+/*
+ * `min-width: 0` on every grid container down the page, so a long unbreakable string — an
+ * endpoint URL, a token, a contact id — cannot push a track wider than the phone it is on.
+ */
+.screen {
+  --bl-density-row: var(--bl-density-high);
+  min-width: 0;
+  display: grid;
+  gap: var(--bl-space-6);
+  max-width: 76rem;
+}
+
+.header {
+  display: grid;
+  gap: var(--bl-space-2);
+  justify-items: start;
+  max-width: 46rem;
+}
+
+.breadcrumb {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-2xl);
+  font-weight: var(--bl-font-weight-bold);
+  letter-spacing: var(--bl-font-tracking-display);
+  line-height: var(--bl-font-leading-tight);
+}
+
+.lead {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+}
+
+.muted {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+}
+
+.body {
+  margin: 0;
+  line-height: var(--bl-font-leading-relaxed);
+  overflow-wrap: anywhere;
+}
+
+.columns {
+  min-width: 0;
+  display: grid;
+  gap: var(--bl-space-5);
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: start;
+}
+
+.evidence {
+  min-width: 0;
+  display: grid;
+  gap: var(--bl-space-5);
+}
+
+.panel {
+  min-width: 0;
+  display: grid;
+  gap: var(--bl-space-3);
+  padding: var(--bl-space-5);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-lg);
+  background: var(--bl-color-surface);
+}
+
+.panelHeading {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-lg);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.subHeading {
+  margin: var(--bl-space-3) 0 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-md);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+/*
+ * The client's own words. One quiet warning rule, no background wash and no icon — the point is
+ * that somebody is unhappy, not that the interface is alarmed.
+ */
+.complaint {
+  margin: 0;
+  padding: var(--bl-space-3) var(--bl-space-4);
+  border-left: 3px solid var(--bl-color-warning);
+  color: var(--bl-color-text);
+  font-size: var(--bl-font-size-md);
+  font-style: normal;
+  line-height: var(--bl-font-leading-relaxed);
+}
+
+/* A URL is one long word. It wraps rather than deciding how wide the page is. */
+.list {
+  display: grid;
+  gap: var(--bl-space-2);
+  margin: 0;
+  padding-left: var(--bl-space-5);
+  font-size: var(--bl-font-size-sm);
+  line-height: var(--bl-font-leading-normal);
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-3);
+  margin-top: var(--bl-space-2);
+}
+
+/*
+ * The scenario decides what a learner may do, and it says so in a sentence — "Book again and read
+ * the response" is a better label than "Book". A sentence on a button that will not wrap decides
+ * how wide the page is, so here it wraps: left-aligned, never wider than the column it is in.
+ */
+.actions > * {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
+
+.refusal {
+  margin: 0;
+  padding: var(--bl-space-3);
+  border: 1px solid var(--bl-color-error);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface-2);
+}
+
+/* ---- the case list ------------------------------------------------------------------------- */
+
+.caseList {
+  display: grid;
+  gap: var(--bl-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+}
+
+.caseCard {
+  display: grid;
+  gap: var(--bl-space-2);
+  padding: var(--bl-space-4);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-lg);
+  background: var(--bl-color-surface);
+}
+
+.caseTitle {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-md);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.caseLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.caseLink:hover {
+  text-decoration: underline;
+}
+
+.caseSymptom {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+  line-height: var(--bl-font-leading-normal);
+}
+
+.caseClient {
+  margin: 0;
+  color: var(--bl-color-text-faint);
+  font-size: var(--bl-font-size-xs);
+}
+
+/* ---- tables --------------------------------------------------------------------------------- */
+
+/* `min-width: 0` is what makes `overflow-x` bite inside a grid item; without it a wide log
+ * table pushes the page sideways instead of scrolling inside its own box. */
+.tableWrap {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--bl-font-size-sm);
+}
+
+.table th,
+.table td {
+  padding: var(--bl-space-2) var(--bl-space-3);
+  border-bottom: 1px solid var(--bl-color-border);
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.table thead th {
+  color: var(--bl-color-text-soft);
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.reason {
+  white-space: normal;
+}
+
+/* A skipped step or a failure: a rule and a tint, with the reason spelled out in the row. */
+.problemRow > td:first-child {
+  box-shadow: inset 2px 0 0 var(--bl-color-error);
+}
+
+.problemRow > td {
+  background: var(--bl-color-surface-2);
+}
+
+/* Something the record does not have. Said in words in the cell; this only softens it. */
+.absent {
+  color: var(--bl-color-text-soft);
+}
+
+.disclosure {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--bl-color-link);
+  font: inherit;
+  font-size: var(--bl-font-size-sm);
+  cursor: pointer;
+}
+
+.disclosure:hover {
+  text-decoration: underline;
+}
+
+.labLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--bl-font-size-sm);
+}
+
+.inlineLink {
+  color: var(--bl-color-link);
+}
+
+@media (width <= 1024px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 768px) {
+  .screen {
+    gap: var(--bl-space-5);
+  }
+
+  .panel {
+    padding: var(--bl-space-4);
+  }
+
+  .caseList {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 400px) {
+  .panel {
+    padding: var(--bl-space-3);
+  }
+}
+
+/* A second fact in the same cell — a status code beside its reason — set back but not hidden. */
+.detail {
+  color: var(--bl-color-text-soft);
+}

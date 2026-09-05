@@ -40,6 +40,37 @@ import { viewFor, workflowZone, type RunView } from './view.ts';
 
 const ACTIVE: WorkflowRun['status'][] = ['active', 'waiting'];
 
+/**
+ * How many times one run may enter one node before the engine calls it a loop (SIM-011, D-141).
+ *
+ * A workflow that edges back to an earlier step is legal and sometimes right — a nurture that
+ * cycles until a reply arrives is a real pattern — so this is deliberately well above any
+ * defensible number of passes rather than a cap of one. What it stops is the workflow that has no
+ * way out.
+ *
+ * The point of catching it here rather than at the engine's global cascade limit is that a
+ * learner has to be able to see what happened. A `CASCADE_LIMIT` refusal abandons the whole
+ * operation and leaves a diagnostic; this ends the one run that is spinning, as a failure with
+ * the node and the count on it, and leaves everything else in the account exactly as it was. The
+ * global limit stays where it is, as the last resort it has always been (D-078).
+ */
+export const MAX_NODE_VISITS_PER_RUN = 25;
+
+/**
+ * How many times this run has already started this node, counted from the run's own execution
+ * history. Deterministic and replay-safe: replay rebuilds the same records in the same order, so
+ * it reaches the same count at the same point and fails the same run.
+ */
+function visitsSoFar(state: SimulatorState, runId: string, nodeId: string): number {
+  let seen = 0;
+  for (const record of state.execution) {
+    if (record.kind !== 'step_started') continue;
+    if (record.workflow_run_id !== runId || record.node_id !== nodeId) continue;
+    seen += 1;
+  }
+  return seen;
+}
+
 const nodeById = (workflow: Workflow, id: string | null): WorkflowNode | null =>
   id === null ? null : (workflow.nodes.find((node) => node.id === id) ?? null);
 
@@ -252,6 +283,16 @@ export function workflowAdvanced(
   }
 
   current = { ...current, current_node_id: next.id };
+  // A run that keeps arriving at the same node is going round. Ending it here — failed, with the
+  // node and the count — is what makes the incident inspectable instead of a frozen tab.
+  const visits = visitsSoFar(state, current.id, next.id);
+  if (visits >= MAX_NODE_VISITS_PER_RUN) {
+    return failRun(account, current, next, event, workflow, 'workflow_loop', {
+      visits,
+      limit: MAX_NODE_VISITS_PER_RUN,
+      ...nodeFacts(workflow, next),
+    });
+  }
   records.push(record('step_started', event, current, next, nodeFacts(workflow, next)));
   const view = viewFor(account, workflow, current, state.clock.timezone, event.at);
   if (!view) {

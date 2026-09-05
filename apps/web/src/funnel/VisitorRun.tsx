@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { Button, Field, Input, Select, StatusPill } from '@bloomlab/design-system';
 import {
@@ -14,14 +14,23 @@ import {
   type VisitAction,
 } from '@bloomlab/simulator-core';
 
+import type { PendingEvent } from '@bloomlab/simulator-core';
+
 import type { StoredRun } from '../simulator/store';
 import type { ExecutionResult } from '../workflow/execution';
 import {
-  bookFromFunnel,
+  VISIT_SOURCES,
+  formStarted,
+  formSubmission,
+  funnelBooking,
+  funnelPayment,
+  newVisitId,
   newVisitor,
-  payFromFunnel,
-  submitForm,
-  submitSurvey,
+  performEvents,
+  stepViewed,
+  surveySubmission,
+  visitEnded,
+  visitStarted,
   type SubmissionValues,
   type Visitor,
 } from './commands';
@@ -47,6 +56,33 @@ import styles from './funnel.module.css';
  * A refusal is shown as a refusal. If the form has no such field, or the visitor gave no name and
  * the account has no contact to update, the engine says so and the visitor does not move on.
  */
+
+/**
+ * What this walk has done, and how much of it the account has been told (FUN-004, D-147). Held in
+ * a ref rather than in state because it is a record of the past, not something the screen renders:
+ * changing it must never cause a render, and a render must never lose it.
+ */
+interface VisitLog {
+  id: string;
+  started: boolean;
+  steps: { id: string; blocks: number }[];
+  recordedSteps: number;
+  forms: string[];
+  recordedForms: number;
+  ended: 'left' | 'completed' | null;
+  recordedEnd: boolean;
+}
+
+const newVisitLog = (firstStepId: string | null, blocks: number): VisitLog => ({
+  id: newVisitId(),
+  started: false,
+  steps: firstStepId ? [{ id: firstStepId, blocks }] : [],
+  recordedSteps: 0,
+  forms: [],
+  recordedForms: 0,
+  ended: null,
+  recordedEnd: false,
+});
 
 export interface VisitorRunProps {
   funnel: Funnel;
@@ -81,6 +117,34 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
   /** Where in the run's log this visit began, so the chain shows this visit and not the account. */
   const [from, setFrom] = useState<number>(() => visitorLogWatermark(run));
   const [done, setDone] = useState(false);
+  /**
+   * The visit this walk is being recorded as (FUN-004, D-147).
+   *
+   * A walk is traffic, so it is recorded as traffic, through the same events an authored cohort
+   * uses — and it travels in the *same commit* as whatever the visitor did. There is one writer
+   * to a run at a time: telemetry on its own timer would race the learner's own submission, and
+   * one of the two would be dropped by the Lab's single-flight guard. So this ref accumulates
+   * what the visit has done and `owed` turns the unrecorded part into events, which ride along
+   * with the next action.
+   *
+   * Telemetry needs a funnel the account actually holds, so an unsaved draft is walked without
+   * being recorded and the screen says so rather than losing the visit silently.
+   */
+  const [source, setSource] = useState<string>(VISIT_SOURCES[0]);
+  const recordable = Boolean(account.funnels[funnel.id]);
+  const visit = useRef<VisitLog>(newVisitLog(start?.id ?? null, start?.blocks.length ?? 1));
+  /**
+   * Visits that ended with no commit to travel with — somebody pressed "Start over" halfway down.
+   * They wait here and are written with the next action, because two commits in one tick are both
+   * built against the run this render captured and the second would undo the first.
+   */
+  const abandoned = useRef<VisitLog[]>([]);
+  /**
+   * Where the visit came from is fixed the moment any of it is recorded: a visit does not change
+   * its source halfway through, and the picker says so by becoming unavailable rather than by
+   * quietly ignoring the change.
+   */
+  const [sourceLocked, setSourceLocked] = useState(false);
 
   const step = stepId ? stepOf(funnel, stepId) : null;
   const actions = useMemo(
@@ -88,7 +152,78 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
     [funnel, account, step, run.state.clock.now],
   );
 
+  /**
+   * Everything about this visit the account has not been told yet, as events against `current`.
+   * Nothing is marked recorded here: `settle` does that, once the commit has actually succeeded,
+   * so a refused submission does not silently lose the steps that led to it.
+   */
+  const owed = useCallback(
+    (current: StoredRun): PendingEvent[] => {
+      if (!recordable) return [];
+      const events: PendingEvent[] = [];
+      for (const log of [...abandoned.current, visit.current]) {
+        if (!log.started) {
+          events.push(visitStarted(current, { visit_id: log.id, funnel_id: funnel.id, source }));
+        }
+        for (const view of log.steps.slice(log.recordedSteps)) {
+          events.push(stepViewed(current, log.id, view.id, view.blocks));
+        }
+        for (const block of log.forms.slice(log.recordedForms)) {
+          events.push(formStarted(current, log.id, block));
+        }
+        if (log.ended && !log.recordedEnd) events.push(visitEnded(current, log.id, log.ended));
+      }
+      return events;
+    },
+    [funnel.id, recordable, source],
+  );
+
+  /** Marks what `owed` produced as recorded. Called only after a commit succeeded. */
+  const settle = useCallback(() => {
+    for (const log of [...abandoned.current, visit.current]) {
+      log.started = true;
+      log.recordedSteps = log.steps.length;
+      log.recordedForms = log.forms.length;
+      if (log.ended) log.recordedEnd = true;
+    }
+    abandoned.current = [];
+    setSourceLocked(true);
+  }, []);
+
+  /** True when this walk has done something the account has not been told about. */
+  const owesAnything = () => {
+    const log = visit.current;
+    return (
+      !log.started ||
+      log.recordedSteps < log.steps.length ||
+      log.recordedForms < log.forms.length ||
+      Boolean(log.ended && !log.recordedEnd)
+    );
+  };
+
+  /** Writes what the visit owes on its own, when nothing else is being committed. */
+  const flush = useCallback(async () => {
+    if (!recordable) return;
+    const result = await perform(async (current) =>
+      performEvents(current, scenario, owed(current)),
+    );
+    if (result?.ok) settle();
+  }, [owed, perform, recordable, scenario, settle]);
+
+  // Deliberately not memoised: it is one button's handler, and it resets six pieces of state,
+  // which is not something a stable identity buys anything for.
   const restart = () => {
+    // A walk abandoned mid-funnel is a drop-off and the Autopsy has to see it as one — but it is
+    // not written here. Starting over must never be a save: a commit now would be built against
+    // the run this render captured, and whatever the learner did next would be applied to the
+    // same stale run and lose it. So the visit joins the queue and travels with the next action.
+    if (!done) visit.current.ended = 'left';
+    if (owesAnything()) abandoned.current = [...abandoned.current, visit.current];
+    visit.current = newVisitLog(
+      firstStep(funnel)?.id ?? null,
+      firstStep(funnel)?.blocks.length ?? 1,
+    );
+    setSourceLocked(false);
     setVisitor(newVisitor());
     setStepId(firstStep(funnel)?.id ?? null);
     setValues({});
@@ -100,56 +235,94 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
 
   const known = account.contacts[visitor.contact_id];
 
-  const advance = useCallback((to: string | null) => {
-    if (to === null) setDone(true);
-    else setStepId(to);
-  }, []);
+  // Plain functions from here down: they read a ref and set state, which is what the React
+  // compiler memoises well and what manual dependency lists get wrong.
+  const advance = (to: string | null) => {
+    const log = visit.current;
+    if (to === null) {
+      setDone(true);
+      log.ended = 'completed';
+      // A call to action ends the funnel without committing anything of its own, so this is the
+      // one place a visit is written on its own — and nothing else is in flight when it is.
+      if (!log.recordedEnd) void flush();
+      return;
+    }
+    setStepId(to);
+    if (!log.steps.some((view) => view.id === to)) {
+      const next = stepOf(funnel, to);
+      log.steps.push({ id: to, blocks: next?.blocks.length ?? 1 });
+    }
+  };
 
-  const act = useCallback(
-    async (action: VisitAction) => {
-      setRefusal(null);
-      if (action.kind === 'advance') {
-        advance(action.to_step_id);
-        return;
-      }
-      const answers = values[action.block_id] ?? {};
-      if (
-        (action.kind === 'submit_form' || action.kind === 'submit_survey') &&
-        !known &&
-        !canCreateContact(answers)
-      ) {
-        setRefusal(
-          'This visitor has no name yet, and the account has no contact to update. A submission that would create a nameless contact is refused by the engine, so fill in a first name.',
-        );
-        return;
-      }
-      const result = await perform(async (current) => {
-        switch (action.kind) {
-          case 'submit_form':
-            return submitForm(current, scenario, visitor, action.form_id, answers);
-          case 'submit_survey':
-            return submitSurvey(current, scenario, visitor, action.survey_id, answers);
-          case 'book': {
-            const chosen = slot[action.block_id];
-            const picked = action.slots.find((row) => row.starts_at === chosen) ?? action.slots[0];
-            if (!picked) throw new Error('This calendar has no openings to book.');
-            return bookFromFunnel(current, scenario, visitor, action.calendar_id, picked);
-          }
-          case 'checkout':
-            return payFromFunnel(current, scenario, visitor, action.product_id, action.amount);
-        }
-      });
-      if (!result) return;
-      if (!result.ok) {
-        setRefusal(result.refusal.message);
-        return;
-      }
-      // The account now knows this visitor: from here the same person updates rather than creates.
-      setVisitor((current) => ({ ...current, is_new: false }));
+  /** The visitor began filling something in. Starting is not submitting, and never becomes it. */
+  const noteFormStart = (blockId: string) => {
+    const log = visit.current;
+    if (!log.forms.includes(blockId)) log.forms.push(blockId);
+  };
+
+  const act = async (action: VisitAction) => {
+    setRefusal(null);
+    if (action.kind === 'advance') {
       advance(action.to_step_id);
-    },
-    [advance, known, perform, scenario, slot, values, visitor],
-  );
+      return;
+    }
+    const answers = values[action.block_id] ?? {};
+    if (
+      (action.kind === 'submit_form' || action.kind === 'submit_survey') &&
+      !known &&
+      !canCreateContact(answers)
+    ) {
+      setRefusal(
+        'This visitor has no name yet, and the account has no contact to update. A submission that would create a nameless contact is refused by the engine, so fill in a first name.',
+      );
+      return;
+    }
+    // One commit for the whole action: what the visit still owes, then the thing the visitor
+    // actually did. Either all of it lands or none of it does, so the Autopsy never sees a
+    // submission with no visit behind it (D-147). An action that finishes the funnel carries the
+    // visit's ending too, rather than being followed by a second commit against a stale run.
+    if (action.to_step_id === null) visit.current.ended = 'completed';
+    const result = await perform(async (current) => {
+      const telemetry = owed(current);
+      const id = visit.current.id;
+      switch (action.kind) {
+        case 'submit_form':
+          return performEvents(current, scenario, [
+            ...telemetry,
+            formSubmission(current, visitor, action.form_id, answers, id),
+          ]);
+        case 'submit_survey':
+          return performEvents(current, scenario, [
+            ...telemetry,
+            surveySubmission(current, visitor, action.survey_id, answers, id),
+          ]);
+        case 'book': {
+          const chosen = slot[action.block_id];
+          const picked = action.slots.find((row) => row.starts_at === chosen) ?? action.slots[0];
+          if (!picked) throw new Error('This calendar has no openings to book.');
+          const booking = funnelBooking(current, visitor, action.calendar_id, picked, id);
+          if ('refusal' in booking) {
+            return { ok: false as const, run: current, refusal: booking.refusal };
+          }
+          return performEvents(current, scenario, [...telemetry, booking.event]);
+        }
+        case 'checkout':
+          return performEvents(current, scenario, [
+            ...telemetry,
+            funnelPayment(current, visitor, action.product_id, action.amount, id),
+          ]);
+      }
+    });
+    if (!result) return;
+    if (!result.ok) {
+      setRefusal(result.refusal.message);
+      return;
+    }
+    settle();
+    // The account now knows this visitor: from here the same person updates rather than creates.
+    setVisitor((current) => ({ ...current, is_new: false }));
+    advance(action.to_step_id);
+  };
 
   /** What the account did since this visit began, in the run's own order. Read, never invented. */
   const chain: ChainEntry[] = useMemo(
@@ -190,10 +363,31 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
             ? `Visiting as ${known.first_name}${known.last_name ? ` ${known.last_name}` : ''} — the account already has this contact, so a submission updates it.`
             : 'Visiting as someone the account has never met. The first submission creates the contact.'}
         </p>
+        <Field label="Came from">
+          <Select
+            value={source}
+            onChange={(event) => setSource(event.target.value)}
+            disabled={sourceLocked}
+            data-testid="visitor-source"
+          >
+            {VISIT_SOURCES.map((row) => (
+              <option key={row} value={row}>
+                {row}
+              </option>
+            ))}
+          </Select>
+        </Field>
         <Button variant="ghost" size="sm" onClick={restart} data-testid="visitor-restart">
           Start over as a new visitor
         </Button>
       </div>
+
+      {!recordable && (
+        <p className={styles.muted} data-testid="visit-not-recorded">
+          This funnel is not saved yet, so the walk is not recorded as traffic and the Autopsy will
+          not see it. Save it in Build first.
+        </p>
+      )}
 
       {refusal && (
         <p className={styles.refusal} role="alert" data-testid="visitor-refusal">
@@ -232,12 +426,13 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
                     values={values[action.block_id] ?? {}}
                     chosenSlot={slot[action.block_id]}
                     timezone={run.state.clock.timezone}
-                    onValue={(field, value) =>
+                    onValue={(field, value) => {
+                      noteFormStart(action.block_id);
                       setValues((current) => ({
                         ...current,
                         [action.block_id]: { ...(current[action.block_id] ?? {}), [field]: value },
-                      }))
-                    }
+                      }));
+                    }}
                     onSlot={(value) =>
                       setSlot((current) => ({ ...current, [action.block_id]: value }))
                     }

@@ -1,0 +1,171 @@
+# REP-002: reporting as diagnosis rather than a dashboard.
+#
+# The learner reads the real report — the same projection the Reporting Lab draws, on the same
+# run — and says which stage is costing Glowhaus the most, why the data supports it, and what
+# they would do first. Nothing in the interface names the bottleneck before they answer.
+#
+# The structured choice is what makes this gradable deterministically. The written half is graded
+# only on whether it cites the evidence the report actually holds, never on the quality of the
+# argument, which is rubric work and belongs to Phase 19 (D-070).
+#
+# A FIX IT rather than a new family: something is wrong with this business and the job is to find
+# out what, from symptoms. The system it is wrong in happens to be the whole funnel rather than
+# one workflow.
+id: EX-FIX_IT-glowhaus-reporting-bottleneck
+type: FIX_IT
+title: Where the money is going
+mode: practice
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-STRATEGIZE-funnel-math
+  - SK-STRATEGIZE-bottleneck-diagnosis
+scenario: SC-glowhaus-reporting
+instructions: |
+  Priya says: "We spent eighteen hundred pounds on ads over three weeks and we have taken sixteen
+  hundred and eighty. I want to know whether to turn the ads off."
+
+  Open the **Reporting Lab** on this account and run the window if it has not run. Read the whole
+  chain — visits, leads, bookings, shows, sales — and the numbers underneath it, including how
+  quickly leads were contacted and how many were contacted at all.
+
+  Then decide: **which one stage is costing Glowhaus the most right now**, and say what in the
+  report tells you so. Name the actual figures. If a stage looks bad on a small sample, say that
+  too.
+
+  You are not being asked which stage has the lowest percentage. You are being asked which one to
+  fix first, for this business, with this data.
+allowed_features: []
+starting_state:
+  notes: >-
+    The account carries three weeks of real history. Nothing needs building.
+decision_options:
+  - value: traffic
+    label: Traffic — not enough people are arriving
+  - value: conversion
+    label: Conversion — visitors are not becoming leads
+  - value: booking
+    label: Booking — leads are not booking
+  - value: show
+    label: Show — booked people are not turning up
+  - value: close
+    label: Close — people who turn up are not buying
+response_markers:
+  cites_show_numbers:
+    - 4 of 9
+    - four of nine
+    - '44'
+    - '45'
+    - nine appointment
+    - 9 appointment
+    - five no
+    - 5 no
+    - no-show
+    - no show
+  cites_the_chain:
+    - '40'
+    - '14'
+    - '11'
+    - forty
+    - fourteen
+    - eleven
+  names_reminders:
+    - reminder
+    - remind
+    - confirmation
+    - nobody is reminded
+    - no reminder
+  notes_contact_speed:
+    - time to contact
+    - never contacted
+    - median
+    - six minutes
+    - 6 min
+  notes_small_sample:
+    - small sample
+    - sample size
+    - only two
+    - only 2
+    - too few
+    - not enough data
+expected_outcomes:
+  - id: a1
+    type: state
+    path: decision.choice
+    operator: equals
+    value: show
+    tier: required
+    dimension: correctness
+    description: >-
+      The stage that is costing the most is the one where five of nine due appointments were
+      missed, after the funnel and the booking step both did their job.
+  - id: a2
+    type: state
+    path: decision.reasoning_mentions
+    operator: contains
+    value: cites_show_numbers
+    tier: required
+    dimension: explanation
+    description: The answer cites the show figures rather than asserting the stage.
+  - id: a3
+    type: state
+    path: decision.reasoning_mentions
+    operator: contains
+    value: cites_the_chain
+    tier: quality
+    dimension: explanation
+    description: The answer reads the stage against the rest of the chain rather than on its own.
+  - id: a4
+    type: state
+    path: decision.reasoning_mentions
+    operator: contains
+    value: names_reminders
+    tier: quality
+    dimension: architecture
+    description: The answer says what is missing between booking and the appointment.
+  - id: a5
+    type: state
+    path: decision.reasoning_mentions
+    operator: contains
+    value: notes_contact_speed
+    tier: bonus
+    dimension: edge_cases
+    description: The answer notices the two leads nobody messaged, or the gap between median and mean.
+  - id: a6
+    type: state
+    path: decision.reasoning_mentions
+    operator: contains
+    value: notes_small_sample
+    tier: bonus
+    dimension: edge_cases
+    description: The answer refuses to rank a source on a handful of visits.
+critical_failures:
+  - id: c1
+    type: state
+    path: decision.choice
+    operator: not_contains
+    value: close
+    description: >-
+      Three of the four people who turned up bought something. Blaming the stage that is working
+      hardest is the diagnosis error this exercise exists to catch.
+grading:
+  mode: deterministic
+  weights:
+    correctness: 40
+    edge_cases: 15
+    architecture: 15
+    maintainability: 0
+    explanation: 30
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: Work down the chain and ask what each stage did with what it was given. One of them was handed eleven people and returned four.
+  - level: concept_reminder
+    text: The stage with the lowest percentage is not automatically the one to fix. Ask which stage is losing the most people who had already cost money to get.
+  - level: worked_example
+    text: >-
+      Nine appointments came due and four people showed. Five people who had been advertised to,
+      converted, contacted and booked did not turn up, and nothing in this account reminds anybody
+      before a consultation. That is the stage to fix first.
+fieldwork: null
+portfolio: null

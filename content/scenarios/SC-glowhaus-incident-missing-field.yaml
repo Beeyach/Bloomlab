@@ -1,0 +1,165 @@
+# SIM-011 · missing_field. Valid data, incomplete data, wrong outcome.
+#
+# The field exists, the branch is written correctly, and the workflow runs to the end. What is
+# missing is the value: leads who come through the short campaign form never answer the treatment
+# question, so the branch that looks at it takes its fallback and everyone gets the generic email.
+# Nothing here is a schema error, which is the point — a validator would pass this.
+id: SC-glowhaus-incident-missing-field
+title: Glowhaus — everyone gets the same email
+client: CL-glowhaus-medspa
+summary: >-
+  Leads from the campaign form are all being sent the general enquiry email, including the ones
+  who came in about laser. The routing branch is written correctly and the field it reads exists.
+initial_account_state:
+  users:
+    - { id: priya, name: Priya Raman, role: admin }
+  contacts: []
+  tags: [new-lead, laser-interest]
+  custom_fields:
+    - key: treatment_interest
+      label: Treatment interest
+      type: dropdown
+      options: [Signature Facial, Membership, Laser]
+  forms:
+    # The campaign form is the short one, built for a paid ad. It never asks the treatment
+    # question, so the field is empty on every lead it creates.
+    - id: campaign-form
+      name: Laser Campaign Form
+      fields: [first_name, last_name, email, phone]
+    - id: consult-request
+      name: Consultation Request
+      fields: [first_name, last_name, email, phone, treatment_interest]
+  workflows:
+    - id: wf-route-by-interest
+      name: Route By Interest
+      trigger:
+        ghl_feature_id: GHL-WF-FORM-SUBMITTED
+        filters: []
+      nodes:
+        - id: n1
+          type: branch
+          ghl_feature_id: GHL-WF-IF-ELSE
+          label: What are they here for?
+          config:
+            branches:
+              - name: laser
+                groups:
+                  - conditions:
+                      - {
+                          field: contact.custom_fields.treatment_interest,
+                          operator: is,
+                          value: Laser,
+                        }
+              - name: membership
+                groups:
+                  - conditions:
+                      - {
+                          field: contact.custom_fields.treatment_interest,
+                          operator: is,
+                          value: Membership,
+                        }
+          position: { x: 0, y: 120 }
+        - id: n2
+          type: action
+          ghl_feature_id: GHL-WF-SEND-EMAIL
+          label: Laser consultation email
+          config:
+            {
+              subject: 'Your laser consultation',
+              body: 'Hi {{contact.first_name}}, here is what to expect from a laser consultation, including the patch test.',
+            }
+          position: { x: -200, y: 260 }
+        - id: n3
+          type: action
+          ghl_feature_id: GHL-WF-SEND-EMAIL
+          label: Membership email
+          config:
+            {
+              subject: 'About the Glow Membership',
+              body: 'Hi {{contact.first_name}}, here is what the membership covers.',
+            }
+          position: { x: 0, y: 260 }
+        - id: n4
+          type: action
+          ghl_feature_id: GHL-WF-SEND-EMAIL
+          label: General enquiry email
+          config:
+            {
+              subject: 'Thanks for getting in touch',
+              body: 'Hi {{contact.first_name}}, someone from the studio will be in touch shortly.',
+            }
+          position: { x: 200, y: 260 }
+        - { id: n5, type: end, position: { x: 0, y: 400 } }
+      edges:
+        - { from: n1, to: n2, branch: laser }
+        - { from: n1, to: n3, branch: membership }
+        - { from: n1, to: n4 }
+        - { from: n2, to: n5 }
+        - { from: n3, to: n5 }
+        - { from: n4, to: n5 }
+      settings: { allow_reentry: false, timezone: America/Chicago }
+simulation_time: '2026-09-07T09:00:00-05:00'
+timezone: America/Chicago
+seed: 4104
+scheduled_events:
+  - at: '2026-09-07T10:05:00-05:00'
+    type: form.submitted
+    payload:
+      form_id: campaign-form
+      contact_id: yusuf
+      values:
+        {
+          first_name: Yusuf,
+          last_name: Karim,
+          email: 'yusuf.karim@example.com',
+          phone: '+15125550133',
+        }
+    description: Yusuf answers the laser ad and fills in the campaign form
+  - at: '2026-09-07T11:40:00-05:00'
+    type: form.submitted
+    payload:
+      form_id: consult-request
+      contact_id: petra
+      values:
+        {
+          first_name: Petra,
+          last_name: Nowak,
+          email: 'petra.nowak@example.com',
+          phone: '+15125550134',
+          treatment_interest: Laser,
+        }
+    description: Petra fills in the full consultation form instead
+injectable_events:
+  - id: campaign-lead
+    type: form.submitted
+    description: Send another lead through the campaign form and watch which branch it takes.
+    payload:
+      form_id: campaign-form
+      contact_id: test-campaign
+      values:
+        {
+          first_name: Test,
+          last_name: Campaign,
+          email: 'test.campaign@example.com',
+          phone: '+15125550135',
+        }
+hidden_facts:
+  ad_promise: 'The ad this form sits under is entirely about laser.'
+failure_modes: [missing_field]
+incident:
+  title: Everyone gets the same email
+  symptom: >-
+    Two leads came in about laser on the same morning. One got the laser email and one got the
+    general enquiry email. The branch that decides between them evaluated correctly in both cases.
+  client_complaint: >-
+    "We are paying for laser ads and the people who click them get an email that does not mention
+    laser once. The ones who find us on Google get the right one. Why?"
+  failure_mode: missing_field
+  inspect:
+    - The branch result in the execution log, for both leads, and what it compared
+    - Yusuf's contact record beside Petra's
+    - The fields each of the two forms collects
+  reproduce:
+    - Run both queued submissions.
+    - Read the branch comparison rather than the branch that was taken. The condition is right;
+      look at what it had to work with.

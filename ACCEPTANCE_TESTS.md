@@ -230,11 +230,27 @@ Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine a
 ## Phase 15 — Troubleshooting and reporting
 
 - **SIM-011** Each of the nine failure modes reproducible with a symptom shown before any fix hint.
+  - **PASSED (Phase 15).** Nine scenarios, one per failure, each produced by engine behaviour rather than authored into the case file: a missing phone skips the SMS step, do-not-disturb refuses the send, a wrong credential answers 401, a merge field with nothing behind it sends the gap, a round-robin calendar with no staff offers no slot, a second enrolment is refused while the first is active, a valid condition compares against a tag the account renamed, two workflows re-trigger each other until the engine stops one enrolment, and an endpoint that accepts the credential fails anyway. The case file shows the symptom, the client's complaint, the logs and the system state, and never names the failure mode; Reproduce it re-runs the fault on demand.
+  - Fixtures: `PHONE-001`, `DND-001`, `WEBAUTH-001`, `FIELD-001`, `SLOTS-001`, `REENTRY-001`, `CONDITION-001`, `LOOP-001`, `INTEGRATION-001`.
+  - Evidence: `apps/web/src/incident/incidents.test.ts` (19 tests), `npm run review:incident` (20 sections).
 - **DES-013** INCIDENT view shows symptom, logs, client complaint, system state; no alarm animation.
+  - **PASSED (Phase 15).** The Incident Room is Inter in a table with one quiet warning rule on the client's own words. The probe checks the four parts are present, that no element on the page runs an animation, that nothing learner-facing is monospace, that a skipped step and a failure are marked by a rule and by their wording rather than by colour alone, that every target is at least 44 px, and that nothing overflows sideways at 320.
+  - Evidence: `npm run review:incident` sections `case-file`, `understated`, `reduced-motion`, `width-1440` … `width-320`; screenshots `.review/incident-1440.png`, `.review/incident-390.png`.
 - **EXR-010** FUNNEL AUTOPSY exposes the six data views; submission requires separate problem and hypothesis fields.
+  - **PASSED (Phase 15).** `EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic` opens the Autopsy lens with traffic source, conversion rate, scroll behaviour, form completion, booking rate and drop-off, all projected from the run's own visit telemetry. The exercise authors `problem` and `hypothesis` as separate fields, the schema refuses a FUNNEL AUTOPSY that authors only one, and the grader reads them separately: a problem statement that explains the cause is a critical failure.
+  - Evidence: `apps/web/src/reporting/reporting.test.ts`, `npm run review:funnel` → `autopsy-lens`.
 - **FUN-004** Same six data views available in the Lab.
+  - **PASSED (Phase 15).** One `funnelAutopsy` projection serves both surfaces, so the Lab and the exercise cannot disagree. A funnel with no traffic says so rather than showing six zeroes.
+  - Evidence: `npm run review:funnel` sections `autopsy-lens`, `autopsy-empty`; screenshot `.review/funnel-autopsy.png`.
 - **REP-001** All ten metrics computed from simulator data and reconcile with the event log (test).
+  - **PASSED (Phase 15).** `SC-glowhaus-reporting` holds three weeks as 269 scheduled events with no seeded totals; Run the window advances the clock through the ordinary execution door, and each metric is reconciled in a test against the events behind it: 40 visits, 14 leads, 11 bookings, 9 due, 4 showed, 5 no-show, 3 won, 1680 collected after one 480 refund, 2160 open pipeline, 12 messaged and 5 replied, median time to contact 6 minutes. Two contacts were never contacted and the report says which and why.
+  - Evidence: `apps/web/src/reporting/reporting.test.ts` (22 tests), `npm run review:reporting` (21 sections).
 - **REP-002** At least one reporting exercise requires a bottleneck diagnosis, graded.
+  - **PASSED (Phase 15).** `EX-FIX_IT-glowhaus-reporting-bottleneck` asks which stage is losing the most and grades the answer against the same report: show rate passes, close rate is a critical failure. The Lab teaches the reasoning rather than displaying a dashboard — it opens on the stage chain, and every metric row opens to its calculation and the events behind it.
+  - Evidence: `apps/web/src/reporting/reporting.test.ts`, `npm run review:reporting` sections `diagnosis-workspace`, `graded-exercise`, `calculation-disclosure`, `evidence-drawer`.
+- **REP-003** (cross-cutting) No fabricated number reaches a learner-facing screen.
+  - **PASSED (Phase 15).** `noFakeAnalytics.test.ts` scans every learner-facing module for a percentage or money amount written into markup and for a reporting rate computed outside the projection, and fails on either. Flag-gated developer surfaces are excluded by name. The two hits it found while being written were a bar-width ratio in the Academy diagram (kept: it is arithmetic about pixels) and the Reporting Lab dividing leads by visits (fixed by carrying `conversion` on the source row).
+  - Evidence: `apps/web/src/reporting/noFakeAnalytics.test.ts` (4 tests).
 
 ## Phase 16 — Sales exercises
 

@@ -371,6 +371,96 @@ export interface Funnel {
   version: number;
 }
 
+/* ---- funnel visit telemetry (FUN-004, EXR-010) ------------------------------------------ */
+
+/**
+ * How far down one funnel step a visitor got, as an ordered semantic scale.
+ *
+ * Bloomlab does not model pixels, viewports or a scroll heatmap, and is not going to: a funnel
+ * here is conversion architecture, so "how far did they get" is answered in the funnel's own
+ * units — the ordered blocks on the step. `top` is the first block only, `bottom` is the last
+ * block reached, `middle` is everything between. `blocks_seen` keeps the raw count beside it so
+ * the reach is inspectable rather than a bare label (D-137).
+ */
+export const FUNNEL_REACH_LEVELS = ['top', 'middle', 'bottom'] as const;
+export type FunnelReachLevel = (typeof FUNNEL_REACH_LEVELS)[number];
+
+/** One step of one visit: when the visitor arrived and how far down they got. */
+export interface FunnelStepView {
+  step_id: string;
+  at: string;
+  reach: FunnelReachLevel;
+  blocks_seen: number;
+}
+
+/** How a visit finished. `left` is a drop-off; `completed` reached the end of the funnel. */
+export const FUNNEL_VISIT_ENDINGS = ['left', 'completed'] as const;
+export type FunnelVisitEnding = (typeof FUNNEL_VISIT_ENDINGS)[number];
+
+/**
+ * One visitor's passage through one funnel (FUN-004, EXR-010).
+ *
+ * This is simulated visitor behaviour — the fictional traffic a funnel received — and never the
+ * learner's own browser. It records only what a visit is: where it came from, which steps it met,
+ * how far down each it got, whether a form was started, who it turned out to be, and where it
+ * stopped. What the visit *achieved* is not duplicated here: a submission, a booking and a
+ * payment are already `FORM_SUBMITTED`, `APPOINTMENT_BOOKED` and `PAYMENT_RECEIVED`, and the
+ * projection joins them by the `visit_id` those events carry (D-136).
+ */
+export interface FunnelVisit {
+  id: string;
+  funnel_id: string;
+  /**
+   * Where the visit came from, as a recorded fact. Unknown stays Unknown: nothing here guesses
+   * an attribution from text nobody recorded (D-138).
+   */
+  source: string;
+  started_at: string;
+  /** The steps met, in the order they were met. */
+  steps: FunnelStepView[];
+  /** Block ids the visitor began filling in. A start is not a submission. */
+  forms_started: string[];
+  /** Who the visit turned out to be, once a submission identified them. */
+  contact_id: string | null;
+  /** True when the account had no such contact before this visit identified them. */
+  contact_is_new: boolean;
+  ended_at: string | null;
+  ended_reason: FunnelVisitEnding | null;
+  /** The step the visit was on when it ended, or is on now. */
+  last_step_id: string | null;
+}
+
+/* ---- external endpoints (SIM-011) -------------------------------------------------------- */
+
+/** Why an accepted call still failed. `auth` is the caller's problem; the rest are the service's. */
+export const EXTERNAL_FAILURE_KINDS = ['auth', 'server_error', 'unavailable', 'timeout'] as const;
+export type ExternalFailureKind = (typeof EXTERNAL_FAILURE_KINDS)[number];
+
+/**
+ * What one outside service does when a workflow's Webhook action calls it (SIM-011, D-139).
+ *
+ * Bloomlab makes no request: there is no network in the simulator and there is not going to be
+ * one. This is the scenario's own deterministic answer for a named URL, so a learner can tell
+ * "my credentials are wrong" from "the service is down" without either being a real outage. It
+ * is training simulation, not a HighLevel field, and the interface says so wherever it is shown.
+ *
+ * Matching is on the whole URL. A substring rule would make one endpoint silently answer for
+ * another, which is exactly the kind of invisible behaviour a troubleshooting phase must not add.
+ */
+export interface ExternalEndpoint {
+  id: string;
+  /** The exact URL that reaches this service. */
+  url: string;
+  /** What it requires before it accepts a call at all. Null accepts any caller. */
+  auth: { header: string; token: string } | null;
+  /** The status a healthy, accepted call gets back. */
+  ok_status: number;
+  /** The status a call with missing or wrong credentials gets back. */
+  unauthorized_status: number;
+  /** When set, the service itself is failing and every accepted call gets this instead. */
+  outage: { status: number; kind: Exclude<ExternalFailureKind, 'auth'> } | null;
+}
+
 export interface Payment {
   id: string;
   contact_id: string;
@@ -634,6 +724,10 @@ export interface AccountState {
   payments: Record<string, Payment>;
   /** The funnels the account holds, learner-built or authored by the scenario (FUN-001). */
   funnels: Record<string, Funnel>;
+  /** Simulated visitor traffic through those funnels (FUN-004, EXR-010). */
+  funnel_visits: Record<string, FunnelVisit>;
+  /** What each named outside service answers a Webhook action with (SIM-011). */
+  external_endpoints: Record<string, ExternalEndpoint>;
   conversations: Record<string, Conversation>;
   workflows: Record<string, Workflow>;
   workflow_runs: Record<string, WorkflowRun>;

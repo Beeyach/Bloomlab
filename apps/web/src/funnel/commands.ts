@@ -10,7 +10,12 @@ import type {
 import type { BloomlabDatabase } from '../data/db';
 import { randomId } from '../data/envelope';
 import { resetStoredRun, type StoredRun } from '../simulator/store';
-import { execute, type ExecutionOptions, type ExecutionResult } from '../workflow/execution';
+import {
+  execute,
+  type EngineRefusal,
+  type ExecutionOptions,
+  type ExecutionResult,
+} from '../workflow/execution';
 
 /**
  * The Funnel Lab command layer (FUN-001 … FUN-003, D-119, D-120).
@@ -40,6 +45,7 @@ export const newFunnelId = () => `fn-${randomId()}`;
 export const newStepId = () => `st-${randomId()}`;
 export const newBlockId = () => `bl-${randomId()}`;
 export const newVisitorId = () => `contact-${randomId()}`;
+export const newVisitId = () => `fv-${randomId()}`;
 export const newAppointmentId = () => `appt-${randomId()}`;
 export const newPaymentId = () => `pay-${randomId()}`;
 
@@ -141,11 +147,73 @@ export const newVisitor = (): Visitor => ({ contact_id: newVisitorId(), is_new: 
 
 export type SubmissionValues = Record<string, string | number | boolean>;
 
+/* ---- what the visit itself did ---------------------------------------------------------- */
+
+/**
+ * Funnel visit telemetry (FUN-004, EXR-010, D-136).
+ *
+ * A walk through SIMULATE is traffic, so the Lab records it as traffic: the visit began, it met a
+ * step, somebody started filling a form in, it ended. These are the same events an authored
+ * cohort uses, through the same door, so the Autopsy reads a live walk and three weeks of
+ * authored history the same way and there is no second telemetry path.
+ *
+ * The Lab renders a whole step at once — there is no scrolling model here and there is not going
+ * to be one — so the reach it can honestly record is the whole step. Varied reach depth comes
+ * from authored history, and `KNOWN_LIMITATIONS.md` says exactly that.
+ */
+export interface VisitTelemetry {
+  visit_id: string;
+  funnel_id: string;
+  source: string;
+}
+
+export const visitStarted = (run: StoredRun, visit: VisitTelemetry): PendingEvent =>
+  injected(run, 'FUNNEL_VISIT_STARTED', { ...visit });
+
+export const stepViewed = (
+  run: StoredRun,
+  visitId: string,
+  stepId: string,
+  blocks: number,
+): PendingEvent =>
+  injected(run, 'FUNNEL_STEP_VIEWED', {
+    visit_id: visitId,
+    step_id: stepId,
+    reach: 'bottom',
+    blocks_seen: Math.max(1, blocks),
+  });
+
+export const formStarted = (run: StoredRun, visitId: string, blockId: string): PendingEvent =>
+  injected(run, 'FUNNEL_FORM_STARTED', { visit_id: visitId, block_id: blockId });
+
+export const visitEnded = (
+  run: StoredRun,
+  visitId: string,
+  reason: 'left' | 'completed',
+): PendingEvent => injected(run, 'FUNNEL_VISIT_ENDED', { visit_id: visitId, reason });
+
+/** The sources a learner can walk a funnel as. Authored traffic may name any source it likes. */
+export const VISIT_SOURCES = ['meta-ads', 'google-search', 'instagram-bio', 'Unknown'] as const;
+
 /**
  * A form submission from the funnel. The real `FORM_SUBMITTED` event, with the referenced form
  * and only the answers the visitor gave — an unknown field is refused by the reducer rather than
  * dropped, which is what makes a broken form block visible instead of silently harmless.
  */
+export const formSubmission = (
+  run: StoredRun,
+  visitor: Visitor,
+  formId: string,
+  values: SubmissionValues,
+  visitId?: string | null,
+): PendingEvent =>
+  injected(run, 'FORM_SUBMITTED', {
+    form_id: formId,
+    contact_id: visitor.contact_id,
+    values,
+    ...(visitId ? { visit_id: visitId } : {}),
+  });
+
 export const submitForm = (
   run: StoredRun,
   scenario: SimulatorScenario,
@@ -153,20 +221,28 @@ export const submitForm = (
   formId: string,
   values: SubmissionValues,
   options?: Options,
+  visitId?: string | null,
 ) =>
   execute(
     run,
     scenario,
-    {
-      kind: 'process',
-      event: injected(run, 'FORM_SUBMITTED', {
-        form_id: formId,
-        contact_id: visitor.contact_id,
-        values,
-      }),
-    },
+    { kind: 'process', event: formSubmission(run, visitor, formId, values, visitId) },
     options,
   );
+
+export const surveySubmission = (
+  run: StoredRun,
+  visitor: Visitor,
+  surveyId: string,
+  values: SubmissionValues,
+  visitId?: string | null,
+): PendingEvent =>
+  injected(run, 'SURVEY_SUBMITTED', {
+    survey_id: surveyId,
+    contact_id: visitor.contact_id,
+    values,
+    ...(visitId ? { visit_id: visitId } : {}),
+  });
 
 export const submitSurvey = (
   run: StoredRun,
@@ -175,18 +251,12 @@ export const submitSurvey = (
   surveyId: string,
   values: SubmissionValues,
   options?: Options,
+  visitId?: string | null,
 ) =>
   execute(
     run,
     scenario,
-    {
-      kind: 'process',
-      event: injected(run, 'SURVEY_SUBMITTED', {
-        survey_id: surveyId,
-        contact_id: visitor.contact_id,
-        values,
-      }),
-    },
+    { kind: 'process', event: surveySubmission(run, visitor, surveyId, values, visitId) },
     options,
   );
 
@@ -198,6 +268,45 @@ export const submitSurvey = (
  * that engine assigned and the length the calendar was configured for (D-129). A funnel visitor
  * is a customer, which is the distinction Customer Booked Appointment turns on.
  */
+/**
+ * The slot the visitor picked, revalidated against the engine now (D-133). Returns the booking
+ * event, or the refusal to show instead: a time that was offered a moment ago and has since been
+ * taken is refused rather than booked over.
+ */
+export const funnelBooking = (
+  run: StoredRun,
+  visitor: Visitor,
+  calendarId: string,
+  slot: Slot,
+  visitId?: string | null,
+): { event: PendingEvent } | { refusal: EngineRefusal } => {
+  const calendar = run.state.account.calendars[calendarId];
+  if (calendar) {
+    const current = slotAt(run.state.account, calendar, run.state.clock.now, slot.starts_at);
+    if (!current || !sameSlot(current, slot)) {
+      return {
+        refusal: {
+          code: 'INVALID_PAYLOAD',
+          message: 'That time is no longer available. Choose another opening.',
+          detail: { calendar_id: calendarId, starts_at: slot.starts_at },
+        },
+      };
+    }
+  }
+  return {
+    event: injected(run, 'APPOINTMENT_BOOKED', {
+      appointment_id: newAppointmentId(),
+      contact_id: visitor.contact_id,
+      calendar_id: calendarId,
+      starts_at: slot.starts_at,
+      duration_minutes: slot.duration_minutes,
+      host_id: slot.host_id,
+      booked_by: 'customer',
+      ...(visitId ? { visit_id: visitId } : {}),
+    }),
+  };
+};
+
 export const bookFromFunnel = (
   run: StoredRun,
   scenario: SimulatorScenario,
@@ -205,39 +314,13 @@ export const bookFromFunnel = (
   calendarId: string,
   slot: Slot,
   options?: Options,
+  visitId?: string | null,
 ) => {
-  const calendar = run.state.account.calendars[calendarId];
-  if (calendar) {
-    const current = slotAt(run.state.account, calendar, run.state.clock.now, slot.starts_at);
-    if (!current || !sameSlot(current, slot)) {
-      return Promise.resolve<ExecutionResult>({
-        ok: false,
-        run,
-        refusal: {
-          code: 'INVALID_PAYLOAD',
-          message: 'That time is no longer available. Choose another opening.',
-          detail: { calendar_id: calendarId, starts_at: slot.starts_at },
-        },
-      });
-    }
+  const outcome = funnelBooking(run, visitor, calendarId, slot, visitId);
+  if ('refusal' in outcome) {
+    return Promise.resolve<ExecutionResult>({ ok: false, run, refusal: outcome.refusal });
   }
-  return execute(
-    run,
-    scenario,
-    {
-      kind: 'process',
-      event: injected(run, 'APPOINTMENT_BOOKED', {
-        appointment_id: newAppointmentId(),
-        contact_id: visitor.contact_id,
-        calendar_id: calendarId,
-        starts_at: slot.starts_at,
-        duration_minutes: slot.duration_minutes,
-        host_id: slot.host_id,
-        booked_by: 'customer',
-      }),
-    },
-    options,
-  );
+  return execute(run, scenario, { kind: 'process', event: outcome.event }, options);
 };
 
 /**
@@ -246,6 +329,21 @@ export const bookFromFunnel = (
  * no subscription handling, no failed-payment path and no refund here; those are the Payments Lab
  * (PAY-001) and the interface says so where a learner can see it (D-122).
  */
+export const funnelPayment = (
+  run: StoredRun,
+  visitor: Visitor,
+  productId: string,
+  amount: number,
+  visitId?: string | null,
+): PendingEvent =>
+  injected(run, 'PAYMENT_RECEIVED', {
+    payment_id: newPaymentId(),
+    contact_id: visitor.contact_id,
+    product_id: productId,
+    amount,
+    ...(visitId ? { visit_id: visitId } : {}),
+  });
+
 export const payFromFunnel = (
   run: StoredRun,
   scenario: SimulatorScenario,
@@ -253,19 +351,30 @@ export const payFromFunnel = (
   productId: string,
   amount: number,
   options?: Options,
+  visitId?: string | null,
 ) =>
   execute(
     run,
     scenario,
-    {
-      kind: 'process',
-      event: injected(run, 'PAYMENT_RECEIVED', {
-        payment_id: newPaymentId(),
-        contact_id: visitor.contact_id,
-        product_id: productId,
-        amount,
-      }),
-    },
+    { kind: 'process', event: funnelPayment(run, visitor, productId, amount, visitId) },
+    options,
+  );
+
+/**
+ * Several events as one commit. Telemetry travels beside the thing it describes — a form
+ * submission and the step view that follows it are one action from the visitor, so they are one
+ * unit here: either all of it happened or none of it did, and the Autopsy never sees half a walk.
+ */
+export const performEvents = (
+  run: StoredRun,
+  scenario: SimulatorScenario,
+  events: PendingEvent[],
+  options?: Options,
+): Promise<ExecutionResult> =>
+  execute(
+    run,
+    scenario,
+    { kind: 'batch', ops: events.map((event) => ({ kind: 'process' as const, event })) },
     options,
   );
 

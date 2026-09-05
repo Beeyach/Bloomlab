@@ -30,7 +30,8 @@ Last updated: 2026-09-08 (end of Phase 13)
 - **The scheduled-event queue is only reachable from a scenario or the engine API.** The harness
   shows the queue and drains it, and the injector can create a future appointment, but there is no
   control for queuing an arbitrary event by hand; `schedule()` is covered by unit tests.
-- **Two failure conditions, not nine.** A contact with no phone and a contact on do-not-disturb are
+- **(Closed in Phase 15: all nine failure conditions are enforced; see Phase 15 below.) Two
+  failure conditions, not nine.** A contact with no phone and a contact on do-not-disturb are
   enforced because they are properties of an outbound message. The rest of SIM-011 — invalid
   webhook auth, missing field, unavailable appointment, bad condition, workflow loop, integration
   failure — is Phase 15, and duplicate enrolment is enforced here only because re-entry is a
@@ -305,3 +306,64 @@ Last updated: 2026-09-08 (end of Phase 13)
   87 ms for 504 events) against a 100 ms ceiling. Phase 13 established that pre-Phase-13 `main`
   reproduces the same numbers in the same container. PERF-002 must not be claimed for this
   scenario from container evidence; it needs one run on the reference desktop.
+
+## Phase 15 — Troubleshooting and Reporting
+
+- **The reporting window is the scenario's three weeks, and only that.** `SC-glowhaus-reporting`
+  runs 1–21 September and the Lab reports on what happened inside it. There is no date picker, no
+  comparison against a previous period and no custom range; a learner cannot yet ask what October
+  looked like, because October has no events. Adding ranges before there is more than one window
+  of history would be a control with nothing behind it.
+- **Ten metrics, and they are the ten REP-001 names.** No cost, spend, ROAS, cost per lead,
+  lifetime value or attribution model is calculated, because none of them can be derived from what
+  the simulator records — an account has no ad spend in it. A learner who needs them meets them in
+  the pricing and reporting curriculum, not as a number this engine would have to invent.
+- **Attribution is the visit's own source and nothing cleverer.** A lead is credited to the source
+  on the visit that captured them. There is no first-touch versus last-touch choice, no
+  multi-session identity stitching and no channel grouping: a contact who arrives twice from two
+  sources is two visits, and only the converting one carries the credit. Real attribution needs
+  identity resolution the simulator does not model.
+- **Time to contact is measured to the first outbound message, not to a call.** The account has no
+  call records, so a business that phones its leads within a minute would read as never contacted.
+  The metric says which channel it counted, and the two never-contacted rows say why they are
+  excluded rather than being averaged in.
+- **Scroll behaviour is three levels, not a pixel depth.** A step view records whether the visitor
+  reached the top, the middle or the bottom of the page, because that is what the simulated visitor
+  run can honestly produce. There is no heatmap, no scroll-depth percentage and no time-on-element:
+  a heatmap over simulated visits would be a picture of nothing (REP-003, §70).
+- **An incident is one authored fault at a time.** Each scenario carries one `incident` block naming
+  one failure mode. Two faults interacting — the thing that makes real troubleshooting hard — is not
+  yet authorable, and neither is a fault that appears only intermittently, because the engine is
+  deterministic by design.
+- **The Incident Room reads and reproduces; it does not repair.** A learner inspects the case,
+  re-runs the fault and follows the links into the CRM, Workflow, Funnel or Calendar Lab to fix it
+  there. There is no fix-it-here control on the incident page itself, and no automatic check that
+  the incident is now resolved: the graded fix belongs to the FIX IT exercises, which run in the
+  Labs that own the configuration.
+- **External services are as deterministic as the scenario made them.** An endpoint answers from
+  its authored profile: a URL, an expected credential, an ok status and an optional outage. There
+  is no latency, no retry policy, no rate limit, no partial response and no flapping service. A
+  learner meets the failure the scenario configured, on demand, every time.
+- **The webhook action carries headers but not GHL's authorization pickers.** `GHL-WF-WEBHOOK`
+  stays fidelity B. A learner writes an `Authorization` or `X-API-Key` header row, which is how a
+  Bearer token or an API key is actually sent, but Basic auth and OAuth2 — including token refresh
+  through Global Workflow Settings — are practised in GHL, not here. Query parameters are typed
+  into the URL rather than offered as their own rows. Recorded in the record's
+  `known_limitations`.
+- **The loop bound is a bound, not a diagnosis.** `MAX_ENROLMENTS_IN_ONE_CHAIN` stops a runaway
+  chain at ten enrolments and records what was going round, which is enough to teach the incident.
+  It does not name the pair of workflows as a cycle before running them: static detection across
+  workflow definitions (this one's tag trigger matches that one's tag action) is not implemented,
+  so a learner who builds the same loop in the Workflow Lab meets it at run time.
+- **Registry verification was indirect for the fifth phase running.** `GHL-WF-WEBHOOK` was
+  re-checked on 2026-09-06 through search-result summaries of the official Custom Webhook article,
+  because the build environment's egress proxy still rejects `help.gohighlevel.com` with a 403 at
+  the CONNECT. The record's `verification_note` says exactly that rather than claiming the article
+  was read.
+- **The Workflow Lab frame-timing probe still misses its ceiling in this container.** Unchanged
+  again, and unrelated to Phase 15: `review:workflow` → `five-hundred-events` reported mean 18.5 ms,
+  p95 55 ms, maximum frame 130 ms and engine compute 79 ms for 504 events, against ceilings of
+  50 ms (p95) and 100 ms (maximum). Those numbers sit inside the range Phase 14 recorded (mean 19,
+  p95 57, max 165, compute 87), and Phase 13 established that pre-Phase-13 `main` reproduces them
+  in the same container. PERF-002 must not be claimed for this scenario from container evidence; it
+  needs one run on the reference desktop.

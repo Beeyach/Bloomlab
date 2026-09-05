@@ -1,0 +1,125 @@
+# SIM-011 · integration_failure. The credential is right and the service is down.
+#
+# The pair to the invalid-auth incident, and the reason both exist: the workflow is configured
+# correctly here. The token matches, the URL is right, the payload is right. The rota tool itself
+# is returning 503. There is nothing to fix in HighLevel, and saying so is the correct diagnosis.
+id: SC-glowhaus-incident-integration
+title: Glowhaus — nothing wrong with the workflow
+client: CL-glowhaus-medspa
+summary: >-
+  The same rota sync, the same symptom on the surface, and a different cause. The webhook step is
+  configured exactly as the rota tool documents. What comes back is not a 2xx, and the reason is
+  on the other side of the wire.
+initial_account_state:
+  users:
+    - { id: priya, name: Priya Raman, role: admin }
+  contacts:
+    - id: theo
+      first_name: Theo
+      last_name: Barnes
+      email: 'theo.barnes@example.com'
+      phone: '+15125550162'
+      timezone: America/Chicago
+      source: Google
+      owner_id: priya
+  tags: [booked]
+  calendars:
+    - id: consultation
+      name: Consultation
+      type: personal
+      duration_minutes: 30
+      slot_interval_minutes: 30
+      minimum_notice_minutes: 60
+      timezone: America/Chicago
+      staff_ids: [priya]
+      availability:
+        - { day: 1, start: '09:00', end: '17:00' }
+        - { day: 2, start: '09:00', end: '17:00' }
+        - { day: 3, start: '09:00', end: '17:00' }
+        - { day: 4, start: '09:00', end: '17:00' }
+        - { day: 5, start: '09:00', end: '17:00' }
+  external_endpoints:
+    - id: rota
+      url: 'https://rota.glowhaus.example/hooks/bookings'
+      auth: { header: Authorization, token: 'Bearer rota_live_9f2c' }
+      ok_status: 200
+      unauthorized_status: 401
+      outage: { kind: unavailable, status: 503 }
+  workflows:
+    - id: wf-rota-sync
+      name: Rota Sync
+      trigger:
+        ghl_feature_id: GHL-WF-CUSTOMER-BOOKED-APPOINTMENT
+        filters: []
+      nodes:
+        - id: n1
+          type: action
+          ghl_feature_id: GHL-WF-WEBHOOK
+          label: Push the booking to the rota
+          config:
+            url: 'https://rota.glowhaus.example/hooks/bookings'
+            method: POST
+            headers: { Authorization: 'Bearer rota_live_9f2c' }
+            custom_data:
+              { first_name: '{{contact.first_name}}', appointment: '{{appointment.date}}' }
+          position: { x: 0, y: 120 }
+        - {
+            id: n2,
+            type: action,
+            ghl_feature_id: GHL-WF-ADD-CONTACT-TAG,
+            label: Tag as synced,
+            config: { tag: booked },
+            position: { x: 0, y: 240 },
+          }
+        - { id: n3, type: end, position: { x: 0, y: 360 } }
+      edges:
+        - { from: n1, to: n2 }
+        - { from: n2, to: n3 }
+      settings: { allow_reentry: true, timezone: America/Chicago }
+simulation_time: '2026-09-07T09:00:00-05:00'
+timezone: America/Chicago
+seed: 4109
+scheduled_events:
+  - at: '2026-09-07T09:15:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: ap-theo,
+        contact_id: theo,
+        calendar_id: consultation,
+        starts_at: '2026-09-11T11:00:00-05:00',
+        host_id: priya,
+        booked_by: customer,
+      }
+    description: Theo books a consultation, which should reach the rota
+injectable_events:
+  - id: retry-booking
+    type: appointment.booked
+    description: Book again and read the response. Retrying will not change what comes back.
+    payload:
+      {
+        appointment_id: ap-theo-retry,
+        contact_id: theo,
+        calendar_id: consultation,
+        minutes_from_now: 2880,
+        host_id: priya,
+        booked_by: customer,
+      }
+hidden_facts:
+  what_the_vendor_says: 'The rota tool has an open incident on its own status page.'
+failure_modes: [integration_failure]
+incident:
+  title: Nothing wrong with the workflow
+  symptom: >-
+    Rota Sync runs, the webhook step fires, and the response is not a success. The token in the
+    header is the one the rota tool issued and the URL is the documented one.
+  client_complaint: >-
+    "It has stopped again. You fixed this last month, so what have you broken this time?"
+  failure_mode: integration_failure
+  inspect:
+    - The Rota Sync execution log, at the webhook step, and the status it came back with
+    - The header the webhook sends, against what the rota endpoint expects
+    - Whether anything in this account changed
+  reproduce:
+    - Run the queued booking.
+    - Compare the status and reason with the one you got when a credential was wrong.

@@ -1,7 +1,10 @@
 # Release stamp of the curriculum (spec §101, CNT-007). Bump content_version whenever any file
 # under content/ changes, then run `npm run content:lock`. Git = what Bloomlab teaches.
-content_version: '2026.09.09'
+content_version: '2026.09.12'
 schema_version: 1
 notes: >-
-  Phase 13 — the Funnel Lab's training account (SC-glowhaus-funnel), the FUNNEL ASSEMBLY exercise
-  with partial-order architecture checks, and registry records for Funnels, Surveys and Products.
+  Phase 15 — Glowhaus's three weeks as 269 scheduled events (SC-glowhaus-reporting), nine incident
+  scenarios behind the Incident Room, the FUNNEL AUTOPSY and the graded bottleneck exercise, and
+  the outbound webhook record re-checked for headers and authorization. The loop incident
+  now holds its contact from the first instant, so its Reproduce it action is valid whenever a
+  learner fires it (D-150).

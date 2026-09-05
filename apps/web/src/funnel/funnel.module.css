@@ -645,3 +645,128 @@
     top: var(--bl-space-4);
   }
 }
+
+/* ---- the Autopsy lens (FUN-004) ---------------------------------------------------------- */
+
+/*
+ * Forensic rather than analytical. Tables with their sample sizes, at the Lab's own density; no
+ * heatmap, no gauge, no health score and no card that exists to fill a row. It is a lens over the
+ * funnel that is open, so it sits under the working area rather than replacing it.
+ */
+.autopsyPanel {
+  min-width: 0;
+  display: grid;
+  gap: var(--bl-space-3);
+  padding: var(--bl-space-4);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-lg);
+  background: var(--bl-color-surface);
+}
+
+.autopsyBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--bl-space-3);
+}
+
+.autopsyToggle {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--bl-color-link);
+  font: inherit;
+  font-size: var(--bl-font-size-sm);
+  cursor: pointer;
+}
+
+.autopsyToggle:hover {
+  text-decoration: underline;
+}
+
+.autopsy {
+  display: grid;
+  gap: var(--bl-space-5);
+}
+
+.autopsyView {
+  min-width: 0;
+  display: grid;
+  gap: var(--bl-space-2);
+  padding-top: var(--bl-space-4);
+  border-top: 1px solid var(--bl-color-border);
+}
+
+.autopsyView:first-of-type {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.autopsyHeading {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-md);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.autopsyFigure {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-xl);
+  font-variant-numeric: tabular-nums;
+}
+
+.autopsyWorkings {
+  margin: 0;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+/* As everywhere else: a grid item needs `min-width: 0` before `overflow-x` can contain it. */
+.autopsyTableWrap {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.autopsyTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--bl-font-size-sm);
+}
+
+.autopsyTable th,
+.autopsyTable td {
+  padding: var(--bl-space-2) var(--bl-space-3);
+  border-bottom: 1px solid var(--bl-color-border);
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.autopsyTable thead th {
+  color: var(--bl-color-text-soft);
+  font-weight: var(--bl-font-weight-medium);
+  text-transform: none;
+}
+
+.autopsyAside {
+  display: block;
+  color: var(--bl-color-text-soft);
+  font-size: var(--bl-font-size-xs);
+  white-space: normal;
+}
+
+/* Marked by a rule and named in the sentence underneath, never by colour on its own. */
+.autopsyWorst > th:first-child {
+  box-shadow: inset 2px 0 0 var(--bl-color-text);
+}
+
+.autopsyWorst > th,
+.autopsyWorst > td {
+  background: var(--bl-color-surface-2);
+  font-weight: var(--bl-font-weight-medium);
+}

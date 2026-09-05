@@ -1,5 +1,6 @@
 # Verified 2026-09-02 against "Workflow Action - Webhook (Outbound)": POST by default, custom
 # key-value data with merge fields, no files, payload not shown in execution logs.
+# Re-checked 2026-09-06 for headers and authorization (Phase 15).
 id: GHL-WF-WEBHOOK
 official_name: Webhook
 area: Workflows
@@ -7,12 +8,15 @@ feature_type: action
 implementation_type: native_ghl
 status: current
 simulation_fidelity: B
-last_verified: 2026-09-04
+last_verified: 2026-09-06
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000003299-workflow-action-webhook-outbound-
 known_limitations:
   - Cannot send files or images.
   - The payload only carries data related to the triggering event.
   - Execution logs confirm the call but do not show the payload.
+  - GHL's own authorization pickers (Bearer, API key, Basic, OAuth2) are not offered. The simulator has the header row a learner would use for the first two; Basic and OAuth2, including token refresh through Global Workflow Settings, are practised in GHL.
+  - Query parameters are not offered as their own rows; a learner puts them in the URL.
+  - The simulator answers from an endpoint the scenario configures, so the responses a learner meets are the ones the scenario authored, not whatever a live service would return.
 skills:
   - SK-CONNECT-webhook-payloads
 supported_configs:
@@ -24,15 +28,29 @@ supported_configs:
       type: select
       required: true
       options: [POST, GET, PUT, PATCH, DELETE]
+    - name: headers
+      type: json
+      required: false
+      description: Key-value header rows, as GHL's No auth plus Headers path. An Authorization or X-API-Key row is how a Bearer token or an API key is sent.
     - name: custom_data
       type: json
       required: false
       description: Key-value pairs; values may use merge fields.
-approximation_note: Training approximation — the simulator shows the outgoing payload it would send and the response code; no request leaves the sandbox.
+approximation_note: >-
+  Training approximation. The simulator shows the outgoing payload it would send, the header names
+  it would send with it, and the response code it got back; no request leaves the sandbox. The
+  response comes from an endpoint the scenario configures — a URL, an expected credential, and an
+  optional outage — so a wrong token answers 401 and a failing service answers its own status,
+  deterministically and on demand. Header values are never recorded, only their names.
 aliases:
   - Custom Webhook
 verification_note: >-
-  Name, default method, custom data and the three limitations confirmed on the help-center
+  Name, default method, custom data and the first three limitations confirmed on the help-center
   article, 2026-09-02. Re-checked 2026-09-04 through search summaries of the official article
   (the build environment's proxy blocks the help centre): the outbound webhook posts a
-  context-dependent payload to a URL with optional Custom Data key/value rows.
+  context-dependent payload to a URL with optional Custom Data key/value rows. Headers and
+  authorization re-checked the same way on 2026-09-06 against the Custom Webhook article
+  (help.gohighlevel.com/support/solutions/articles/155000003305): GET, POST, PUT and DELETE, an
+  authorization picker offering Bearer token, API key, Basic and OAuth2, and a Headers section
+  where a bespoke header row is added under No auth. Not read directly; the proxy still returns
+  403 for the help centre.

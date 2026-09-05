@@ -18,9 +18,24 @@ export interface LearnerResponse {
   choice: string | null;
   /** Structured predictions, keyed by the field name after `prediction.`. */
   prediction: Record<string, string>;
+  /**
+   * Named long-form answers, keyed by the exercise's own `written_fields` (EXR-010, D-143).
+   * Optional on the type so an attempt saved before Phase 15 still reads: an old draft has no
+   * `written` and resumes with none rather than failing to load.
+   */
+  written?: Record<string, string>;
 }
 
-export const emptyResponse = (): LearnerResponse => ({ text: '', choice: null, prediction: {} });
+export const emptyResponse = (): LearnerResponse => ({
+  text: '',
+  choice: null,
+  prediction: {},
+  written: {},
+});
+
+/** The named answers on a response, tolerating a draft saved before they existed. */
+export const writtenOf = (response: LearnerResponse): Record<string, string> =>
+  response.written ?? {};
 
 /**
  * The marker keys whose phrases appear in the text, case-insensitively. Deterministic: the same
@@ -42,9 +57,26 @@ export function learnerState(
   exercise: Exercise,
   response: LearnerResponse,
 ): Record<string, unknown> {
-  const found = markersIn(response.text, exercise.response_markers);
+  const named = writtenOf(response);
+  // Markers are matched against everything the learner wrote, the free response and every named
+  // answer together, so an exercise that moved its writing into named fields still satisfies the
+  // `answer.<marker>` checks that were authored against one textarea.
+  const everything = [response.text, ...exercise.written_fields.map((f) => named[f.key] ?? '')]
+    .filter((part) => part.length > 0)
+    .join('\n');
+  const found = markersIn(everything, exercise.response_markers);
   const answer: Record<string, unknown> = { text: response.text };
   for (const key of Object.keys(exercise.response_markers)) answer[key] = found.includes(key);
+  // Each named answer is graded on its own: which markers appear *in it*, and whether it was
+  // answered at all. That is what lets a check say the hypothesis names the booking step without
+  // being satisfied by the problem statement mentioning it.
+  const written: Record<string, unknown> = {};
+  for (const field of exercise.written_fields) {
+    const value = named[field.key] ?? '';
+    written[field.key] = value;
+    written[`${field.key}_mentions`] = markersIn(value, exercise.response_markers);
+    written[`${field.key}_answered`] = value.trim().length > 0;
+  }
   return {
     prediction: { ...response.prediction, text: response.text },
     decision: {
@@ -53,6 +85,7 @@ export function learnerState(
       reasoning_mentions: found,
     },
     answer,
+    written,
   };
 }
 

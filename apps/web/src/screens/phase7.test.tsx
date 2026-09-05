@@ -250,8 +250,10 @@ describe('Skill Map (DES-011, PRD-013)', () => {
     renderAt(`/skills/${BOTTLENECK}`);
     const dialog = await screen.findByRole('dialog', { name: 'Bottleneck diagnosis' });
     expect(dialog).toHaveTextContent('Next required');
-    // Its only exercise is independent-mode, so the builder has no first step to offer yet.
-    expect(dialog).toHaveTextContent('No suitable next exercise is authored');
+    // Phase 15 authored a practice-mode exercise for this capability, so the builder now has a
+    // first step to offer rather than nothing.
+    expect(dialog).toHaveTextContent('Forty visits, fourteen leads');
+    expect(dialog).toHaveTextContent('first practice');
     expect(dialog).not.toHaveTextContent('Opens after');
     expect(within(dialog).getByRole('link', { name: /Funnel math/ })).toBeInTheDocument();
     expect(dialog).toHaveTextContent('demonstrated');
@@ -264,7 +266,9 @@ describe('Skill Map (DES-011, PRD-013)', () => {
     expect(dialog).toHaveTextContent('Demonstrated independently 1 time.');
     expect(dialog).toHaveTextContent('Still needed:');
     expect(dialog).toHaveTextContent('Retrieval due in');
-    expect(dialog).toHaveTextContent('No suitable next exercise is authored');
+    // The builder offers the next step towards the evidence still owed, from the Phase 15
+    // exercises this capability now has.
+    expect(dialog).toHaveTextContent('Forty visits, fourteen leads');
     const evidence = within(dialog).getByRole('heading', { name: 'Evidence' })
       .parentElement as HTMLElement;
     expect(within(evidence).getByText('Demonstrated')).toBeInTheDocument();

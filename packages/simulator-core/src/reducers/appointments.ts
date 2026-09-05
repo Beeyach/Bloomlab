@@ -85,11 +85,27 @@ function bookedBy(event: SimulatorEvent, fallback: BookedBy = 'customer'): Booke
   return value;
 }
 
+/**
+ * The appointment a booking event is about (D-145).
+ *
+ * A booking that names no id gets one from the event, which is deterministic and unique within
+ * the run — so an authored injectable like "Jordan books 40 minutes from now" can be replayed
+ * without the scenario having to invent an id for a record that does not exist yet.
+ *
+ * The rule lives here rather than inline because two other places need the same answer. A
+ * workflow trigger matches on the event, not on the record the reducer went on to write, so
+ * before this existed an injected booking created a real appointment that fired no Customer
+ * Booked Appointment trigger at all — the booking happened and the confirmation never did. Both
+ * matchers now ask this, so there is one rule and it cannot drift.
+ */
+export const appointmentIdOf = (event: SimulatorEvent): string | null => {
+  const named = optionalString(event.payload, 'appointment_id');
+  if (named) return named;
+  return event.type === 'APPOINTMENT_BOOKED' ? `appt-${event.id}` : null;
+};
+
 export function appointmentBooked(account: AccountState, event: SimulatorEvent): ReducerResult {
-  // A booking that names no id gets one from the event, which is deterministic and unique within
-  // the run — so an authored injectable like "Jordan books 40 minutes from now" can be replayed
-  // without the scenario having to invent an id for a record that does not exist yet.
-  const id = optionalString(event.payload, 'appointment_id') ?? `appt-${event.id}`;
+  const id = appointmentIdOf(event) as string;
   if (account.appointments[id]) {
     fail('DUPLICATE_ENTITY', `An appointment ${id} already exists`, { appointment_id: id });
   }

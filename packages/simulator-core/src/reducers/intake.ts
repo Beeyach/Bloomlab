@@ -6,6 +6,7 @@ import {
   type SimulatorEvent,
 } from '../events.ts';
 import type { AccountState } from '../state.ts';
+import { identifyVisit } from './funnelVisits.ts';
 import { bumpAnalytics, count, entity, result, type ReducerResult } from './shared.ts';
 
 /**
@@ -103,7 +104,11 @@ export function formSubmitted(account: AccountState, event: SimulatorEvent): Red
       fields: form.fields,
     });
   }
-  const next = bumpAnalytics(account, count(account.analytics, 'forms_submitted'));
+  const visitId = optionalString(event.payload, 'visit_id');
+  const next = bumpAnalytics(
+    identifyVisit(account, visitId, contactId, account.contacts[contactId] === undefined),
+    count(account.analytics, 'forms_submitted'),
+  );
   return result(
     next,
     [
@@ -112,7 +117,7 @@ export function formSubmitted(account: AccountState, event: SimulatorEvent): Red
         at: event.at,
         contact_id: contactId,
         event_id: event.id,
-        data: { form_id: formId, values },
+        data: { form_id: formId, values, ...(visitId ? { visit_id: visitId } : {}) },
       },
     ],
     [submissionEvent(account, event, contactId, values)],
@@ -132,7 +137,11 @@ export function surveySubmitted(account: AccountState, event: SimulatorEvent): R
       fields: survey.fields,
     });
   }
-  const next = bumpAnalytics(account, count(account.analytics, 'surveys_submitted'));
+  const visitId = optionalString(event.payload, 'visit_id');
+  const next = bumpAnalytics(
+    identifyVisit(account, visitId, contactId, account.contacts[contactId] === undefined),
+    count(account.analytics, 'surveys_submitted'),
+  );
   return result(
     next,
     [
@@ -141,7 +150,7 @@ export function surveySubmitted(account: AccountState, event: SimulatorEvent): R
         at: event.at,
         contact_id: contactId,
         event_id: event.id,
-        data: { survey_id: surveyId, values },
+        data: { survey_id: surveyId, values, ...(visitId ? { visit_id: visitId } : {}) },
       },
     ],
     [submissionEvent(account, event, contactId, values)],
@@ -174,7 +183,12 @@ export function webhookResponse(account: AccountState, event: SimulatorEvent): R
   if (typeof status !== 'number' || !Number.isInteger(status)) {
     fail('INVALID_PAYLOAD', `${event.type} needs an integer status`, { status });
   }
-  const failed = (status as number) >= 400;
+  // HighLevel's own rule: a webhook succeeded only on a 2xx. Everything else — a redirect, a
+  // refused credential, a failing service — is a failed action in its execution logs, and this
+  // matches that rather than inventing a friendlier threshold (D-140).
+  const code = status as number;
+  const failed = code < 200 || code >= 300;
+  const kind = optionalString(event.payload, 'failure_kind');
   const contactId = optionalString(event.payload, 'contact_id');
   return result(account, [
     {
@@ -182,8 +196,16 @@ export function webhookResponse(account: AccountState, event: SimulatorEvent): R
       at: event.at,
       contact_id: contactId,
       event_id: event.id,
-      data: { endpoint, status, body: event.payload.body ?? null },
-      reason: failed ? 'webhook_error' : null,
+      data: {
+        endpoint,
+        status,
+        body: event.payload.body ?? null,
+        ...(kind ? { failure_kind: kind } : {}),
+        ...(event.payload.endpoint_id ? { endpoint_id: event.payload.endpoint_id } : {}),
+      },
+      // `webhook_auth` and `webhook_unavailable` are different problems with different fixes, so
+      // the record says which rather than collapsing both into one token (SIM-011).
+      reason: failed ? (kind === 'auth' ? 'webhook_auth' : `webhook_${kind ?? 'error'}`) : null,
     },
   ]);
 }

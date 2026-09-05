@@ -6,12 +6,14 @@ import {
   IconCalendar,
   IconCampaign,
   IconChat,
+  IconIncident,
   IconFunnel,
   IconHome,
   IconInfo,
   IconMap,
   IconMore,
   IconRecords,
+  IconReport,
   IconSandbox,
   VisuallyHidden,
   cx,
@@ -47,6 +49,8 @@ const AREAS: Area[] = [
   { to: '/funnel', label: 'Funnel', icon: IconFunnel },
   { to: '/calendar', label: 'Calendar', icon: IconCalendar },
   { to: '/conversations', label: 'Inbox', icon: IconChat },
+  { to: '/reporting', label: 'Reporting', icon: IconReport },
+  { to: '/incident', label: 'Incidents', icon: IconIncident },
   { to: '/playground', label: 'Playground', icon: IconSandbox },
 ];
 

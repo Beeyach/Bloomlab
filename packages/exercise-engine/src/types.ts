@@ -91,10 +91,16 @@ export type ContextSource = (typeof CONTEXT_SOURCES)[number];
 
 /**
  * State roots that hold what the learner supplied rather than what a runtime produced. A `state`
- * assertion on `prediction.tag`, `decision.choice` or `answer.names_missing_information` is
- * gradable from the runner alone; one on `contacts.maria.tags` needs a simulator.
+ * assertion on `prediction.tag`, `decision.choice`, `answer.names_missing_information` or
+ * `written.hypothesis_mentions` is gradable from the runner alone; one on `contacts.maria.tags`
+ * needs a simulator.
+ *
+ * `written` arrived with Phase 15 for exercises that ask for more than one long-form answer and
+ * need them kept apart (EXR-010, D-143). Adding a root does not change how anything already
+ * authored is judged: an exercise with no written fields has an empty `written` and every earlier
+ * assertion reads exactly what it read before.
  */
-export const LEARNER_STATE_ROOTS = ['prediction', 'decision', 'answer'] as const;
+export const LEARNER_STATE_ROOTS = ['prediction', 'decision', 'answer', 'written'] as const;
 
 export interface GradingContext {
   /**

@@ -84,6 +84,20 @@ export const FAMILY_TREATMENTS: Partial<Record<Exercise['type'], Partial<FamilyT
     responseLabel: 'What is happening, what you still need to know, and what you would build first',
     responseHelp: 'Several answers are defensible. Say what you would deliberately not build yet.',
   },
+  FUNNEL_AUTOPSY: {
+    family: 'Funnel autopsy',
+    stance: 'Read what the traffic did. Say what is wrong before you say why.',
+    workTitle: 'Your reading',
+    responseLabel: 'Anything else worth recording',
+    responseHelp: 'Optional. The two answers above are what this one is graded on.',
+  },
+  FUNNEL_ASSEMBLY: {
+    family: 'Funnel assembly',
+    stance: 'Build the architecture, then walk a visitor through it.',
+    workTitle: 'Your funnel',
+    responseLabel: 'Why it is in this order',
+    responseHelp: 'The funnel itself is built in the Lab. This is the reasoning behind it.',
+  },
 };
 
 export function treatmentFor(exercise: Exercise): FamilyTreatment {

@@ -262,7 +262,9 @@ describe('Unit completion is exposure evidence (PRD-003, MAS-003)', () => {
     expect(evaluation.ladder_state).toBe('LEARNING');
     expect(evaluation.counts.independent_passes).toBe(0);
     expect(evaluation.counts.practiced_passes).toBe(0);
-    expect(screen.getByTestId('next-step')).toHaveTextContent('No suitable next exercise');
+    // Reading the unit is exposure, so the next step is the first practice the capability has —
+    // one Phase 15 authored against the reporting account.
+    expect(screen.getByTestId('next-step')).toHaveTextContent('first practice');
     expect(screen.queryByRole('button', { name: 'Finish this unit' })).not.toBeInTheDocument();
   });
 
@@ -484,7 +486,7 @@ describe('Phase 7 navigation into the Academy', () => {
     ) as HTMLElement;
     expect(object).toHaveTextContent('Started, nothing passed yet.');
     expect(object).not.toHaveTextContent('Next · Read');
-    expect(object).toHaveTextContent('No suitable next exercise is authored');
+    expect(object).toHaveTextContent('first practice');
     await waitFor(() =>
       expect(screen.getByRole('heading', { name: 'Recent evidence' })).toBeInTheDocument(),
     );

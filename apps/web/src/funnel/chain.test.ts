@@ -302,6 +302,7 @@ describe('the rest of the visitor’s funnel reaches the same account', () => {
       'consultation',
       slot,
       options(),
+      'visit-booking',
     );
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -317,6 +318,7 @@ describe('the rest of the visitor’s funnel reaches the same account', () => {
       status: 'booked',
     });
     expect(result.run.state.account.analytics.appointments_booked).toBe(1);
+    expect(of(result.run, 'appointment.booked')[0]?.payload.visit_id).toBe('visit-booking');
   });
 
   it('refuses a calendar opening that became stale before the visitor clicked it', async () => {
@@ -353,6 +355,7 @@ describe('the rest of the visitor’s funnel reaches the same account', () => {
       'glow-membership',
       149,
       options(),
+      'visit-payment',
     );
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -367,6 +370,7 @@ describe('the rest of the visitor’s funnel reaches the same account', () => {
     expect(result.run.state.account.analytics.revenue).toBe(149);
     // No subscription, no invoice, no second payment: Phase 13 records the one event and stops.
     expect(of(result.run, 'payment.received')).toHaveLength(1);
+    expect(of(result.run, 'payment.received')[0]?.payload.visit_id).toBe('visit-payment');
   });
 
   it('refuses a booking on a calendar the account does not hold', async () => {

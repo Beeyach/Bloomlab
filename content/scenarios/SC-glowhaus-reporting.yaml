@@ -1,0 +1,1414 @@
+# Glowhaus's three-week paid push, as it actually happened (REP-001, REP-002, EXR-010, FUN-004).
+#
+# Everything the report shows is built here from facts rather than seeded as a total: forty
+# funnel visits with where each came from and how far down each step it got, fourteen form
+# submissions that create the leads, the front desk's texts and the replies to them, eleven
+# bookings, what happened on the day, the deals, the money and one refund. The report derives
+# every one of its ten numbers from that history, so a reviewer can check the arithmetic by
+# reading the events rather than trusting a figure.
+#
+# The window is deliberately small enough to add up by hand. Forty visits, fourteen leads,
+# eleven bookings, nine appointments that came due, four of them showed. The leak is in the
+# middle of that chain and the data supports saying so — but nothing in the interface says it,
+# because working that out is the exercise.
+#
+# There is no follow-up workflow here on purpose. Glowhaus texts new leads by hand, which is why
+# time to contact is six minutes for most people, a day for one, and never for two: one lead
+# filled the form in without a phone number, and one rang to ask not to be texted.
+id: SC-glowhaus-reporting
+title: Glowhaus — three weeks of paid traffic
+client: CL-glowhaus-medspa
+summary: >-
+  Glowhaus spent three weeks sending paid traffic to a consultation funnel. Forty people visited,
+  fourteen asked for a consultation, eleven booked one. The money that came out the other end is
+  smaller than any of those numbers suggest, and the report holds every fact needed to say why.
+initial_account_state:
+  users:
+    - id: priya
+      name: Priya Raman
+      role: admin
+  contacts: []
+  tags: [new-lead, booked, member]
+  custom_fields:
+    - key: treatment_interest
+      label: Treatment interest
+      type: dropdown
+      options: [Signature Facial, Membership, Laser]
+  pipelines:
+    - id: consultations
+      name: Consultations
+      stages: [New Lead, Booked, Showed, Won, Lost]
+  calendars:
+    - id: consultation
+      name: Consultation
+      type: personal
+      duration_minutes: 30
+      slot_interval_minutes: 30
+      minimum_notice_minutes: 60
+      timezone: America/Chicago
+      staff_ids: [priya]
+      availability:
+        - { day: 1, start: '09:00', end: '17:00' }
+        - { day: 2, start: '09:00', end: '17:00' }
+        - { day: 3, start: '09:00', end: '17:00' }
+        - { day: 4, start: '09:00', end: '17:00' }
+        - { day: 5, start: '09:00', end: '17:00' }
+      locations:
+        - { id: studio, kind: address, value: '2400 South Lamar, Austin' }
+      default_location_id: studio
+  forms:
+    - id: consult-request
+      name: Consultation Request
+      fields: [first_name, last_name, email, phone, treatment_interest]
+  products:
+    - id: facial-course
+      name: Signature Facial Course
+      price: 480
+    - id: laser-course
+      name: Laser Course
+      price: 1200
+    - id: glow-membership
+      name: Glow Membership
+      price: 149
+      recurring: true
+  funnels:
+    - id: fn-consult
+      name: Consultation Funnel
+      steps:
+        - id: st-landing
+          name: The offer
+          purpose: offer
+          next_step_id: st-apply
+          blocks:
+            - {
+                id: bl-landing-headline,
+                role: headline,
+                headline: 'Skin that looks like you slept',
+              }
+            - {
+                id: bl-landing-problem,
+                role: problem,
+                body: 'Nothing you have tried has lasted past a fortnight.',
+              }
+            - {
+                id: bl-landing-outcome,
+                role: outcome,
+                body: 'A plan built around your skin, not a package someone else bought.',
+              }
+            - {
+                id: bl-landing-cta,
+                role: cta,
+                headline: 'Ask for a consultation',
+                target_step_id: st-apply,
+              }
+        - id: st-apply
+          name: Tell us about your skin
+          purpose: capture
+          next_step_id: st-book
+          blocks:
+            - {
+                id: bl-apply-headline,
+                role: headline,
+                headline: 'Five questions, then pick a time',
+              }
+            - { id: bl-apply-form, role: form, reference_id: consult-request }
+        - id: st-book
+          name: Pick a time
+          purpose: booking
+          next_step_id: st-thanks
+          blocks:
+            - { id: bl-book-headline, role: headline, headline: 'When suits you?' }
+            - { id: bl-book-calendar, role: calendar, reference_id: consultation }
+        - id: st-thanks
+          name: You are booked
+          purpose: confirmation
+          blocks:
+            - { id: bl-thanks-headline, role: headline, headline: 'See you at the studio' }
+simulation_time: '2026-08-10T08:00:00-05:00'
+timezone: America/Chicago
+seed: 8412
+scheduled_events:
+  - at: '2026-08-10T09:00:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v001', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-10T09:00:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v001', step_id: 'st-landing', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-10T09:00:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v001', reason: 'left' }
+  - at: '2026-08-10T12:17:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v012', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-10T12:17:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v012', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-10T12:17:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v012', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-10T12:17:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v012', block_id: 'bl-apply-form' }
+  - at: '2026-08-10T12:17:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v012', reason: 'left' }
+  - at: '2026-08-10T15:34:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v023', funnel_id: 'fn-consult', source: 'instagram-bio' }
+  - at: '2026-08-10T15:34:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v023', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-10T15:34:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v023', reason: 'left' }
+  - at: '2026-08-11T10:00:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v027', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-11T10:00:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v027', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-11T10:00:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v027', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-11T10:00:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v027', block_id: 'bl-apply-form' }
+  - at: '2026-08-11T10:00:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'ava',
+        visit_id: 'v027',
+        values:
+          {
+            first_name: 'Ava',
+            last_name: 'Okafor',
+            email: 'ava@example.com',
+            treatment_interest: 'Signature Facial',
+            phone: '+15125551000',
+          },
+      }
+    description: 'Ava asks for a consultation'
+  - at: '2026-08-11T10:00:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v027', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-11T10:00:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v027', step_id: 'st-thanks', reach: 'bottom', blocks_seen: 1 }
+  - at: '2026-08-11T10:00:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v027', reason: 'completed' }
+  - at: '2026-08-11T10:04:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'ava',
+        body: 'Hi Ava, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Ava'
+  - at: '2026-08-11T10:07:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v002', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-11T10:07:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v002', step_id: 'st-landing', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-11T10:07:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v002', reason: 'left' }
+  - at: '2026-08-11T11:30:00-05:00'
+    type: sms.received
+    payload: { contact_id: 'ava', body: 'Yes please, whenever you have something.' }
+  - at: '2026-08-11T12:00:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: 'ap-ava',
+        contact_id: 'ava',
+        calendar_id: 'consultation',
+        starts_at: '2026-08-22T10:00:00-05:00',
+        host_id: 'priya',
+        booked_by: 'customer',
+      }
+    description: 'Ava takes a consultation slot'
+  - at: '2026-08-11T12:30:00-05:00'
+    type: opportunity.created
+    payload:
+      {
+        opportunity_id: 'op-ava',
+        contact_id: 'ava',
+        pipeline_id: 'consultations',
+        stage: 'New Lead',
+        value: 480,
+        name: 'Ava — Signature Facial',
+      }
+  - at: '2026-08-11T13:24:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v013', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-11T13:24:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v013', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-11T13:24:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v013', step_id: 'st-apply', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-11T13:24:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v013', reason: 'left' }
+  - at: '2026-08-11T16:41:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v024', funnel_id: 'fn-consult', source: 'instagram-bio' }
+  - at: '2026-08-11T16:41:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v024', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-11T16:41:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v024', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-11T16:41:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v024', block_id: 'bl-apply-form' }
+  - at: '2026-08-11T16:41:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v024', reason: 'left' }
+  - at: '2026-08-12T09:48:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v025', funnel_id: 'fn-consult', source: 'instagram-bio' }
+  - at: '2026-08-12T09:48:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v025', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-12T09:48:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v025', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-12T09:48:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v025', block_id: 'bl-apply-form' }
+  - at: '2026-08-12T09:48:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v025', reason: 'left' }
+  - at: '2026-08-12T11:11:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v028', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-12T11:11:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v028', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-12T11:11:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v028', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-12T11:11:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v028', block_id: 'bl-apply-form' }
+  - at: '2026-08-12T11:11:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'bea',
+        visit_id: 'v028',
+        values:
+          {
+            first_name: 'Bea',
+            last_name: 'Lindqvist',
+            email: 'bea@example.com',
+            treatment_interest: 'Laser',
+            phone: '+15125551001',
+          },
+      }
+    description: 'Bea asks for a consultation'
+  - at: '2026-08-12T11:11:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v028', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-12T11:11:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v028', step_id: 'st-thanks', reach: 'bottom', blocks_seen: 1 }
+  - at: '2026-08-12T11:11:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v028', reason: 'completed' }
+  - at: '2026-08-12T11:14:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v003', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-12T11:14:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v003', step_id: 'st-landing', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-12T11:14:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v003', reason: 'left' }
+  - at: '2026-08-12T11:17:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'bea',
+        body: 'Hi Bea, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Bea'
+  - at: '2026-08-12T12:41:00-05:00'
+    type: sms.received
+    payload: { contact_id: 'bea', body: 'Yes please, whenever you have something.' }
+  - at: '2026-08-12T13:11:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: 'ap-bea',
+        contact_id: 'bea',
+        calendar_id: 'consultation',
+        starts_at: '2026-08-22T14:00:00-05:00',
+        host_id: 'priya',
+        booked_by: 'customer',
+      }
+    description: 'Bea takes a consultation slot'
+  - at: '2026-08-12T13:41:00-05:00'
+    type: opportunity.created
+    payload:
+      {
+        opportunity_id: 'op-bea',
+        contact_id: 'bea',
+        pipeline_id: 'consultations',
+        stage: 'New Lead',
+        value: 1200,
+        name: 'Bea — Laser',
+      }
+  - at: '2026-08-12T14:31:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v014', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-12T14:31:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v014', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-12T14:31:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v014', step_id: 'st-apply', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-12T14:31:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v014', reason: 'left' }
+  - at: '2026-08-13T10:55:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v026', funnel_id: 'fn-consult', source: 'instagram-bio' }
+  - at: '2026-08-13T10:55:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v026', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-13T10:55:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v026', step_id: 'st-apply', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-13T10:55:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v026', reason: 'left' }
+  - at: '2026-08-13T12:21:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v004', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-13T12:21:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v004', step_id: 'st-landing', reach: 'middle', blocks_seen: 2 }
+  - at: '2026-08-13T12:21:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v004', reason: 'left' }
+  - at: '2026-08-13T12:22:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v029', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-13T12:22:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v029', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-13T12:22:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v029', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-13T12:22:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v029', block_id: 'bl-apply-form' }
+  - at: '2026-08-13T12:22:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'cara',
+        visit_id: 'v029',
+        values:
+          {
+            first_name: 'Cara',
+            last_name: 'Mendes',
+            email: 'cara@example.com',
+            treatment_interest: 'Signature Facial',
+            phone: '+15125551002',
+          },
+      }
+    description: 'Cara asks for a consultation'
+  - at: '2026-08-13T12:22:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v029', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-13T12:22:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v029', step_id: 'st-thanks', reach: 'bottom', blocks_seen: 1 }
+  - at: '2026-08-13T12:22:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v029', reason: 'completed' }
+  - at: '2026-08-13T12:27:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'cara',
+        body: 'Hi Cara, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Cara'
+  - at: '2026-08-13T13:52:00-05:00'
+    type: sms.received
+    payload: { contact_id: 'cara', body: 'Yes please, whenever you have something.' }
+  - at: '2026-08-13T14:22:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: 'ap-cara',
+        contact_id: 'cara',
+        calendar_id: 'consultation',
+        starts_at: '2026-08-23T10:00:00-05:00',
+        host_id: 'priya',
+        booked_by: 'customer',
+      }
+    description: 'Cara takes a consultation slot'
+  - at: '2026-08-13T14:52:00-05:00'
+    type: opportunity.created
+    payload:
+      {
+        opportunity_id: 'op-cara',
+        contact_id: 'cara',
+        pipeline_id: 'consultations',
+        stage: 'New Lead',
+        value: 480,
+        name: 'Cara — Signature Facial',
+      }
+  - at: '2026-08-13T15:38:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v015', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-13T15:38:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v015', step_id: 'st-landing', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-13T15:38:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v015', reason: 'left' }
+  - at: '2026-08-14T13:28:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v005', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-14T13:28:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v005', step_id: 'st-landing', reach: 'middle', blocks_seen: 2 }
+  - at: '2026-08-14T13:28:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v005', reason: 'left' }
+  - at: '2026-08-14T13:33:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v030', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-14T13:33:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v030', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-14T13:33:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v030', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-14T13:33:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v030', block_id: 'bl-apply-form' }
+  - at: '2026-08-14T13:33:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'dom',
+        visit_id: 'v030',
+        values:
+          {
+            first_name: 'Dom',
+            last_name: 'Whitaker',
+            email: 'dom@example.com',
+            treatment_interest: 'Signature Facial',
+            phone: '+15125551003',
+          },
+      }
+    description: 'Dom asks for a consultation'
+  - at: '2026-08-14T13:33:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v030', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-14T13:33:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v030', step_id: 'st-thanks', reach: 'bottom', blocks_seen: 1 }
+  - at: '2026-08-14T13:33:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v030', reason: 'completed' }
+  - at: '2026-08-14T13:40:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'dom',
+        body: 'Hi Dom, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Dom'
+  - at: '2026-08-14T15:33:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: 'ap-dom',
+        contact_id: 'dom',
+        calendar_id: 'consultation',
+        starts_at: '2026-08-23T15:00:00-05:00',
+        host_id: 'priya',
+        booked_by: 'customer',
+      }
+    description: 'Dom takes a consultation slot'
+  - at: '2026-08-14T16:03:00-05:00'
+    type: opportunity.created
+    payload:
+      {
+        opportunity_id: 'op-dom',
+        contact_id: 'dom',
+        pipeline_id: 'consultations',
+        stage: 'New Lead',
+        value: 480,
+        name: 'Dom — Signature Facial',
+      }
+  - at: '2026-08-14T16:45:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v016', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-14T16:45:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v016', step_id: 'st-landing', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-14T16:45:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v016', reason: 'left' }
+  - at: '2026-08-15T09:52:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v017', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-15T09:52:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v017', step_id: 'st-landing', reach: 'middle', blocks_seen: 2 }
+  - at: '2026-08-15T09:52:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v017', reason: 'left' }
+  - at: '2026-08-15T14:35:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v006', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-15T14:35:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v006', step_id: 'st-landing', reach: 'middle', blocks_seen: 2 }
+  - at: '2026-08-15T14:35:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v006', reason: 'left' }
+  - at: '2026-08-15T14:44:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v031', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-15T14:44:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v031', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-15T14:44:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v031', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-15T14:44:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v031', block_id: 'bl-apply-form' }
+  - at: '2026-08-15T14:44:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'ellis',
+        visit_id: 'v031',
+        values:
+          {
+            first_name: 'Ellis',
+            last_name: 'Nakamura',
+            email: 'ellis@example.com',
+            treatment_interest: 'Signature Facial',
+            phone: '+15125551004',
+          },
+      }
+    description: 'Ellis asks for a consultation'
+  - at: '2026-08-15T14:44:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v031', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-15T14:44:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v031', step_id: 'st-thanks', reach: 'bottom', blocks_seen: 1 }
+  - at: '2026-08-15T14:44:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v031', reason: 'completed' }
+  - at: '2026-08-15T14:49:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'ellis',
+        body: 'Hi Ellis, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Ellis'
+  - at: '2026-08-15T16:44:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: 'ap-ellis',
+        contact_id: 'ellis',
+        calendar_id: 'consultation',
+        starts_at: '2026-08-24T11:00:00-05:00',
+        host_id: 'priya',
+        booked_by: 'customer',
+      }
+    description: 'Ellis takes a consultation slot'
+  - at: '2026-08-15T17:14:00-05:00'
+    type: opportunity.created
+    payload:
+      {
+        opportunity_id: 'op-ellis',
+        contact_id: 'ellis',
+        pipeline_id: 'consultations',
+        stage: 'New Lead',
+        value: 480,
+        name: 'Ellis — Signature Facial',
+      }
+  - at: '2026-08-16T10:59:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v018', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-16T10:59:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v018', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-16T10:59:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v018', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-16T10:59:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v018', block_id: 'bl-apply-form' }
+  - at: '2026-08-16T10:59:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v018', reason: 'left' }
+  - at: '2026-08-16T15:42:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v007', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-16T15:42:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v007', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-16T15:42:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v007', reason: 'left' }
+  - at: '2026-08-16T15:55:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v032', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-16T15:55:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v032', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-16T15:55:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v032', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-16T15:55:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v032', block_id: 'bl-apply-form' }
+  - at: '2026-08-16T15:55:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'faye',
+        visit_id: 'v032',
+        values:
+          {
+            first_name: 'Faye',
+            last_name: 'Adeyemi',
+            email: 'faye@example.com',
+            treatment_interest: 'Laser',
+            phone: '+15125551005',
+          },
+      }
+    description: 'Faye asks for a consultation'
+  - at: '2026-08-16T15:55:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v032', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-16T15:55:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v032', step_id: 'st-thanks', reach: 'bottom', blocks_seen: 1 }
+  - at: '2026-08-16T15:55:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v032', reason: 'completed' }
+  - at: '2026-08-16T16:04:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'faye',
+        body: 'Hi Faye, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Faye'
+  - at: '2026-08-16T17:55:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: 'ap-faye',
+        contact_id: 'faye',
+        calendar_id: 'consultation',
+        starts_at: '2026-08-24T15:00:00-05:00',
+        host_id: 'priya',
+        booked_by: 'customer',
+      }
+    description: 'Faye takes a consultation slot'
+  - at: '2026-08-16T18:25:00-05:00'
+    type: opportunity.created
+    payload:
+      {
+        opportunity_id: 'op-faye',
+        contact_id: 'faye',
+        pipeline_id: 'consultations',
+        stage: 'New Lead',
+        value: 1200,
+        name: 'Faye — Laser',
+      }
+  - at: '2026-08-17T10:06:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v033', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-17T10:06:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v033', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-17T10:06:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v033', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-17T10:06:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v033', block_id: 'bl-apply-form' }
+  - at: '2026-08-17T10:06:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'gus',
+        visit_id: 'v033',
+        values:
+          {
+            first_name: 'Gus',
+            last_name: 'Halvorsen',
+            email: 'gus@example.com',
+            treatment_interest: 'Signature Facial',
+            phone: '+15125551006',
+          },
+      }
+    description: 'Gus asks for a consultation'
+  - at: '2026-08-17T10:06:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v033', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-17T10:06:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v033', step_id: 'st-thanks', reach: 'bottom', blocks_seen: 1 }
+  - at: '2026-08-17T10:06:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v033', reason: 'completed' }
+  - at: '2026-08-17T10:12:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'gus',
+        body: 'Hi Gus, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Gus'
+  - at: '2026-08-17T11:06:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v019', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-17T11:06:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v019', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-17T11:06:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v019', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-17T11:06:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v019', block_id: 'bl-apply-form' }
+  - at: '2026-08-17T11:06:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v019', reason: 'left' }
+  - at: '2026-08-17T12:06:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: 'ap-gus',
+        contact_id: 'gus',
+        calendar_id: 'consultation',
+        starts_at: '2026-08-25T10:00:00-05:00',
+        host_id: 'priya',
+        booked_by: 'customer',
+      }
+    description: 'Gus takes a consultation slot'
+  - at: '2026-08-17T12:36:00-05:00'
+    type: opportunity.created
+    payload:
+      {
+        opportunity_id: 'op-gus',
+        contact_id: 'gus',
+        pipeline_id: 'consultations',
+        stage: 'New Lead',
+        value: 480,
+        name: 'Gus — Signature Facial',
+      }
+  - at: '2026-08-17T16:49:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v008', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-17T16:49:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v008', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-17T16:49:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v008', reason: 'left' }
+  - at: '2026-08-18T09:56:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v009', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-18T09:56:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v009', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-18T09:56:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v009', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-18T09:56:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v009', block_id: 'bl-apply-form' }
+  - at: '2026-08-18T09:56:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v009', reason: 'left' }
+  - at: '2026-08-18T11:17:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v034', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-18T11:17:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v034', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-18T11:17:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v034', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-18T11:17:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v034', block_id: 'bl-apply-form' }
+  - at: '2026-08-18T11:17:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'hana',
+        visit_id: 'v034',
+        values:
+          {
+            first_name: 'Hana',
+            last_name: 'Petrov',
+            email: 'hana@example.com',
+            treatment_interest: 'Membership',
+            phone: '+15125551007',
+          },
+      }
+    description: 'Hana asks for a consultation'
+  - at: '2026-08-18T11:17:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v034', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-18T11:17:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v034', step_id: 'st-thanks', reach: 'bottom', blocks_seen: 1 }
+  - at: '2026-08-18T11:17:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v034', reason: 'completed' }
+  - at: '2026-08-18T11:21:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'hana',
+        body: 'Hi Hana, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Hana'
+  - at: '2026-08-18T12:13:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v020', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-18T12:13:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v020', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-18T12:13:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v020', step_id: 'st-apply', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-18T12:13:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v020', reason: 'left' }
+  - at: '2026-08-18T12:47:00-05:00'
+    type: sms.received
+    payload: { contact_id: 'hana', body: 'Yes please, whenever you have something.' }
+  - at: '2026-08-18T13:17:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: 'ap-hana',
+        contact_id: 'hana',
+        calendar_id: 'consultation',
+        starts_at: '2026-08-25T13:00:00-05:00',
+        host_id: 'priya',
+        booked_by: 'customer',
+      }
+    description: 'Hana takes a consultation slot'
+  - at: '2026-08-19T10:03:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v010', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-19T10:03:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v010', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-19T10:03:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v010', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-19T10:03:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v010', block_id: 'bl-apply-form' }
+  - at: '2026-08-19T10:03:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v010', reason: 'left' }
+  - at: '2026-08-19T12:28:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v035', funnel_id: 'fn-consult', source: 'instagram-bio' }
+  - at: '2026-08-19T12:28:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v035', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-19T12:28:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v035', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-19T12:28:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v035', block_id: 'bl-apply-form' }
+  - at: '2026-08-19T12:28:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'iris',
+        visit_id: 'v035',
+        values:
+          {
+            first_name: 'Iris',
+            last_name: 'Delgado',
+            email: 'iris@example.com',
+            treatment_interest: 'Membership',
+            phone: '+15125551008',
+          },
+      }
+    description: 'Iris asks for a consultation'
+  - at: '2026-08-19T12:28:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v035', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-19T12:28:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v035', step_id: 'st-thanks', reach: 'bottom', blocks_seen: 1 }
+  - at: '2026-08-19T12:28:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v035', reason: 'completed' }
+  - at: '2026-08-19T12:36:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'iris',
+        body: 'Hi Iris, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Iris'
+  - at: '2026-08-19T13:20:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v021', funnel_id: 'fn-consult', source: 'instagram-bio' }
+  - at: '2026-08-19T13:20:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v021', step_id: 'st-landing', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-19T13:20:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v021', reason: 'left' }
+  - at: '2026-08-19T14:28:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: 'ap-iris',
+        contact_id: 'iris',
+        calendar_id: 'consultation',
+        starts_at: '2026-08-26T11:00:00-05:00',
+        host_id: 'priya',
+        booked_by: 'customer',
+      }
+    description: 'Iris takes a consultation slot'
+  - at: '2026-08-20T11:10:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v011', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-20T11:10:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v011', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-20T11:10:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v011', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-20T11:10:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v011', block_id: 'bl-apply-form' }
+  - at: '2026-08-20T11:10:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v011', reason: 'left' }
+  - at: '2026-08-20T13:39:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v036', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-20T13:39:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v036', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-20T13:39:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v036', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-20T13:39:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v036', block_id: 'bl-apply-form' }
+  - at: '2026-08-20T13:39:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'jae',
+        visit_id: 'v036',
+        values:
+          {
+            first_name: 'Jae',
+            last_name: 'Sorrell',
+            email: 'jae@example.com',
+            treatment_interest: 'Membership',
+            phone: '+15125551009',
+          },
+      }
+    description: 'Jae asks for a consultation'
+  - at: '2026-08-20T13:39:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v036', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-20T13:39:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v036', step_id: 'st-thanks', reach: 'bottom', blocks_seen: 1 }
+  - at: '2026-08-20T13:39:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v036', reason: 'completed' }
+  - at: '2026-08-20T13:44:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'jae',
+        body: 'Hi Jae, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Jae'
+  - at: '2026-08-20T14:27:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v022', funnel_id: 'fn-consult', source: 'instagram-bio' }
+  - at: '2026-08-20T14:27:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v022', step_id: 'st-landing', reach: 'middle', blocks_seen: 2 }
+  - at: '2026-08-20T14:27:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v022', reason: 'left' }
+  - at: '2026-08-20T15:39:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: 'ap-jae',
+        contact_id: 'jae',
+        calendar_id: 'consultation',
+        starts_at: '2026-08-26T14:00:00-05:00',
+        host_id: 'priya',
+        booked_by: 'customer',
+      }
+    description: 'Jae takes a consultation slot'
+  - at: '2026-08-20T16:09:00-05:00'
+    type: opportunity.created
+    payload:
+      {
+        opportunity_id: 'op-jae',
+        contact_id: 'jae',
+        pipeline_id: 'consultations',
+        stage: 'New Lead',
+        value: 149,
+        name: 'Jae — Membership',
+      }
+  - at: '2026-08-21T14:50:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v037', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-21T14:50:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v037', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-21T14:50:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v037', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-21T14:50:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v037', block_id: 'bl-apply-form' }
+  - at: '2026-08-21T14:50:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'kit',
+        visit_id: 'v037',
+        values:
+          {
+            first_name: 'Kit',
+            last_name: 'Baptiste',
+            email: 'kit@example.com',
+            treatment_interest: 'Signature Facial',
+            phone: '+15125551010',
+          },
+      }
+    description: 'Kit asks for a consultation'
+  - at: '2026-08-21T14:50:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v037', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-21T14:50:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v037', step_id: 'st-thanks', reach: 'bottom', blocks_seen: 1 }
+  - at: '2026-08-21T14:50:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v037', reason: 'completed' }
+  - at: '2026-08-21T14:56:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'kit',
+        body: 'Hi Kit, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Kit'
+  - at: '2026-08-21T16:50:00-05:00'
+    type: appointment.booked
+    payload:
+      {
+        appointment_id: 'ap-kit',
+        contact_id: 'kit',
+        calendar_id: 'consultation',
+        starts_at: '2026-09-04T11:00:00-05:00',
+        host_id: 'priya',
+        booked_by: 'customer',
+      }
+    description: 'Kit takes a consultation slot'
+  - at: '2026-08-22T11:00:00-05:00'
+    type: appointment.status_changed
+    payload: { appointment_id: 'ap-ava', status: 'showed' }
+    description: 'Ava is marked showed'
+  - at: '2026-08-22T12:00:00-05:00'
+    type: payment.received
+    payload: { payment_id: 'pay-ava', contact_id: 'ava', product_id: 'facial-course', amount: 480 }
+    description: 'Ava pays for Signature Facial'
+  - at: '2026-08-22T15:00:00-05:00'
+    type: appointment.status_changed
+    payload: { appointment_id: 'ap-bea', status: 'showed' }
+    description: 'Bea is marked showed'
+  - at: '2026-08-22T15:01:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v038', funnel_id: 'fn-consult', source: 'meta-ads' }
+  - at: '2026-08-22T15:01:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v038', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-22T15:01:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v038', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-22T15:01:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v038', block_id: 'bl-apply-form' }
+  - at: '2026-08-22T15:01:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'lena',
+        visit_id: 'v038',
+        values:
+          {
+            first_name: 'Lena',
+            last_name: 'Duarte',
+            email: 'lena@example.com',
+            treatment_interest: 'Laser',
+          },
+      }
+    description: 'Lena asks for a consultation'
+  - at: '2026-08-22T15:01:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v038', step_id: 'st-book', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-22T15:01:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v038', reason: 'left' }
+  - at: '2026-08-22T15:08:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'lena',
+        body: 'Hi Lena, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Lena'
+  - at: '2026-08-22T16:00:00-05:00'
+    type: payment.received
+    payload: { payment_id: 'pay-bea', contact_id: 'bea', product_id: 'laser-course', amount: 1200 }
+    description: 'Bea pays for Laser'
+  - at: '2026-08-22T18:00:00-05:00'
+    type: opportunity.updated
+    payload: { opportunity_id: 'op-ava', status: 'won', stage: 'Won' }
+    description: "Ava's deal is marked won"
+  - at: '2026-08-22T18:00:00-05:00'
+    type: opportunity.updated
+    payload: { opportunity_id: 'op-bea', status: 'won', stage: 'Won' }
+    description: "Bea's deal is marked won"
+  - at: '2026-08-23T10:12:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v039', funnel_id: 'fn-consult', source: 'google-search' }
+  - at: '2026-08-23T10:12:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v039', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-23T10:12:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v039', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-23T10:12:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v039', block_id: 'bl-apply-form' }
+  - at: '2026-08-23T10:12:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'mo',
+        visit_id: 'v039',
+        values:
+          {
+            first_name: 'Mo',
+            last_name: 'Ferreira',
+            email: 'mo@example.com',
+            treatment_interest: 'Membership',
+            phone: '+15125551012',
+          },
+      }
+    description: 'Mo asks for a consultation'
+  - at: '2026-08-23T10:12:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v039', step_id: 'st-book', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-23T10:12:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v039', reason: 'left' }
+  - at: '2026-08-23T11:00:00-05:00'
+    type: appointment.status_changed
+    payload: { appointment_id: 'ap-cara', status: 'showed' }
+    description: 'Cara is marked showed'
+  - at: '2026-08-23T11:42:00-05:00'
+    type: sms.received
+    payload: { contact_id: 'mo', body: 'Yes please, whenever you have something.' }
+  - at: '2026-08-23T12:00:00-05:00'
+    type: payment.received
+    payload:
+      { payment_id: 'pay-cara', contact_id: 'cara', product_id: 'facial-course', amount: 480 }
+    description: 'Cara pays for Signature Facial'
+  - at: '2026-08-23T16:00:00-05:00'
+    type: appointment.status_changed
+    payload: { appointment_id: 'ap-dom', status: 'showed' }
+    description: 'Dom is marked showed'
+  - at: '2026-08-23T18:00:00-05:00'
+    type: opportunity.updated
+    payload: { opportunity_id: 'op-cara', status: 'won', stage: 'Won' }
+    description: "Cara's deal is marked won"
+  - at: '2026-08-23T18:00:00-05:00'
+    type: opportunity.updated
+    payload: { opportunity_id: 'op-dom', stage: 'Booked' }
+  - at: '2026-08-24T10:17:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'mo',
+        body: 'Hi Mo, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Mo'
+  - at: '2026-08-24T11:23:00-05:00'
+    type: funnel.visit_started
+    payload: { visit_id: 'v040', funnel_id: 'fn-consult', source: 'instagram-bio' }
+  - at: '2026-08-24T11:23:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v040', step_id: 'st-landing', reach: 'bottom', blocks_seen: 4 }
+  - at: '2026-08-24T11:23:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v040', step_id: 'st-apply', reach: 'bottom', blocks_seen: 2 }
+  - at: '2026-08-24T11:23:00-05:00'
+    type: funnel.form_started
+    payload: { visit_id: 'v040', block_id: 'bl-apply-form' }
+  - at: '2026-08-24T11:23:00-05:00'
+    type: form.submitted
+    payload:
+      {
+        form_id: 'consult-request',
+        contact_id: 'nell',
+        visit_id: 'v040',
+        values:
+          {
+            first_name: 'Nell',
+            last_name: 'Ashby',
+            email: 'nell@example.com',
+            treatment_interest: 'Signature Facial',
+            phone: '+15125551013',
+          },
+      }
+    description: 'Nell asks for a consultation'
+  - at: '2026-08-24T11:23:00-05:00'
+    type: funnel.step_viewed
+    payload: { visit_id: 'v040', step_id: 'st-book', reach: 'top', blocks_seen: 1 }
+  - at: '2026-08-24T11:23:00-05:00'
+    type: funnel.visit_ended
+    payload: { visit_id: 'v040', reason: 'left' }
+  - at: '2026-08-24T11:25:00-05:00'
+    type: contact.updated
+    payload: { contact_id: 'nell', dnd: true }
+    description: 'Nell rings the studio and asks not to be texted'
+  - at: '2026-08-24T11:28:00-05:00'
+    type: sms.sent
+    payload:
+      {
+        contact_id: 'nell',
+        body: 'Hi Nell, thanks for asking about a consultation at Glowhaus. Reply here with a time that suits and we will hold it for you.',
+        purpose: 'first_contact',
+      }
+    description: 'The front desk texts Nell'
+  - at: '2026-08-24T12:00:00-05:00'
+    type: appointment.status_changed
+    payload: { appointment_id: 'ap-ellis', status: 'no_show' }
+    description: 'Ellis is marked no show'
+  - at: '2026-08-24T13:00:00-05:00'
+    type: payment.failed
+    payload:
+      {
+        payment_id: 'pay-ellis',
+        contact_id: 'ellis',
+        product_id: 'glow-membership',
+        amount: 149,
+        reason: 'card_declined',
+      }
+    description: "Ellis's card is declined"
+  - at: '2026-08-24T16:00:00-05:00'
+    type: appointment.status_changed
+    payload: { appointment_id: 'ap-faye', status: 'no_show' }
+    description: 'Faye is marked no show'
+  - at: '2026-08-24T18:00:00-05:00'
+    type: opportunity.updated
+    payload: { opportunity_id: 'op-ellis', stage: 'Booked' }
+  - at: '2026-08-24T18:00:00-05:00'
+    type: opportunity.updated
+    payload: { opportunity_id: 'op-faye', stage: 'Booked' }
+  - at: '2026-08-25T11:00:00-05:00'
+    type: appointment.status_changed
+    payload: { appointment_id: 'ap-gus', status: 'no_show' }
+    description: 'Gus is marked no show'
+  - at: '2026-08-25T14:00:00-05:00'
+    type: appointment.status_changed
+    payload: { appointment_id: 'ap-hana', status: 'no_show' }
+    description: 'Hana is marked no show'
+  - at: '2026-08-25T17:00:00-05:00'
+    type: appointment.cancelled
+    payload: { appointment_id: 'ap-jae' }
+    description: 'Jae cancels the day before'
+  - at: '2026-08-25T18:00:00-05:00'
+    type: opportunity.updated
+    payload: { opportunity_id: 'op-gus', status: 'lost', stage: 'Lost' }
+    description: "Gus's deal is marked lost"
+  - at: '2026-08-26T12:00:00-05:00'
+    type: appointment.status_changed
+    payload: { appointment_id: 'ap-iris', status: 'no_show' }
+    description: 'Iris is marked no show'
+  - at: '2026-08-26T12:00:00-05:00'
+    type: refund.issued
+    payload: { payment_id: 'pay-cara', reason: 'reaction_to_patch_test' }
+    description: 'Cara is refunded after a reaction to the patch test'
+  - at: '2026-08-26T18:00:00-05:00'
+    type: opportunity.updated
+    payload: { opportunity_id: 'op-jae', status: 'abandoned', stage: 'New Lead' }
+    description: "Jae's deal is marked abandoned"
+injectable_events: []
+hidden_facts:
+  ad_spend_this_window: 1800
+  front_desk_follow_up: 'By hand, between clients'
+  reminder_system: 'None. Nobody is reminded before a consultation.'
+failure_modes: []
