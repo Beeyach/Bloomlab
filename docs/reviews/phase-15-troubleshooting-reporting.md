@@ -120,6 +120,34 @@ appointments and opportunities as it goes, and the validator rejected every refe
 now walks the scheduled events in queue order and remembers what each one creates before checking
 the next. A genuine dangling reference still fails.
 
+## Independent post-completion audit
+
+A second code pass after the first green PR head found three correctness gaps and fixed them before
+merge.
+
+**Reporting missed id-less bookings.** D-145 made the reducer and appointment triggers agree on the
+deterministic id `appt-<event id>` when an `APPOINTMENT_BOOKED` event names no
+`appointment_id`, but the reporting projection still read only the payload field. The appointment
+therefore existed and its workflow ran while booking rate and the appointment cohort ignored it.
+The report now uses the same `appointmentIdOf` helper as the reducer and trigger adapters.
+
+**A booking could leak into another funnel's Autopsy.** The first projection reduced all booking
+events in the account to contact ids. If the same contact was a lead on Funnel A and later booked
+through Funnel B, Funnel A received the booking too. Live booking and payment actions now carry the
+visit id already held by the visitor session; the Autopsy binds explicitly linked outcomes to that
+visit. Older authored histories without visit ids keep a conservative one-booking-per-contact
+fallback so existing scenarios remain readable (D-149).
+
+**Injectables were validated against the future.** D-144 correctly made scheduled history
+time-ordered, but the initial implementation then checked injectables against the entity set left
+after all scheduled events. An action available at run start could therefore pass validation
+because a later event would create its target. Injectables are now checked against the authored
+starting account while scheduled events continue to build references in queue order (D-150).
+
+These corrections are pinned by regression tests, including a reducer-minted appointment id, a
+booking explicitly linked to another funnel visit, scheduled create-then-reference history, and an
+injectable that wrongly depends on a future creation.
+
 ## Verification
 
 Tests: **1192 pass**, 48 new. Ten new regression fixtures.
@@ -188,7 +216,7 @@ REP-003 is enforced by a test rather than by an audit note that goes stale.
 
 ## Versions
 
-Simulator `2026.09.11-r1` (visit telemetry, external endpoints, loop and node-visit bounds, the
+Simulator `2026.09.11-r2` (visit telemetry, external endpoints, loop and node-visit bounds, the
 appointment trigger fix), content `2026.09.11`. App version, mastery rules and the exercise grader
 untouched — `written` is additive, so no previously graded attempt changes.
 
