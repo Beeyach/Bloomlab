@@ -458,5 +458,4 @@ describe('FUN-004: the Funnel Autopsy reads the same traffic', () => {
       denominator: 1,
     });
   });
-
 });
