@@ -660,8 +660,14 @@ export function validateScenario(
    * initial state, plus everything the events before it created. An event that names something
    * nothing has created yet is still a content bug and still reported.
    */
-  const known = Object.fromEntries(
+  // Scheduled history is allowed to build entities over time. Injectables are different: they
+  // are available from the beginning of the run, so one must never become "valid" merely because
+  // a future scheduled event will create the record it names.
+  const initialKnown = Object.fromEntries(
     Object.entries(entities).map(([field, ids]) => [field, new Set(ids)]),
+  ) as Record<string, Set<string>>;
+  const known = Object.fromEntries(
+    Object.entries(initialKnown).map(([field, ids]) => [field, new Set(ids)]),
   ) as Record<string, Set<string>>;
 
   const remember = (type: SimulatorEventType, payload: EventPayload | undefined) => {
@@ -677,13 +683,17 @@ export function validateScenario(
     }
   };
 
-  const checkEvent = (event: ScenarioScheduledEvent | ScenarioInjectableEvent, path: string) => {
+  const checkEvent = (
+    event: ScenarioScheduledEvent | ScenarioInjectableEvent,
+    path: string,
+    available: Record<string, Set<string>> = known,
+  ) => {
     const type = resolveEventType(event.type);
     if (!type) {
       issues.push(issue('UNKNOWN_EVENT_TYPE', path, `${event.type} is not a simulator event`));
       return null;
     }
-    for (const [field, ids] of Object.entries(known)) {
+    for (const [field, ids] of Object.entries(available)) {
       const value = event.payload?.[field];
       // A form submission legitimately names a contact that does not exist yet: that is what
       // creates it. Every other reference must already resolve.
@@ -714,10 +724,10 @@ export function validateScenario(
       if (type) remember(type, event.payload);
     });
 
-  // An injectable can be used at any point in the run, so it is checked against the account the
-  // scheduled history leaves behind rather than against the account before any of it happened.
+  // An injectable can be used before any scheduled event has fired. Check it against the
+  // authored starting account, not the final entity set the scheduled history happens to build.
   (scenario.injectable_events ?? []).forEach((event, index) => {
-    checkEvent(event, `injectable_events.${index}`);
+    checkEvent(event, `injectable_events.${index}`, initialKnown);
   });
   for (const id of duplicates((scenario.injectable_events ?? []).map((event) => event.id))) {
     issues.push(issue('DUPLICATE_ID', 'injectable_events', `Duplicate action id ${id}`));

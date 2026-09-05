@@ -151,6 +151,57 @@ describe('scenario validation (spec §100)', () => {
     ).toContain('DANGLING_REF');
   });
 
+  it('allows a later scheduled event to use an entity an earlier scheduled event creates', () => {
+    const candidate: SimulatorScenario = {
+      ...scenario(),
+      scheduled_events: [
+        {
+          at: '2026-09-04T14:00:00-05:00',
+          type: 'appointment.booked',
+          payload: {
+            appointment_id: 'future-appointment',
+            contact_id: 'maria',
+            calendar_id: 'consultation',
+            starts_at: '2026-09-05T15:00:00-05:00',
+          },
+        },
+        {
+          at: '2026-09-04T15:00:00-05:00',
+          type: 'appointment.status_changed',
+          payload: { appointment_id: 'future-appointment', status: 'confirmed' },
+        },
+      ],
+    };
+    expect(codes(candidate)).not.toContain('DANGLING_REF');
+  });
+
+  it('does not let an injectable depend on an entity only scheduled to exist later', () => {
+    const candidate: SimulatorScenario = {
+      ...scenario(),
+      scheduled_events: [
+        {
+          at: '2026-09-04T15:00:00-05:00',
+          type: 'appointment.booked',
+          payload: {
+            appointment_id: 'future-appointment',
+            contact_id: 'maria',
+            calendar_id: 'consultation',
+            starts_at: '2026-09-05T15:00:00-05:00',
+          },
+        },
+      ],
+      injectable_events: [
+        {
+          id: 'confirm-future',
+          type: 'appointment.status_changed',
+          description: 'Confirm an appointment that has not happened yet.',
+          payload: { appointment_id: 'future-appointment', status: 'confirmed' },
+        },
+      ],
+    };
+    expect(codes(candidate)).toContain('DANGLING_REF');
+  });
+
   it('rejects an event type outside the catalogue', () => {
     expect(
       codes({
