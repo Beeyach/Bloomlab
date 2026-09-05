@@ -709,10 +709,26 @@ export function validateScenario(
   };
 
   // In the order the queue will run them, so "created by an earlier event" means what it says.
+  // The queue orders on the instant itself and then on the authored position (`compareScheduled`),
+  // so this has to as well. Comparing the authored strings only agrees with that while every
+  // event in the scenario writes its time the same way: '2026-09-04T18:00:00Z' sorts after
+  // '2026-09-04T14:00:00-05:00' as text and runs an hour before it, which let a scenario that
+  // mixed offsets validate clean and then drop the event at runtime.
+  const orderedAt = (event: ScenarioScheduledEvent): number => {
+    try {
+      return instant(event.at);
+    } catch {
+      // Reported as INVALID_TIME below. Ordered last, so one unreadable time cannot shuffle the
+      // events around it and turn a good reference into a dangling one.
+      return Number.POSITIVE_INFINITY;
+    }
+  };
   [...(scenario.scheduled_events ?? []).entries()]
-    .sort(([leftIndex, left], [rightIndex, right]) =>
-      left.at === right.at ? leftIndex - rightIndex : left.at < right.at ? -1 : 1,
-    )
+    .sort(([leftIndex, left], [rightIndex, right]) => {
+      const byTime = orderedAt(left) - orderedAt(right);
+      // NaN when both are unreadable; either way the authored position settles it.
+      return Number.isNaN(byTime) || byTime === 0 ? leftIndex - rightIndex : byTime;
+    })
     .forEach(([index, event]) => {
       const path = `scheduled_events.${index}`;
       try {

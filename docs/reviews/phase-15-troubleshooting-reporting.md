@@ -32,10 +32,11 @@ and go and look.
 A rate over a zero denominator is `null`, everywhere, and reads **Not enough data**. Nothing in the
 product prints 0% for a percentage of nothing.
 
-`METRIC_DEFINITIONS` is the only place the ten rules live, and one source-level test fails the build
-if any learner-facing module works out a rate of its own. That test found a real one: the Lab's
-source table divided leads by visits instead of reading the report. `SourceRow` now carries
-`conversion` and the screen reads it.
+`METRIC_DEFINITIONS` is the only place the ten rules live, and a source-level test scans the
+learner-facing modules for the shape that breaks that: a division handed straight to a percentage
+or currency formatter. It found a real one — the Lab's source table divided leads by visits instead
+of reading the report. `SourceRow` now carries `conversion` and the screen reads it. The scan is a
+regression guard over that shape rather than a proof about every way a rate could be written.
 
 ## The three-week account
 
@@ -148,9 +149,18 @@ These corrections are pinned by regression tests, including a reducer-minted app
 booking explicitly linked to another funnel visit, scheduled create-then-reference history, and an
 injectable that wrongly depends on a future creation.
 
+A second audit pass found one more, in the same validator. D-144's walk ordered the scheduled queue
+by comparing the authored `at` strings, and the run orders it by the instant. Those agree only while
+every event in a scenario writes its time the same way, so a scenario that mixed offsets validated
+clean and then dropped its earlier event at runtime with an `UNKNOWN_ENTITY` diagnostic — through
+the check written to catch exactly that. The walk now parses the instant and falls back to the
+authored position, which is the queue's own rule (D-151). No authored scenario was affected: all
+seventeen write one offset throughout. The engine is untouched, so `SIMULATOR_VERSION` does not
+move — this is authoring-time validation, not simulated behaviour.
+
 ## Verification
 
-Tests: **1192 pass**, 48 new. Ten new regression fixtures.
+Tests: **1198 pass** across 82 files, 54 new. Ten new regression fixtures.
 
 | Probe | Result |
 |---|---|
@@ -211,8 +221,12 @@ CONNECT. The record's `verification_note` says exactly that. Fifth phase under t
 
 **INF-015 stays `NOT_STARTED`.** `AUDIT_REPORT.md` does not exist in the repository. The §141 audit
 is an independent pass with no coding, covering ten categories, and writing one in the same session
-that wrote the code would not be independent. The one category this phase does close is fake data:
-REP-003 is enforced by a test rather than by an audit note that goes stale.
+that wrote the code would not be independent. The one category this phase does close is fake data,
+and it closes it with a regression guard rather than a note that goes stale: `noFakeAnalytics.test.ts`
+scans learner-facing TS/TSX for hard-coded percentages and money amounts and for a division formatted
+as a rate outside `reporting/`. Those are the shapes the mistake has actually taken here, and the
+guard stops them recurring. REP-003 itself is wider than the scan — a rate built over several
+statements would read as ordinary code — so reviewing a reporting change is still part of holding it.
 
 ## Versions
 

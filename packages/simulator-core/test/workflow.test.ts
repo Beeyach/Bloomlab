@@ -175,6 +175,60 @@ describe('scenario validation (spec §100)', () => {
     expect(codes(candidate)).not.toContain('DANGLING_REF');
   });
 
+  it('orders scheduled events by the instant they run at, not by how the time was written', () => {
+    const candidate: SimulatorScenario = {
+      ...scenario(),
+      scheduled_events: [
+        // 19:00Z, written in the account's own offset.
+        {
+          at: '2026-09-04T14:00:00-05:00',
+          type: 'appointment.booked',
+          payload: {
+            appointment_id: 'future-appointment',
+            contact_id: 'maria',
+            calendar_id: 'consultation',
+            starts_at: '2026-09-05T15:00:00-05:00',
+          },
+        },
+        // 18:00Z — an hour earlier, so the queue runs this one first and the appointment it
+        // names does not exist yet. Sorted as text these two read the other way round, and the
+        // scenario validated clean while the run quietly dropped the status change (D-144).
+        {
+          at: '2026-09-04T18:00:00Z',
+          type: 'appointment.status_changed',
+          payload: { appointment_id: 'future-appointment', status: 'confirmed' },
+        },
+      ],
+    };
+    expect(codes(candidate)).toContain('DANGLING_REF');
+  });
+
+  it('still allows a mixed-offset history whose creations really do come first', () => {
+    const candidate: SimulatorScenario = {
+      ...scenario(),
+      scheduled_events: [
+        // 18:00Z, and the one that creates the appointment.
+        {
+          at: '2026-09-04T18:00:00Z',
+          type: 'appointment.booked',
+          payload: {
+            appointment_id: 'future-appointment',
+            contact_id: 'maria',
+            calendar_id: 'consultation',
+            starts_at: '2026-09-05T15:00:00-05:00',
+          },
+        },
+        // 19:00Z, an hour after it, written the other way.
+        {
+          at: '2026-09-04T14:00:00-05:00',
+          type: 'appointment.status_changed',
+          payload: { appointment_id: 'future-appointment', status: 'confirmed' },
+        },
+      ],
+    };
+    expect(codes(candidate)).not.toContain('DANGLING_REF');
+  });
+
   it('does not let an injectable depend on an entity only scheduled to exist later', () => {
     const candidate: SimulatorScenario = {
       ...scenario(),
