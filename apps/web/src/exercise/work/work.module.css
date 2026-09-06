@@ -1,0 +1,414 @@
+/* The selling families' work areas (Phase 16). Quiet surfaces, real controls, no chrome for its
+   own sake: the objects here are a business, a finding, a message and a thread. */
+
+.desk {
+  display: grid;
+  gap: var(--bl-space-5);
+  align-content: start;
+  min-width: 0;
+}
+
+.deskTitle {
+  margin: 0;
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-lg);
+  font-weight: var(--bl-font-weight-semibold);
+  letter-spacing: var(--bl-font-tracking-display);
+}
+
+.deskNote,
+.help {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+/* Moving between the businesses on the list. Labelled, never a numbered dot. */
+.switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.switch {
+  display: grid;
+  gap: 2px;
+  min-height: 44px;
+  padding: var(--bl-space-2) var(--bl-space-4);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-snow);
+  font: inherit;
+  text-align: left;
+  color: var(--bl-color-text);
+  cursor: pointer;
+}
+
+.switch:hover {
+  background: var(--bl-color-mist);
+}
+
+.switch[aria-current='true'] {
+  border-color: var(--bl-color-ink);
+  box-shadow: inset 0 0 0 1px var(--bl-color-ink);
+}
+
+.switch:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}
+
+.switchName {
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.switchState {
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+.prospect,
+.finding,
+.written,
+.thread {
+  display: grid;
+  gap: var(--bl-space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+.finding {
+  padding: var(--bl-space-4);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-snow);
+}
+
+.findings {
+  display: grid;
+  gap: var(--bl-space-4);
+}
+
+/* Evidence: what was seen, where it came from, and whether it was seen first-hand. */
+.evidence {
+  display: grid;
+  gap: var(--bl-space-2);
+}
+
+.evidenceTitle {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.evidenceList {
+  display: grid;
+  gap: var(--bl-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.evidenceItem {
+  min-width: 0;
+}
+
+.evidenceChoice {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--bl-space-3);
+  min-height: 44px;
+  padding: var(--bl-space-3) var(--bl-space-4);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface);
+  cursor: pointer;
+}
+
+.evidenceChoice:has(input:checked) {
+  border-color: var(--bl-color-ink);
+  box-shadow: inset 0 0 0 1px var(--bl-color-ink);
+}
+
+.evidenceChoice:has(input:focus-visible) {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}
+
+.evidenceChoice input {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--bl-color-ink);
+}
+
+.evidenceBody {
+  display: grid;
+  gap: 2px;
+  padding: var(--bl-space-1) 0;
+  min-width: 0;
+}
+
+.evidenceSource,
+.evidenceKind {
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+.evidenceText {
+  overflow-wrap: anywhere;
+}
+
+/* Radio and checkbox groups: the whole row is the target. */
+.choices {
+  display: grid;
+  gap: var(--bl-space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0 0 var(--bl-space-2);
+  font-size: var(--bl-font-size-sm);
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--bl-space-3);
+  min-height: 44px;
+  padding: var(--bl-space-2) var(--bl-space-4);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-snow);
+  cursor: pointer;
+}
+
+.choice input {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--bl-color-ink);
+}
+
+.choice:has(input:checked) {
+  border-color: var(--bl-color-ink);
+  box-shadow: inset 0 0 0 1px var(--bl-color-ink);
+}
+
+.choice:has(input:focus-visible) {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}
+
+.choiceBody {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.choiceName {
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.choiceHelp {
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+/* Fields */
+.field {
+  display: grid;
+  gap: var(--bl-space-1);
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: var(--bl-font-size-sm);
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.kind {
+  font-weight: var(--bl-font-weight-regular);
+  color: var(--bl-color-text-soft);
+}
+
+.textarea,
+.input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--bl-space-3) var(--bl-space-4);
+  border: 1px solid var(--bl-color-border-strong);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-surface);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--bl-color-text);
+}
+
+.input {
+  min-height: 44px;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.textarea:focus-visible,
+.input:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}
+
+.textarea:disabled,
+.input:disabled {
+  background: var(--bl-color-mist);
+  color: var(--bl-color-text-soft);
+}
+
+/* Objective feedback: a fact about the work, never a judgement of it. Never colour alone. */
+.count {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.countOver,
+.problemNote {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+  font-weight: var(--bl-font-weight-medium);
+  color: var(--bl-color-warning-ink, var(--bl-color-ink));
+  font-variant-numeric: tabular-nums;
+}
+
+.problemNote {
+  padding-left: var(--bl-space-3);
+  border-left: 2px solid var(--bl-color-border-strong);
+}
+
+.addButton,
+.quietButton {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0 var(--bl-space-5);
+  border: 1px solid var(--bl-color-border-strong);
+  border-radius: var(--bl-radius-full);
+  background: var(--bl-color-snow);
+  font: inherit;
+  font-weight: var(--bl-font-weight-medium);
+  color: var(--bl-color-text);
+  cursor: pointer;
+}
+
+.quietButton {
+  border-color: transparent;
+  background: transparent;
+  padding: 0;
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.addButton:hover {
+  background: var(--bl-color-mist);
+}
+
+.addButton:focus-visible,
+.quietButton:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--bl-radius-sm);
+}
+
+.addButton:disabled {
+  color: var(--bl-color-text-soft);
+  cursor: default;
+}
+
+/* The client thread */
+.threadHead {
+  display: grid;
+  gap: 2px;
+}
+
+.messages {
+  display: grid;
+  gap: var(--bl-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fromClient,
+.fromLearner {
+  display: grid;
+  gap: var(--bl-space-1);
+  padding: var(--bl-space-3) var(--bl-space-4);
+  border-radius: var(--bl-radius-md);
+  min-width: 0;
+}
+
+.fromClient {
+  border: 1px solid var(--bl-color-border);
+  background: var(--bl-color-snow);
+}
+
+.fromLearner {
+  border: 1px solid var(--bl-color-border);
+  background: var(--bl-color-mist);
+}
+
+.messageWho {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+  font-weight: var(--bl-font-weight-medium);
+  color: var(--bl-color-text-soft);
+}
+
+.messageText {
+  margin: 0;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.messageNote {
+  margin: 0;
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+.composer {
+  display: grid;
+  gap: var(--bl-space-4);
+}
+
+/* At 1440 a business and its evidence can sit beside the decision without either getting narrow. */
+@media (min-width: 1280px) {
+  .prospect {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .prospect > .deskTitle,
+  .prospect > .deskNote {
+    grid-column: 1 / -1;
+  }
+
+  .prospect > .evidence {
+    grid-row: span 3;
+  }
+}

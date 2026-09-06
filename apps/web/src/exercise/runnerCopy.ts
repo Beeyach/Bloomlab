@@ -20,6 +20,12 @@ export interface FamilyTreatment {
   tone: 'normal' | 'incident';
   /** Whether a link back to the unit is offered at all for this family (EXR-019). */
   offersLesson: boolean;
+  /**
+   * Whether the family asks for one free piece of writing at the end. The selling families do
+   * not: their work is the decisions, the findings, the messages and the thread, and an extra
+   * "your answer" box under all of that is a box nobody should have to fill in.
+   */
+  freeResponse: boolean;
 }
 
 const DEFAULT_TREATMENT: FamilyTreatment = {
@@ -30,6 +36,7 @@ const DEFAULT_TREATMENT: FamilyTreatment = {
   responseHelp: 'Saved as you type, on this device.',
   tone: 'normal',
   offersLesson: true,
+  freeResponse: true,
 };
 
 export const FAMILY_TREATMENTS: Partial<Record<Exercise['type'], Partial<FamilyTreatment>>> = {
@@ -97,6 +104,36 @@ export const FAMILY_TREATMENTS: Partial<Record<Exercise['type'], Partial<FamilyT
     workTitle: 'Your funnel',
     responseLabel: 'Why it is in this order',
     responseHelp: 'The funnel itself is built in the Lab. This is the reasoning behind it.',
+  },
+  PROSPECT_IT: {
+    family: 'Prospect it',
+    stance: 'Three businesses. Skipping one is an answer.',
+    workTitle: 'Your list',
+    freeResponse: false,
+  },
+  AUDIT_IT: {
+    family: 'Audit it',
+    stance: 'Write what you found, and say how sure you are.',
+    workTitle: 'Your findings',
+    freeResponse: false,
+  },
+  WRITE_IT: {
+    family: 'Write it',
+    stance: 'One reader, one point, one next step.',
+    workTitle: 'Your writing',
+    freeResponse: false,
+  },
+  EXPLAIN_IT: {
+    family: 'Explain it',
+    stance: 'The same system, twice, for two people who need different things.',
+    workTitle: 'Your explanations',
+    freeResponse: false,
+  },
+  SAY_IT: {
+    family: 'Say it',
+    stance: 'A client is writing to you. Answer them.',
+    workTitle: 'The conversation',
+    freeResponse: false,
   },
 };
 
