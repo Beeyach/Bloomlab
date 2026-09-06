@@ -45,7 +45,8 @@
     "review:funnel": "node scripts/review/funnel-probe.mjs",
     "review:calendar": "node scripts/review/calendar-probe.mjs",
     "review:reporting": "node scripts/review/reporting-probe.mjs",
-    "review:incident": "node scripts/review/incident-probe.mjs"
+    "review:incident": "node scripts/review/incident-probe.mjs",
+    "review:sales": "node scripts/review/sales-probe.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
