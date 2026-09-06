@@ -114,7 +114,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-013 | AUDIT IT: findings forced into Verified / Likely / Unknown. | P1 | 16 | PASSED | §27 |
 | EXR-014 | WRITE IT: cold email, follow-up, interested reply, discovery recap, proposal explanation, client update, scope response, payment reminder, upsell, breakup email; AI rubric where needed. | P1 | 16 | PASSED | §27 |
 | EXR-015 | SAY IT: voice practice modes cold call, discovery, proposal presentation, negotiation, client explanation. | P1 | 21 | NOT_STARTED | §27 |
-| EXR-016 | PRICE IT: learner sets project price, deposit, recurring, rush fee, timeline, revisions, inclusions, exclusions; hidden economics and risk revealed after submission. | P1 | 17 | NOT_STARTED | §27 |
+| EXR-016 | PRICE IT: learner sets project price, deposit, recurring, rush fee, timeline, revisions, inclusions, exclusions; hidden economics and risk revealed after submission. | P1 | 17 | PASSED | §27 |
 | EXR-017 | NEGOTIATE IT: client pushes back; learner may clarify, hold price, reduce scope, phase, concede, or walk away; winning is not the only success. | P1 | 18 | NOT_STARTED | §27 |
 | EXR-018 | EXPLAIN IT: technical explanation for different audiences (business owner, another GHL builder). | P1 | 16 | PASSED | §27 |
 | EXR-019 | REBUILD BLIND: no lesson, no step-by-step support; hints reduce independence evidence. Phase 12: a reminder system built through the command layer and graded from the two texts the engine sent 24 h and 2 h before the appointment (`exerciseRuntime.test.ts`). | P1 | 9 | PASSED | §27 |
@@ -225,23 +225,23 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | SAL-006 | Presentation frame: problem → consequence → system → outcome. | P1 | 16 | PASSED | §20 |
 | SAL-007 | Client language: explanation without unnecessary GHL jargon. | P1 | 16 | PASSED | §20 |
 | SAL-008 | Closing: asking for commitment, proposal follow-up, ghosting, decision delay, next-step control. | P1 | 16 | PASSED | §20 |
-| SAL-009 | Proposal structure: problem, recommendation, scope, price, timeline, assumptions, exclusions, acceptance. | P1 | 17 | NOT_STARTED | §21 |
+| SAL-009 | Proposal structure: problem, recommendation, scope, price, timeline, assumptions, exclusions, acceptance. | P1 | 17 | PASSED | §21 |
 | SAL-010 | Change-request scope control. | P1 | 24 | NOT_STARTED | §21 |
 | SAL-011 | Onboarding: access, credentials, domains, calendars, users, branding, copy, payment, expectations. | P1 | 24 | NOT_STARTED | §21 |
 | SAL-012 | Build order taught as dependencies (data → pipeline → calendar → forms → workflows → funnel → tracking → QA), not random building. | P1 | 24 | NOT_STARTED | §21 |
 | SAL-013 | Client communication types: update, blocker, delay, approval, revision, technical explanation. | P1 | 16 | PASSED | §21 |
 | SAL-014 | Handoff: documentation, training, ownership, support. | P1 | 24 | NOT_STARTED | §21 |
 | SAL-015 | Retention (later): reporting, maintenance, retainer, expansion, referral, account strategy. | P2 | 25 | NOT_STARTED | §21 |
-| SAL-016 | Scope training: deliverables, assumptions, exclusions, revisions, dependencies, location count, workflow complexity, migration, integration, rush, copy, design, support. | P1 | 17 | NOT_STARTED | §20 |
+| SAL-016 | Scope training: deliverables, assumptions, exclusions, revisions, dependencies, location count, workflow complexity, migration, integration, rush, copy, design, support. | P1 | 17 | PASSED | §20 |
 
 ## PRI — Pricing
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| PRI-001 | Pricing Arena designed as a deal desk showing requirements, scope, price, payment, timeline, recurring, exclusions; scope reductions have visible structural consequences. | P1 | 17 | NOT_STARTED | §80 |
-| PRI-002 | Pricing engine: no single universally correct price. Scenario stores baseline complexity, estimated labor, risk, migration, locations, integrations, custom development, rush, recurring support; evaluation covers price, margin, scope, risk, reasoning. | P1 | 17 | NOT_STARTED | §122 |
-| PRI-003 | Pricing models taught: fixed, hourly, project, setup, recurring, retainer, margin, complexity, risk, minimum viable project pricing. | P1 | 17 | NOT_STARTED | §20 |
-| PRI-004 | Pricing math covered by unit tests. | P1 | 17 | NOT_STARTED | §132 |
+| PRI-001 | Pricing Arena designed as a deal desk showing requirements, scope, price, payment, timeline, recurring, exclusions; scope reductions have visible structural consequences. | P1 | 17 | PARTIAL | §80 |
+| PRI-002 | Pricing engine: no single universally correct price. Scenario stores baseline complexity, estimated labor, risk, migration, locations, integrations, custom development, rush, recurring support; evaluation covers price, margin, scope, risk, reasoning. | P1 | 17 | PARTIAL | §122 |
+| PRI-003 | Pricing models taught: fixed, hourly, project, setup, recurring, retainer, margin, complexity, risk, minimum viable project pricing. | P1 | 17 | PASSED | §20 |
+| PRI-004 | Pricing math covered by unit tests. | P1 | 17 | PASSED | §132 |
 
 ## NEG — Negotiation and Scenario Engine
 

@@ -2,7 +2,7 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-06 (end of Phase 16)
+Last updated: 2026-09-06 (end of Phase 17)
 
 ## Current state
 
@@ -412,3 +412,42 @@ Last updated: 2026-09-06 (end of Phase 16)
   `review:workflow` → `five-hundred-events` reported p95 under 50 ms this time and still exceeded
   the 100 ms maximum-frame and long-task ceilings for 504 events. Phase 16 touches nothing in that
   path; PERF-002 still needs one run on the reference desktop rather than a container claim.
+
+## Phase 17 — Pricing Arena
+
+- **Removing a scope line does not change a price on the desk.** PRI-001 asks for a visible price
+  change and EXR-016 forbids showing hidden economics before submission. The learner sets one
+  project fee for the whole deal, so there is no per-line price to subtract, and the delivery cost
+  of the removed line is exactly what may not be shown. What the desk does show is the structural
+  consequence: what the line leaves the client with, and any requirement nothing in the deal
+  answers any more. The economic consequence appears in full after submitting, where the floor
+  moves with the scope. PRI-001 stays PARTIAL with the unmet half named (D-162).
+- **No pricing reasoning is judged.** The Summit exercise is `mixed` and names
+  `PRICING_REASONING_RUBRIC_V1`; the explanation is collected and kept with the attempt, and
+  nothing reads it until the AI gateway (Phase 19). The rubric was not edited even though its first
+  item now duplicates a deterministic check, because changing it would change a contract attempts
+  were judged under. The Glowhaus exercise is fully deterministic and does pass end to end today.
+- **The hourly delivery cost is a number an author chose, not a market rate.** $55 an hour is what
+  both Phase 17 exercises say an hour of delivery costs this business. Nothing in the source
+  establishes a universal rate and the engine does not carry one (D-161). A different business
+  would author a different number and the same quotes would be judged differently, which is the
+  intent, not a defect.
+- **Margin is measured on one-time work only, and complexity is not priced separately.** The
+  contingency comes from the scenario's single `risk` score. The other economics fields
+  (`baseline_complexity`, `migration`, `locations`, `integrations`, `custom_development`) shape the
+  scenario and the scope an author writes, and no formula reads them. Complexity moves the hours,
+  which move the cost; there is no complexity multiplier on top, deliberately.
+- **The proposal is written, not assembled.** `EX-WRITE_IT-summit-proposal` asks for the eight
+  sections and checks they are answered, inside their caps, cite something observed and ask for one
+  thing. It does not read the learner's own priced deal and does not check that the price section
+  matches what they quoted, because the two are separate attempts. Nothing generates a proposal
+  document, and nothing is sent.
+- **Negotiation is still absent.** The desk quotes; it never defends the quote.
+  `EX-NEGOTIATE_IT-summit-freelancer-quote` is untouched and remains un-runnable, and Summit's
+  freelancer-quote and budget-objection injectables are authored and unused, waiting for Phase 18.
+  `EX-SAY_IT-summit-discovery` still waits for Phase 21.
+- **`review:learning` cannot complete in this container, on Phase 17 or on `main`.** Re-checked on
+  this branch and on the stashed baseline in the same container: the Worker cannot reach the
+  network to create a sync key, so the two-device half of the probe never starts. It is the
+  environment rather than a regression, and it is the same limitation recorded at the end of
+  Phase 16.
