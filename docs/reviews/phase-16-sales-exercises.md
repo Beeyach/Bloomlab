@@ -110,19 +110,30 @@ discovery topic the thread never covers; and a hidden fact in learner-visible co
 Thirty-one schema tests exist because each of those is a way an exercise could reach a learner as
 something that cannot honestly be done.
 
-## The bug this phase found
+## Persistence bugs found in review
 
 `review:sales` typed a cold email, typed the follow-up, ticked the evidence, reloaded, and got the
 follow-up back empty.
 
 Every keystroke saves, and each save is a read-modify-write against one workspace row. Two of them
 in flight against different fields could interleave: the second read the row before the first had
-written it and put back a copy without the first edit in it. The learner would never see it happen —
-the screen still showed what they typed.
+written it and put back a copy without the first edit in it. The learner would never see it happen.
+The screen still showed what they typed.
 
-Writes are now queued per attempt, a failed write does not wedge the queue, and two tests pin it.
-This is a Phase 9 behaviour corrected, not a Phase 16 workaround. It would have been possible to
-"fix" the probe by adding a wait; the probe was right and the code was wrong.
+Writes are queued per attempt so those edits cannot overtake one another. Independent review found
+the matching submit-side race: a learner could type and immediately press Run it while the latest
+save was still queued. Finalization used the older attempt object supplied by React, so the finished
+attempt could omit the last edit even though that edit was on its way to IndexedDB. Submission now
+waits for the attempt's write queue, reloads the persisted attempt and grades that response. A
+regression deliberately starts finalization before the last save resolves and proves the last edit
+is both graded and kept on the finished attempt.
+
+The independent pass also found that the PROSPECT IT family schema accepted two businesses even
+though EXR-012 requires at least three. The shipped exercise already had three; the validator now
+enforces the same minimum for every future PROSPECT IT exercise.
+
+These are shared Phase 9 persistence semantics and a Phase 16 family invariant, not probe
+workarounds.
 
 ## Rubric versioning
 
