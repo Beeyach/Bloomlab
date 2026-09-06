@@ -137,8 +137,7 @@ function gradeOne(input: GradeInput): GradeReport {
       ? null
       : Math.round((scoredPassed / scored.length) * 100);
   const failedCritical = tiers.critical.filter((result) => !result.passed && !result.unevaluated);
-  const requiredIsGate =
-    exercise.type === 'FUNNEL_ASSEMBLY' || exercise.type === 'PRICE_IT';
+  const requiredIsGate = exercise.type === 'FUNNEL_ASSEMBLY' || exercise.type === 'PRICE_IT';
   const failedRequired = requiredIsGate
     ? tiers.required.filter((result) => !result.passed && !result.unevaluated)
     : [];
