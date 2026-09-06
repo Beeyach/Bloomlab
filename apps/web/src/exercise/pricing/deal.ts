@@ -79,7 +79,7 @@ export const brokenPromises = (
 
 /** True when the timeline the learner chose is short enough to count as rushed. */
 export const isRushed = (pricing: PricingConfig, timelineDays: number | null): boolean =>
-  timelineDays !== null && timelineDays < pricing.timeline.rush_below_days;
+  timelineDays !== null && timelineDays >= 1 && timelineDays < pricing.timeline.rush_below_days;
 
 /**
  * What this deal costs, at the scope and timeline the learner chose.
@@ -94,7 +94,8 @@ export function dealBasis(
   response: PricingResponse,
 ): DealBasis {
   const scopeHours = includedScope(pricing, response).reduce((sum, item) => sum + item.hours, 0);
-  const revisionHours = (response.revisions ?? 0) * pricing.revision_hours;
+  // A malformed or old draft can never lower delivery cost by carrying negative revisions.
+  const revisionHours = Math.max(0, Math.round(response.revisions ?? 0)) * pricing.revision_hours;
   const rushHours = isRushed(pricing, response.timeline_days)
     ? pricing.timeline.rush_extra_hours
     : 0;
