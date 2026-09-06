@@ -1,3 +1,5 @@
+import { NegotiationThread } from './work/NegotiationThread';
+import { NORMAL_RUN } from './attempt';
 import { useMemo } from 'react';
 import { Link } from 'react-router';
 
@@ -147,6 +149,9 @@ export function ResultView({
       (candidate) => candidate.id === attempt.exercise_id && candidate.pricing !== null,
     ) ?? null;
 
+  const negotiated = content.exercises.find(
+    (candidate) => candidate.id === attempt.exercise_id && candidate.negotiation,
+  );
   return (
     <section
       aria-labelledby="result-title"
@@ -189,6 +194,14 @@ export function ResultView({
         </Surface>
       )}
 
+      {negotiated && attempt.response?.negotiation && (
+        <NegotiationThread
+          exercise={negotiated}
+          saved={attempt.response.negotiation}
+          context={NORMAL_RUN}
+          readOnly
+        />
+      )}
       {priced && attempt.response && (
         <Surface padding="md" className={styles.tier}>
           <DealReveal exercise={priced} response={pricingOf(attempt.response)} />

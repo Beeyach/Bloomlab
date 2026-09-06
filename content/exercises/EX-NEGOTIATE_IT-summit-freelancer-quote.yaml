@@ -1,35 +1,72 @@
-# NEGOTIATE IT (spec §27, NEG-001 … NEG-005): the client pushes back with a cheaper quote.
+# Phase 18: standalone authored negotiation over the Phase 17 pricing contract.
 id: EX-NEGOTIATE_IT-summit-freelancer-quote
 type: NEGOTIATE_IT
-title: 'Someone else quoted nine hundred'
+title: Someone else quoted nine hundred
 mode: practice
 difficulty: 3
 estimated_minutes: 20
 skills:
   - SK-SELL-negotiation-basics
 scenario: SC-summit-discovery
-instructions: |
-  You proposed the application funnel. Marcus replies: "Someone else can do the Calendly and
-  Zapier part for 900. Why is yours more?"
+instructions: >-
+  This practice starts with the standalone agreement shown below. Marcus has a cheaper quote and will test the scope, payment and delivery terms.
 
-  Respond. You may clarify, hold your price, reduce scope, phase the project, offer a
-  concession, or walk away. Winning the deal is not the only successful outcome — a clean walk-away
-  with the door open can score higher than a discount that loses money.
+
+  Read each reply, write back, and choose a move. Configure any change before sending it. You may
+  finish with an agreement, an unresolved decision or a professional walk-away. Deal outcome and the
+  quality of your decision are separate. Written reasoning awaits rubric review.
 allowed_features: []
 starting_state: {}
 expected_outcomes:
   - id: a1
     type: state
-    path: negotiation.strategy
-    operator: exists
-    description: The response resolves to a recognised strategy.
+    path: negotiation.decision_reached
+    operator: equals
+    value: true
+    description: The negotiation reached a decision or a professional exit.
+    tier: required
+  - id: a2
+    type: state
+    path: negotiation.economically_sound
+    operator: equals
+    value: true
+    description: Every offer protected delivery cost, risk and the exact margin policy.
+    tier: required
+  - id: a3
+    type: state
+    path: negotiation.structurally_sound
+    operator: equals
+    value: true
+    description: Scope, dependencies, stage fees and delivery promises stayed coherent.
+    tier: required
+  - id: a4
+    type: state
+    path: negotiation.trades_kept
+    operator: equals
+    value: true
+    description: Every concession had an explicit reciprocal commitment.
+    tier: required
+  - id: a5
+    type: state
+    path: negotiation.diagnosed
+    operator: equals
+    value: true
+    description: At least one diagnosis distinguished the supported constraint from an assumption.
+    tier: quality
+  - id: a6
+    type: state
+    path: negotiation.handled_objections
+    operator: equals
+    value: true
+    description: Objections were addressed rather than ignored or attacked.
+    tier: quality
 critical_failures:
   - id: c1
     type: state
     path: negotiation.discount_below_cost
     operator: equals
     value: false
-    description: Discounting below the estimated labor cost is a critical failure.
+    description: No offered commitment falls below what delivering its actual scope costs.
 grading:
   mode: mixed
   rubric: PRICING_REASONING_RUBRIC_V1
@@ -39,3 +76,673 @@ hints:
     text: What does the 900 quote leave out? Say that before you say anything about your price.
 fieldwork: null
 portfolio: null
+negotiation:
+  subject: Summit — what can we responsibly agree?
+  starting_deal:
+    project: 2400
+    deposit_percent: 50
+    recurring: 150
+    timeline_days: 21
+    revisions: 0
+    exclusions:
+      - No custom development or advertising management.
+      - No ongoing support beyond the separate monthly agreement.
+  pricing:
+    currency: USD
+    cost:
+      hourly_cost: 55
+      risk_allowance_percent_per_point: 5
+    margin:
+      floor_percent: 40
+      healthy_percent: 55
+    timeline:
+      standard_days: 21
+      rush_below_days: 10
+      rush_extra_hours: 4
+    revision_hours: 2
+    requirements:
+      - id: fewer_unqualified
+        need:
+          I keep taking calls with people who were never going to buy. I want to know before the call
+          whether someone can actually afford this.
+        satisfied_by:
+          - application_form
+          - qualification_routing
+      - id: faster_replies
+        need:
+          Someone applies on a Friday and hears nothing until Monday. By then they have booked with
+          someone else.
+        satisfied_by:
+          - qualification_routing
+          - applicant_follow_up
+      - id: calls_actually_happen
+        need: About a third of the calls that do get booked never happen.
+        satisfied_by:
+          - discovery_calendar
+          - no_show_recovery
+      - id: keep_my_questions
+        need: I spent a year working out the questions I ask in Typeform. I do not want to start again.
+        satisfied_by:
+          - typeform_migration
+      - id: change_it_myself
+        need: I need to be able to change a question without booking a call with you.
+        satisfied_by:
+          - handover
+    scope:
+      - id: application_form
+        name: Application form
+        description: The form applicants fill in, with the qualifying questions Marcus already asks.
+        hours: 4
+        consequence: There is nothing for anyone to apply through, so nothing else in this deal runs.
+        locked: true
+        dimensions:
+          - deliverables
+          - copy
+      - id: qualification_routing
+        name: Qualification routing
+        description: Sorts each application into book now, follow up, or decline, based on the answers.
+        hours: 5
+        consequence: Every application looks the same again and Marcus reads each one himself before deciding.
+        requires:
+          - application_form
+        dimensions:
+          - deliverables
+          - workflow_complexity
+      - id: discovery_calendar
+        name: Discovery calendar
+        description: A booking calendar with his real availability, buffers and confirmations.
+        hours: 3
+        consequence:
+          Qualified applicants get an email asking them to reply with times, and Marcus books by
+          hand.
+        dimensions:
+          - deliverables
+          - integration
+      - id: applicant_follow_up
+        name: Follow-up for applicants who go quiet
+        description: A short sequence for people who apply and then do not book.
+        hours: 3
+        consequence: An applicant who does not book on the day hears nothing further.
+        requires:
+          - application_form
+        dimensions:
+          - deliverables
+          - workflow_complexity
+      - id: no_show_recovery
+        name: No-show recovery
+        description: Reminders before the call and a rebooking path for anyone who misses it.
+        hours: 2
+        consequence: A missed call stays missed unless Marcus notices the empty slot and chases it himself.
+        requires:
+          - discovery_calendar
+        dimensions:
+          - deliverables
+          - workflow_complexity
+      - id: typeform_migration
+        name: Moving the Typeform questions
+        description: Rebuilding his existing questions and bringing across the applications already submitted.
+        hours: 3
+        consequence: Marcus retypes his questions into the new form and his past applications stay in Typeform.
+        dimensions:
+          - migration
+      - id: handover
+        name: Handover
+        description: A walkthrough recording and a one-page map of what runs when, so he can change a question.
+        hours: 2
+        consequence: Marcus calls you every time a question needs changing, and this becomes support work.
+        dimensions:
+          - support
+          - assumptions
+    control_dimensions:
+      - revisions
+      - exclusions
+      - rush
+    scope_training: false
+  start: competitor_price
+  max_turns: 20
+  rules:
+    strong_diagnosis:
+      trust: 10
+    premature_pitch:
+      trust: -8
+    ignored_objection:
+      frustration: 15
+    defensive:
+      trust: -8
+      frustration: 15
+    acceptance_trust: 50
+    opening_budget_sensitivity: 70
+    rejection_frustration: 75
+    minimum_timeline_days: 7
+  phases:
+    - id: applications_first
+      label: Applications and booking first; migration, recovery and handover second
+      deferred:
+        - typeform_migration
+        - no_show_recovery
+        - handover
+      consequence:
+        Between deliveries, Marcus retypes questions, chases missed calls and maintains the
+        form himself. Phase 2 begins after Phase 1 acceptance.
+      phase_two_days: 14
+  concessions:
+    - id: discount_trade
+      label: Reduce the fee in exchange for full payment upfront
+      kind: discount
+      amount: 100
+      trade:
+        kind: deposit_percent
+        value: 100
+        label: Full payment before work starts
+      consequence: The project fee falls; Marcus funds delivery in advance.
+    - id: discount_free
+      label: Reduce the fee with nothing in return
+      kind: discount
+      amount: 1500
+      trade: null
+      consequence: The same work remains promised for less revenue, with no reciprocal commitment.
+    - id: revision_trade
+      label: Add a revision round with a longer delivery window
+      kind: revision
+      amount: 1
+      trade:
+        kind: timeline_days
+        value: 28
+        label: Delivery moves to 28 days
+      consequence: One extra revision round becomes delivery work. The client accepts a later launch.
+    - id: revision_free
+      label: Add a revision round with nothing in return
+      kind: revision
+      amount: 1
+      trade: null
+      consequence: Another round of work is owed at the same fee and deadline.
+    - id: balance_later
+      label: Balance thirty days after delivery with a larger deposit
+      kind: payment_terms
+      amount: 30
+      trade:
+        kind: deposit_percent
+        value: 60
+        label: Deposit increases to 60 percent
+      consequence:
+        The provider finances the remaining balance for thirty days; Marcus pays more before
+        work starts.
+    - id: deposit_lower
+      label: Lower the deposit with more time to deliver
+      kind: deposit
+      amount: 25
+      trade:
+        kind: timeline_days
+        value: 28
+        label: Delivery moves to 28 days
+      consequence:
+        Marcus commits less upfront; the provider carries more delivery exposure and receives a
+        longer schedule.
+  endings:
+    won: I can agree to the scope, fees and delivery terms we have now put in writing. Send that
+      agreement for acceptance.
+    lost: I cannot commit to this agreement. Let us leave it here rather than promise something that
+      does not fit.
+    walked_away: We will leave this brief here. If the scope or available commitment changes, we can talk again.
+    approval_needed:
+      I need the other decision maker to review these terms. This is a next step, not an
+      accepted deal.
+    exhausted:
+      We have gone around this enough for now. Let us pause without treating the discussion as
+      an agreement.
+  nodes:
+    - id: competitor_price
+      objection: competitor_price
+      message: Someone else can do the Calendly and Zapier part for 900. Why is yours more?
+      diagnosis:
+        - id: constraint
+          label: Compare the booking connection with qualification and applicant follow-up.
+          supported: true
+        - id: assumption
+          label: Assume Marcus only wants the lowest price and does not care what gets delivered.
+          supported: false
+      branches:
+        discount:
+          reply: A lower number interests me. Tell me what you are still promising to deliver.
+          next: budget
+        hold:
+          reply: Then explain the difference in what happens after someone applies.
+          next: budget
+          variants:
+            - when:
+                field: alternative_provider_strength
+                operator: gte
+                value: 60
+              reply:
+                The other provider is a credible option for a simpler connection. Explain the additional
+                responsibility you would take.
+        clarify:
+          reply:
+            The other quote connects booking to my board. It does not sort applications or chase people
+            who go quiet.
+          next: budget
+          variants:
+            - when:
+                field: technical_sophistication
+                operator: gte
+                value: 60
+              reply:
+                The other quote is a booking embed and one connection to my board. Qualification rules and
+                applicant follow-up are outside it.
+        reduce_scope:
+          reply: I can compare a smaller build. Be explicit about what I would have to do myself.
+          next: budget
+        phase:
+          reply: I can consider stages if the first one works without waiting for the second.
+          next: budget
+        defensive:
+          reply: I asked what the work does. Calling the other provider cheap does not answer that.
+          next: budget
+        walk_away:
+          reply:
+            Thank you for being clear about what you can responsibly deliver. We can leave the door open
+            for a different brief.
+          next: null
+      fallback:
+        I am not sure which part of the agreement you want to change. Could you choose a move and
+        make the terms explicit?
+    - id: budget
+      objection: budget
+      message: I was thinking closer to fifteen hundred. Is the problem the total or when I pay it?
+      diagnosis:
+        - id: constraint
+          label: Separate a spending ceiling from cash available at the start.
+          supported: true
+        - id: assumption
+          label: Assume Marcus only wants the lowest price and does not care what gets delivered.
+          supported: false
+      branches:
+        discount:
+          reply: That lowers the bill. I still need the same outcome unless we agree otherwise.
+          next: discount_request
+        hold:
+          reply: I need a reason to stretch, or a smaller commitment I can stand behind.
+          next: discount_request
+          variants:
+            - when:
+                field: trust
+                operator: gte
+                value: 65
+              reply:
+                You listened to what the comparison left out. I am willing to look beyond my opening number
+                if the terms stand up.
+        clarify:
+          reply:
+            I can move money between months. I wanted to know whether you would ask before cutting the
+            price.
+          next: discount_request
+          variants:
+            - when:
+                field: price_sensitivity
+                operator: gte
+                value: 70
+              reply:
+                I started with a low number because I am comparing price closely. The first payment and the
+                full commitment are separate questions.
+        reduce_scope:
+          reply: Show me which results I would postpone or give up.
+          next: discount_request
+        phase:
+          reply: A first stage with its own outcome is easier for me to plan around.
+          next: discount_request
+        defensive:
+          reply: I am telling you a constraint. Arguing about my budget will not change it.
+          next: discount_request
+        walk_away:
+          reply:
+            Thank you for being clear about what you can responsibly deliver. We can leave the door open
+            for a different brief.
+          next: null
+      fallback:
+        I am not sure which part of the agreement you want to change. Could you choose a move and
+        make the terms explicit?
+    - id: discount_request
+      objection: discount_request
+      message: Can you take something off as a first-project discount and keep everything included?
+      diagnosis:
+        - id: constraint
+          label: Distinguish a lower fee for unchanged work from a change in deliverables.
+          supported: true
+        - id: assumption
+          label: Assume Marcus only wants the lowest price and does not care what gets delivered.
+          supported: false
+      branches:
+        discount:
+          reply: I will take that offer seriously as a commitment to deliver the scope you kept.
+          next: scope_reduction
+        hold:
+          reply: All right. Tell me what would need to change for a smaller fee.
+          next: scope_reduction
+          variants:
+            - when:
+                field: frustration
+                operator: gte
+                value: 45
+              reply: We keep moving past my question. I need you to address this objection before another pitch.
+        clarify:
+          reply: I was asking for the same work for less. There is no smaller scope hidden in that request.
+          next: scope_reduction
+        reduce_scope:
+          reply: That is a different deal. I need to understand what stops happening.
+          next: scope_reduction
+        phase:
+          reply: Two stages could work, but a deferred bill for the same launch is not two stages.
+          next: scope_reduction
+        defensive:
+          reply: We can disagree on price without making this personal.
+          next: scope_reduction
+        walk_away:
+          reply:
+            Thank you for being clear about what you can responsibly deliver. We can leave the door open
+            for a different brief.
+          next: null
+      fallback:
+        I am not sure which part of the agreement you want to change. Could you choose a move and
+        make the terms explicit?
+    - id: scope_reduction
+      objection: scope_reduction
+      message:
+        Could I move the old questions myself and skip the walkthrough? What would that leave me
+        doing?
+      diagnosis:
+        - id: constraint
+          label: Identify migration and handover as real work that can leave the agreement.
+          supported: true
+        - id: assumption
+          label: Assume Marcus only wants the lowest price and does not care what gets delivered.
+          supported: false
+      branches:
+        discount:
+          reply: A discount alone does not tell me who will move the questions.
+          next: phased_project
+        hold:
+          reply: If those stay included, I expect you to deliver them at the fee we agree.
+          next: phased_project
+        clarify:
+          reply:
+            I can retype questions. Without the walkthrough I would need to learn how to maintain the
+            form myself.
+          next: phased_project
+        reduce_scope:
+          reply:
+            I see the exclusions. I will own the tasks you have taken out; please keep the remaining
+            system connected.
+          next: phased_project
+        phase:
+          reply: Keep anything the first stage needs in that stage. I do not want half a working system.
+          next: phased_project
+        defensive:
+          reply: I asked about doing some work myself, not whether you approve of my priorities.
+          next: phased_project
+        walk_away:
+          reply:
+            Thank you for being clear about what you can responsibly deliver. We can leave the door open
+            for a different brief.
+          next: null
+      fallback:
+        I am not sure which part of the agreement you want to change. Could you choose a move and
+        make the terms explicit?
+    - id: phased_project
+      objection: phased_project
+      message: Can applications and booking launch first, with migration, recovery and handover later?
+      diagnosis:
+        - id: constraint
+          label: Keep prerequisites in Phase 1 and name a separate Phase 2 delivery commitment.
+          supported: true
+        - id: assumption
+          label: Assume Marcus only wants the lowest price and does not care what gets delivered.
+          supported: false
+      branches:
+        discount:
+          reply: A smaller number today still needs a complete first delivery.
+          next: payment_terms
+        hold:
+          reply: If you recommend one launch, explain why splitting it would create more work.
+          next: payment_terms
+        clarify:
+          reply:
+            I want the first stage to collect, sort and follow up applications and let people book. The
+            rest can follow.
+          next: payment_terms
+        reduce_scope:
+          reply: Removing work is different from delivering it later. I need to know which you mean.
+          next: payment_terms
+        phase:
+          reply: I can see two deliveries and two fees. Between them I will handle the deferred tasks myself.
+          next: payment_terms
+          variants:
+            - when:
+                field: urgency
+                operator: gte
+                value: 70
+              reply:
+                I need the first stage soon. I can defer the later work, but I will compare your first
+                delivery date against that urgency.
+        defensive:
+          reply: Let us stay with what launches and when.
+          next: payment_terms
+        walk_away:
+          reply:
+            Thank you for being clear about what you can responsibly deliver. We can leave the door open
+            for a different brief.
+          next: null
+      fallback:
+        I am not sure which part of the agreement you want to change. Could you choose a move and
+        make the terms explicit?
+    - id: payment_terms
+      objection: payment_terms
+      message: Could the balance wait thirty days after delivery? I get paid at the end of the month.
+      diagnosis:
+        - id: constraint
+          label: Identify who finances the gap between delivery and collection.
+          supported: true
+        - id: assumption
+          label: Assume Marcus only wants the lowest price and does not care what gets delivered.
+          supported: false
+      branches:
+        discount:
+          reply: A smaller fee does not move the balance date. Are you changing the payment schedule too?
+          next: deposit
+        hold:
+          reply: I understand the balance is still due on delivery unless we change that term.
+          next: deposit
+        clarify:
+          reply: The timing is the issue here. I would need you to carry the balance until month end.
+          next: deposit
+          variants:
+            - when:
+                field: decision_authority
+                operator: equals
+                value: shared
+              reply: I also need my partner to agree the payment schedule. I cannot commit for both of us today.
+        reduce_scope:
+          reply: A smaller first commitment may help; I still need a balance date.
+          next: deposit
+        phase:
+          reply: Separate stage invoices help me plan, provided each pays for its own delivery.
+          next: deposit
+        defensive:
+          reply: My payment cycle is a planning question, not an insult to your rate.
+          next: deposit
+        walk_away:
+          reply:
+            Thank you for being clear about what you can responsibly deliver. We can leave the door open
+            for a different brief.
+          next: null
+      fallback:
+        I am not sure which part of the agreement you want to change. Could you choose a move and
+        make the terms explicit?
+    - id: deposit
+      objection: deposit
+      message: Can we lower the deposit? I paid someone upfront before and had to chase the delivery.
+      diagnosis:
+        - id: constraint
+          label: Connect the deposit concern to delivery risk and a concrete payment trade.
+          supported: true
+        - id: assumption
+          label: Assume Marcus only wants the lowest price and does not care what gets delivered.
+          supported: false
+      branches:
+        discount:
+          reply: A fee cut does not settle how we share the risk before delivery.
+          next: concessions
+        hold:
+          reply: Then I need a clear delivery commitment before I send the deposit.
+          next: concessions
+          variants:
+            - when:
+                field: previous_bad_experience
+                operator: gte
+                value: 20
+              reply:
+                The last provider took the deposit and went quiet. I need delivery checkpoints before I can
+                accept the same risk again.
+        clarify:
+          reply:
+            My concern is paying before I see progress. A clear checkpoint matters more than a vague
+            assurance.
+          next: concessions
+          variants:
+            - when:
+                field: fear
+                operator: gte
+                value: 25
+              reply:
+                I am worried about paying before I can inspect anything. Tell me what I can verify before the
+                next payment.
+        reduce_scope:
+          reply: A smaller agreement lowers the commitment, with fewer things delivered.
+          next: concessions
+        phase:
+          reply: A first stage I can inspect would make the next commitment easier.
+          next: concessions
+        defensive:
+          reply: Dismissing what happened last time makes it harder to commit now.
+          next: concessions
+        walk_away:
+          reply:
+            Thank you for being clear about what you can responsibly deliver. We can leave the door open
+            for a different brief.
+          next: null
+      fallback:
+        I am not sure which part of the agreement you want to change. Could you choose a move and
+        make the terms explicit?
+    - id: concessions
+      objection: concessions
+      message: Could you include another revision round for free? What would you want in return?
+      diagnosis:
+        - id: constraint
+          label: Treat an extra revision as extra delivery work and agree an explicit trade.
+          supported: true
+        - id: assumption
+          label: Assume Marcus only wants the lowest price and does not care what gets delivered.
+          supported: false
+      branches:
+        discount:
+          reply: If that fee is your offer, I will expect all the rounds and scope you promised.
+          next: silence
+        hold:
+          reply: We can keep the agreed round count. Name what another round would change.
+          next: silence
+        clarify:
+          reply:
+            Another round means another review and another set of changes. I can trade more time or
+            earlier payment.
+          next: silence
+        reduce_scope:
+          reply: Taking work out could fund the extra attention, as long as we name the loss.
+          next: silence
+        phase:
+          reply: We could review each stage separately. Keep the round counts clear.
+          next: silence
+        defensive:
+          reply: I asked what would make it workable. You can decline without blaming me.
+          next: silence
+        walk_away:
+          reply:
+            Thank you for being clear about what you can responsibly deliver. We can leave the door open
+            for a different brief.
+          next: null
+      fallback:
+        I am not sure which part of the agreement you want to change. Could you choose a move and
+        make the terms explicit?
+    - id: silence
+      objection: silence
+      message: 'A week passes without a reply. Marcus finally writes: I am still weighing the other
+        provider.'
+      diagnosis:
+        - id: constraint
+          label: Ask for a decision or a next step without inventing agreement from silence.
+          supported: true
+        - id: assumption
+          label: Assume Marcus only wants the lowest price and does not care what gets delivered.
+          supported: false
+      branches:
+        discount:
+          reply: I noticed the lower offer. I have not accepted it just by going quiet.
+          next: walking_away
+        hold:
+          reply: Thanks for leaving the terms clear. I am comparing the commitments.
+          next: walking_away
+        clarify:
+          reply: I have not decided yet. A specific decision point would help more than another sales pitch.
+          next: walking_away
+        reduce_scope:
+          reply: A smaller commitment is something concrete to compare.
+          next: walking_away
+        phase:
+          reply: Two stages make the first decision smaller; the later stage still needs its own agreement.
+          next: walking_away
+        defensive:
+          reply: Pressure will not make this a better fit.
+          next: walking_away
+        walk_away:
+          reply:
+            Thank you for being clear about what you can responsibly deliver. We can leave the door open
+            for a different brief.
+          next: null
+      fallback:
+        I am not sure which part of the agreement you want to change. Could you choose a move and
+        make the terms explicit?
+    - id: walking_away
+      objection: walking_away
+      message: If you cannot do the full original build at nine hundred, perhaps we should leave it here.
+      diagnosis:
+        - id: constraint
+          label: Recognize that the requested full build and price may not support a viable agreement.
+          supported: true
+        - id: assumption
+          label: Assume Marcus only wants the lowest price and does not care what gets delivered.
+          supported: false
+      branches:
+        discount:
+          reply: If that is your firm offer for the scope you kept, I am ready to decide.
+          next: null
+        hold:
+          reply: You have kept your terms clear. I will decide whether this commitment fits.
+          next: null
+        clarify:
+          reply: You are right to ask what is essential. I am deciding between this agreement and leaving it.
+          next: null
+        reduce_scope:
+          reply: I will decide on the smaller scope you actually offered, with its exclusions.
+          next: null
+        phase:
+          reply: I will decide on the two stages you offered, with the gap between deliveries understood.
+          next: null
+        defensive:
+          reply: Let us close this without taking shots at each other.
+          next: null
+        walk_away:
+          reply:
+            Thank you for being clear about what you can responsibly deliver. We can leave the door open
+            for a different brief.
+          next: null
+      fallback:
+        I am not sure which part of the agreement you want to change. Could you choose a move and
+        make the terms explicit?

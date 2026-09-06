@@ -115,7 +115,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-014 | WRITE IT: cold email, follow-up, interested reply, discovery recap, proposal explanation, client update, scope response, payment reminder, upsell, breakup email; AI rubric where needed. | P1 | 16 | PASSED | §27 |
 | EXR-015 | SAY IT: voice practice modes cold call, discovery, proposal presentation, negotiation, client explanation. | P1 | 21 | NOT_STARTED | §27 |
 | EXR-016 | PRICE IT: learner sets project price, deposit, recurring, rush fee, timeline, revisions, inclusions, exclusions; hidden economics and risk revealed after submission. | P1 | 17 | PASSED | §27 |
-| EXR-017 | NEGOTIATE IT: client pushes back; learner may clarify, hold price, reduce scope, phase, concede, or walk away; winning is not the only success. | P1 | 18 | NOT_STARTED | §27 |
+| EXR-017 | NEGOTIATE IT: client pushes back; learner may clarify, hold price, reduce scope, phase, concede, or walk away; winning is not the only success. | P1 | 18 | PASSED | §27 |
 | EXR-018 | EXPLAIN IT: technical explanation for different audiences (business owner, another GHL builder). | P1 | 16 | PASSED | §27 |
 | EXR-019 | REBUILD BLIND: no lesson, no step-by-step support; hints reduce independence evidence. Phase 12: a reminder system built through the command layer and graded from the two texts the engine sent 24 h and 2 h before the appointment (`exerciseRuntime.test.ts`). | P1 | 9 | PASSED | §27 |
 | EXR-020 | FIELDWORK: real GHL work; Bloomlab collects screenshots, configuration answers, explanation, test results, then questions reasoning. | P1 | 22 | NOT_STARTED | §27 |
@@ -247,11 +247,11 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| NEG-001 | Hidden client state (trust, urgency, price sensitivity, frustration, technical sophistication, actual budget, stated budget, decision authority, fear, previous bad experience, alternative provider strength) is tracked and never shown numerically to the learner. | P0 | 18 | NOT_STARTED | §39, §121, TA§50 |
-| NEG-002 | Learner actions: clarify, hold price, reduce scope, phase, concession, walk away. Winning is not the only success; a lost deal can score high. | P1 | 18 | NOT_STARTED | §27, §20 |
-| NEG-003 | Authored branching first: learner responses classified into strategies (discount, hold, clarify, reduce_scope, phase, walk_away, defensive) with pre-authored reactions; AI only for language that genuinely needs interpretation. | P1 | 18 | NOT_STARTED | §40, TA§51 |
-| NEG-004 | Objection coverage: budget, competitor price, discount request, scope reduction, phased project, payment terms, deposit, concessions, silence, walking away. | P1 | 18 | NOT_STARTED | §20 |
-| NEG-005 | Scenario engine: current state + learner action + rules → updated scenario; dialogue actions modify hidden state (e.g. strong diagnosis trust +10, premature pitch trust −8, ignored objection frustration +15). | P0 | 18 | NOT_STARTED | §40, TA§50 |
+| NEG-001 | Hidden client state (trust, urgency, price sensitivity, frustration, technical sophistication, actual budget, stated budget, decision authority, fear, previous bad experience, alternative provider strength) is tracked and never shown numerically to the learner. | P0 | 18 | PASSED | §39, §121, TA§50 |
+| NEG-002 | Learner actions: clarify, hold price, reduce scope, phase, concession, walk away. Winning is not the only success; a lost deal can score high. | P1 | 18 | PASSED | §27, §20 |
+| NEG-003 | Authored branching first: learner responses classified into strategies (discount, hold, clarify, reduce_scope, phase, walk_away, defensive) with pre-authored reactions; AI only for language that genuinely needs interpretation. | P1 | 18 | PARTIAL | §40, TA§51 |
+| NEG-004 | Objection coverage: budget, competitor price, discount request, scope reduction, phased project, payment terms, deposit, concessions, silence, walking away. | P1 | 18 | PASSED | §20 |
+| NEG-005 | Scenario engine: current state + learner action + rules → updated scenario; dialogue actions modify hidden state (e.g. strong diagnosis trust +10, premature pitch trust −8, ignored objection frustration +15). | P0 | 18 | PASSED | §40, TA§50 |
 
 ## CALL — Call Room
 

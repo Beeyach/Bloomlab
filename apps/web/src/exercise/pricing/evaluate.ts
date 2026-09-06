@@ -49,7 +49,7 @@ function isComplete(quote: Quote, inclusions: number, exclusions: number): boole
 }
 
 export function evaluatePricing(
-  exercise: Exercise,
+  exercise: Pick<Exercise, 'pricing'>,
   economics: DealEconomics | null,
   response: PricingResponse,
 ): PricingEvaluation | null {
@@ -116,7 +116,7 @@ export function evaluatePricing(
 
 /** The `price` root of the grading state tree, empty for an exercise that prices nothing. */
 export function priceState(
-  exercise: Exercise,
+  exercise: Pick<Exercise, 'pricing'>,
   economics: DealEconomics | null,
   response: PricingResponse,
 ): Record<string, unknown> {

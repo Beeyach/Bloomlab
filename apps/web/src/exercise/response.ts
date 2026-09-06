@@ -1,3 +1,5 @@
+import { negotiationOf } from './negotiation/context';
+import { negotiationProjection, type NegotiationState } from './negotiation/engine';
 import type { Exercise } from '@bloomlab/content-schema';
 import { LEARNER_STATE_ROOTS } from '@bloomlab/exercise-engine';
 
@@ -44,6 +46,7 @@ export interface LearnerResponse {
    * Optional for the same reason `sales` is — a draft saved before it existed resumes without it.
    */
   pricing?: PricingResponse;
+  negotiation?: NegotiationState;
 }
 
 export const emptyResponse = (): LearnerResponse => ({
@@ -129,7 +132,16 @@ export function learnerState(
     options.economics === undefined ? economicsFor(exercise) : options.economics,
     pricingOf(response),
   );
+  const negotiation = negotiationOf(exercise, response.negotiation);
   return {
+    negotiation:
+      negotiation && exercise.negotiation
+        ? negotiationProjection(
+            exercise.negotiation,
+            options.economics === undefined ? economicsFor(exercise) : options.economics,
+            negotiation,
+          )
+        : {},
     prediction: { ...response.prediction, text: response.text },
     decision: {
       choice: response.choice,

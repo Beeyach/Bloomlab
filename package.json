@@ -47,6 +47,7 @@
     "review:reporting": "node scripts/review/reporting-probe.mjs",
     "review:incident": "node scripts/review/incident-probe.mjs",
     "review:sales": "node scripts/review/sales-probe.mjs",
+    "review:negotiation": "node scripts/review/negotiation-probe.mjs",
     "review:pricing": "node scripts/review/pricing-probe.mjs"
   },
   "devDependencies": {

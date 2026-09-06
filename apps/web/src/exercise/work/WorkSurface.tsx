@@ -1,3 +1,4 @@
+import { NegotiationThread } from './NegotiationThread';
 import { useMemo, useState } from 'react';
 
 import type { Exercise } from '@bloomlab/content-schema';
@@ -158,6 +159,15 @@ export function WorkSurface({
           onToggleCitation={(id) => toggleCitation(field.key, id)}
         />
       ))}
+
+      {exercise.negotiation && (
+        <NegotiationThread
+          exercise={exercise}
+          saved={attempt.response.negotiation}
+          context={context}
+          disabled={disabled}
+        />
+      )}
 
       {exercise.conversation && (
         <ClientThread

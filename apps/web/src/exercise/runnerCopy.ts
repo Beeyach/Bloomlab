@@ -129,6 +129,12 @@ export const FAMILY_TREATMENTS: Partial<Record<Exercise['type'], Partial<FamilyT
     workTitle: 'Your explanations',
     freeResponse: false,
   },
+  NEGOTIATE_IT: {
+    family: 'Negotiate it',
+    stance: 'Defend the deal, change it intelligently, or walk away.',
+    workTitle: 'The negotiation',
+    freeResponse: false,
+  },
   SAY_IT: {
     family: 'Say it',
     stance: 'A client is writing to you. Answer them.',

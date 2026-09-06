@@ -192,6 +192,11 @@ export async function finalizeAttempt(
       recorded: false,
     };
   }
+  if (
+    exercise.negotiation &&
+    (!current.response.negotiation || current.response.negotiation.status === 'open')
+  )
+    throw new Error('Finish the negotiation conversation before submitting.');
   if (!canGradeNow(exercise)) throw new NotGradableError(exercise.id);
   // Refused before anything is written, so a malformed retrieval can never reach the record.
   const skillIds = skillsForAttempt(exercise, current);
