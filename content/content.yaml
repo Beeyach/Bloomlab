@@ -1,10 +1,12 @@
 # Release stamp of the curriculum (spec §101, CNT-007). Bump content_version whenever any file
 # under content/ changes, then run `npm run content:lock`. Git = what Bloomlab teaches.
-content_version: '2026.09.12'
+content_version: '2026.09.13'
 schema_version: 1
 notes: >-
-  Phase 15 — Glowhaus's three weeks as 269 scheduled events (SC-glowhaus-reporting), nine incident
-  scenarios behind the Incident Room, the FUNNEL AUTOPSY and the graded bottleneck exercise, and
-  the outbound webhook record re-checked for headers and authorization. The loop incident
-  now holds its contact from the first instant, so its Reproduce it action is valid whenever a
-  learner fires it (D-150).
+  Phase 16 — the selling families. Two prospect businesses that are genuinely prospects
+  (Ridgeline, Halcyon), evidence packs the learner can actually see, PROSPECT IT with hidden
+  per-business evaluation, AUDIT IT over Northwind's outside-in evidence, eight WRITE IT briefs
+  covering every communication type EXR-014 and SAL-013 name, EXPLAIN IT for two audiences, and
+  two authored client threads: written discovery with Marcus and the nine days of silence after
+  the proposal. Discovery and written-communication rubrics move to V2; V1 stays for the attempts
+  it judged.

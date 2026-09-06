@@ -1,0 +1,80 @@
+# Versioned rubric (AI-011, CALL-003, SAL-004, SAL-005). V1 stays as it is for the attempts it
+# judged; this version carries all fourteen discovery topics plus technical discovery, and the two
+# listening rules. Judged by the AI gateway in Phase 19; nothing evaluates it before that.
+id: SALES_DISCOVERY_RUBRIC_V2
+version: 2
+title: Discovery conversation
+applies_to:
+  - SAY_IT
+  - WRITE_IT
+model_class: strong
+output_schema: ai_grading_v1
+rewards_verified_uncertainty: true
+items:
+  - id: r1
+    tier: critical
+    criterion: Did not propose a system before the client agreed with the diagnosis.
+    weight: 5
+  - id: r2
+    tier: required
+    criterion: Opened the conversation properly and said what it was for before asking anything.
+    topics: [opening, agenda]
+    weight: 3
+  - id: r3
+    tier: required
+    criterion: Got the current process out of them, including the tools it runs on and the people who do it.
+    guidance: Count what the client actually said, not what was asked.
+    topics: [current_process, tools, staff]
+    weight: 4
+  - id: r4
+    tier: required
+    criterion: Established what they want instead, and what is in the way of it today.
+    topics: [desired_result, pain]
+    weight: 4
+  - id: r5
+    tier: required
+    criterion: Got real numbers out of them, how many and how often and what each one is worth.
+    topics: [volume, impact]
+    weight: 3
+  - id: r6
+    tier: required
+    criterion: Found out what makes now different from six months ago.
+    topics: [urgency]
+    weight: 2
+  - id: r7
+    tier: required
+    criterion: Established who else has a say and how the decision actually gets made.
+    topics: [stakeholders, decision_process]
+    weight: 3
+  - id: r8
+    tier: required
+    criterion: Talked about money before proposing anything.
+    topics: [budget]
+    weight: 3
+  - id: r9
+    tier: required
+    criterion: Asked what the system would have to connect to and what already lives there.
+    topics: [technical]
+    weight: 3
+  - id: r10
+    tier: required
+    criterion: Ended on a specific next step with a time attached.
+    topics: [next_step]
+    weight: 3
+  - id: r11
+    tier: required
+    criterion: Listened. The client did more than half the talking and was not talked over.
+    weight: 4
+  - id: r12
+    tier: quality
+    criterion: Said the problem back in the client's own words and got them to agree with it.
+    weight: 2
+  - id: r13
+    tier: quality
+    criterion: Explained anything technical without builder vocabulary.
+    weight: 2
+  - id: r14
+    tier: bonus
+    criterion: Said plainly what they did not know yet, and how they would check it.
+    guidance: Reward "I don't know yet, this is how I would find out" over fabricated confidence.
+    weight: 2

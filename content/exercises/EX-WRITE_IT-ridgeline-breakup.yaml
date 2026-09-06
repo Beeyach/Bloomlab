@@ -1,0 +1,56 @@
+# WRITE IT (EXR-014): the last email. Knowing when to stop is part of prospecting.
+id: EX-WRITE_IT-ridgeline-breakup
+type: WRITE_IT
+title: The last email to Ridgeline
+mode: independent
+difficulty: 2
+estimated_minutes: 12
+skills:
+  - SK-SELL-prospect-selection
+client: CL-ridgeline-roofing
+format: breakup_email
+instructions: |
+  You have emailed Dale at Ridgeline three times over five weeks. The first got a one-line "send me
+  something next month". The other two got nothing.
+
+  Write the last one. Close the loop, leave the door open, and do not guilt him. Under 80 words.
+  Nothing in it should ask him to explain himself, and nothing in it should pretend you know why he
+  went quiet.
+allowed_features: []
+starting_state: {}
+written_fields:
+  - key: breakup_email
+    label: The last email
+    help: Under 80 words. This is the one that gets a reply or ends it cleanly.
+    rows: 8
+    audience: owner
+    max_words: 80
+    next_step: true
+    message_type: breakup_email
+expected_outcomes:
+  - id: a1
+    type: state
+    path: message.all_answered
+    operator: equals
+    value: true
+    description: The email is written.
+  - id: a2
+    type: state
+    path: message.fields.breakup_email.within_limit
+    operator: equals
+    value: true
+    description: Under 80 words.
+  - id: a3
+    type: state
+    path: message.has_next_step
+    operator: equals
+    value: true
+    description: Even the last email asks for one thing.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
+  pass_threshold: 70
+hints: []
+fieldwork: null
+portfolio: null

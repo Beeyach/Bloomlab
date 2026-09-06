@@ -1,0 +1,69 @@
+# WRITE IT (EXR-014, SAL-013): the Friday update, and the message you send when something stops.
+id: EX-WRITE_IT-glowhaus-build-week
+type: WRITE_IT
+title: Friday update, and the thing that is stuck
+mode: practice
+difficulty: 2
+estimated_minutes: 20
+skills:
+  - SK-DELIVER-client-explanation
+client: CL-glowhaus-medspa
+format: client_update
+instructions: |
+  You are two weeks into Glowhaus. The reminder system is built and running on test bookings. The
+  no-show recovery half is written but not switched on. Priya has not asked for anything, which is
+  exactly when clients start wondering what they are paying for.
+
+  Write the Friday update. What is done, what is next, nothing padded. Under 120 words.
+
+  Then write the blocker. You cannot connect the booking confirmation to their front-desk number
+  because nobody has given you access to the phone account, and you have asked twice. Say what is
+  stopped, what you need, and by when. Under 100 words, and do not make it sound like her fault.
+allowed_features: []
+starting_state: {}
+written_fields:
+  - key: client_update
+    label: The Friday update
+    help: Under 120 words. Done, next, and nothing else.
+    rows: 8
+    audience: owner
+    max_words: 120
+    next_step: false
+    message_type: client_update
+  - key: blocker
+    label: The blocker
+    help: Under 100 words. What is stopped, what you need, by when.
+    rows: 8
+    audience: owner
+    max_words: 100
+    next_step: true
+    message_type: blocker
+expected_outcomes:
+  - id: a1
+    type: state
+    path: message.all_answered
+    operator: equals
+    value: true
+    description: Both messages are written.
+  - id: a2
+    type: state
+    path: message.within_word_limit
+    operator: equals
+    value: true
+    description: Both are inside the caps the brief set.
+  - id: a3
+    type: state
+    path: message.has_next_step
+    operator: equals
+    value: true
+    description: The blocker names the one thing you need.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: Priya was burned by an agency that sent updates full of activity and no result. Say what works now, not what you worked on.
+fieldwork: null
+portfolio: null

@@ -1,0 +1,338 @@
+# WRITE IT with an authored thread (CONV-002, SAL-004, SAL-005). Discovery in writing: Marcus
+# answers as himself, the branch follows the move the learner picks, and pitching before he agrees
+# with the diagnosis ends the attempt whatever the score says. Voice discovery is Phase 21.
+id: EX-WRITE_IT-summit-written-discovery
+type: WRITE_IT
+title: Discovery with Marcus, in writing
+mode: practice
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SELL-discovery-call
+client: CL-summit-coaching
+format: written_discovery
+instructions: |
+  Marcus will not do a call this week, but he will answer email. That is the whole conversation.
+
+  Find out how his applications work now, how many there are, what they are worth, what is in the
+  way, who decides and what it would have to connect to. Say his problem back to him and get him to
+  agree with it **before** you propose anything.
+
+  Pick what you are doing with each message. If you send one without picking, he will ask what you
+  meant, which is what a real person does.
+allowed_features: []
+starting_state: {}
+conversation:
+  client: CL-summit-coaching
+  subject: 'Re: your application process'
+  channel: email
+  opening: n1
+  composer_help: Write what you would actually send. Short is fine.
+  nodes:
+    - id: n1
+      covers: [opening]
+      client_message: >-
+        Happy to do this by email. I'm between client blocks all week so calls are hard. What do
+        you want to know?
+      moves:
+        - id: set_agenda
+          label: Say what you want to cover and why
+          kind: ask
+          next: n2
+        - id: ask_process
+          label: Ask how applications work today
+          kind: ask
+          next: n3
+        - id: pitch_first
+          label: Describe the system you would build
+          kind: pitch
+          next: n_early
+      fallback: n_clarify_early
+    - id: n2
+      covers: [agenda, desired_result]
+      client_message: >-
+        That works. What I want out of this is fewer calls with people who were never going to buy.
+        Last month I did eleven and two were worth having.
+      moves:
+        - id: ask_process
+          label: Ask how applications work today
+          kind: ask
+          next: n3
+        - id: ask_volume
+          label: Ask how many come in and what they are worth
+          kind: ask
+          next: n4
+        - id: pitch_first
+          label: Describe the system you would build
+          kind: pitch
+          next: n_early
+      fallback: n_clarify_early
+    - id: n3
+      covers: [current_process, tools, staff]
+      client_message: >-
+        Someone fills in the application form, it lands in my inbox, and I read it when I get a
+        gap. If I like it I send my booking link. The board where I track people is separate and I
+        update it on Fridays, when I remember. It is only me doing all of that.
+      moves:
+        - id: ask_volume
+          label: Ask how many come in and what they are worth
+          kind: ask
+          next: n4
+        - id: ask_pain
+          label: Ask what the worst part of that is
+          kind: ask
+          next: n5
+        - id: pitch_first
+          label: Describe the system you would build
+          kind: pitch
+          next: n_early
+      fallback: n_clarify_early
+    - id: n4
+      covers: [volume, impact]
+      client_message: >-
+        Thirty-eight applications last month. About two in ten turn into the twelve-week program,
+        which is three thousand two hundred. So call it seven or eight sales a quarter.
+      moves:
+        - id: ask_pain
+          label: Ask what the worst part of that is
+          kind: ask
+          next: n5
+        - id: ask_urgency
+          label: Ask what makes this the month to fix it
+          kind: ask
+          next: n6
+        - id: pitch_first
+          label: Describe the system you would build
+          kind: pitch
+          next: n_early
+      fallback: n_clarify_early
+    - id: n5
+      covers: [pain]
+      client_message: >-
+        Six hours a week on calls I already know are wrong by minute four. And the good ones wait
+        two days for a reply because they are in the same pile as the bad ones.
+      moves:
+        - id: reflect_back
+          label: Say the problem back to him in his own words
+          kind: reflect
+          next: n7
+        - id: ask_urgency
+          label: Ask what makes this the month to fix it
+          kind: ask
+          next: n6
+        - id: pitch_first
+          label: Describe the system you would build
+          kind: pitch
+          next: n_early
+      fallback: n_clarify_early
+    - id: n6
+      covers: [urgency]
+      client_message: >-
+        I have a retreat in November and I am not doing this by hand through that. If it is not
+        sorted by the end of October it waits until next year.
+      moves:
+        - id: reflect_back
+          label: Say the problem back to him in his own words
+          kind: reflect
+          next: n7
+        - id: ask_technical
+          label: Ask what it would have to work with
+          kind: ask
+          next: n8
+        - id: pitch_first
+          label: Describe the system you would build
+          kind: pitch
+          next: n_early
+      fallback: n_clarify_early
+    - id: n7
+      covers: [pain, desired_result]
+      diagnosis_agreed: true
+      client_message: >-
+        Yes. That is it exactly. The problem is not that I get too few applications, it is that
+        the right ones wait behind the wrong ones.
+      moves:
+        - id: ask_technical
+          label: Ask what it would have to work with
+          kind: ask
+          next: n8
+        - id: ask_stakeholders
+          label: Ask who else has a say
+          kind: ask
+          next: n9
+        - id: propose
+          label: Propose what you would build
+          kind: pitch
+          next: n11
+      fallback: n_clarify_late
+    - id: n8
+      covers: [technical, tools]
+      client_message: >-
+        The application form stays, I have three years of answers in it. The booking link and the
+        newsletter stay too. The board I would happily lose.
+      moves:
+        - id: ask_stakeholders
+          label: Ask who else has a say
+          kind: ask
+          next: n9
+        - id: ask_budget
+          label: Ask what he has in mind to spend
+          kind: ask
+          next: n10
+        - id: propose
+          label: Propose what you would build
+          kind: pitch
+          next: n11
+      fallback: n_clarify_late
+    - id: n9
+      covers: [stakeholders, decision_process, staff]
+      client_message: >-
+        It is my decision. I will show it to the contractor who does my ops two days a month,
+        because she is the one who will be poking at it when I am away, but she does not sign
+        anything off.
+      moves:
+        - id: ask_budget
+          label: Ask what he has in mind to spend
+          kind: ask
+          next: n10
+        - id: propose
+          label: Propose what you would build
+          kind: pitch
+          next: n11
+      fallback: n_clarify_late
+    - id: n10
+      covers: [budget]
+      client_message: >-
+        I was thinking fifteen hundred for the whole thing. Tell me if that is not the right number
+        and why.
+      moves:
+        - id: propose
+          label: Propose what you would build
+          kind: pitch
+          next: n11
+        - id: set_next_step
+          label: Put a time on the next step
+          kind: next_step
+          next: n12
+      fallback: n_clarify_late
+    - id: n11
+      client_message: >-
+        Understood. So what happens next, and when?
+      moves:
+        - id: set_next_step
+          label: Put a time on the next step
+          kind: next_step
+          next: n12
+        - id: ask_budget
+          label: Ask what he has in mind to spend
+          kind: ask
+          next: n10
+      fallback: n_clarify_late
+    - id: n12
+      covers: [next_step]
+      end: true
+      client_message: >-
+        Thursday at ten works. Send me the recap before it so I am not reading it cold.
+    - id: n_early
+      client_message: >-
+        Hold on. You have not asked me a single thing about how any of this works today. What are
+        you basing that on?
+      moves:
+        - id: ask_process
+          label: Ask how applications work today
+          kind: ask
+          next: n3
+        - id: ask_pain
+          label: Ask what the worst part of that is
+          kind: ask
+          next: n5
+      fallback: n_clarify_early
+    - id: n_clarify_early
+      client_message: >-
+        I am not sure what you are asking me. Can you put that another way?
+      moves:
+        - id: ask_process
+          label: Ask how applications work today
+          kind: ask
+          next: n3
+        - id: ask_volume
+          label: Ask how many come in and what they are worth
+          kind: ask
+          next: n4
+        - id: ask_pain
+          label: Ask what the worst part of that is
+          kind: ask
+          next: n5
+      fallback: n_clarify_early
+    - id: n_clarify_late
+      client_message: >-
+        Sorry, what do you need from me there?
+      moves:
+        - id: ask_technical
+          label: Ask what it would have to work with
+          kind: ask
+          next: n8
+        - id: ask_budget
+          label: Ask what he has in mind to spend
+          kind: ask
+          next: n10
+        - id: set_next_step
+          label: Put a time on the next step
+          kind: next_step
+          next: n12
+      fallback: n_clarify_late
+expected_outcomes:
+  - id: a1
+    type: state
+    path: conversation.diagnosis_agreed
+    operator: equals
+    value: true
+    description: Marcus agreed with the problem before anything was proposed.
+  - id: a2
+    type: state
+    path: conversation.learner_talk_over_60
+    operator: equals
+    value: false
+    description: He did more than 40% of the talking.
+  - id: a3
+    type: state
+    path: conversation.complete
+    operator: equals
+    value: true
+    description: The conversation reached an end rather than being abandoned.
+  - id: a4
+    type: state
+    path: conversation.topics_covered
+    operator: gte
+    value: 8
+    tier: quality
+    description: Eight or more of the discovery topics actually came up.
+  - id: a5
+    type: state
+    path: conversation.next_step_agreed
+    operator: equals
+    value: true
+    tier: quality
+    description: It ended on a next step with a time on it.
+  - id: a6
+    type: state
+    path: conversation.topics.budget
+    operator: equals
+    value: true
+    tier: quality
+    description: Money came up before the work was proposed.
+critical_failures:
+  - id: c1
+    type: state
+    path: conversation.pitched_before_diagnosis
+    operator: equals
+    value: false
+    description: Proposing a system before he agreed with the diagnosis.
+grading:
+  mode: mixed
+  rubric: SALES_DISCOVERY_RUBRIC_V2
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: Marcus tests whether you listened. Saying his problem back to him is a move in itself, and it is the one that unlocks the rest.
+fieldwork: null
+portfolio: null

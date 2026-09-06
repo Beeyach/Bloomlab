@@ -1,0 +1,169 @@
+# WRITE IT with an authored thread (CONV-002, SAL-008): the five closing situations. Chasing,
+# a delay, a vague answer, asking for the commitment, and holding the next step. No pricing
+# mechanics here: that is Phase 17, and negotiation is Phase 18.
+id: EX-WRITE_IT-summit-after-the-proposal
+type: WRITE_IT
+title: Nine days of silence
+mode: practice
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-DELIVER-proposal-writing
+client: CL-summit-coaching
+format: closing
+instructions: |
+  You sent Marcus the proposal nine days ago. He replied once, the same afternoon, and nothing
+  since. His last message is at the top of the thread.
+
+  Get this to a decision. Either he starts, or he tells you when, or you close the file and stop
+  spending your week on it. What you cannot do is chase him every four days with nothing new in
+  your hand.
+
+  Pick what you are doing with each message.
+allowed_features: []
+starting_state: {}
+conversation:
+  client: CL-summit-coaching
+  subject: 'Re: Summit — application funnel proposal'
+  channel: email
+  opening: c1
+  composer_help: Write the message you would actually send him today.
+  nodes:
+    - id: c1
+      situation: ghosting
+      client_message: >-
+        Thanks for this. Let me look at it properly over the weekend and come back to you.
+
+        (That was nine days ago. Nothing since.)
+      moves:
+        - id: follow_up_with_something
+          label: Follow up with something he does not already have
+          kind: next_step
+          next: c2
+        - id: ask_where_it_stands
+          label: Ask plainly where it stands
+          kind: ask
+          next: c3
+        - id: close_the_file
+          label: Offer to close the file
+          kind: close
+          next: c4
+      fallback: c_clarify
+    - id: c2
+      situation: decision_delay
+      client_message: >-
+        Sorry, that is on me. I have been inside a launch since we spoke. Can we pick this up in
+        November?
+      moves:
+        - id: ask_what_changes
+          label: Ask what will be different in November
+          kind: ask
+          next: c5
+        - id: ask_commitment
+          label: Ask him to decide now either way
+          kind: close
+          next: c5
+        - id: agree_and_diarise
+          label: Agree the date and hold it
+          kind: next_step
+          next: c6
+      fallback: c_clarify
+    - id: c3
+      situation: proposal_follow_up
+      client_message: >-
+        Still thinking about it.
+      moves:
+        - id: ask_the_blocker
+          label: Ask what specifically is unresolved
+          kind: ask
+          next: c5
+        - id: offer_two_paths
+          label: Offer him two ways forward
+          kind: next_step
+          next: c2
+      fallback: c_clarify
+    - id: c4
+      situation: commitment
+      client_message: >-
+        No, do not close it. I do want to do this. I have just had nothing in my head for anything
+        that is not the launch.
+      moves:
+        - id: ask_commitment
+          label: Ask him to decide now either way
+          kind: close
+          next: c5
+        - id: set_the_start
+          label: Put a date on starting
+          kind: next_step
+          next: c6
+      fallback: c_clarify
+    - id: c5
+      situation: commitment
+      client_message: >-
+        Fair enough. What do you need from me to start?
+      moves:
+        - id: set_the_start
+          label: Put a date on starting
+          kind: next_step
+          next: c6
+        - id: ask_commitment
+          label: Ask him to decide now either way
+          kind: close
+          next: c6
+      fallback: c_clarify
+    - id: c6
+      situation: next_step_control
+      covers: [next_step]
+      end: true
+      client_message: >-
+        Tuesday at nine then. I will have the form login and the calendar access ready before that.
+    - id: c_clarify
+      client_message: >-
+        I am not sure what you want me to do with that.
+      moves:
+        - id: ask_where_it_stands
+          label: Ask plainly where it stands
+          kind: ask
+          next: c3
+        - id: set_the_start
+          label: Put a date on starting
+          kind: next_step
+          next: c6
+      fallback: c_clarify
+expected_outcomes:
+  - id: a1
+    type: state
+    path: conversation.complete
+    operator: equals
+    value: true
+    description: The thread reached a decision instead of trailing off.
+  - id: a2
+    type: state
+    path: conversation.next_step_agreed
+    operator: equals
+    value: true
+    description: It ended with a next step both of you hold.
+  - id: a3
+    type: state
+    path: conversation.learner_talk_over_60
+    operator: equals
+    value: false
+    tier: quality
+    description: Chasing did not turn into talking at him.
+  - id: a4
+    type: state
+    path: conversation.situations.next_step_control
+    operator: equals
+    value: true
+    tier: quality
+    description: You kept hold of what happens next.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: '"Just checking in" gives him nothing to answer. Either bring something new or ask him to decide.'
+fieldwork: null
+portfolio: null

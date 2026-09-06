@@ -1,37 +1,104 @@
-# EXPLAIN IT (spec §27): the same system for two audiences.
+# EXPLAIN IT (spec §27, EXR-018, SAL-006, SAL-007): the same system for two readers who need
+# different things. Jargon is counted against the glossary; the frame is read from the markers.
 id: EX-EXPLAIN_IT-no-show-system
 type: EXPLAIN_IT
 title: Explain the no-show system twice
 mode: independent
 difficulty: 2
-estimated_minutes: 15
+estimated_minutes: 20
 skills:
   - SK-DELIVER-client-explanation
 scenario: SC-glowhaus-no-show
 format: two_audiences
 instructions: |
-  Explain the no-show recovery system you built, twice. Once for Priya, who will never open the
-  workflow builder. Once for another GHL builder who will maintain it after you. Each under 150
-  words. Do not describe behaviour the system does not have.
+  Explain the no-show recovery system you built, twice.
+
+  Once for Priya, who owns the business and will never open the workflow builder. She wants to know
+  what changed for her front desk and what it is worth.
+
+  Once for the GHL builder who takes this over next month. He needs to know what fires it, what
+  stops it firing twice, and what it touches.
+
+  Each under 150 words. Do not describe behaviour the system does not have.
 allowed_features: []
 starting_state: {}
+response_markers:
+  problem:
+    ['no-show', 'no show', 'did not turn up', "didn't turn up", 'missed appointment', 'empty slot']
+  consequence: ['costs', 'lost', 'empty', 'wasted', 'a week', 'a month', 'revenue', 'front desk']
+  system:
+    ['text', 'message', 'the next morning', 'rebook', 'reminder', 'workflow', 'appointment status']
+  outcome: ['rebooked', 'back on the calendar', 'fewer', 'without anyone', 'filled']
+  trigger: ['appointment status', 'appointment status changed', 'status trigger']
+  filter: ['only when', 'filter', 'no-show status', 'condition']
+  reentry: ['re-entry', 'reentry', 'twice', 'duplicate', 'enter again']
+sales:
+  frame:
+    - element: problem
+      markers: [problem]
+    - element: consequence
+      markers: [consequence]
+    - element: system
+      markers: [system]
+    - element: outcome
+      markers: [outcome]
+written_fields:
+  - key: owner
+    label: For Priya
+    help: Under 150 words. What changed for her, and what it is worth.
+    rows: 10
+    audience: owner
+    max_words: 150
+  - key: builder
+    label: For the next builder
+    help: Under 150 words. What fires it, what stops it firing twice, what it touches.
+    rows: 10
+    audience: builder
+    max_words: 150
 expected_outcomes:
   - id: a1
+    type: state
+    path: explanation.audiences_answered
+    operator: equals
+    value: 2
+    description: Both versions are written.
+  - id: a2
     type: state
     path: explanation.owner_jargon_count
     operator: lte
     value: 1
-    description: The owner version is nearly free of GHL jargon.
-  - id: a2
+    description: The owner version is nearly free of builder vocabulary.
+  - id: a3
     type: state
-    path: explanation.builder_names_trigger
+    path: written.builder_mentions
+    operator: contains
+    value: trigger
+    description: The builder version names what fires it.
+  - id: a4
+    type: state
+    path: written.builder_mentions
+    operator: contains
+    value: reentry
+    tier: quality
+    description: The builder version says what stops it running twice.
+  - id: a5
+    type: state
+    path: explanation.frame_covered
+    operator: gte
+    value: 3
+    tier: quality
+    description: The explanation gets from the problem to what changed, not just to what it does.
+  - id: a6
+    type: state
+    path: message.within_word_limit
     operator: equals
     value: true
-    description: The builder version names the trigger and its filter.
+    tier: quality
+    description: Both are inside 150 words.
 critical_failures: []
 grading:
   mode: mixed
-  rubric: WRITTEN_COMMUNICATION_RUBRIC_V1
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
   pass_threshold: 70
 hints: []
 fieldwork: null

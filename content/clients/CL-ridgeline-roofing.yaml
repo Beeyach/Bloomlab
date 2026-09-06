@@ -1,0 +1,89 @@
+# Persistent fictional client: a roofing company on the prospect list. Big ticket, obvious need,
+# and one thing about it that cannot be settled from the outside (SAL-002).
+id: CL-ridgeline-roofing
+business_name: Ridgeline Roofing
+industry: roofing
+locations:
+  - name: Ridgeline Boise
+    city: Boise
+    region: ID
+    timezone: America/Boise
+team:
+  - name: Dale Mercer
+    role: Owner
+    notes: Started as a crew lead; still climbs on roofs in storm season.
+  - name: Corinne Baptiste
+    role: Office coordinator
+    notes: Books inspections, chases insurance paperwork.
+  - name: Crews (3)
+    role: Installers
+offers:
+  - name: Roof Inspection
+    price: 0
+    billing: one_time
+    notes: Free, and the way every job starts.
+  - name: Roof Replacement
+    price: 14500
+    billing: one_time
+  - name: Gutter Package
+    price: 1800
+    billing: one_time
+lead_sources:
+  - Storm-season door knocking
+  - Google Business Profile
+  - Insurance adjuster referrals
+  - Facebook
+current_systems:
+  - A CRM the contractor network provides
+  - Shared inbox for the website form
+  - Paper inspection sheets photographed on phones
+metrics:
+  monthly_leads: 140
+  booking_rate: 0.55
+  show_rate: 0.82
+  close_rate: 0.31
+  average_ticket: 11200
+problems:
+  - Inspection requests come in overnight and get called back the following afternoon.
+  - Quotes go out and nothing happens unless Corinne remembers to chase them.
+  - Storm weeks produce more leads than the office can answer.
+relationship_state:
+  stage: prospect
+  since: 2026-09-02
+  owner: Ary
+  notes: Found while looking at roofers running ads in Boise. No contact yet.
+assets:
+  - kind: domain
+    name: ridgelineroofingid.com
+  - kind: form
+    name: Website "Book an inspection" form
+  - kind: brand
+    name: Contractor network badge in the site footer
+hidden_facts:
+  network_owns_the_crm: true
+  owner_can_change_follow_up: false
+  quotes_sent_last_month: 61
+  quotes_followed_up: 9
+voice:
+  character: VC-storm-season-roofer
+  tone: Friendly, fast, always half-distracted by a job.
+  speaking_style: Talks in seasons and crews; trusts people who have seen a real jobsite.
+  sample_phrases:
+    - Give me the short version, I'm between jobs.
+    - Storm weeks we drown, then it goes quiet for a month.
+    - The network gives us the software. I don't know what I can change in it.
+history:
+  - date: 2026-09-02
+    event: Added to the prospect list from a Boise roofing ad sweep.
+hidden_state:
+  trust: 30
+  urgency: 45
+  price_sensitivity: 40
+  frustration: 50
+  technical_sophistication: 20
+  fear: 25
+  previous_bad_experience: 30
+  alternative_provider_strength: 55
+  actual_budget: 9000
+  stated_budget: 4000
+  decision_authority: shared

@@ -1,37 +1,97 @@
-# WRITE IT (spec §27): a cold email built on verified evidence.
+# WRITE IT (spec §27, EXR-014, SAL-003): the first email and the follow-up, both built on
+# something actually observed. The six cold-email concepts live in the rubric; the word caps, the
+# next step and the citation are checked here.
 id: EX-WRITE_IT-northwind-cold-email
 type: WRITE_IT
-title: Cold email to Gary at Northwind
+title: Cold email to Gary, and the follow-up
 mode: practice
 difficulty: 2
-estimated_minutes: 15
+estimated_minutes: 20
 skills:
   - SK-SELL-evidence-based-audit
 scenario: SC-northwind-audit
 format: cold_email
 instructions: |
-  Write the first cold email to Gary Lindqvist. Opener, one piece of evidence you actually
-  observed, why it matters to him, one problem, one clear next step. Under 120 words. No claims
-  you could not defend if he called you on them.
+  Write the first email to Gary Lindqvist, then write the follow-up you would send six days later
+  if he does not reply.
+
+  The first email: open on him, name one thing you actually observed, say why it matters to a
+  business like his, name one problem, ask for one thing. Under 120 words.
+
+  The follow-up has to add something. It cannot thank him for a reply he never sent, and it cannot
+  be "just circling back". Under 90 words.
 allowed_features: []
 starting_state: {}
+sales:
+  evidence:
+    - id: ev-nw-reply-22h
+      source: test_enquiry
+      observation: >-
+        You submitted their website form at 11:00 on Wednesday. The reply came at 09:12 the next
+        morning, 22 hours later.
+      direct: true
+    - id: ev-nw-no-text
+      source: test_enquiry
+      observation: >-
+        Nothing else arrived: no text, no second email, no call to the number you gave.
+      direct: true
+    - id: ev-nw-ads-page
+      source: landing_page
+      observation: >-
+        Their Google Ads landing page has the same form and no phone number above the fold.
+      direct: true
+    - id: ev-nw-competitor
+      source: ad
+      observation: >-
+        Two competitors on the same search show a click-to-call extension; Northwind's ad does not.
+      direct: false
+written_fields:
+  - key: initial_email
+    label: The first email
+    help: Under 120 words, to Gary, who is usually reading this on a phone between jobs.
+    rows: 10
+    audience: owner
+    max_words: 120
+    next_step: true
+    cites_evidence: true
+    message_type: cold_email
+  - key: follow_up
+    label: The follow-up, six days later
+    help: Under 90 words. He did not reply. Say something you have not said yet.
+    rows: 8
+    audience: owner
+    max_words: 90
+    next_step: true
+    message_type: follow_up
 expected_outcomes:
   - id: a1
     type: state
-    path: email.word_count
-    operator: lte
-    value: 120
-    description: Under 120 words.
-  - id: a2
-    type: state
-    path: email.has_call_to_action
+    path: message.all_answered
     operator: equals
     value: true
-    description: One clear next step.
+    description: Both the email and the follow-up are written.
+  - id: a2
+    type: state
+    path: message.within_word_limit
+    operator: equals
+    value: true
+    description: Both are inside the caps the brief set.
+  - id: a3
+    type: state
+    path: message.has_next_step
+    operator: equals
+    value: true
+    description: Each message asks for one thing.
+  - id: a4
+    type: state
+    path: message.cites_direct_evidence
+    operator: equals
+    value: true
+    description: The first email rests on something you observed yourself.
 critical_failures: []
 grading:
   mode: mixed
-  rubric: WRITTEN_COMMUNICATION_RUBRIC_V1
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
   pass_threshold: 70
 hints:
   - level: nudge
