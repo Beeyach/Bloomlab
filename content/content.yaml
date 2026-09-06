@@ -1,11 +1,12 @@
 # Release stamp of the curriculum (spec §101, CNT-007). Bump content_version whenever any file
 # under content/ changes, then run `npm run content:lock`. Git = what Bloomlab teaches.
-content_version: '2026.09.14'
+content_version: '2026.09.15'
 schema_version: 1
 notes: >-
   Phase 17 — the Pricing Arena. PRICE IT becomes a deal desk: the client's own requirements, scope
   lines that say what removing them leaves behind, and the eight numbers a quote is made of.
   Summit's application funnel is priced against its scenario's 22 hours, and a new Glowhaus
   second-location scenario carries the scope training that walks all thirteen dimensions. The
-  proposal is authored as eight sections a client can say yes to, and two learning units teach the
-  ten pricing concepts. Nothing hidden reaches the learner until the attempt is in.
+  proposal is authored as eight sections a client can say yes to, with its own explicit priced
+  scope rather than fake continuity from a prior attempt, and two learning units teach the ten
+  pricing concepts. Nothing hidden reaches the learner until the attempt is in.
