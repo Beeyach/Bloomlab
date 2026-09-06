@@ -33,23 +33,32 @@ export interface Quote {
 export function quoteOf(response: PricingResponse): Quote {
   // Each figure the learner typed is rounded to whole dollars once, here, and every number
   // downstream is built from the rounded ones. Nothing rounds a second time.
-  const project = response.project === null ? null : dollars(response.project);
-  const rush = response.rush_fee === null ? null : dollars(response.rush_fee);
+  const project =
+    response.project === null || response.project < 0 ? null : dollars(response.project);
+  const rush =
+    response.rush_fee === null || response.rush_fee < 0 ? null : dollars(response.rush_fee);
   const total = project === null ? null : project + (rush ?? 0);
 
   // One canonical deposit: whatever the learner expressed it as, it becomes dollars here and is
   // never recomputed anywhere else. A percentage of a total that does not exist yet is not a
   // number, so it stays null rather than becoming zero.
   const deposit =
-    response.deposit === null
+    response.deposit === null || response.deposit.value < 0
       ? null
       : response.deposit.kind === 'amount'
         ? dollars(response.deposit.value)
-        : total === null
+        : response.deposit.value > 100 || total === null
           ? null
           : percentOf(total, response.deposit.value);
 
-  const recurring = response.recurring === null ? null : dollars(response.recurring);
+  const recurring =
+    response.recurring === null || response.recurring < 0 ? null : dollars(response.recurring);
+  const timelineDays =
+    response.timeline_days === null || response.timeline_days < 1
+      ? null
+      : Math.round(response.timeline_days);
+  const revisions =
+    response.revisions === null || response.revisions < 0 ? null : Math.round(response.revisions);
   return {
     project,
     rush_fee: rush,
@@ -60,8 +69,8 @@ export function quoteOf(response: PricingResponse): Quote {
     on_delivery: total === null ? null : total - (deposit ?? 0),
     recurring,
     recurring_annual: recurring === null ? null : recurring * 12,
-    timeline_days: response.timeline_days,
-    revisions: response.revisions,
+    timeline_days: timelineDays,
+    revisions,
   };
 }
 
