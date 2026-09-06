@@ -95,6 +95,23 @@ export {
 } from './portfolio.ts';
 export { GlossarySchema, type GlossaryEntry } from './glossary.ts';
 export {
+  DealRequirementSchema,
+  PRICE_METRICS,
+  PRICING_CONCEPTS,
+  PRICING_STATE_ROOTS,
+  PROPOSAL_SECTIONS,
+  PricingConfigSchema,
+  SCOPE_DIMENSIONS,
+  ScopeItemSchema,
+  type DealRequirement,
+  type PriceMetric,
+  type PricingConcept,
+  type PricingConfig,
+  type ProposalSection,
+  type ScopeDimension,
+  type ScopeItem,
+} from './pricing.ts';
+export {
   AUDIT_METRICS,
   CLOSING_SITUATIONS,
   CONVERSATION_CHANNELS,
