@@ -18,7 +18,8 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ### Fixed — Phase 16
 
-- **Two quick edits to different fields could lose one of them (D-158).** Every keystroke saves, and a sales work area has many fields: typing in a message and then ticking the evidence fired two read-modify-writes at the same workspace row, and the second could read the row before the first had written it. Writes are now queued per attempt. Found by `review:sales`, which reloaded a cold email and got the follow-up back empty. This is a Phase 9 behaviour corrected, not a Phase 16 workaround.
+- **Attempt persistence had two lost-work races (D-158).** Every keystroke saves, and a sales work area has many fields. Writes are now queued per attempt so two edits cannot overwrite one another. Independent review found the submit-side race as well: pressing Run it while the latest save was queued could grade and preserve the older React snapshot. Submission now flushes pending writes and reloads the persisted attempt before grading; a failed latest save refuses finalization instead of recording stale work.
+- **PROSPECT IT schema now enforces the EXR-012 minimum of three businesses.** The Phase 16 exercise authored three, but the family validator still accepted a future two-business exercise. The schema and regression fixture now refuse fewer than three.
 
 ### Added — Phase 15 · Troubleshooting and Reporting
 
