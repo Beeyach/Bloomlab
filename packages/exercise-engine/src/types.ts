@@ -100,7 +100,24 @@ export type ContextSource = (typeof CONTEXT_SOURCES)[number];
  * authored is judged: an exercise with no written fields has an empty `written` and every earlier
  * assertion reads exactly what it read before.
  */
-export const LEARNER_STATE_ROOTS = ['prediction', 'decision', 'answer', 'written'] as const;
+export const LEARNER_STATE_ROOTS = [
+  'prediction',
+  'decision',
+  'answer',
+  'written',
+  /**
+   * Phase 16's selling families (EXR-012 … EXR-018, CONV-002). Each root is one projection of
+   * what the learner actually did: the businesses they judged, the findings they wrote and how
+   * they supported them, the messages they sent, the two explanations, and the thread they held.
+   * The runner computes them once, from pure functions the work area shows its feedback from, so
+   * a figure a learner reads and the figure a check reads are the same figure.
+   */
+  'prospects',
+  'audit',
+  'message',
+  'explanation',
+  'conversation',
+] as const;
 
 export interface GradingContext {
   /**

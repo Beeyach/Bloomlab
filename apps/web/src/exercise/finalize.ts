@@ -38,8 +38,26 @@ export const EVIDENCE_KIND_BY_MODE: Record<Exercise['mode'], EvidenceKind> = {
   pressure: 'pressure_test',
 };
 
+/**
+ * The selling families produce their own kind of evidence, whatever mode they are authored in
+ * (spec §30; the mastery rules' own list). Doing the work in a sales context is what a skill's
+ * `sales_use` requirement is asking for, and explaining a system to an audience is `explanation`.
+ * A guided run is still guided practice: assistance decides that, not the family.
+ */
+export const EVIDENCE_KIND_BY_TYPE: Partial<Record<Exercise['type'], EvidenceKind>> = {
+  PROSPECT_IT: 'sales_use',
+  AUDIT_IT: 'sales_use',
+  WRITE_IT: 'sales_use',
+  SAY_IT: 'sales_use',
+  PRICE_IT: 'sales_use',
+  NEGOTIATE_IT: 'sales_use',
+  EXPLAIN_IT: 'explanation',
+};
+
 export function evidenceKindFor(exercise: Exercise, run: ActiveAttempt['run']): EvidenceKind {
-  return run === 'retrieval' ? 'retrieval' : EVIDENCE_KIND_BY_MODE[exercise.mode];
+  if (run === 'retrieval') return 'retrieval';
+  if (exercise.mode === 'guided') return EVIDENCE_KIND_BY_MODE.guided;
+  return EVIDENCE_KIND_BY_TYPE[exercise.type] ?? EVIDENCE_KIND_BY_MODE[exercise.mode];
 }
 
 export class RetrievalTargetError extends Error {
@@ -202,6 +220,9 @@ export async function finalizeAttempt(
         skillIds.map((skillId) => [skillId, `ea:${attempt.attempt_id}:${skillId}`]),
       ),
       grade: report,
+      // The work itself travels with the attempt: a sales thread and the writing in it are the
+      // evidence, and the draft is cleared two lines below.
+      response: attempt.response,
     },
     database,
   );

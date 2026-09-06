@@ -15,6 +15,19 @@ import {
   title,
 } from './common.ts';
 import { FUNNEL_BLOCK_ROLES, FUNNEL_STEP_PURPOSES } from './funnel.ts';
+import {
+  AUDIT_METRICS,
+  CONVERSATION_METRICS,
+  ConversationSchema,
+  EXPLANATION_METRICS,
+  MESSAGE_FIELD_METRICS,
+  MESSAGE_METRICS,
+  MESSAGE_TYPES,
+  PROSPECT_METRICS,
+  SALES_STATE_ROOTS,
+  SalesConfigSchema,
+  WRITING_AUDIENCES,
+} from './sales.ts';
 import { WorkflowDefinitionSchema } from './workflow.ts';
 
 /**
@@ -198,6 +211,20 @@ const writtenField = z.strictObject({
   /** The question under the label, in the learner's words. Never a hint at the answer. */
   help: z.string().trim().min(4),
   rows: z.number().int().min(2).max(20).default(5),
+  /**
+   * Who this answer is for (SAL-007). `owner` is the reader who will never open a workflow
+   * builder, so builder vocabulary in it is counted as jargon; `builder` is the person who will
+   * maintain the thing, where the same words are exactly right.
+   */
+  audience: z.enum(WRITING_AUDIENCES).default('none'),
+  /** The brief's word cap, counted the same way in the work area and in the grade. */
+  max_words: z.number().int().min(20).max(2000).optional(),
+  /** Ask for the one thing the reader is being asked to do (SAL-003's CTA, SAL-008's next step). */
+  next_step: z.boolean().default(false),
+  /** Offer this exercise's evidence to cite, so a claim can be checked against something. */
+  cites_evidence: z.boolean().default(false),
+  /** Which of the written pieces Phase 16 trains this is (EXR-014, SAL-013). */
+  message_type: z.enum(MESSAGE_TYPES).optional(),
 });
 
 const responseMarkers = z.record(
@@ -239,6 +266,90 @@ const gradingWeights = z
     'Grading weights must sum to 100',
   );
 
+/** The parts of an exercise a sales state path is judged against. */
+interface SalesPathSubject {
+  type: ExerciseType;
+  written_fields: { key: string; audience: string; message_type?: string }[];
+  sales: { frame: { element: string }[] };
+  conversation: { nodes: { covers: string[]; situation?: string }[] } | null;
+}
+
+const listing = (values: readonly string[]): string => values.join(', ');
+
+/**
+ * Why an authored `state` check on a sales projection could never be judged. Empty means the
+ * path names a figure this exercise's own work actually produces.
+ */
+function salesPathIssues(exercise: SalesPathSubject, root: string, rest: string[]): string[] {
+  const key = rest.join('.');
+  const problems: string[] = [];
+  const needs = (ok: boolean, message: string) => {
+    if (!ok) problems.push(message);
+  };
+  const known = (metrics: readonly string[]) =>
+    needs(metrics.includes(key), `${root}.${key} is not one of ${listing(metrics)}`);
+
+  switch (root) {
+    case 'prospects':
+      needs(exercise.type === 'PROSPECT_IT', 'Only PROSPECT IT judges prospects');
+      known(PROSPECT_METRICS);
+      break;
+    case 'audit':
+      needs(exercise.type === 'AUDIT_IT', 'Only AUDIT IT collects findings');
+      known(AUDIT_METRICS);
+      break;
+    case 'message': {
+      needs(exercise.written_fields.length > 0, 'message.* needs at least one written field');
+      if (rest[0] === 'fields') {
+        const field = rest[1] ?? '';
+        const metric = rest.slice(2).join('.');
+        needs(
+          exercise.written_fields.some((candidate) => candidate.key === field),
+          `message.fields.${field} needs a written field named ${field}`,
+        );
+        needs(
+          (MESSAGE_FIELD_METRICS as readonly string[]).includes(metric),
+          `message.fields.<field>.${metric} is not one of ${listing(MESSAGE_FIELD_METRICS)}`,
+        );
+      } else known(MESSAGE_METRICS);
+      break;
+    }
+    case 'explanation': {
+      needs(
+        exercise.written_fields.some((field) => field.audience !== 'none'),
+        'explanation.* needs written fields written for an audience',
+      );
+      if (rest[0] === 'frame') {
+        const element = rest[1] ?? '';
+        needs(
+          exercise.sales.frame.some((entry) => entry.element === element),
+          `explanation.frame.${element} needs a sales.frame entry for ${element}`,
+        );
+      } else known(EXPLANATION_METRICS);
+      break;
+    }
+    case 'conversation': {
+      const nodes = exercise.conversation?.nodes ?? [];
+      needs(nodes.length > 0, 'conversation.* needs an authored conversation');
+      if (rest[0] === 'topics') {
+        const topic = rest[1] ?? '';
+        needs(
+          nodes.some((node) => node.covers.includes(topic)),
+          `no turn of this thread covers ${topic}`,
+        );
+      } else if (rest[0] === 'situations') {
+        const situation = rest[1] ?? '';
+        needs(
+          nodes.some((node) => node.situation === situation),
+          `no turn of this thread stages ${situation}`,
+        );
+      } else known(CONVERSATION_METRICS);
+      break;
+    }
+  }
+  return problems;
+}
+
 export const ExerciseSchema = z
   .strictObject({
     id: ref('exercises'),
@@ -269,6 +380,15 @@ export const ExerciseSchema = z
     /** Named long-form answers, when one textarea is not the right shape (EXR-010). */
     written_fields: z.array(writtenField).default([]),
     decision_options: z.array(decisionOption).default([]),
+    /** The selling families' authored half: evidence, prospect briefs, the frame (Phase 16). */
+    sales: SalesConfigSchema.default({
+      evidence: [],
+      prospect_briefs: [],
+      min_findings: 3,
+      frame: [],
+    }),
+    /** An authored written client thread (CONV-002). */
+    conversation: ConversationSchema.nullable().default(null),
     fieldwork: fieldwork.nullable().default(null),
     portfolio: portfolioRef.nullable().default(null),
     /** WRITE IT / SAY IT / EXPLAIN IT: what kind of piece, in the spec's own words. */
@@ -455,6 +575,14 @@ export const ExerciseSchema = z
             `decision.reasoning_mentions "${assertion.value}" needs a response_markers entry`,
           );
         }
+        // A check on one of the sales projections must name a figure that projection produces,
+        // for an exercise whose family produces it at all. Otherwise it is a criterion the
+        // learner can never meet, however well they do the work.
+        if ((SALES_STATE_ROOTS as readonly string[]).includes(root ?? '')) {
+          for (const message of salesPathIssues(exercise, root ?? '', rest)) {
+            issue(at('path'), message);
+          }
+        }
       }
     };
     exercise.expected_outcomes.forEach((assertion, index) =>
@@ -463,6 +591,105 @@ export const ExerciseSchema = z
     exercise.critical_failures.forEach((assertion, index) =>
       checkAssertion(assertion, 'critical_failures', index),
     );
+    // ---- the selling families (Phase 16). What a family needs to be runnable at all is checked
+    // here, so an exercise that cannot be done never reaches a learner as one that can.
+    const evidenceIds = new Set(exercise.sales.evidence.map((item) => item.id));
+    for (const [index, field] of exercise.written_fields.entries()) {
+      if (field.cites_evidence && evidenceIds.size === 0) {
+        issue(
+          ['written_fields', index, 'cites_evidence'],
+          `${field.key} offers evidence to cite, but the exercise authors none`,
+        );
+      }
+    }
+    for (const [index, entry] of exercise.sales.frame.entries()) {
+      for (const marker of entry.markers) {
+        if (!markerKeys.has(marker)) {
+          issue(
+            ['sales', 'frame', index, 'markers'],
+            `${marker} needs a response_markers entry named ${marker}`,
+          );
+        }
+      }
+    }
+    for (const [index, item] of exercise.sales.evidence.entries()) {
+      if (!item.client) continue;
+      const belongs =
+        exercise.prospects.includes(item.client) ||
+        item.client === exercise.client ||
+        exercise.prospects.length === 0;
+      if (!belongs) {
+        issue(['sales', 'evidence', index, 'client'], `${item.client} is not one of the prospects`);
+      }
+    }
+    if (exercise.type === 'PROSPECT_IT') {
+      const briefed = new Set(exercise.sales.prospect_briefs.map((brief) => brief.client));
+      for (const prospect of exercise.prospects) {
+        if (!briefed.has(prospect)) {
+          issue(['sales', 'prospect_briefs'], `${prospect} has no prospect brief`);
+        }
+      }
+      for (const [index, brief] of exercise.sales.prospect_briefs.entries()) {
+        if (!exercise.prospects.includes(brief.client)) {
+          issue(
+            ['sales', 'prospect_briefs', index, 'client'],
+            `${brief.client} is not one of this exercise's prospects`,
+          );
+        }
+        // Evidence about another business cannot justify a decision about this one.
+        for (const [axisIndex, axis] of brief.axes.entries()) {
+          for (const id of axis.evidence) {
+            const item = exercise.sales.evidence.find((candidate) => candidate.id === id);
+            if (item && item.client && item.client !== brief.client) {
+              issue(
+                ['sales', 'prospect_briefs', index, 'axes', axisIndex, 'evidence'],
+                `${id} is evidence about ${item.client}, not ${brief.client}`,
+              );
+            }
+          }
+        }
+      }
+      // Somebody has to be worth skipping, or the exercise teaches "contact everyone" (SAL-002).
+      if (
+        exercise.sales.prospect_briefs.length > 0 &&
+        !exercise.sales.prospect_briefs.some((brief) => brief.acceptable_decisions.includes('skip'))
+      ) {
+        issue(
+          ['sales', 'prospect_briefs'],
+          'At least one prospect must be one it is right to skip',
+        );
+      }
+    }
+    if (exercise.type === 'AUDIT_IT' && exercise.sales.evidence.length === 0) {
+      issue(['sales', 'evidence'], 'AUDIT IT needs the evidence the learner is auditing');
+    }
+    if (exercise.type === 'AUDIT_IT' && !exercise.sales.evidence.some((item) => item.direct)) {
+      issue(
+        ['sales', 'evidence'],
+        'AUDIT IT needs at least one directly observed item, or nothing can be Verified',
+      );
+    }
+    if (exercise.type === 'EXPLAIN_IT') {
+      // The requirement is the same system for two audiences (EXR-018); one answer is a different
+      // exercise, and the schema will not let it be authored as this one.
+      const audiences = new Set(
+        exercise.written_fields
+          .filter((field) => field.audience !== 'none')
+          .map((field) => field.audience),
+      );
+      if (!audiences.has('owner') || !audiences.has('builder')) {
+        issue(
+          ['written_fields'],
+          'EXPLAIN IT asks for the owner version and the builder version; author a written field for each audience',
+        );
+      }
+    }
+    if (exercise.conversation) {
+      const client = exercise.conversation.client ?? exercise.client;
+      if (!client) {
+        issue(['conversation', 'client'], 'A thread needs a client, on the exercise or on itself');
+      }
+    }
     if (exercise.type === 'RUN_THE_LEAD' && !exercise.starting_state.contact_id) {
       issue(['starting_state', 'contact_id'], 'RUN THE LEAD names the contact that gets enrolled');
     }
