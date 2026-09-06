@@ -158,9 +158,7 @@ function enqueue<T>(key: string, work: () => Promise<T>): Promise<T> {
   // Recover from an earlier failed edit before running the next one, but keep this edit's own
   // rejection visible in the queue. Finalization can then refuse to record stale work if the
   // latest save failed instead of silently grading the previous persisted draft.
-  const queued = (writes.get(key) ?? Promise.resolve())
-    .catch(() => undefined)
-    .then(work);
+  const queued = (writes.get(key) ?? Promise.resolve()).catch(() => undefined).then(work);
   writes.set(key, queued);
   return queued;
 }
