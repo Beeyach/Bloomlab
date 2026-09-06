@@ -58,7 +58,7 @@ export function DealReveal({
       <dl className={styles.revealRows}>
         <dt>You quoted</dt>
         <dd data-testid="reveal-total">{quote.total === null ? 'Nothing' : money(quote.total)}</dd>
-        <dt>Margin on the one-time work</dt>
+        <dt>Margin on the one-time work, rounded</dt>
         <dd data-testid="reveal-margin">
           {margin === null ? 'No price to measure' : `${margin}%`}
         </dd>
@@ -68,6 +68,12 @@ export function DealReveal({
         <dd>{money(healthy)}</dd>
       </dl>
 
+      {!evaluation.projection.margin_at_least_floor && quote.total !== null && (
+        <p className={styles.deskNote}>
+          The percentage above is rounded for display. This business&rsquo;s{' '}
+          {config.margin.floor_percent}% floor needs at least {money(floorMargin)} on this cost.
+        </p>
+      )}
       <p className={styles.deskNote}>
         Recurring revenue is not in that margin. {money(quote.recurring ?? 0)} a month is real
         money, and it is not what pays for building this.
