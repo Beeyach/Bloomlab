@@ -12,6 +12,7 @@ skills:
   - SK-SELL-discovery-call
   - SK-SELL-project-pricing
   - SK-SELL-negotiation-basics
+  - SK-DELIVER-proposal-writing
 stages:
   - id: s1
     name: Discovery
@@ -28,6 +29,12 @@ stages:
     exercises:
       - EX-NEGOTIATE_IT-summit-freelancer-quote
     deliverable: A response to the cheaper quote that keeps margin or walks away.
+  - id: s4
+    name: Proposal
+    exercises:
+      - EX-WRITE_IT-summit-proposal
+    deliverable: >-
+      A proposal with all eight sections, in Marcus's language, that he can accept in one reply.
 fieldwork_required: false
 portfolio: PF-application-qualification-system
 capstone: false

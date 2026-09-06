@@ -1,0 +1,171 @@
+# The proposal (SAL-009, EXR-014, EXR-010).
+#
+# Eight sections, and all eight are required: a proposal missing its assumptions or its
+# acceptance is the one that turns into an argument in week four. Each section is its own answer
+# with its own cap, because the failure mode of proposal writing is a long recommendation and a
+# one-line scope.
+#
+# The numbers come from the learner's own PRICE IT attempt. This exercise does not re-price the
+# deal and does not check the arithmetic — it checks that what they decided is written down where
+# a client can read it and say yes to it.
+id: EX-WRITE_IT-summit-proposal
+type: WRITE_IT
+title: Write the Summit proposal
+mode: independent
+difficulty: 3
+estimated_minutes: 35
+skills:
+  - SK-DELIVER-proposal-writing
+client: CL-summit-coaching
+scenario: SC-summit-discovery
+instructions: |
+  You have priced the application funnel. Now write the proposal Marcus reads.
+
+  Eight sections, each one short. Use the numbers from your own pricing: the fee you set, the
+  deposit you asked for, the timeline you promised, the revisions you included and the things you
+  named as not included.
+
+  Write it so he can read the whole thing in four minutes and reply with one word.
+allowed_features: []
+starting_state: {}
+sales:
+  evidence:
+    - id: ev-discovery-volume
+      source: phone_call
+      observation: >-
+        Marcus takes about twelve discovery calls a month and says four of them are worth having.
+      direct: true
+    - id: ev-typeform
+      source: document
+      observation: >-
+        The Typeform he uses now asks nine questions, including budget and timeframe.
+      direct: true
+    - id: ev-reply-delay
+      source: test_enquiry
+      observation: >-
+        A test application submitted on Friday afternoon got its first reply on Monday at 10am.
+      direct: true
+    - id: ev-no-shows
+      source: phone_call
+      observation: Marcus said roughly a third of booked calls do not happen.
+      direct: false
+  min_findings: 3
+  frame: []
+written_fields:
+  - key: problem
+    label: The problem
+    help: What is happening now, in Marcus's own terms, and what it is costing him.
+    rows: 4
+    audience: owner
+    max_words: 120
+    proposal_section: problem
+    cites_evidence: true
+  - key: recommendation
+    label: What you recommend
+    help: The system you are proposing and what it changes, in two or three sentences.
+    rows: 4
+    audience: owner
+    max_words: 100
+    proposal_section: recommendation
+  - key: scope
+    label: What is included
+    help: Everything he is getting, named the way he would name it.
+    rows: 6
+    audience: owner
+    max_words: 180
+    proposal_section: scope
+  - key: price
+    label: The price
+    help: >-
+      The project fee, the deposit, when the rest is due, and any monthly fee. Numbers, not ranges.
+    rows: 4
+    audience: owner
+    max_words: 90
+    proposal_section: price
+  - key: timeline
+    label: The timeline
+    help: How long it takes, what you need from him, and when he gets it.
+    rows: 4
+    audience: owner
+    max_words: 90
+    proposal_section: timeline
+  - key: assumptions
+    label: What you are assuming
+    help: >-
+      The things you have taken as true to price it this way. Where you are wrong, the price moves.
+    rows: 5
+    audience: owner
+    max_words: 120
+    proposal_section: assumptions
+  - key: exclusions
+    label: What is not included
+    help: The things he could reasonably assume are in this and are not.
+    rows: 5
+    audience: owner
+    max_words: 120
+    proposal_section: exclusions
+  - key: acceptance
+    label: How he accepts it
+    help: >-
+      The one thing you are asking him to do, and what happens next once he does it.
+    rows: 3
+    audience: owner
+    max_words: 70
+    proposal_section: acceptance
+    next_step: true
+expected_outcomes:
+  - id: a1
+    type: state
+    path: message.all_answered
+    operator: equals
+    value: true
+    description: All eight sections are written.
+    tier: required
+  - id: a2
+    type: state
+    path: message.over_limit
+    operator: equals
+    value: 0
+    description: Every section is inside the length the brief allows.
+    tier: required
+  - id: a3
+    type: state
+    path: message.fields.acceptance.next_step
+    operator: equals
+    value: true
+    description: The proposal asks him to do one specific thing.
+    tier: required
+  - id: a4
+    type: state
+    path: message.fields.problem.citations
+    operator: gte
+    value: 1
+    description: >-
+      The problem section rests on something observed in discovery, not on a general claim.
+    tier: required
+  - id: a5
+    type: state
+    path: message.cites_direct_evidence
+    operator: equals
+    value: true
+    description: At least one citation is something seen first-hand.
+    tier: quality
+  - id: a6
+    type: state
+    path: message.fields.assumptions.word_count
+    operator: gte
+    value: 25
+    description: >-
+      The assumptions section says something. One line here is where scope arguments start.
+    tier: quality
+critical_failures: []
+grading:
+  mode: deterministic
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: >-
+      Write the assumptions and exclusions before the recommendation. They are the two sections
+      that decide whether the rest of it holds when the work starts.
+fieldwork: null
+portfolio: PF-application-qualification-system

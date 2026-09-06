@@ -1,0 +1,48 @@
+# Pricing scenario: the second location (spec §80, PRI-002, SAL-016).
+#
+# Glowhaus is the client that recurs through Field Ready, and this is the situation that breaks
+# every single-location assumption in the build: two calendars, two front desks, two sets of
+# hours, one brand, and an opening date that is closer than the work comfortably takes. Its
+# economics are the hidden half of EX-PRICE_IT-glowhaus-two-locations.
+id: SC-glowhaus-two-locations
+title: Glowhaus — the second location
+client: CL-glowhaus-medspa
+summary: >-
+  Priya is opening a second Glowhaus in Round Rock in twelve days. Bookings, reminders and lead
+  handling all assume one location, one calendar and one front desk. Every part of the build has
+  to be scoped twice, and the parts she can live without are not the ones she expects.
+initial_account_state:
+  contacts: []
+  tags: []
+  custom_fields: []
+  custom_values: []
+  pipelines: []
+  opportunities: []
+  calendars: []
+  appointments: []
+  forms: []
+  workflows: []
+simulation_time: '2026-09-07T09:00:00-05:00'
+timezone: America/Chicago
+seed: 5217
+scheduled_events: []
+injectable_events: []
+hidden_facts:
+  # What Priya has not said out loud. The opening date and the six years of Square history are
+  # both in the brief, because she would say them; these are the two she would not.
+  second_front_desk_hired: false
+  agency_burned_before: true
+failure_modes: []
+economics:
+  baseline_complexity: 4
+  estimated_labor_hours: 31
+  risk: 3
+  migration: true
+  locations: 2
+  integrations: 2
+  custom_development: false
+  rush: true
+  recurring_support: true
+hidden_state_overrides:
+  price_sensitivity: 40
+  urgency: 85
