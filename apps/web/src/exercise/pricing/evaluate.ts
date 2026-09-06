@@ -10,7 +10,7 @@ import {
   type DealBasis,
   type DealEconomics,
 } from './deal';
-import { marginPercent, quoteOf, rushIsCoherent, type Quote } from './quote';
+import { marginPercent, quoteOf, rushIsCoherent, totalForMargin, type Quote } from './quote';
 import type { PricingResponse } from './types';
 
 /**
@@ -35,16 +35,16 @@ export interface PricingEvaluation {
 }
 
 /** The eight things PRICE IT asks for. All of them set is what `complete` means. */
-function isComplete(response: PricingResponse, inclusions: number): boolean {
+function isComplete(quote: Quote, inclusions: number, exclusions: number): boolean {
   return (
-    response.project !== null &&
-    response.rush_fee !== null &&
-    response.recurring !== null &&
-    response.deposit !== null &&
-    response.timeline_days !== null &&
-    response.revisions !== null &&
+    quote.project !== null &&
+    quote.rush_fee !== null &&
+    quote.recurring !== null &&
+    quote.deposit !== null &&
+    quote.timeline_days !== null &&
+    quote.revisions !== null &&
     inclusions > 0 &&
-    response.exclusions.filter((line) => line.trim().length > 0).length > 0
+    exclusions > 0
   );
 }
 
@@ -84,7 +84,7 @@ export function evaluatePricing(
     due_now: quote.due_now,
     on_delivery: quote.on_delivery,
     margin_percent: margin,
-    complete: isComplete(response, included.length),
+    complete: isComplete(quote, included.length, exclusions.length),
     // A deposit larger than the work it is a deposit on is not a deposit.
     deposit_within_total:
       quote.deposit === null || total === null
@@ -99,7 +99,10 @@ export function evaluatePricing(
     // The gate: a quote below what delivery costs loses money on every hour of it.
     at_or_above_floor: total === null ? false : total >= basis.floor,
     covers_risk: total === null ? false : total >= basis.covered,
-    margin_at_least_floor: margin !== null && margin >= pricing.margin.floor_percent,
+    // The displayed margin is rounded to a whole percent. The policy gate is not: a true 39.6%
+    // margin does not become a 40% margin merely because the label rounds to 40.
+    margin_at_least_floor:
+      total !== null && total >= totalForMargin(basis, pricing.margin.floor_percent),
     scope: Object.fromEntries(
       pricing.scope.map((item) => [
         item.id,
