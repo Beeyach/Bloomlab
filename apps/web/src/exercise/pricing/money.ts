@@ -29,20 +29,22 @@ export const percentOf = (amount: number, share: number): number => dollars((amo
 
 /** A number the learner typed, as whole dollars, or null when they have not typed one. */
 export function money(value: unknown): number | null {
-  if (typeof value === 'number' && Number.isFinite(value)) return dollars(value);
+  if (typeof value === 'number' && Number.isFinite(value))
+    return value >= 0 ? dollars(value) : null;
   if (typeof value !== 'string') return null;
   const cleaned = value.replace(/[$,\s]/g, '');
   if (cleaned.length === 0) return null;
   const parsed = Number(cleaned);
-  return Number.isFinite(parsed) ? dollars(parsed) : null;
+  return Number.isFinite(parsed) && parsed >= 0 ? dollars(parsed) : null;
 }
 
-/** A whole count the learner typed (revisions, days), or null. */
+/** A whole non-negative count the learner typed (revisions, days), or null. */
 export function count(value: unknown): number | null {
-  if (typeof value === 'number' && Number.isFinite(value)) return Math.round(value);
+  if (typeof value === 'number' && Number.isFinite(value))
+    return value >= 0 ? Math.round(value) : null;
   if (typeof value !== 'string') return null;
   const cleaned = value.trim();
   if (cleaned.length === 0) return null;
   const parsed = Number(cleaned);
-  return Number.isFinite(parsed) ? Math.round(parsed) : null;
+  return Number.isFinite(parsed) && parsed >= 0 ? Math.round(parsed) : null;
 }
