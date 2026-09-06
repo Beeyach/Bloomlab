@@ -155,13 +155,29 @@ export async function startAttempt(
 const writes = new Map<string, Promise<unknown>>();
 
 function enqueue<T>(key: string, work: () => Promise<T>): Promise<T> {
-  const queued = (writes.get(key) ?? Promise.resolve()).then(work, work);
-  // A failed write must not wedge the queue: the next edit still runs.
-  writes.set(
-    key,
-    queued.catch(() => undefined),
-  );
+  // Recover from an earlier failed edit before running the next one, but keep this edit's own
+  // rejection visible in the queue. Finalization can then refuse to record stale work if the
+  // latest save failed instead of silently grading the previous persisted draft.
+  const queued = (writes.get(key) ?? Promise.resolve())
+    .catch(() => undefined)
+    .then(work);
+  writes.set(key, queued);
   return queued;
+}
+
+/**
+ * Waits for every edit already queued for this attempt.
+ *
+ * Submit is a boundary, not another edit: it must see the last keystroke even when IndexedDB has
+ * not finished writing it yet. Because enqueue is synchronous, a save triggered by the input
+ * event is already in this queue before a later click can begin finalization.
+ */
+export async function flushAttemptWrites(
+  exerciseId: string,
+  context: AttemptContext = NORMAL_RUN,
+): Promise<void> {
+  const pending = writes.get(attemptKey(exerciseId, context));
+  if (pending) await pending;
 }
 
 async function update(
