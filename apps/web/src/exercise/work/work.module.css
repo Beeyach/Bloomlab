@@ -412,3 +412,139 @@
     grid-row: span 3;
   }
 }
+
+/* The deal desk (Phase 17). Seven areas of one object, not seven cards. Nothing here shows what
+   the work costs: hours, cost, floor and margin are hidden until the attempt is in (EXR-016). */
+.dealArea {
+  display: grid;
+  gap: var(--bl-space-3);
+  align-content: start;
+  padding: var(--bl-space-4) 0 0;
+  border-top: 1px solid var(--bl-color-border);
+  min-width: 0;
+}
+
+.dealArea:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.requirements {
+  display: grid;
+  gap: var(--bl-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.requirement {
+  display: grid;
+  gap: 2px;
+  padding-left: var(--bl-space-3);
+  border-left: 2px solid var(--bl-color-border);
+  min-width: 0;
+}
+
+.requirement[data-answered='false'] {
+  border-left-color: var(--bl-color-border-strong);
+}
+
+.requirementNeed {
+  overflow-wrap: anywhere;
+}
+
+.requirementState {
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+.scope {
+  display: grid;
+  gap: var(--bl-space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.scopeLine {
+  min-width: 0;
+}
+
+/* Two money fields sit side by side where there is room and stack where there is not. */
+.dealFields {
+  display: grid;
+  gap: var(--bl-space-4);
+}
+
+@media (min-width: 600px) {
+  .dealFields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+/* The learner's own arithmetic. Tabular so a changed digit does not move the row. */
+.totals {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--bl-space-1) var(--bl-space-4);
+  margin: 0;
+  padding: var(--bl-space-3) var(--bl-space-4);
+  border: 1px solid var(--bl-color-border);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-snow);
+}
+
+.totals dt {
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+.totals dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.totalValue {
+  font-family: var(--bl-font-display);
+  font-size: var(--bl-font-size-lg);
+  font-weight: var(--bl-font-weight-semibold);
+}
+
+.exclusions {
+  display: grid;
+  gap: var(--bl-space-3);
+}
+
+.exclusion {
+  display: grid;
+  gap: var(--bl-space-1);
+  min-width: 0;
+}
+
+/* The reveal, after submission: what the deal cost, what it had to clear, what it made. */
+.reveal {
+  display: grid;
+  gap: var(--bl-space-3);
+  min-width: 0;
+}
+
+.revealRows {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--bl-space-1) var(--bl-space-4);
+  margin: 0;
+}
+
+.revealRows dt {
+  font-size: var(--bl-font-size-sm);
+  color: var(--bl-color-text-soft);
+}
+
+.revealRows dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

@@ -4,11 +4,13 @@ import type { Exercise } from '@bloomlab/content-schema';
 
 import { randomId } from '../../data/envelope';
 import { saveResponse, type ActiveAttempt, type AttemptContext } from '../attempt';
-import { predictionFields, salesOf, writtenOf, type LearnerResponse } from '../response';
+import type { PricingResponse } from '../pricing';
+import { predictionFields, pricingOf, salesOf, writtenOf, type LearnerResponse } from '../response';
 import { treatmentFor } from '../runnerCopy';
 import type { SalesResponse } from '../sales';
 import { AuditDesk } from './AuditDesk';
 import { ClientThread } from './ClientThread';
+import { DealDesk } from './DealDesk';
 import { ProspectDesk } from './ProspectDesk';
 import { WrittenAnswer } from './WrittenAnswer';
 import styles from './work.module.css';
@@ -48,6 +50,10 @@ export function WorkSurface({
   const sales = salesOf(draft);
   const updateSales = (change: Partial<SalesResponse>) =>
     update({ sales: { ...sales, ...change } });
+
+  const pricing = pricingOf(draft);
+  const updatePricing = (change: Partial<PricingResponse>) =>
+    update({ pricing: { ...pricing, ...change } });
 
   const evidenceFor = (key: string) => sales.citations[key] ?? [];
   const toggleCitation = (key: string, id: string) => {
@@ -108,6 +114,15 @@ export function WorkSurface({
           sales={sales}
           disabled={disabled}
           onChange={(prospects) => updateSales({ prospects })}
+        />
+      )}
+
+      {exercise.pricing && (
+        <DealDesk
+          exercise={exercise}
+          pricing={pricing}
+          disabled={disabled}
+          onChange={updatePricing}
         />
       )}
 

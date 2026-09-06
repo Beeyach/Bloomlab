@@ -14,6 +14,8 @@ import { content } from '../content/bundle';
 import { sessionContentOf, type LearnerSnapshot } from '../data/learning';
 import type { ExerciseAttemptRecord } from '../data/types';
 import { describeStep, skillTitle, stepDestination } from '../screens/learningCopy';
+import { pricingOf } from './response';
+import { DealReveal } from './work/DealReveal';
 import {
   ASSISTANCE_WORDS,
   DIMENSION_WORDS,
@@ -138,6 +140,12 @@ export function ResultView({
     report?.outcome === 'passed' &&
     attempt.assistance === 'independent' &&
     attempt.mode !== 'guided';
+  // The hidden half of a priced deal, revealed now that the attempt is in (EXR-016). It is built
+  // from the response kept with the finished attempt, so it survives the draft being cleared.
+  const priced =
+    content.exercises.find(
+      (candidate) => candidate.id === attempt.exercise_id && candidate.pricing !== null,
+    ) ?? null;
 
   return (
     <section
@@ -178,6 +186,12 @@ export function ResultView({
               </dl>
             </div>
           ))}
+        </Surface>
+      )}
+
+      {priced && attempt.response && (
+        <Surface padding="md" className={styles.tier}>
+          <DealReveal exercise={priced} response={pricingOf(attempt.response)} />
         </Surface>
       )}
 
