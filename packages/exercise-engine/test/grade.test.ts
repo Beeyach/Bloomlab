@@ -71,6 +71,53 @@ describe('scoring (D-067)', () => {
     expect(report.outcome).toBe('passed');
   });
 
+  it('PRICE IT cannot average away a failed required deal constraint', () => {
+    const state = { f: { required: false, q1: true, q2: true, q3: true } };
+    const report = gradeExercise({
+      exercise: exercise({
+        type: 'PRICE_IT',
+        expected_outcomes: [
+          assertion({
+            id: 'required',
+            type: 'state',
+            path: 'f.required',
+            operator: 'equals',
+            value: true,
+          }),
+          assertion({
+            id: 'q1',
+            tier: 'quality',
+            type: 'state',
+            path: 'f.q1',
+            operator: 'equals',
+            value: true,
+          }),
+          assertion({
+            id: 'q2',
+            tier: 'quality',
+            type: 'state',
+            path: 'f.q2',
+            operator: 'equals',
+            value: true,
+          }),
+          assertion({
+            id: 'q3',
+            tier: 'quality',
+            type: 'state',
+            path: 'f.q3',
+            operator: 'equals',
+            value: true,
+          }),
+        ],
+        grading: { mode: 'deterministic', pass_threshold: 70 },
+      }),
+      context: context({ state }),
+    });
+    expect(report.score).toBe(75);
+    expect(report.outcome).toBe('failed');
+    expect(report.reason).toBe('required_failure');
+  });
+
   it('counts quality with required and leaves bonus out of the denominator', () => {
     const state = { f: { a: true, b: false, c: true } };
     const report = gradeExercise({
