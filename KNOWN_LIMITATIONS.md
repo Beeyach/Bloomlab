@@ -2,7 +2,7 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-08 (end of Phase 13)
+Last updated: 2026-09-06 (end of Phase 16)
 
 ## Current state
 
@@ -367,3 +367,48 @@ Last updated: 2026-09-08 (end of Phase 13)
   p95 57, max 165, compute 87), and Phase 13 established that pre-Phase-13 `main` reproduces them
   in the same container. PERF-002 must not be claimed for this scenario from container evidence; it
   needs one run on the reference desktop.
+
+## Phase 16 — Sales Exercises
+
+- **No prose is judged yet.** Every selling exercise is `mixed`: the deterministic half runs now
+  and the written half names a rubric the AI gateway executes in Phase 19. A learner who does
+  everything right sees a score of 100 and `rubric_pending`, not a pass. Nothing here reads whether
+  an email is persuasive, whether a reason is good or whether an explanation is clear, and nothing
+  pretends to (AI-006).
+- **The client thread branches on the move, not on the words.** The learner writes the message and
+  says what they are doing; the branch follows that. A reply sent without a move takes the authored
+  fallback and the client asks what was meant. That is a real conversation with authored
+  consequences, and it is not natural-language understanding: two different questions inside the
+  same move reach the same reply.
+- **Discovery is written, not spoken.** SAL-004 and SAL-005 are trained and measured over a written
+  thread. Voice discovery, the Call Room and `EX-SAY_IT-summit-discovery` (which still asserts on
+  `call.*` and is still un-runnable) wait for Phases 20 and 21. Nothing in Phase 16 judges accent,
+  pace or delivery, and it should not be read as having done so.
+- **Jargon counting is one signal, not a measure of clarity.** `explanation.owner_jargon_count`
+  counts distinct glossary terms that are not marked `owner_safe`, whole-word with an optional
+  plural. It does not understand context: an owner explanation that names a term in order to say
+  the reader will never have to touch it is still counted, and an explanation full of ordinary
+  words arranged badly counts zero. The rubric is what judges the writing.
+- **Frame coverage is authored markers, not comprehension.** `explanation.frame_covered` reports
+  which of problem, consequence, system and outcome the exercise's own marker phrases found. An
+  explanation that covers a part in wording the exercise did not anticipate reads as uncovered, and
+  the learner is told what was counted rather than being marked down silently for it.
+- **The prospects are three, and they are authored.** There is no live business research, no
+  scraping and no real company data anywhere in Phase 16 — the evidence packs are fiction written
+  for the exercise. The twenty-industry client library and the full Field Ready sales curriculum
+  are Phase 24.
+- **Nothing is sent.** No email leaves Bloomlab, no inbox is connected and no message reaches a
+  real person. A payment reminder is an exercise about writing a payment reminder.
+- **Pricing and negotiation are deliberately absent.** The closing thread stops at the decision and
+  the next step; it never quotes, discounts or trades scope. `EX-PRICE_IT-summit-application-funnel`
+  and `EX-NEGOTIATE_IT-summit-freelancer-quote` are untouched and remain un-runnable, waiting for
+  Phases 17 and 18.
+- **`review:learning` cannot complete in this container, on Phase 16 or on `main`.** Its second
+  device fails to link (`bLinked: false`), so the two-device half of the probe does not run. The
+  same failure was reproduced on `7e391ca` in the same container before the phase was reviewed, so
+  it is the environment rather than a regression; the single-device half (recording evidence and
+  the derived rows) passes on both.
+- **The Workflow Lab frame-timing probe still misses its ceiling, unchanged again.**
+  `review:workflow` → `five-hundred-events` reported p95 under 50 ms this time and still exceeded
+  the 100 ms maximum-frame and long-task ceilings for 504 events. Phase 16 touches nothing in that
+  path; PERF-002 still needs one run on the reference desktop rather than a container claim.

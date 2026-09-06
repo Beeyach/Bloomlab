@@ -1,0 +1,92 @@
+# WRITE IT (EXR-014): explaining a proposal to the person who has to approve it, and answering a
+# request that is bigger than what was quoted.
+id: EX-WRITE_IT-summit-proposal-questions
+type: WRITE_IT
+title: The proposal, and the thing that was not in it
+mode: practice
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-DELIVER-proposal-writing
+client: CL-summit-coaching
+format: proposal_explanation
+instructions: |
+  Marcus has your proposal in front of him. He has read the price and skipped the middle.
+
+  Write the email that explains what he is actually buying: the problem it fixes, what it costs
+  him now, what the system does, and what changes when it runs. Under 200 words, and no builder
+  vocabulary.
+
+  Then answer this, which arrived an hour later: "Can you also rebuild the application form so it
+  scores people out automatically? Assume it's part of this." Under 150 words. Say plainly whether
+  it is in scope, what it would take, and what you need from him.
+allowed_features: []
+starting_state: {}
+response_markers:
+  problem: ['no-show', 'no show', 'miss the call', 'do not show', "don't show", 'empty slot']
+  consequence: ['costs', 'lost', 'wasted', 'per week', 'a month', 'revenue', 'hours']
+  system: ['reminder', 'text', 'the day before', 'follow-up', 'rebook', 'workflow']
+  outcome: ['show up', 'fewer', 'more calls kept', 'back on the calendar', 'rebooked']
+sales:
+  frame:
+    - element: problem
+      markers: [problem]
+    - element: consequence
+      markers: [consequence]
+    - element: system
+      markers: [system]
+    - element: outcome
+      markers: [outcome]
+written_fields:
+  - key: proposal_explanation
+    label: What he is buying
+    help: Under 200 words, for a man who wants the numbers and skips adjectives.
+    rows: 12
+    audience: owner
+    max_words: 200
+    next_step: true
+    message_type: proposal_explanation
+  - key: scope_response
+    label: The answer about the application form
+    help: Under 150 words. In scope or not, what it would take, what you need from him.
+    rows: 10
+    audience: owner
+    max_words: 150
+    next_step: true
+    message_type: scope_response
+expected_outcomes:
+  - id: a1
+    type: state
+    path: message.all_answered
+    operator: equals
+    value: true
+    description: Both messages are written.
+  - id: a2
+    type: state
+    path: message.within_word_limit
+    operator: equals
+    value: true
+    description: Both are inside the caps the brief set.
+  - id: a3
+    type: state
+    path: message.has_next_step
+    operator: equals
+    value: true
+    description: Each message ends on one next step.
+  - id: a4
+    type: state
+    path: explanation.frame_covered
+    operator: gte
+    value: 3
+    tier: quality
+    description: The explanation gets from the problem to what changes, not just to what it does.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: 'Marcus checks whether you listened. If the proposal explanation does not use a number he gave you, he will notice.'
+fieldwork: null
+portfolio: null

@@ -13,7 +13,9 @@ import type { ExerciseAttemptRecord } from '../data/types';
 import {
   contextOf,
   discardAttempt,
+  flushAttemptWrites,
   isValidRetrievalTarget,
+  loadAttempt,
   type ActiveAttempt,
   type AttemptContext,
 } from './attempt';
@@ -38,8 +40,26 @@ export const EVIDENCE_KIND_BY_MODE: Record<Exercise['mode'], EvidenceKind> = {
   pressure: 'pressure_test',
 };
 
+/**
+ * The selling families produce their own kind of evidence, whatever mode they are authored in
+ * (spec §30; the mastery rules' own list). Doing the work in a sales context is what a skill's
+ * `sales_use` requirement is asking for, and explaining a system to an audience is `explanation`.
+ * A guided run is still guided practice: assistance decides that, not the family.
+ */
+export const EVIDENCE_KIND_BY_TYPE: Partial<Record<Exercise['type'], EvidenceKind>> = {
+  PROSPECT_IT: 'sales_use',
+  AUDIT_IT: 'sales_use',
+  WRITE_IT: 'sales_use',
+  SAY_IT: 'sales_use',
+  PRICE_IT: 'sales_use',
+  NEGOTIATE_IT: 'sales_use',
+  EXPLAIN_IT: 'explanation',
+};
+
 export function evidenceKindFor(exercise: Exercise, run: ActiveAttempt['run']): EvidenceKind {
-  return run === 'retrieval' ? 'retrieval' : EVIDENCE_KIND_BY_MODE[exercise.mode];
+  if (run === 'retrieval') return 'retrieval';
+  if (exercise.mode === 'guided') return EVIDENCE_KIND_BY_MODE.guided;
+  return EVIDENCE_KIND_BY_TYPE[exercise.type] ?? EVIDENCE_KIND_BY_MODE[exercise.mode];
 }
 
 export class RetrievalTargetError extends Error {
@@ -156,56 +176,66 @@ export async function finalizeAttempt(
   database: BloomlabDatabase = db,
   options: { now?: Date } = {},
 ): Promise<FinalizedAttempt> {
-  const existing = await database.exercise_attempts.get(attempt.attempt_id);
+  const attemptContext = contextOf(attempt);
+  // Every edit already triggered by the learner must cross the persistence door before submit
+  // reads the attempt. Otherwise clicking Run it immediately after typing can grade and preserve
+  // the older React snapshot while the last keystroke is still waiting on IndexedDB.
+  await flushAttemptWrites(exercise.id, attemptContext);
+  const current = (await loadAttempt(exercise.id, attemptContext, database)) ?? attempt;
+
+  const existing = await database.exercise_attempts.get(current.attempt_id);
   if (existing) {
-    await discardAttempt(exercise.id, contextOf(attempt), database);
+    await discardAttempt(exercise.id, attemptContext, database);
     return {
       attempt: existing,
-      report: existing.grade ?? gradeAttempt(exercise, attempt),
+      report: existing.grade ?? gradeAttempt(exercise, current),
       recorded: false,
     };
   }
   if (!canGradeNow(exercise)) throw new NotGradableError(exercise.id);
   // Refused before anything is written, so a malformed retrieval can never reach the record.
-  const skillIds = skillsForAttempt(exercise, attempt);
+  const skillIds = skillsForAttempt(exercise, current);
 
   // Read the runtime's own state now, once, so the report is of the account as it stood at
   // submission and cannot drift while the evidence is being written.
   const runtime = runtimeFor(exercise);
   const context = runtime
-    ? await runtime.context(exercise, learnerState(exercise, attempt.response))
+    ? await runtime.context(exercise, learnerState(exercise, current.response))
     : null;
   if (runtime && !context) throw new RuntimeUnavailableError(exercise.id, runtime.id);
-  const report = gradeAttempt(exercise, attempt, context);
+  const report = gradeAttempt(exercise, current, context);
   const completedAt = (options.now ?? new Date()).toISOString();
   const { attempt: row } = await recordEvidence(
     {
       skill_ids: skillIds,
-      kind: evidenceKindFor(exercise, attempt.run),
+      kind: evidenceKindFor(exercise, current.run),
       result: RESULT_BY_OUTCOME[report.outcome],
       source: {
-        type: attempt.run === 'retrieval' ? 'retrieval' : 'exercise',
+        type: current.run === 'retrieval' ? 'retrieval' : 'exercise',
         id: exercise.id,
       },
       exercise_id: exercise.id,
       exercise_type: exercise.type,
       score: report.score,
-      hints_used: attempt.hints_revealed,
+      hints_used: current.hints_revealed,
       difficulty: exercise.difficulty,
       critical_failures: report.failed_critical,
       // A retrieval run carries no authored mode: it is review, not the exercise's normal use.
-      mode: attempt.run === 'retrieval' ? null : exercise.mode,
+      mode: current.run === 'retrieval' ? null : exercise.mode,
       occurred_at: completedAt,
-      started_at: attempt.started_at,
-      attempt_id: attempt.attempt_id,
+      started_at: current.started_at,
+      attempt_id: current.attempt_id,
       evidence_ids: Object.fromEntries(
-        skillIds.map((skillId) => [skillId, `ea:${attempt.attempt_id}:${skillId}`]),
+        skillIds.map((skillId) => [skillId, `ea:${current.attempt_id}:${skillId}`]),
       ),
       grade: report,
+      // The work itself travels with the attempt: a sales thread and the writing in it are the
+      // evidence, and the draft is cleared two lines below.
+      response: current.response,
     },
     database,
   );
-  await discardAttempt(exercise.id, contextOf(attempt), database);
+  await discardAttempt(exercise.id, attemptContext, database);
   if (!row) throw new Error('An exercise attempt must produce an attempt row');
   return { attempt: row, report, recorded: true };
 }

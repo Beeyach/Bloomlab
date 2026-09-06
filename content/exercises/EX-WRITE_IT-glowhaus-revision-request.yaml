@@ -1,0 +1,71 @@
+# WRITE IT (EXR-014, SAL-013): a change request, and explaining what the system does to somebody
+# who will never open it.
+id: EX-WRITE_IT-glowhaus-revision-request
+type: WRITE_IT
+title: She wants it changed
+mode: practice
+difficulty: 3
+estimated_minutes: 20
+skills:
+  - SK-DELIVER-client-explanation
+client: CL-glowhaus-medspa
+format: revision
+instructions: |
+  Priya has read the reminder text and wants it rewritten in her own voice, and she wants it sent
+  the morning of the appointment instead of the night before.
+
+  Write the revision reply. Say which part you will change today, which part you would push back on
+  and why, and whether any of it changes the price. Under 150 words.
+
+  Then write the technical explanation she asked for underneath: "so what actually happens when
+  someone books?" Under 150 words, for a woman who has never opened a workflow builder and does
+  not want to.
+allowed_features: []
+starting_state: {}
+written_fields:
+  - key: revision
+    label: The revision reply
+    help: Under 150 words. What changes, what you would push back on, what it costs.
+    rows: 10
+    audience: owner
+    max_words: 150
+    next_step: true
+    message_type: revision
+  - key: technical_explanation
+    label: What happens when someone books
+    help: Under 150 words, in her language.
+    rows: 10
+    audience: owner
+    max_words: 150
+    next_step: false
+    message_type: technical_explanation
+expected_outcomes:
+  - id: a1
+    type: state
+    path: message.all_answered
+    operator: equals
+    value: true
+    description: Both messages are written.
+  - id: a2
+    type: state
+    path: message.within_word_limit
+    operator: equals
+    value: true
+    description: Both are inside the caps the brief set.
+  - id: a3
+    type: state
+    path: explanation.owner_jargon_count
+    operator: lte
+    value: 1
+    tier: quality
+    description: The explanation stays in her language.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: Moving the reminder to the morning of is a real decision with a real cost. Say what it costs before you agree to it.
+fieldwork: null
+portfolio: null

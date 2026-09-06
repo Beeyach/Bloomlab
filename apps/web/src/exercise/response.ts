@@ -1,6 +1,8 @@
 import type { Exercise } from '@bloomlab/content-schema';
 import { LEARNER_STATE_ROOTS } from '@bloomlab/exercise-engine';
 
+import { emptySalesResponse, salesState, type JargonTerm, type SalesResponse } from './sales';
+
 /**
  * Turning what the learner supplied into the state tree the grader reads.
  *
@@ -24,6 +26,12 @@ export interface LearnerResponse {
    * `written` and resumes with none rather than failing to load.
    */
   written?: Record<string, string>;
+  /**
+   * The selling families' structured work: the businesses judged, the findings written, the next
+   * steps and citations attached to each message, and the client thread (Phase 16). Optional for
+   * the same reason `written` is — a draft saved before it existed resumes without it.
+   */
+  sales?: SalesResponse;
 }
 
 export const emptyResponse = (): LearnerResponse => ({
@@ -31,11 +39,18 @@ export const emptyResponse = (): LearnerResponse => ({
   choice: null,
   prediction: {},
   written: {},
+  sales: emptySalesResponse(),
 });
 
 /** The named answers on a response, tolerating a draft saved before they existed. */
 export const writtenOf = (response: LearnerResponse): Record<string, string> =>
   response.written ?? {};
+
+/** The sales half of a response, tolerating a draft saved before it existed. */
+export const salesOf = (response: LearnerResponse): SalesResponse => ({
+  ...emptySalesResponse(),
+  ...(response.sales ?? {}),
+});
 
 /**
  * The marker keys whose phrases appear in the text, case-insensitively. Deterministic: the same
@@ -49,13 +64,14 @@ export function markersIn(text: string, markers: Exercise['response_markers']): 
 }
 
 /**
- * The `prediction` / `decision` / `answer` roots of the grading state tree. Every path an
- * authored assertion can read is present, so a check never fails merely because the runner did
- * not think to supply it.
+ * The learner-supplied roots of the grading state tree: `prediction`, `decision`, `answer`,
+ * `written`, and the five sales projections. Every path an authored assertion can read is
+ * present, so a check never fails merely because the runner did not think to supply it.
  */
 export function learnerState(
   exercise: Exercise,
   response: LearnerResponse,
+  options: { vocabulary?: readonly JargonTerm[] } = {},
 ): Record<string, unknown> {
   const named = writtenOf(response);
   // Markers are matched against everything the learner wrote, the free response and every named
@@ -77,6 +93,16 @@ export function learnerState(
     written[`${field.key}_mentions`] = markersIn(value, exercise.response_markers);
     written[`${field.key}_answered`] = value.trim().length > 0;
   }
+  // The five sales roots, from the same response, computed by the same functions the work area
+  // shows its own feedback from (Phase 16). An exercise that is not a sales family carries them
+  // empty, exactly as `written` has always been empty for an exercise with no named answers.
+  const sales = salesState({
+    exercise,
+    written: named,
+    sales: salesOf(response),
+    markersIn: (text) => markersIn(text, exercise.response_markers),
+    vocabulary: options.vocabulary,
+  });
   return {
     prediction: { ...response.prediction, text: response.text },
     decision: {
@@ -86,6 +112,7 @@ export function learnerState(
     },
     answer,
     written,
+    ...sales,
   };
 }
 

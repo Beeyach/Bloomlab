@@ -1,0 +1,67 @@
+# WRITE IT (EXR-014): the unpaid invoice, and the extra work worth offering.
+id: EX-WRITE_IT-summit-invoice
+type: WRITE_IT
+title: The invoice, and what comes next
+mode: practice
+difficulty: 2
+estimated_minutes: 20
+skills:
+  - SK-DELIVER-proposal-writing
+client: CL-summit-coaching
+format: payment_reminder
+instructions: |
+  Summit's second invoice was due eleven days ago. The work is delivered and running. Marcus is not
+  avoiding you; he is just slow with admin, and you would like to be paid without making it strange.
+
+  Write the payment reminder. Under 100 words. Firm, easy to act on, no apology for asking.
+
+  Then write the upsell. Their booking system is live and the no-show rate is down. The next real
+  gap is that nobody follows up the people who book a call and never turn up to the second one.
+  Offer that as a piece of work. Under 150 words, and do not sell it as an upgrade to something
+  that is already fine.
+allowed_features: []
+starting_state: {}
+written_fields:
+  - key: payment_reminder
+    label: The payment reminder
+    help: Under 100 words. Say what is owed and make it easy to pay.
+    rows: 8
+    audience: owner
+    max_words: 100
+    next_step: true
+    message_type: payment_reminder
+  - key: upsell
+    label: The next piece of work
+    help: Under 150 words. A problem he has, not a package you sell.
+    rows: 10
+    audience: owner
+    max_words: 150
+    next_step: true
+    message_type: upsell
+expected_outcomes:
+  - id: a1
+    type: state
+    path: message.all_answered
+    operator: equals
+    value: true
+    description: Both messages are written.
+  - id: a2
+    type: state
+    path: message.within_word_limit
+    operator: equals
+    value: true
+    description: Both are inside the caps the brief set.
+  - id: a3
+    type: state
+    path: message.has_next_step
+    operator: equals
+    value: true
+    description: Each message ends on one next step.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
+  pass_threshold: 70
+hints: []
+fieldwork: null
+portfolio: null

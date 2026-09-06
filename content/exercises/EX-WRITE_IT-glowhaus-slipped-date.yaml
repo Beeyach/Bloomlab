@@ -1,0 +1,68 @@
+# WRITE IT (EXR-014, SAL-013): the date moved, and something needs her decision.
+id: EX-WRITE_IT-glowhaus-slipped-date
+type: WRITE_IT
+title: The date moved
+mode: practice
+difficulty: 3
+estimated_minutes: 20
+skills:
+  - SK-DELIVER-client-explanation
+client: CL-glowhaus-medspa
+format: delay
+instructions: |
+  You told Priya the whole system would be live on the 18th. It will not be. The phone access took
+  eight days to arrive and the second location's calendar has different opening hours than you were
+  told, which means the reminders need rebuilding for it.
+
+  Write the delay message. What changed, the new date, what it means for her, and what you are
+  doing so it does not move again. Under 150 words. No excuses and no vague "unforeseen issues".
+
+  Then write the approval request. Her second location closes at 15:00 on Fridays, so the
+  afternoon reminder would land after they shut. You can either send it earlier on Fridays or skip
+  Friday afternoons entirely. She has to pick. Under 100 words.
+allowed_features: []
+starting_state: {}
+written_fields:
+  - key: delay
+    label: The delay message
+    help: Under 150 words. What changed, the new date, what it costs her.
+    rows: 10
+    audience: owner
+    max_words: 150
+    next_step: false
+    message_type: delay
+  - key: approval
+    label: The decision you need from her
+    help: Under 100 words. Two options, what each one means, and when you need the answer.
+    rows: 8
+    audience: owner
+    max_words: 100
+    next_step: true
+    message_type: approval
+expected_outcomes:
+  - id: a1
+    type: state
+    path: message.all_answered
+    operator: equals
+    value: true
+    description: Both messages are written.
+  - id: a2
+    type: state
+    path: message.within_word_limit
+    operator: equals
+    value: true
+    description: Both are inside the caps the brief set.
+  - id: a3
+    type: state
+    path: message.has_next_step
+    operator: equals
+    value: true
+    description: The approval request says exactly what you need her to decide.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
+  pass_threshold: 70
+hints: []
+fieldwork: null
+portfolio: null

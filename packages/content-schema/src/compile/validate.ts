@@ -708,6 +708,59 @@ export function crossValidate(parsed: ParsedContent, issues: IssueList): GraphRe
         'portfolio',
         'portfolio item',
       );
+    if (exercise.conversation?.client) {
+      requireRef(
+        'MISSING_CLIENT',
+        look.clients,
+        exercise.conversation.client,
+        exercise,
+        'conversation.client',
+        'client',
+      );
+    }
+    // A sales exercise is only honest if the learner's evidence is what a learner could see. A
+    // hidden fact copied into the evidence pack, a client's message or the brief hands over
+    // something nobody observed and turns an audit into a memory test (SAL-001, §23, §35).
+    const secrets: string[] = [];
+    const collect = (facts: Record<string, string | number | boolean>) => {
+      for (const value of Object.values(facts)) {
+        if (typeof value === 'string' && value.trim().length >= 8) secrets.push(value.trim());
+      }
+    };
+    if (scenario) collect(scenario.hidden_facts);
+    for (const id of [exercise.client, exercise.conversation?.client, ...exercise.prospects]) {
+      const client = id ? look.clients.get(id) : undefined;
+      if (client) collect(client.hidden_facts);
+    }
+    const visible: { where: string; text: string }[] = [
+      { where: 'instructions', text: exercise.instructions },
+      ...exercise.sales.evidence.map((item, index) => ({
+        where: `sales.evidence.${index}.observation`,
+        text: item.observation,
+      })),
+      ...exercise.written_fields.map((field, index) => ({
+        where: `written_fields.${index}.help`,
+        text: `${field.label} ${field.help}`,
+      })),
+      ...exercise.hints.map((hint, index) => ({ where: `hints.${index}`, text: hint.text })),
+      ...(exercise.conversation?.nodes ?? []).map((node, index) => ({
+        where: `conversation.nodes.${index}.client_message`,
+        text: `${node.client_message} ${node.moves.map((move) => move.label).join(' ')}`,
+      })),
+    ];
+    for (const { where, text } of visible) {
+      const lowered = text.toLowerCase();
+      for (const secret of secrets) {
+        if (lowered.includes(secret.toLowerCase())) {
+          issues.error(
+            'HIDDEN_FACT_EXPOSED',
+            fileOf(exercise.id),
+            `${exercise.id} shows the learner a hidden fact ("${secret}") in ${where}`,
+            { id: exercise.id, path: where },
+          );
+        }
+      }
+    }
   }
 
   // ---- scenarios

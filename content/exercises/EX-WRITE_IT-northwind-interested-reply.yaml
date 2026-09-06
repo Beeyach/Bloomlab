@@ -1,0 +1,68 @@
+# WRITE IT (EXR-014): the reply when a cold email lands, and the recap that holds a call together.
+id: EX-WRITE_IT-northwind-interested-reply
+type: WRITE_IT
+title: He replied. Now what?
+mode: practice
+difficulty: 2
+estimated_minutes: 20
+skills:
+  - SK-SELL-discovery-call
+client: CL-northwind-hvac
+format: interested_reply
+instructions: |
+  Gary replied to your email with four words: "What does this cost?"
+
+  Write the reply. You do not know enough to price anything yet, and pretending you do is how you
+  end up quoting the wrong job. Ask for a short call without dodging the question. Under 100 words.
+
+  Then assume the call happened. Write the recap you send the same afternoon: what he told you,
+  what you would look at first, and what happens next. Under 150 words. Only put things in it that
+  he actually said on the call, which means you have to decide what he said and be consistent.
+allowed_features: []
+starting_state: {}
+written_fields:
+  - key: interested_reply
+    label: Your reply to "what does this cost?"
+    help: Under 100 words. Answer the question honestly and ask for the call.
+    rows: 8
+    audience: owner
+    max_words: 100
+    next_step: true
+    message_type: interested_reply
+  - key: discovery_recap
+    label: The recap after the call
+    help: Under 150 words. What he told you, in his words, and what happens next.
+    rows: 10
+    audience: owner
+    max_words: 150
+    next_step: true
+    message_type: discovery_recap
+expected_outcomes:
+  - id: a1
+    type: state
+    path: message.all_answered
+    operator: equals
+    value: true
+    description: Both messages are written.
+  - id: a2
+    type: state
+    path: message.within_word_limit
+    operator: equals
+    value: true
+    description: Both are inside the caps the brief set.
+  - id: a3
+    type: state
+    path: message.has_next_step
+    operator: equals
+    value: true
+    description: Each message ends on one next step.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: 'A price with no diagnosis behind it is a guess. Saying so is not dodging: it is the reason for the call.'
+fieldwork: null
+portfolio: null

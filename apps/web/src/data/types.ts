@@ -6,6 +6,8 @@
  */
 
 import type { GradeReport } from '@bloomlab/exercise-engine';
+
+import type { LearnerResponse } from '../exercise/response';
 import type {
   AssistanceLevel,
   EvidenceCounts,
@@ -94,6 +96,15 @@ export interface ExerciseAttemptRecord extends SyncEnvelope {
    * before Phase 9 and on evidence entered by hand.
    */
   grade?: GradeReport | null;
+  /**
+   * What the learner actually wrote and decided, kept with the finished attempt (Phase 16).
+   *
+   * A sales attempt's evidence is the work itself: the findings and how they were classified,
+   * the messages, the thread the learner held. The draft is cleared on finalize, so without this
+   * the transcript a rubric will one day read would be gone the moment it was submitted. Absent
+   * on attempts recorded before Phase 16 and on evidence entered by hand.
+   */
+  response?: LearnerResponse | null;
 }
 
 /** Derived: the engine's evaluation of one skill, materialised for screens and sync. */

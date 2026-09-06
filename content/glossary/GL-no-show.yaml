@@ -4,6 +4,7 @@ definition: >-
   An appointment status meaning the contact did not arrive. Distinct from Cancelled: a no-show
   should trigger recovery, a cancellation should not.
 aliases: [no show, did not attend]
+owner_safe: true
 related_skills:
   - SK-AUTOMATE-no-show-recovery
 ghl_features:

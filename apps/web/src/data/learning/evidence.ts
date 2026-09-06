@@ -13,6 +13,8 @@ import {
 
 import type { GradeReport } from '@bloomlab/exercise-engine';
 
+import type { LearnerResponse } from '../../exercise/response';
+
 import { db, type BloomlabDatabase } from '../db';
 import { nowIso } from '../envelope';
 import type { ExerciseAttemptRecord, SkillEvidenceRecord } from '../types';
@@ -56,6 +58,8 @@ export interface RecordEvidenceInput {
   started_at?: string;
   /** The deterministic grade, stored on the attempt row (D-069). */
   grade?: GradeReport | null;
+  /** What the learner wrote and decided, stored on the attempt row (Phase 16). */
+  response?: LearnerResponse | null;
 }
 
 export interface RecordEvidenceOptions extends RecomputeOptions {
@@ -112,6 +116,7 @@ export async function recordEvidence(
             mode: input.mode ?? null,
             versions,
             grade: input.grade ?? null,
+            response: input.response ?? null,
           },
           input.attempt_id,
         );

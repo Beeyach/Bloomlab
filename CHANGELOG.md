@@ -4,6 +4,23 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 16 · Sales Exercises
+
+- The authored half of the selling families in content: `sales` on an exercise (the evidence a learner can see, the hidden prospect briefs, the minimum findings, the presentation frame) and `conversation` (a branching client thread). Strict validation refuses what could not honestly be done or judged — an AUDIT IT with nothing observed first-hand, a prospect list where no business is right to skip, a Maybe that does not name what it is waiting on, an EXPLAIN IT with one audience, a thread that branches nowhere or ends nowhere, and a check on a sales figure the family does not produce. A hidden fact copied into learner-visible copy now fails the build (`HIDDEN_FACT_EXPOSED`).
+- Five learner-state roots and the pure projections behind them (D-151): `prospects`, `audit`, `message`, `explanation`, `conversation` in `apps/web/src/exercise/sales/`. One word counter, one talk share, one evidence rule, used by the work area and by the grader. Grader `2026.09.13`.
+- Four work areas inside the one runner: a business at a time with its evidence beside it and Contact / Maybe / Skip; a finding composer held to Verified / Likely / Unknown with the support rule said on the spot (D-153); a message with its cap counted as you type, the one next step it asks for and the evidence it may cite; and the same system explained twice for two readers.
+- The written client thread (D-154, CONV-002): the client writes, the learner picks what they are doing and writes back, and the branch follows the move. Sending without picking one takes the authored fallback and the client asks what was meant. The exchange survives a reload and travels with the finished attempt; nothing anywhere says "Correct."
+- Talk share and the early pitch as deterministic figures (D-156): a whole percent of the thread, penalised above 60 and not at it, and a pitch at or before the turn the client agreed on, which is a critical failure in the discovery exercise.
+- Jargon counted against the glossary, which gains `owner_safe` for the terms an owner already uses (D-155), and frame coverage read from the exercise's own markers rather than from the words "problem" and "outcome".
+- The selling families now write their own evidence kind: `sales_use` for PROSPECT IT, AUDIT IT, WRITE IT, SAY IT, PRICE IT and NEGOTIATE IT, `explanation` for EXPLAIN IT. The finished response is kept on the attempt record, so a thread is still there after it is submitted.
+- Content: `CL-ridgeline-roofing` and `CL-halcyon-yoga` (two businesses that are genuinely prospects, one of them right to skip), evidence packs for Northwind's outside-in audit, `EX-PROSPECT_IT-three-businesses` with hidden per-business evaluation (D-152), eight WRITE IT briefs covering all fifteen pieces EXR-014 and SAL-013 name, `EX-EXPLAIN_IT-no-show-system` for two audiences, and two authored threads: written discovery with Marcus and the nine days of silence after the proposal (D-159). `SALES_DISCOVERY_RUBRIC_V2` and `WRITTEN_COMMUNICATION_RUBRIC_V2` carry their topics and concepts as data (D-157); V1 of each is untouched. Content version 2026.09.13.
+- 164 new tests (1360 total) and `npm run review:sales` (24 sections), which drives the real screens across the five review widths, the keyboard path and reduced motion.
+
+### Fixed — Phase 16
+
+- **Attempt persistence had two lost-work races (D-158).** Every keystroke saves, and a sales work area has many fields. Writes are now queued per attempt so two edits cannot overwrite one another. Independent review found the submit-side race as well: pressing Run it while the latest save was queued could grade and preserve the older React snapshot. Submission now flushes pending writes and reloads the persisted attempt before grading; a failed latest save refuses finalization instead of recording stale work.
+- **PROSPECT IT schema now enforces the EXR-012 minimum of three businesses.** The Phase 16 exercise authored three, but the family validator still accepted a future two-business exercise. The schema and regression fixture now refuse fewer than three.
+
 ### Added — Phase 15 · Troubleshooting and Reporting
 
 - Funnel visit telemetry in the shared engine (D-134). Five events join the catalogue (51): `FUNNEL_VISIT_STARTED`, `FUNNEL_STEP_VIEWED`, `FUNNEL_SCROLL_RECORDED`, `FUNNEL_FORM_STARTED` and `FUNNEL_VISIT_ENDED`. A visit records where it came from, which steps it saw, how far down each one it got, which forms it started and how it ended. Reach only ever deepens, and a visit that has ended refuses more telemetry.

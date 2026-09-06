@@ -255,15 +255,35 @@ Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine a
 ## Phase 16 — Sales exercises
 
 - **SAL-001** AUDIT IT requires a classification per finding; an unsupported VERIFIED claim loses points (test).
+  - **PASSED (Phase 16).** A finding stands up only when its evidence carries it: Verified needs at least one item the learner observed first-hand, Likely needs evidence and stays labelled an inference, Unknown needs what would confirm it. Everything else is an unsupported claim, counted by `audit.unsupported_claims`, which `EX-AUDIT_IT-northwind-outside-in` requires to be zero. Confident wording changes nothing, because nothing reads the wording. The work area says so at the moment it happens rather than at submission.
+  - Evidence: `apps/web/src/exercise/sales/sales.test.ts` (the AUDIT IT block: an unsupported Verified scores below a clean run of the same three findings), `npm run review:sales` → `audit-unsupported-verified`.
 - **SAL-002 / EXR-012** PROSPECT IT presents ≥ 3 businesses; Skip with sound reasoning can score full marks.
+  - **PASSED (Phase 16).** `EX-PROSPECT_IT-three-businesses` puts Northwind, Ridgeline and Halcyon in front of the learner with only what can be seen of each. Halcyon is right to skip and Ridgeline is a defensible Maybe, so contacting all three fails the deterministic half. A Skip with the dimensions named and the evidence cited scores 100 on that half, exactly as a Contact would. "Sound reasoning" is never the length of the reason: it is the decision the brief accepts plus evidence behind every dimension named.
+  - Evidence: `apps/web/src/exercise/sales/sales.test.ts` (PROSPECT IT block, including "does not read the length of the reason"), `npm run review:sales` → `prospect-opens`, `prospect-skip`.
 - **SAL-003 / EXR-014** WRITE IT cold-email rubric checks opener, evidence, relevance, problem, CTA, follow-up.
+  - **PASSED (Phase 16).** `WRITTEN_COMMUNICATION_RUBRIC_V2` carries all six as data on the items, so the claim is checked rather than read. `EX-WRITE_IT-northwind-cold-email` asks for the email and the follow-up, caps both, asks each for one next step, and requires the first to cite something observed first-hand. V1 is unchanged for the attempts it judged. The rubric itself is executed by the AI gateway in Phase 19; until then the exercise reports `rubric_pending` rather than a verdict.
+  - Evidence: `apps/web/src/exercise/salesCoverage.test.ts`, `apps/web/src/exercise/sales/sales.test.ts` (WRITE IT block), `npm run review:sales` → `write-cold-email`.
 - **SAL-004** Discovery rubric contains all fourteen items plus technical discovery.
+  - **PASSED (Phase 16).** `SALES_DISCOVERY_RUBRIC_V2` names each of the fifteen topics as data on the item that judges it, and a test walks the whole list. The authored thread makes them reachable rather than a checklist: Marcus surfaces the current process, the tools and the people in one answer, and the learner decides what to ask next.
+  - Evidence: `apps/web/src/exercise/salesCoverage.test.ts` (fifteen parameterised cases), `EX-WRITE_IT-summit-written-discovery`.
 - **SAL-005** Transcript with > 60% learner talk time or a pitch before diagnosis is penalised (test).
+  - **PASSED (Phase 16).** Talk share is one function over the thread both sides can see, rounded to a whole percent and reported as `conversation.talk_share`: exactly 60 is not penalised, above it is. A pitch is a move the learner chose, not a guess at their prose, so `conversation.pitched_before_diagnosis` is true when the pitch turn is at or before the turn Marcus agreed on. In the discovery exercise that is a critical failure, which no score can override.
+  - Evidence: `apps/web/src/exercise/sales/sales.test.ts` (the talk-share boundary, an empty thread, a pitch before and after agreement, and the failed attempt).
 - **SAL-006 / SAL-007 / EXR-018** EXPLAIN IT grades the problem → consequence → system → outcome frame and flags unnecessary jargon.
+  - **PASSED (Phase 16).** `EX-EXPLAIN_IT-no-show-system` asks for the owner version and the builder version as separate answers; the schema refuses an EXPLAIN IT that authors only one. Frame coverage is read from the exercise's own markers, so the learner never has to write the words "problem" or "outcome". Jargon is counted against the glossary, minus the terms marked `owner_safe`, so a no-show is not held against anybody and a custom value is.
+  - Evidence: `apps/web/src/exercise/sales/sales.test.ts` (EXPLAIN IT block), `packages/content-schema/test/sales.test.ts`, `npm run review:sales` → `explain-two-audiences`.
 - **SAL-008** Closing scenarios cover commitment, follow-up, ghosting, delay, next step.
+  - **PASSED (Phase 16).** `EX-WRITE_IT-summit-after-the-proposal` stages all five in one thread: nine days of silence, a vague "still thinking about it", November, the decision, and the date both sides hold. A content test walks the five against the authored nodes. No pricing or negotiation mechanics: that is Phase 17 and Phase 18.
+  - Evidence: `apps/web/src/exercise/salesCoverage.test.ts`, `apps/web/src/exercise/sales/sales.test.ts` (closing block), `npm run review:sales` → `thread-closing`.
 - **SAL-013** WRITE IT includes update, blocker, delay, approval, revision, technical explanation prompts.
+  - **PASSED (Phase 16).** All six are authored as real briefs with a reader, a cap and a next step, across the Glowhaus delivery exercises. A content test walks all fifteen written pieces EXR-014 and SAL-013 name and checks each one is asked for by an exercise rather than listed in a document.
+  - Evidence: `apps/web/src/exercise/salesCoverage.test.ts` (fifteen parameterised cases), `npm run review:sales` → `write-client-communication`.
 - **EXR-013** AUDIT IT UI offers only Verified / Likely / Unknown.
+  - **PASSED (Phase 16).** Three radios, from one constant, with no fourth option and no "Other". The learner writes their own findings; this is not a list of prewritten claims to tick. An Unknown asks what would settle it, and only then.
+  - Evidence: `apps/web/src/exercise/salesRunner.test.tsx`, `npm run review:sales` → `audit-classifications` (checks the three values and that Confirmed, Assumed, Probable, Guess and Other appear nowhere on the page).
 - **CONV-002** Inbox conversation continues based on the learner's message; no "Correct." banner.
+  - **PASSED (Phase 16).** Two authored threads. The client writes, the learner picks what they are doing and writes back, and the branch follows the move: asking how it works today and proposing a system reach different replies. Sending without picking a move takes the authored fallback and the client asks what was meant. The exchange survives a reload and travels with the finished attempt. Nothing says "Correct."
+  - Evidence: `apps/web/src/exercise/salesRunner.test.tsx` (the thread block, including the branch, the fallback and the reload), `npm run review:sales` → `thread-branch-a`, `thread-branch-b`, `thread-fallback`, `thread-persists`, `thread-closing`.
 
 ## Phase 17 — Pricing Arena
 

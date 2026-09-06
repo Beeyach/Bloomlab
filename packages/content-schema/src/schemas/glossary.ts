@@ -9,6 +9,13 @@ export const GlossarySchema = z
     term: z.string().trim().min(2).max(80),
     definition: markdown,
     aliases: stringList.default([]),
+    /**
+     * Ordinary business language a client already uses (SAL-007). A no-show is a no-show to
+     * anyone; a custom value is not. This is what separates necessary vocabulary from jargon
+     * when an explanation written for an owner is counted, and it is content rather than a list
+     * hidden in one component.
+     */
+    owner_safe: z.boolean().default(false),
     related_skills: z.array(skillRef).default([]),
     ghl_features: z.array(featureRef).default([]),
   })

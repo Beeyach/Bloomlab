@@ -1,0 +1,70 @@
+# Versioned rubric (AI-011, SAL-003, SAL-006, SAL-007). V1 stays as it is for the attempts it
+# judged; this version adds the six cold-email concepts, the presentation frame and the audience
+# rule that Phase 16 trains. Judged by the AI gateway in Phase 19; nothing evaluates it before that.
+id: WRITTEN_COMMUNICATION_RUBRIC_V2
+version: 2
+title: Written client communication
+applies_to:
+  - WRITE_IT
+  - EXPLAIN_IT
+model_class: cheap
+output_schema: ai_grading_v1
+rewards_verified_uncertainty: true
+items:
+  - id: r1
+    tier: critical
+    criterion: Describes only behaviour the system actually has, and claims nothing the evidence does not support.
+    concepts: [unsupported_claim]
+    weight: 5
+  - id: r2
+    tier: required
+    criterion: Opens on the reader and their situation, not on the writer or their company.
+    concepts: [opener]
+    weight: 3
+  - id: r3
+    tier: required
+    criterion: Names something specific that was actually observed about this business.
+    guidance: A real observation, not a compliment and not a category. "Your form replied in 22 hours" counts; "your marketing could be stronger" does not.
+    concepts: [evidence]
+    weight: 4
+  - id: r4
+    tier: required
+    criterion: Says why that observation matters to this reader in particular.
+    concepts: [relevance]
+    weight: 3
+  - id: r5
+    tier: required
+    criterion: Names one problem and stays on it, rather than listing everything that could be improved.
+    concepts: [problem]
+    weight: 3
+  - id: r6
+    tier: required
+    criterion: Ends on one clear next step the reader can take or refuse.
+    concepts: [cta]
+    weight: 3
+  - id: r7
+    tier: required
+    criterion: The follow-up adds something new and does not invent a reply that never came.
+    guidance: Chasing with "just circling back" is not new. Neither is thanking someone for a message they did not send.
+    concepts: [follow_up]
+    weight: 3
+  - id: r8
+    tier: required
+    criterion: Written for the stated reader; the owner version avoids builder vocabulary and the builder version is precise about what runs.
+    concepts: [audience_fit, jargon]
+    weight: 4
+  - id: r9
+    tier: quality
+    criterion: Moves from problem to consequence to system to outcome, without needing those four words.
+    concepts: [frame]
+    weight: 2
+  - id: r10
+    tier: quality
+    criterion: Short. Inside the brief's cap, no filler, no apology for writing.
+    concepts: [brevity]
+    weight: 2
+  - id: r11
+    tier: bonus
+    criterion: Uses the reader's own words or numbers back to them.
+    concepts: [relevance]
+    weight: 1

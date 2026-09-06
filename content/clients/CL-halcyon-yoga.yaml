@@ -1,0 +1,82 @@
+# Persistent fictional client: a business it is right to skip (SAL-002). Small tickets, a booking
+# system the studio does not control, and decisions made somewhere else.
+id: CL-halcyon-yoga
+business_name: Halcyon Yoga
+industry: gym_fitness
+locations:
+  - name: Halcyon Alberta Street
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Nina Alvarez
+    role: Studio manager
+    notes: Runs the schedule and the front desk; reports to the operator.
+  - name: Teachers (9)
+    role: Instructors
+    notes: Mostly part-time, paid per class.
+offers:
+  - name: Drop-in Class
+    price: 18
+    billing: one_time
+  - name: Ten-class Pass
+    price: 150
+    billing: package
+  - name: Monthly Unlimited
+    price: 89
+    billing: recurring
+lead_sources:
+  - Walk-ins from the street
+  - Instagram
+  - The operator's class-booking app
+current_systems:
+  - A class-booking app supplied by the studio operator
+  - The operator's mailing list
+  - A shared studio phone
+metrics:
+  monthly_leads: 60
+  booking_rate: 0.64
+  show_rate: 0.71
+  close_rate: 0.22
+  average_ticket: 74
+problems:
+  - New students try one class and are never heard from again.
+  - Nobody at the studio can change what the booking app sends.
+  - The schedule changes weekly and the website lags behind it.
+relationship_state:
+  stage: prospect
+  since: 2026-09-02
+  owner: Ary
+  notes: Came up in a Portland small-business sweep. No contact yet.
+assets:
+  - kind: domain
+    name: halcyonyoga.com
+  - kind: brand
+    name: Operator branding across all six studios
+hidden_facts:
+  operator_sets_the_stack: true
+  studio_manager_has_no_budget: true
+  contract_ends: '2028-01-01'
+voice:
+  character: VC-studio-manager
+  tone: Warm, apologetic about anything to do with software.
+  speaking_style: Talks about students and the schedule; sends anything technical upstream.
+  sample_phrases:
+    - I'd have to ask the operator about that.
+    - We just use whatever the app does.
+    - Most people come once and I never see them again.
+history:
+  - date: 2026-09-02
+    event: Added to the prospect list from a Portland studio sweep.
+hidden_state:
+  trust: 45
+  urgency: 20
+  price_sensitivity: 80
+  frustration: 35
+  technical_sophistication: 15
+  fear: 20
+  previous_bad_experience: 15
+  alternative_provider_strength: 25
+  actual_budget: 0
+  stated_budget: 0
+  decision_authority: none

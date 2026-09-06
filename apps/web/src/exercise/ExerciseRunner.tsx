@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 
 import { Button, Stack, Surface, cx } from '@bloomlab/design-system';
@@ -13,19 +13,16 @@ import {
   discardAttempt,
   resolveRunContext,
   revealHint,
-  saveResponse,
   startAttempt,
   useActiveAttempt,
-  type ActiveAttempt,
-  type AttemptContext,
 } from './attempt';
 import { finalizeAttempt, gradeAttempt, RuntimeUnavailableError } from './finalize';
 import { HintDrawer } from './HintDrawer';
 import { Markdown } from './markdown';
-import { predictionFields, writtenOf } from './response';
 import { ResultView } from './ResultView';
 import { canGradeNow, missingSources, SOURCE_DEPENDENCY, SOURCE_PHASE } from './runtime';
 import { MODE_WORDS, treatmentFor } from './runnerCopy';
+import { WorkSurface } from './work/WorkSurface';
 import styles from './ExerciseRunner.module.css';
 import { useAttemptHistory } from './useAttemptHistory';
 
@@ -76,112 +73,6 @@ function Brief({ exercise }: { exercise: Exercise }) {
           </ul>
         </div>
       )}
-    </section>
-  );
-}
-
-function WorkSurface({
-  exercise,
-  attempt,
-  context,
-  disabled,
-}: {
-  exercise: Exercise;
-  attempt: ActiveAttempt;
-  context: AttemptContext;
-  disabled: boolean;
-}) {
-  const treatment = treatmentFor(exercise);
-  const fields = useMemo(() => predictionFields(exercise), [exercise]);
-  // Keyed on the attempt id by the caller, so starting again remounts with empty work.
-  const [draft, setDraft] = useState(attempt.response);
-
-  const update = (change: Partial<typeof draft>) => {
-    const next = { ...draft, ...change };
-    setDraft(next);
-    void saveResponse(exercise.id, context, change);
-  };
-
-  return (
-    <section aria-labelledby="work-title" className={styles.work}>
-      <h2 id="work-title" className={styles.sectionTitle}>
-        {treatment.workTitle}
-      </h2>
-
-      {exercise.decision_options.length > 0 && (
-        <fieldset className={styles.options} disabled={disabled}>
-          <legend className={styles.optionsLegend}>Where it lives</legend>
-          {exercise.decision_options.map((option) => (
-            <label key={option.value} className={styles.option}>
-              <input
-                type="radio"
-                name="decision-choice"
-                value={option.value}
-                checked={draft.choice === option.value}
-                onChange={() => update({ choice: option.value })}
-              />
-              <span>{option.label}</span>
-            </label>
-          ))}
-        </fieldset>
-      )}
-
-      {fields.length > 0 && (
-        <div className={styles.predictions}>
-          {fields.map((field) => (
-            <label key={field.key} className={styles.field}>
-              <span className={styles.fieldLabel}>{field.label}</span>
-              <input
-                type="text"
-                value={draft.prediction[field.key] ?? ''}
-                disabled={disabled}
-                onChange={(event) =>
-                  update({ prediction: { ...draft.prediction, [field.key]: event.target.value } })
-                }
-              />
-            </label>
-          ))}
-        </div>
-      )}
-
-      {/*
-        Named long-form answers (EXR-010). Each is its own saved field, because for some work the
-        difference between two answers is the whole point: what you observed is not what you think
-        explains it. Nothing is prefilled and nothing is suggested.
-      */}
-      {exercise.written_fields.map((field) => (
-        <label key={field.key} className={styles.field}>
-          <span className={styles.fieldLabel}>{field.label}</span>
-          <textarea
-            className={styles.response}
-            rows={field.rows}
-            value={writtenOf(draft)[field.key] ?? ''}
-            disabled={disabled}
-            aria-describedby={`written-help-${field.key}`}
-            onChange={(event) =>
-              update({ written: { ...writtenOf(draft), [field.key]: event.target.value } })
-            }
-          />
-          <span id={`written-help-${field.key}`} className={styles.help}>
-            {field.help}
-          </span>
-        </label>
-      ))}
-
-      <label className={styles.field}>
-        <span className={styles.fieldLabel}>{treatment.responseLabel}</span>
-        <textarea
-          className={styles.response}
-          rows={7}
-          value={draft.text}
-          disabled={disabled}
-          aria-describedby="response-help"
-          onChange={(event) => update({ text: event.target.value })}
-        />
-      </label>
-      <p id="response-help" className={styles.help}>
-        {treatment.responseHelp}
-      </p>
     </section>
   );
 }
