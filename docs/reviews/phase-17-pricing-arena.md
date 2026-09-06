@@ -115,10 +115,38 @@ does not have; a proposal that is not all eight sections, or two fields claiming
 scope hours that disagree with the scenario's estimated labor hours; and a priced scenario with no
 economics at all.
 
+## Independent audit findings
+
+Independent review found four correctness gaps after the first implementation report.
+
+1. **Invalid values could lower the deal cost.** The number inputs had HTML minimums, but the
+   parsers accepted negative values and `dealBasis` multiplied a negative revision count into the
+   cost. Pricing parsers and quote normalization now reject impossible negative values, and the
+   deal basis defensively clamps malformed legacy revisions. Regression tests cover negative money,
+   revisions, deposits and timelines (D-165).
+2. **Required PRICE IT constraints could be averaged away.** The grader treated required rows as a
+   hard gate only for FUNNEL ASSEMBLY. A PRICE IT attempt could therefore miss a required deal
+   constraint and still cross 70% on other rows. PRICE IT required assertions now produce
+   `required_failure`, so all eight required answers and required deal constraints have to hold
+   (D-165).
+3. **The margin floor used the rounded label.** A true 39.6% margin rounded to 40% and passed a 40%
+   policy. The display may still round to a whole percent, but the gate compares the quote against
+   the exact revenue needed for the authored margin. The reveal says the percentage is rounded and
+   names the exact dollar floor when it misses (D-165).
+4. **The proposal claimed continuity that did not exist.** Its brief said to use the learner's own
+   PRICE IT numbers, but no Phase 17 path injects a previous attempt into this WRITE IT exercise.
+   The proposal is now explicitly standalone and carries the priced scope it asks the learner to
+   turn into the eight sections. Persistent cross-stage continuity remains Boss Client work
+   (D-166).
+
+The audit also rechecked the original `price.total gte 1200` question. The operator itself was not
+inverted: critical assertions state the condition that must hold. The real defects were the missing
+state path and the untraceable 1,200 number, which D-163 already replaced with the derived floor.
+
 ## Verification
 
-- **1451 tests** (1360 before), across:
-  - `apps/web/src/exercise/pricing/pricing.test.ts` — 29 tests on the math alone: rounding half away
+- **1456 tests** (1360 before), across:
+  - `apps/web/src/exercise/pricing/pricing.test.ts` — 32 tests on the math alone: rounding half away
     from zero and never to negative zero, a percentage over a zero denominator, the total with and
     without a rush fee, a deposit expressed both ways reaching the same canonical dollars, a
     percentage deposit that stays unset while there is no total, a deposit larger than the total,
@@ -126,7 +154,8 @@ economics at all.
     exactly the cost and one dollar under it, cost falling when scope comes out and rising with
     revisions and a compressed timeline, and the rush fee in all four timeline combinations.
   - `apps/web/src/exercise/pricingCoverage.test.ts` — the requirements against the compiled
-    curriculum: ten pricing concepts, thirteen scope dimensions, eight proposal sections, scope
+    curriculum: ten pricing concepts, thirteen scope dimensions, eight proposal sections plus the
+    standalone priced-scope contract, scope
     hours matching every priced scenario, no hidden economics in authored learner-facing copy, the
     two defensible prices, the under-floor critical failure, and the smaller deal with a lower
     floor.
@@ -152,8 +181,10 @@ economics at all.
   delivery cost is exactly what may not be shown. The structural half is fully met and the economic
   half is shown after submitting. Recorded in D-162 rather than settled by rewording either
   criterion.
-- **PRI-002 is PARTIAL.** The nine economics fields are stored and read, and price, margin, scope and
-  risk are all evaluated. Reasoning feedback is not: the explanation is collected and preserved and
+- **PRI-002 is PARTIAL.** All nine economics fields are required and stored on the scenario. The
+  runtime math directly consumes estimated labor and risk; the remaining fields constrain the
+  authored scenario and scope rather than each getting a second multiplier. Price, margin, scope
+  and risk are evaluated. Reasoning feedback is not: the explanation is collected and preserved and
   the rubric is named, and Phase 19 executes it.
 - **`review:learning`** cannot complete here. The Worker cannot reach the network to create a sync
   key, so the two-device half never starts. Re-checked on the stashed baseline in the same container
