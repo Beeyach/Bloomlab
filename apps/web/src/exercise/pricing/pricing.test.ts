@@ -99,8 +99,10 @@ describe('money rounds once, to whole dollars', () => {
     expect(money('1999.6')).toBe(2000);
     expect(money('')).toBeNull();
     expect(money('not a number')).toBeNull();
+    expect(money('-1')).toBeNull();
     expect(count('3')).toBe(3);
     expect(count('  ')).toBeNull();
+    expect(count('-1')).toBeNull();
   });
 });
 
@@ -138,9 +140,34 @@ describe('the quote is the learner’s own arithmetic', () => {
     expect(quoteOf(answer({ rush_fee: null })).total).toBe(2000);
     expect(answer({ rush_fee: null }).rush_fee).toBeNull();
   });
+
+  it('refuses invalid negative money, revisions and non-positive timelines', () => {
+    const quote = quoteOf(
+      answer({
+        project: -1,
+        rush_fee: -1,
+        recurring: -1,
+        timeline_days: 0,
+        revisions: -2,
+        deposit: { kind: 'percent', value: 101 },
+      }),
+    );
+    expect(quote.project).toBeNull();
+    expect(quote.rush_fee).toBeNull();
+    expect(quote.recurring).toBeNull();
+    expect(quote.timeline_days).toBeNull();
+    expect(quote.revisions).toBeNull();
+    expect(quote.deposit).toBeNull();
+  });
 });
 
 describe('what the deal costs moves with the scope', () => {
+  it('a malformed negative revision count can never reduce delivery cost', () => {
+    const basis = dealBasis(config, economics, answer({ revisions: -10 }));
+    expect(basis.revision_hours).toBe(0);
+    expect(basis.cost).toBe(1000);
+  });
+
   it('counts every included line, and keeps locked lines in whatever the learner did', () => {
     const basis = dealBasis(config, economics, answer());
     expect(basis.scope_hours).toBe(20);
@@ -181,6 +208,14 @@ describe('what the deal costs moves with the scope', () => {
     expect(isRushed(config, 9)).toBe(true);
     expect(isRushed(config, 10)).toBe(false);
     expect(isRushed(config, null)).toBe(false);
+  });
+});
+
+describe('margin policy uses the exact threshold, not its rounded label', () => {
+  it('does not turn a true 39.6% margin into a passing 40% margin', () => {
+    const evaluated = evaluatePricing(exercise, economics, answer({ project: 1655 }));
+    expect(evaluated?.projection.margin_percent).toBe(40);
+    expect(evaluated?.projection.margin_at_least_floor).toBe(false);
   });
 });
 
