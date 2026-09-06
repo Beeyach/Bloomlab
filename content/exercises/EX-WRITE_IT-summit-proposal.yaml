@@ -5,9 +5,9 @@
 # with its own cap, because the failure mode of proposal writing is a long recommendation and a
 # one-line scope.
 #
-# The numbers come from the learner's own PRICE IT attempt. This exercise does not re-price the
-# deal and does not check the arithmetic — it checks that what they decided is written down where
-# a client can read it and say yes to it.
+# This Phase 17 proposal drill is deliberately standalone. Persistent project continuity belongs
+# to the Boss Client later, so this exercise gives the priced scope it is asking the learner to
+# turn into a proposal rather than pretending it can read a previous PRICE IT attempt.
 id: EX-WRITE_IT-summit-proposal
 type: WRITE_IT
 title: Write the Summit proposal
@@ -19,13 +19,23 @@ skills:
 client: CL-summit-coaching
 scenario: SC-summit-discovery
 instructions: |
-  You have priced the application funnel. Now write the proposal Marcus reads.
+  Marcus is reviewing this priced scope:
 
-  Eight sections, each one short. Use the numbers from your own pricing: the fee you set, the
-  deposit you asked for, the timeline you promised, the revisions you included and the things you
-  named as not included.
+  - $2,200 project fee
+  - 50% deposit, with the balance due on delivery
+  - $150/month after handover
+  - no rush fee
+  - 21 working days
+  - one revision round
+  - application form, qualification routing, discovery calendar, applicant follow-up, no-show
+    recovery, Typeform migration and handover included
+  - copywriting the application questions from scratch, and paid ads/ad management, excluded
 
-  Write it so he can read the whole thing in four minutes and reply with one word.
+  Turn that deal into the proposal Marcus reads. This is a standalone proposal drill; it does not
+  read a previous PRICE IT attempt.
+
+  Eight sections, each one short. Write it so he can read the whole thing in four minutes and
+  reply with one word.
 allowed_features: []
 starting_state: {}
 sales:
