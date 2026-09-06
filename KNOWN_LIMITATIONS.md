@@ -439,8 +439,9 @@ Last updated: 2026-09-06 (end of Phase 17)
   which move the cost; there is no complexity multiplier on top, deliberately.
 - **The proposal is written, not assembled.** `EX-WRITE_IT-summit-proposal` asks for the eight
   sections and checks they are answered, inside their caps, cite something observed and ask for one
-  thing. It does not read the learner's own priced deal and does not check that the price section
-  matches what they quoted, because the two are separate attempts. Nothing generates a proposal
+  thing. It does not read the learner's own priced deal or check that the price section matches a
+  prior quote, because the two are separate attempts. The Phase 17 drill now gives the learner an
+  explicit priced scope in its own brief rather than pretending the previous attempt is linked. Nothing generates a proposal
   document, and nothing is sent.
 - **Negotiation is still absent.** The desk quotes; it never defends the quote.
   `EX-NEGOTIATE_IT-summit-freelancer-quote` is untouched and remains un-runnable, and Summit's
