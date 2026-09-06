@@ -14,7 +14,7 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 - Jargon counted against the glossary, which gains `owner_safe` for the terms an owner already uses (D-155), and frame coverage read from the exercise's own markers rather than from the words "problem" and "outcome".
 - The selling families now write their own evidence kind: `sales_use` for PROSPECT IT, AUDIT IT, WRITE IT, SAY IT, PRICE IT and NEGOTIATE IT, `explanation` for EXPLAIN IT. The finished response is kept on the attempt record, so a thread is still there after it is submitted.
 - Content: `CL-ridgeline-roofing` and `CL-halcyon-yoga` (two businesses that are genuinely prospects, one of them right to skip), evidence packs for Northwind's outside-in audit, `EX-PROSPECT_IT-three-businesses` with hidden per-business evaluation (D-152), eight WRITE IT briefs covering all fifteen pieces EXR-014 and SAL-013 name, `EX-EXPLAIN_IT-no-show-system` for two audiences, and two authored threads: written discovery with Marcus and the nine days of silence after the proposal (D-159). `SALES_DISCOVERY_RUBRIC_V2` and `WRITTEN_COMMUNICATION_RUBRIC_V2` carry their topics and concepts as data (D-157); V1 of each is untouched. Content version 2026.09.13.
-- 162 new tests (1358 total) and `npm run review:sales` (24 sections), which drives the real screens across the five review widths, the keyboard path and reduced motion.
+- 164 new tests (1360 total) and `npm run review:sales` (24 sections), which drives the real screens across the five review widths, the keyboard path and reduced motion.
 
 ### Fixed — Phase 16
 

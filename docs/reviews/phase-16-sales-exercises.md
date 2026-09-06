@@ -148,7 +148,7 @@ rubric is untouched and stays valid for the attempts it judged.
 
 ## Verification
 
-- **1358 tests** (1196 before), across:
+- **1360 tests** (1196 before), across:
   - `apps/web/src/exercise/sales/sales.test.ts` — the five projections, the evidence rules, the talk
     share boundary, the early pitch, and full deterministic runs of four exercises.
   - `apps/web/src/exercise/salesRunner.test.tsx` — the real screens: three businesses, three
@@ -157,7 +157,10 @@ rubric is untouched and stays valid for the attempts it judged.
   - `apps/web/src/exercise/salesCoverage.test.ts` — the requirements against the compiled
     curriculum: fifteen written pieces, fifteen discovery topics, six writing concepts, five closing
     situations, and no hidden fact in any learner-visible string.
-  - `packages/content-schema/test/sales.test.ts` — every schema refusal listed above.
+  - `packages/content-schema/test/sales.test.ts` — every schema refusal listed above, including
+    the three-business minimum EXR-012 asks for.
+  - `apps/web/src/exercise/finalizeQueuedWrites.test.ts` — submission started before the last save
+    resolves still grades and keeps that edit.
 - **`npm run review:sales`**: 24 sections, PASS, in Chromium at 1440, 1024, 768, 390 and 320, plus
   the keyboard path (a radio group reached by Tab and moved through with the arrow keys) and reduced
   motion. Screenshots in `.review/sales-*.png`.
