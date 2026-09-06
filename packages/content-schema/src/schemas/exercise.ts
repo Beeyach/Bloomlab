@@ -16,6 +16,12 @@ import {
 } from './common.ts';
 import { FUNNEL_BLOCK_ROLES, FUNNEL_STEP_PURPOSES } from './funnel.ts';
 import {
+  PRICE_METRICS,
+  PRICING_STATE_ROOTS,
+  PROPOSAL_SECTIONS,
+  PricingConfigSchema,
+} from './pricing.ts';
+import {
   AUDIT_METRICS,
   CONVERSATION_METRICS,
   ConversationSchema,
@@ -225,6 +231,8 @@ const writtenField = z.strictObject({
   cites_evidence: z.boolean().default(false),
   /** Which of the written pieces Phase 16 trains this is (EXR-014, SAL-013). */
   message_type: z.enum(MESSAGE_TYPES).optional(),
+  /** Which section of a proposal this answer is (SAL-009). */
+  proposal_section: z.enum(PROPOSAL_SECTIONS).optional(),
 });
 
 const responseMarkers = z.record(
@@ -272,6 +280,7 @@ interface SalesPathSubject {
   written_fields: { key: string; audience: string; message_type?: string }[];
   sales: { frame: { element: string }[] };
   conversation: { nodes: { covers: string[]; situation?: string }[] } | null;
+  pricing: { scope: { id: string }[] } | null;
 }
 
 const listing = (values: readonly string[]): string => values.join(', ');
@@ -326,6 +335,21 @@ function salesPathIssues(exercise: SalesPathSubject, root: string, rest: string[
           `explanation.frame.${element} needs a sales.frame entry for ${element}`,
         );
       } else known(EXPLANATION_METRICS);
+      break;
+    }
+    case 'price': {
+      needs(exercise.pricing !== null, 'price.* needs an authored pricing block');
+      if (rest[0] === 'scope') {
+        const item = rest[1] ?? '';
+        needs(
+          (exercise.pricing?.scope ?? []).some((line) => line.id === item),
+          `price.scope.${item} is not one of this exercise's scope lines`,
+        );
+        needs(
+          rest[2] === 'included',
+          `price.scope.<line>.${rest.slice(2).join('.')} is not one of included`,
+        );
+      } else known(PRICE_METRICS);
       break;
     }
     case 'conversation': {
@@ -389,6 +413,8 @@ export const ExerciseSchema = z
     }),
     /** An authored written client thread (CONV-002). */
     conversation: ConversationSchema.nullable().default(null),
+    /** The deal this exercise prices: its scope, its cost basis and its policies (Phase 17). */
+    pricing: PricingConfigSchema.nullable().default(null),
     fieldwork: fieldwork.nullable().default(null),
     portfolio: portfolioRef.nullable().default(null),
     /** WRITE IT / SAY IT / EXPLAIN IT: what kind of piece, in the spec's own words. */
@@ -578,7 +604,8 @@ export const ExerciseSchema = z
         // A check on one of the sales projections must name a figure that projection produces,
         // for an exercise whose family produces it at all. Otherwise it is a criterion the
         // learner can never meet, however well they do the work.
-        if ((SALES_STATE_ROOTS as readonly string[]).includes(root ?? '')) {
+        const projected = [...SALES_STATE_ROOTS, ...PRICING_STATE_ROOTS] as readonly string[];
+        if (projected.includes(root ?? '')) {
           for (const message of salesPathIssues(exercise, root ?? '', rest)) {
             issue(at('path'), message);
           }
@@ -681,6 +708,31 @@ export const ExerciseSchema = z
         issue(
           ['written_fields'],
           'EXPLAIN IT asks for the owner version and the builder version; author a written field for each audience',
+        );
+      }
+    }
+    // ---- pricing and the proposal (Phase 17).
+    if (exercise.type === 'PRICE_IT' && !exercise.pricing) {
+      issue(['pricing'], 'PRICE IT prices a deal; author its scope and cost basis');
+    }
+    if (exercise.type !== 'PRICE_IT' && exercise.pricing) {
+      issue(['pricing'], 'Only PRICE IT carries a pricing block');
+    }
+    if (exercise.type === 'PRICE_IT' && !exercise.scenario) {
+      issue(['scenario'], 'PRICE IT is priced against a scenario and its economics');
+    }
+    const sections = exercise.written_fields
+      .map((field) => field.proposal_section)
+      .filter((section) => section !== undefined);
+    if (sections.length > 0) {
+      requireUnique(ctx, sections, ['written_fields'], 'proposal section');
+      // A proposal is all eight sections or it is not a proposal (SAL-009). Half of one would
+      // pass a check on what it does contain while missing the parts a client decides on.
+      const missing = PROPOSAL_SECTIONS.filter((section) => !sections.includes(section));
+      if (missing.length > 0) {
+        issue(
+          ['written_fields'],
+          `A proposal needs all eight sections; missing ${missing.join(', ')}`,
         );
       }
     }

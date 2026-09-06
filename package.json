@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Bloomlab \u2014 mastery-based funnel and GoHighLevel training simulator",
+  "description": "Bloomlab — mastery-based funnel and GoHighLevel training simulator",
   "engines": {
     "node": ">=22.22.0"
   },
@@ -46,7 +46,8 @@
     "review:calendar": "node scripts/review/calendar-probe.mjs",
     "review:reporting": "node scripts/review/reporting-probe.mjs",
     "review:incident": "node scripts/review/incident-probe.mjs",
-    "review:sales": "node scripts/review/sales-probe.mjs"
+    "review:sales": "node scripts/review/sales-probe.mjs",
+    "review:pricing": "node scripts/review/pricing-probe.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

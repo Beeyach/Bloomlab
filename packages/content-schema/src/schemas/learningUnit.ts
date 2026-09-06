@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { TERRITORIES } from '../ids.ts';
+import { PRICING_CONCEPTS } from './pricing.ts';
 import { featureRef, ref, requireUnique, skillRef, tier, title } from './common.ts';
 
 /**
@@ -46,9 +47,16 @@ export const LearningUnitFrontMatterSchema = z
     ghl_features: z.array(featureRef).default([]),
     estimated_minutes: z.number().int().min(3).max(120),
     summary: z.string().trim().min(20).max(400),
+    /**
+     * Which of the ten pricing concepts this unit teaches (PRI-003). Declared as data so that
+     * "the curriculum covers all ten" is something a test walks rather than something a document
+     * claims; the unit still has to actually teach them.
+     */
+    pricing_concepts: z.array(z.enum(PRICING_CONCEPTS)).default([]),
   })
   .superRefine((unit, ctx) => {
     requireUnique(ctx, unit.skills, ['skills'], 'skill');
+    requireUnique(ctx, unit.pricing_concepts, ['pricing_concepts'], 'pricing concept');
     requireUnique(ctx, unit.ghl_features, ['ghl_features'], 'GHL feature');
   });
 

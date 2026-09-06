@@ -117,6 +117,12 @@ export const LEARNER_STATE_ROOTS = [
   'message',
   'explanation',
   'conversation',
+  /**
+   * Phase 17's deal (EXR-016, PRI-002). What the learner quoted, what follows from it, and what
+   * the scenario's own economics say about it. Same rule as the sales roots: one function
+   * produces the figures the deal desk shows and the figures a check reads.
+   */
+  'price',
 ] as const;
 
 export interface GradingContext {

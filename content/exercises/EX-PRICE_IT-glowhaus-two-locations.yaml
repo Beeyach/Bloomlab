@@ -1,0 +1,246 @@
+# PRICE IT as scope training (SAL-016, PRI-001, EXR-016).
+#
+# This is the exercise that walks all thirteen scope dimensions. Ten of them live in the scope
+# lines — deliverables, locations, workflow complexity, dependencies, copy, migration,
+# integration, design, support, assumptions — and the remaining three are the controls the
+# learner works with directly: how many revisions they include, what they write as excluded, and
+# whether they charge for compressing the timeline.
+#
+# The opening date is the pressure. Priya opens in twelve days, the work normally takes thirty,
+# and no amount of scope removal makes that comfortable. Something has to give, and deciding
+# which thing is the lesson.
+#
+# Graded deterministically: every check here is arithmetic or a promise kept, so this one runs
+# end to end today rather than waiting on a rubric.
+id: EX-PRICE_IT-glowhaus-two-locations
+type: PRICE_IT
+title: Scope and price the second Glowhaus
+mode: practice
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SELL-project-pricing
+scenario: SC-glowhaus-two-locations
+instructions: |
+  Priya opens the Round Rock location in twelve days. Everything Glowhaus runs on today assumes
+  one calendar, one front desk and one set of opening hours.
+
+  Work through the scope line by line. Each one says what Priya is left with if you take it out,
+  and some of them need another line to mean anything. Then set the price: a project fee, a rush
+  fee, a deposit, a recurring fee, the timeline, the rounds of revisions you are including, and
+  the things you are naming as not included.
+
+  She has to be able to take bookings on opening day. Promise a date you can hold.
+allowed_features: []
+starting_state: {}
+pricing:
+  currency: USD
+  cost:
+    # The same delivery cost as the Summit deal: it is Ary's own rate, not something the client
+    # sets (D-161). Thirty-one hours at $55 is $1,705.
+    hourly_cost: 55
+    risk_allowance_percent_per_point: 5
+  margin:
+    floor_percent: 40
+    healthy_percent: 55
+  timeline:
+    standard_days: 30
+    rush_below_days: 14
+    rush_extra_hours: 6
+  revision_hours: 2
+  requirements:
+    - id: right_location
+      need: >-
+        People book at South Congress when they meant Round Rock, and we only find out when they
+        turn up at the wrong door.
+      satisfied_by: [booking_calendars, location_routing]
+    - id: stop_retyping
+      need: Dana retypes every lead from the Meta form into Square by hand.
+      satisfied_by: [meta_lead_ads]
+    - id: keep_client_history
+      need: Six years of client history is in Square. I am not starting that again.
+      satisfied_by: [square_import]
+    - id: fewer_no_shows
+      need: Reminders only go out when somebody at the desk remembers to send them.
+      satisfied_by: [reminder_sequences]
+    - id: desk_can_run_it
+      need: >-
+        Two front desks now, and neither of them can be calling me every time something looks odd.
+      satisfied_by: [staff_training]
+    - id: looks_like_us
+      need: The booking page has to look like the rest of Glowhaus on a phone.
+      satisfied_by: [booking_page_design]
+  scope:
+    - id: booking_calendars
+      name: Two booking calendars
+      description: >-
+        A calendar per location, each with its own opening hours, staff and appointment types.
+      hours: 6
+      consequence: >-
+        Both locations share one calendar, so Round Rock slots appear at South Congress hours.
+      locked: true
+      dimensions: [deliverables, locations]
+    - id: location_routing
+      name: Location routing
+      description: >-
+        Sends each new lead to the right location's calendar based on where they say they are.
+      hours: 5
+      consequence: >-
+        Every lead is offered both locations and the front desk sorts out the wrong ones by phone.
+      requires: [booking_calendars]
+      dimensions: [workflow_complexity, dependencies]
+    - id: reminder_sequences
+      name: Confirmations and reminders
+      description: >-
+        Confirmation and reminder messages, written once per location so the address is right.
+      hours: 4
+      consequence: >-
+        Nobody is reminded automatically, and the desk goes back to the paper list it uses now.
+      requires: [booking_calendars]
+      dimensions: [copy, deliverables]
+    - id: square_import
+      name: Moving the Square history
+      description: >-
+        Bringing six years of client records and appointment history across from Square Appointments.
+      hours: 5
+      consequence: >-
+        Existing clients arrive as new contacts with no history, and Dana looks them up in Square.
+      dimensions: [migration]
+    - id: meta_lead_ads
+      name: Connecting Meta Lead Ads
+      description: Leads from the Meta form arrive directly, with the location they picked.
+      hours: 3
+      consequence: Leads keep arriving by email and somebody retypes them.
+      dimensions: [integration]
+    - id: booking_page_design
+      name: Booking page design
+      description: >-
+        The booking page laid out in Glowhaus's own type and colour, and checked on a phone.
+      hours: 4
+      consequence: >-
+        Priya gets the default booking page, which works and does not look like her business.
+      dimensions: [design]
+    - id: staff_training
+      name: Training both front desks
+      description: >-
+        A session at each location and a written runbook for what to do when something looks wrong.
+      hours: 4
+      consequence: >-
+        Two desks learn the system by using it on real clients, and you take the phone calls.
+      dimensions: [support, assumptions]
+  control_dimensions: [revisions, exclusions, rush]
+  scope_training: true
+expected_outcomes:
+  - id: a1
+    type: state
+    path: price.complete
+    operator: equals
+    value: true
+    description: All eight of the deal's answers are set.
+    tier: required
+  - id: a2
+    type: state
+    path: price.timeline_days
+    operator: lte
+    value: 12
+    description: The timeline delivers before Round Rock opens.
+    tier: required
+  - id: a3
+    type: state
+    path: price.rush_justified
+    operator: equals
+    value: true
+    description: >-
+      Compressing thirty days of work into twelve is rush work, and the quote charges for it.
+    tier: required
+  - id: a4
+    type: state
+    path: price.requirements_met
+    operator: equals
+    value: true
+    description: Everything Priya asked for still has something in the deal answering it.
+    tier: required
+  - id: a5
+    type: state
+    path: price.scope_dependencies_met
+    operator: equals
+    value: true
+    description: Nothing left in the deal depends on something taken out of it.
+    tier: required
+  - id: a7
+    type: state
+    path: price.deposit_within_total
+    operator: equals
+    value: true
+    description: The deposit is part of the total, not larger than it.
+    tier: required
+  - id: a8
+    type: state
+    path: price.exclusions_count
+    operator: gte
+    value: 3
+    description: >-
+      At least three things are named as not included. On a rushed two-location build, the
+      assumptions are where the argument in week three comes from.
+    tier: required
+  - id: a9
+    type: state
+    path: price.covers_risk
+    operator: equals
+    value: true
+    description: The quote covers delivery plus the contingency this build's risk asks for.
+    tier: quality
+  - id: a10
+    type: state
+    path: price.margin_at_least_floor
+    operator: equals
+    value: true
+    description: The margin on the one-time work is at or above the floor this business works to.
+    tier: quality
+  - id: a11
+    type: state
+    path: price.scope.square_import.included
+    operator: equals
+    value: true
+    description: >-
+      The six years of client history are migrated and paid for, not dropped to hit a date.
+    tier: quality
+  - id: a12
+    type: state
+    path: price.recurring
+    operator: gte
+    value: 1
+    description: >-
+      Two locations running on a system you built carries ongoing support, and it is priced.
+    tier: bonus
+critical_failures:
+  - id: c2
+    type: state
+    path: price.locked_scope_kept
+    operator: equals
+    value: true
+    description: >-
+      The two calendars are still in the deal. Without them there is nothing to open Round Rock
+      with, so a quote that drops them is quoting for a different job.
+  - id: c1
+    type: state
+    path: price.at_or_above_floor
+    operator: equals
+    value: true
+    description: >-
+      The total is at or above what delivering the scope costs. A quote below it loses money on
+      every hour of the build.
+grading:
+  mode: deterministic
+  pass_threshold: 70
+hints:
+  - level: nudge
+    text: >-
+      Twelve days is the constraint you cannot move. Work out what has to be true on opening day,
+      and price the rest of it as what it is.
+  - level: concept_reminder
+    text: >-
+      Taking work out to hit a date is a scope decision, not a discount. If a line comes out, it
+      comes out of the price and out of what you promised, and Priya has to hear both.
+fieldwork: null
+portfolio: null

@@ -137,10 +137,10 @@ function gradeOne(input: GradeInput): GradeReport {
       ? null
       : Math.round((scoredPassed / scored.length) * 100);
   const failedCritical = tiers.critical.filter((result) => !result.passed && !result.unevaluated);
-  const failedRequired =
-    exercise.type === 'FUNNEL_ASSEMBLY'
-      ? tiers.required.filter((result) => !result.passed && !result.unevaluated)
-      : [];
+  const requiredIsGate = exercise.type === 'FUNNEL_ASSEMBLY' || exercise.type === 'PRICE_IT';
+  const failedRequired = requiredIsGate
+    ? tiers.required.filter((result) => !result.passed && !result.unevaluated)
+    : [];
   const rubricPending =
     exercise.grading.mode === 'deterministic' ? null : (exercise.grading.rubric ?? null);
 
@@ -148,8 +148,8 @@ function gradeOne(input: GradeInput): GradeReport {
     // A dangerous failure ends it, whatever the number says (MAS-004).
     if (failedCritical.length > 0) return { outcome: 'failed', reason: 'critical_failure' };
     if (unevaluated.length > 0) return { outcome: 'partial', reason: 'unevaluated_assertions' };
-    // A FUNNEL ASSEMBLY brief names structural constraints as required. Missing one cannot be
-    // averaged away by quality points from the rest of the page (EXR-011, D-125).
+    // FUNNEL ASSEMBLY and PRICE IT name structural / deal constraints as required. Missing one
+    // cannot be averaged away by quality points from the rest of the work (EXR-011, EXR-016).
     if (failedRequired.length > 0) return { outcome: 'failed', reason: 'required_failure' };
     // A rubric this phase cannot evaluate is never quietly treated as passed (AI-006).
     if (rubricPending) return { outcome: 'partial', reason: 'rubric_pending' };

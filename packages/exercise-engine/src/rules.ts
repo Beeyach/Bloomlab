@@ -4,7 +4,7 @@
  */
 
 /** Bumped whenever grading behaviour changes (date-based, like the mastery rules). */
-export const EXERCISE_GRADER_VERSION = '2026.09.13';
+export const EXERCISE_GRADER_VERSION = '2026.09.15';
 
 export const SCORING_RULES = {
   /**

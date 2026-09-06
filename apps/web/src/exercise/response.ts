@@ -1,6 +1,13 @@
 import type { Exercise } from '@bloomlab/content-schema';
 import { LEARNER_STATE_ROOTS } from '@bloomlab/exercise-engine';
 
+import {
+  economicsFor,
+  emptyPricingResponse,
+  priceState,
+  type DealEconomics,
+  type PricingResponse,
+} from './pricing';
 import { emptySalesResponse, salesState, type JargonTerm, type SalesResponse } from './sales';
 
 /**
@@ -32,6 +39,11 @@ export interface LearnerResponse {
    * the same reason `written` is — a draft saved before it existed resumes without it.
    */
   sales?: SalesResponse;
+  /**
+   * The deal the learner priced: the scope they kept and the eight numbers they set (Phase 17).
+   * Optional for the same reason `sales` is — a draft saved before it existed resumes without it.
+   */
+  pricing?: PricingResponse;
 }
 
 export const emptyResponse = (): LearnerResponse => ({
@@ -40,6 +52,7 @@ export const emptyResponse = (): LearnerResponse => ({
   prediction: {},
   written: {},
   sales: emptySalesResponse(),
+  pricing: emptyPricingResponse(),
 });
 
 /** The named answers on a response, tolerating a draft saved before they existed. */
@@ -50,6 +63,12 @@ export const writtenOf = (response: LearnerResponse): Record<string, string> =>
 export const salesOf = (response: LearnerResponse): SalesResponse => ({
   ...emptySalesResponse(),
   ...(response.sales ?? {}),
+});
+
+/** The priced half of a response, tolerating a draft saved before it existed. */
+export const pricingOf = (response: LearnerResponse): PricingResponse => ({
+  ...emptyPricingResponse(),
+  ...(response.pricing ?? {}),
 });
 
 /**
@@ -71,7 +90,7 @@ export function markersIn(text: string, markers: Exercise['response_markers']): 
 export function learnerState(
   exercise: Exercise,
   response: LearnerResponse,
-  options: { vocabulary?: readonly JargonTerm[] } = {},
+  options: { vocabulary?: readonly JargonTerm[]; economics?: DealEconomics | null } = {},
 ): Record<string, unknown> {
   const named = writtenOf(response);
   // Markers are matched against everything the learner wrote, the free response and every named
@@ -103,6 +122,13 @@ export function learnerState(
     markersIn: (text) => markersIn(text, exercise.response_markers),
     vocabulary: options.vocabulary,
   });
+  // The deal, from the same response and the scenario's own economics (Phase 17). An exercise
+  // that prices nothing carries an empty `price`, exactly as it carries an empty `written`.
+  const price = priceState(
+    exercise,
+    options.economics === undefined ? economicsFor(exercise) : options.economics,
+    pricingOf(response),
+  );
   return {
     prediction: { ...response.prediction, text: response.text },
     decision: {
@@ -113,6 +139,7 @@ export function learnerState(
     answer,
     written,
     ...sales,
+    price,
   };
 }
 
