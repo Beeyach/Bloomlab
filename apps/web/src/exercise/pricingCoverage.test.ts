@@ -106,6 +106,14 @@ describe('a proposal is all eight sections (SAL-009)', () => {
     expect(field?.max_words ?? 0).toBeGreaterThan(0);
     expect(field?.help.length ?? 0).toBeGreaterThan(10);
   });
+
+  it('does not pretend to read a prior PRICE IT attempt', () => {
+    const proposal = find('EX-WRITE_IT-summit-proposal');
+    expect(proposal.instructions).toContain('standalone proposal drill');
+    expect(proposal.instructions).not.toContain('your own pricing');
+    expect(proposal.instructions).toContain('$2,200 project fee');
+    expect(proposal.instructions).toContain('50% deposit');
+  });
 });
 
 describe('every priced exercise is priced against its own scenario (PRI-002)', () => {
