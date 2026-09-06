@@ -439,8 +439,8 @@ export const ExerciseSchema = z
     if (exercise.type === 'FIELDWORK' && !exercise.fieldwork?.required) {
       issue(['fieldwork'], 'FIELDWORK exercises require real GHL fieldwork');
     }
-    if (exercise.type === 'PROSPECT_IT' && exercise.prospects.length < 2) {
-      issue(['prospects'], 'PROSPECT IT judges several businesses');
+    if (exercise.type === 'PROSPECT_IT' && exercise.prospects.length < 3) {
+      issue(['prospects'], 'PROSPECT IT needs at least three businesses');
     }
     if (exercise.type !== 'PROSPECT_IT' && exercise.prospects.length > 0) {
       issue(['prospects'], 'Only PROSPECT IT lists prospects');
