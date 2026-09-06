@@ -21,10 +21,10 @@ const evidence = (id: string, extra: Record<string, unknown> = {}) => ({
 
 const prospectExercise = (overrides: Record<string, unknown> = {}) => ({
   ...exercise,
-  id: 'EX-PROSPECT_IT-two',
+  id: 'EX-PROSPECT_IT-three',
   type: 'PROSPECT_IT',
   scenario: undefined,
-  prospects: ['CL-acme', 'CL-beta'],
+  prospects: ['CL-acme', 'CL-beta', 'CL-gamma'],
   expected_outcomes: [],
   critical_failures: [],
   grading: { mode: 'deterministic', pass_threshold: 70 },
@@ -32,6 +32,7 @@ const prospectExercise = (overrides: Record<string, unknown> = {}) => ({
     evidence: [
       evidence('ev-a-one', { client: 'CL-acme' }),
       evidence('ev-b-one', { client: 'CL-beta' }),
+      evidence('ev-g-one', { client: 'CL-gamma' }),
     ],
     prospect_briefs: [
       {
@@ -45,6 +46,12 @@ const prospectExercise = (overrides: Record<string, unknown> = {}) => ({
         acceptable_decisions: ['skip'],
         strongest_decision: 'skip',
         axes: [{ axis: 'economics', evidence: ['ev-b-one'] }],
+      },
+      {
+        client: 'CL-gamma',
+        acceptable_decisions: ['contact'],
+        strongest_decision: 'contact',
+        axes: [{ axis: 'technical_fit', evidence: ['ev-g-one'] }],
       },
     ],
   },
@@ -115,6 +122,18 @@ describe('the evidence pack (SAL-001)', () => {
 describe('prospect briefs (SAL-002)', () => {
   it('accepts a list where one business is right to skip', () => {
     expect(parse(prospectExercise()).success).toBe(true);
+  });
+
+  it('refuses fewer than the three businesses EXR-012 requires', () => {
+    const two = prospectExercise({
+      prospects: ['CL-acme', 'CL-beta'],
+      sales: {
+        ...prospectExercise().sales,
+        evidence: prospectExercise().sales.evidence.slice(0, 2),
+        prospect_briefs: prospectExercise().sales.prospect_briefs.slice(0, 2),
+      },
+    });
+    expect(messages(two)).toContain('PROSPECT IT needs at least three businesses');
   });
 
   it('refuses a list where every prospect should be contacted', () => {
