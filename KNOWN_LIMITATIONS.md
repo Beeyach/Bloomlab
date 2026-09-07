@@ -462,4 +462,4 @@ Last updated: 2026-09-06 (end of Phase 17)
 - Phasing uses authored dependency-valid two-stage plans. It is not an unrestricted planner for restructuring an already-phased deal; incomplete or unsupported reconfiguration takes the clarification path without altering the offer.
 - Hidden numeric state is absent from learner-rendered HTML. Local simulation state and bundled fictional content are inspectable in developer tools; they are not security secrets.
 - Node 26 on the review host breaks an existing localStorage database test. The unchanged suite passes under the pinned Node 22 runtime. Browser probes requiring offline reload need the built service worker, not the development server.
-- Independent review remains pending. Phase 19/20/21/24 were not started and this task must not merge the PR.
+- Phase 18 closed through PR #20 at `154a00a73d659b92f0cc871f636462a9cb094f4b`; main CI `34072172459`, Checks, production migration (none pending), and deployment succeeded (1,570 tests / 93 files). Preview correctly skipped on main. Phase 19 is now current; Phases 20/21/24 remain unstarted.

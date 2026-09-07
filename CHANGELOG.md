@@ -4,6 +4,10 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Documentation — Phase 18 closure
+
+- PR #20 merged at `154a00a73d659b92f0cc871f636462a9cb094f4b`. Main CI `34072172459` SUCCESS: 1,570 tests across 93 files, Checks SUCCESS, production D1 migration SUCCESS with none pending, production Wrangler deploy SUCCESS; preview correctly skipped on main. Historical Phase 18 review evidence remains unchanged. Phase 19 is current.
+
 ### Added — Phase 18 · Negotiation
 
 - Standalone Summit NEGOTIATE IT with six actions, seven authored strategies, ten executable objections, configurable scope/phase/concession terms and natural multi-turn client replies.
