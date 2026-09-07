@@ -456,7 +456,7 @@ Last updated: 2026-09-06 (end of Phase 17)
 
 ## Phase 18 — Negotiation
 
-- NEG-003 remains PARTIAL: the classifier understands the explicit action protocol, not free prose. Unselected language takes an authored clarification with confidence zero. No real interpreter, AI call or fake keyword AI exists.
+- At Phase 18 closure, NEG-003 was PARTIAL because only explicit actions were classified. Phase 19 now implements the Worker language classifier and fallback boundary; status remains PARTIAL pending live language-quality verification.
 - The Summit negotiation is mixed: deterministic success remains rubric_pending for `PRICING_REASONING_RUBRIC_V1`. Written quality and whether prose matches the selected move await Phase 19. The existing rubric is unchanged.
 - One standalone starting deal and ten executable situations cover the required objections. This is not broad language coverage or persistent Boss Client continuity. New attempts start from client state plus scenario overrides, never another exercise's price or a completed attempt's hidden state.
 - Phasing uses authored dependency-valid two-stage plans. It is not an unrestricted planner for restructuring an already-phased deal; incomplete or unsupported reconfiguration takes the clarification path without altering the offer.

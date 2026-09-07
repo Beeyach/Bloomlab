@@ -316,8 +316,10 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 - content: none (`CONTENT_VERSION = null` until the content compiler exists)
 - simulator: 0.0.0 (no engine yet)
 
-### Added — Phase 19 · AI Gateway (verification in progress)
+### Added — Phase 19 · AI Gateway (live-provider gate open)
 
 - Worker-only Anthropic HTTP provider, model catalog verified 2026-09-07, structured rubric validation with one repair, learner settings, usage accounting, atomic budget reservations and exact rubric records in the existing D1 tables (`0002_ai_gateway.sql`).
 - Queued recoverable rubric submissions, pure minimum-of-independently-passing-halves combination, and persisted rubric feedback. Grader `2026.09.17`; content, rubric, simulator, mastery and IndexedDB versions unchanged.
 - Cheap negotiation language classification selects authored strategies only; settings at `/settings/ai`. Live Anthropic verification remains open without the Worker secret.
+
+- Phase 19 local verification: 1,632 tests across 95 files; typecheck, lint, format, docs, content and production build pass. AI, exercise, sales, pricing, negotiation, keyboard and touch probes pass. AI-009 and NEG-003 remain PARTIAL for live-provider evidence.

@@ -389,19 +389,19 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| AI-001 | Minimal runtime AI. Preferred order: code → deterministic rules → authored branches → lightweight classifier → full LLM judgment. AI is the coach, not the course engine. | P0 | 19 | IN_PROGRESS | §106 |
-| AI-002 | AI setting: Off / Limited / Full; default Limited; core Bloomlab functions with AI Off. | P0 | 19 | IN_PROGRESS | §107 |
-| AI-003 | Budget ≈ $20/month with server-side cost tracking and governor; thresholds $0–12 normal, $12–16 prefer cheaper models, $16–19 important tasks only, $19+ optional AI blocked; configurable; never silently exceeded. | P0 | 19 | IN_PROGRESS | §108, TA§37 |
-| AI-004 | Usage log stores model, input tokens, cached input tokens, output tokens, estimated cost, request type, exercise, timestamp. | P0 | 19 | IN_PROGRESS | §108, TA§37 |
-| AI-005 | Model routing: no model for deterministic tasks; cheaper Claude model for classification, extraction, simple rubric checks; stronger model for open-ended sales critique, diagnosis, proposal review, negotiation, call evaluation, hard client reasoning. Most expensive model never default at runtime. | P0 | 19 | IN_PROGRESS | §109, TA§36 |
-| AI-006 | Schema-driven structured output (`score, rubric_results[], critical_issue, strengths[], improvements[], next_probe, confidence`), validated before acceptance; one repair-prompt retry; then save learner work and report evaluation failure. Never parse arbitrary prose. | P0 | 19 | IN_PROGRESS | §110, TA§40 |
-| AI-007 | AI cannot override objective deterministic failure (expected SMS 1, actual 2 → failed). | P0 | 19 | IN_PROGRESS | §111, TA§34 |
-| AI-008 | AI failure handling: save submission, preserve transcript and deterministic state, offer retry, allow other non-AI study. Never lose work. | P0 | 19 | IN_PROGRESS | §112 |
-| AI-009 | Claude is called only through the Worker (`browser → Worker → budget check → normalisation → Claude → schema validation → stored`). API key never reaches the browser. | P0 | 19 | IN_PROGRESS | §105, TA§35 |
-| AI-010 | Prompt caching for stable context (grading philosophy, rubrics, negotiation rules, client profile, skill criteria); the whole curriculum is never sent per call. | P1 | 19 | IN_PROGRESS | TA§39 |
-| AI-011 | Every AI rubric is versioned (e.g. `SALES_DISCOVERY_RUBRIC_V3`); old attempts stay bound to their original version. | P0 | 19 | IN_PROGRESS | TA§42 |
-| AI-012 | AI feedback storage: submission, rubric version, model, result, cost, timestamp; giant prompts not stored forever. | P1 | 19 | IN_PROGRESS | TA§41 |
-| AI-013 | Settings show "AI this month $x / $20" with breakdown (call feedback, written coaching, negotiation, diagnosis); cost not shown obsessively during learning. | P2 | 19 | IN_PROGRESS | TA§38 |
+| AI-001 | Minimal runtime AI. Preferred order: code → deterministic rules → authored branches → lightweight classifier → full LLM judgment. AI is the coach, not the course engine. | P0 | 19 | PASSED | §106 |
+| AI-002 | AI setting: Off / Limited / Full; default Limited; core Bloomlab functions with AI Off. | P0 | 19 | PASSED | §107 |
+| AI-003 | Budget ≈ $20/month with server-side cost tracking and governor; thresholds $0–12 normal, $12–16 prefer cheaper models, $16–19 important tasks only, $19+ optional AI blocked; configurable; never silently exceeded. | P0 | 19 | PASSED | §108, TA§37 |
+| AI-004 | Usage log stores model, input tokens, cached input tokens, output tokens, estimated cost, request type, exercise, timestamp. | P0 | 19 | PASSED | §108, TA§37 |
+| AI-005 | Model routing: no model for deterministic tasks; cheaper Claude model for classification, extraction, simple rubric checks; stronger model for open-ended sales critique, diagnosis, proposal review, negotiation, call evaluation, hard client reasoning. Most expensive model never default at runtime. | P0 | 19 | PASSED | §109, TA§36 |
+| AI-006 | Schema-driven structured output (`score, rubric_results[], critical_issue, strengths[], improvements[], next_probe, confidence`), validated before acceptance; one repair-prompt retry; then save learner work and report evaluation failure. Never parse arbitrary prose. | P0 | 19 | PASSED | §110, TA§40 |
+| AI-007 | AI cannot override objective deterministic failure (expected SMS 1, actual 2 → failed). | P0 | 19 | PASSED | §111, TA§34 |
+| AI-008 | AI failure handling: save submission, preserve transcript and deterministic state, offer retry, allow other non-AI study. Never lose work. | P0 | 19 | PASSED | §112 |
+| AI-009 | Claude is called only through the Worker (`browser → Worker → budget check → normalisation → Claude → schema validation → stored`). API key never reaches the browser. | P0 | 19 | PARTIAL | §105, TA§35 |
+| AI-010 | Prompt caching for stable context (grading philosophy, rubrics, negotiation rules, client profile, skill criteria); the whole curriculum is never sent per call. | P1 | 19 | PASSED | TA§39 |
+| AI-011 | Every AI rubric is versioned (e.g. `SALES_DISCOVERY_RUBRIC_V3`); old attempts stay bound to their original version. | P0 | 19 | PASSED | TA§42 |
+| AI-012 | AI feedback storage: submission, rubric version, model, result, cost, timestamp; giant prompts not stored forever. | P1 | 19 | PASSED | TA§41 |
+| AI-013 | Settings show "AI this month $x / $20" with breakdown (call feedback, written coaching, negotiation, diagnosis); cost not shown obsessively during learning. | P2 | 19 | PASSED | TA§38 |
 
 ## VOI — Voice
 

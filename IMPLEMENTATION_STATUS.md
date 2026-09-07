@@ -24,6 +24,8 @@ Phase 17 — Pricing Arena: **a learner prices a deal on what the client asked f
 
 Phase 18 — Negotiation: the authored engine, standalone deal, ten-objection conversation and attempt-local persistence are implemented. All six actions and seven strategies have executable reactions; hidden state changes later responses and outcomes. Grading reuses Phase 17 economics, retains every harmful offer and permits a high-scoring professional walk-away. NEG-003 remains PARTIAL for actual free-form interpretation; mixed success remains rubric_pending. See `docs/reviews/phase-18-negotiation.md` for evidence and review boundaries. Merged and production-green at `154a00a73d659b92f0cc871f636462a9cb094f4b` (PR #20). Main CI `34072172459`: SUCCESS; 1,570 tests across 93 files; Checks, production D1 migration (no pending migration), and production Wrangler deploy SUCCESS; preview correctly skipped on main.
 
+Phase 19 — AI Gateway: Worker-only Anthropic routing, canonical AI settings, conservative atomic budget reservations, structured validation with one repair, exact rubric persistence and recoverable submitted attempts are implemented. Full local verification: 1,632 tests across 95 files; all affected browser probes pass. AI-009 remains PARTIAL for live Anthropic verification; NEG-003 remains PARTIAL for live language quality. PR #21 stays open for independent audit. See `docs/reviews/phase-19-ai-gateway.md`.
+
 ## VERSIONS
 
 - app: 0.1.0
@@ -33,6 +35,8 @@ Phase 18 — Negotiation: the authored engine, standalone deal, ten-objection co
 - exercise grader: 2026.09.16 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
 
 ## PASSED
+
+- AI-001, AI-002, AI-003, AI-004, AI-005, AI-006, AI-007, AI-008, AI-010, AI-011, AI-012, AI-013 — Worker gateway, canonical policy, atomic conservative reservations, structured validation/repair, exact rubric records and recoverable queued submission verified with injected providers and browser probes. See `docs/reviews/phase-19-ai-gateway.md`; live-provider acceptance remains open.
 
 Phase 0–1:
 
@@ -264,7 +268,7 @@ Phase 18:
 
 ## IN PROGRESS
 
-- AI-001, AI-002, AI-003, AI-004, AI-005, AI-006, AI-007, AI-008, AI-009, AI-010, AI-011, AI-012, AI-013 — Phase 19 implemented and undergoing verification. Live Anthropic verification remains gated on the Worker secret; no phase-wide green claim.
+
 
 - DES-006 — cross-cutting: Phase 2 gallery reviewed against the §70 list (no gradient heroes, gradient text, glassmorphism, blobs, icon-per-heading, card-everything, fake stats, emoji nav, trophies, huge shadows, confetti); re-checked every phase.
 - DES-008 — density mechanism (`data-density`, `--bl-density-row`) implemented in ToolPanel and rows; Phase 7 assigns the Skill Map its high-visual / low-text density (typographic territory objects, one line of scope, one count) and the Command Center a low-medium content density; the Academy, labs, Call Room and Pricing Arena take theirs with their phases.
@@ -277,7 +281,9 @@ Phase 18:
 
 ## PARTIAL
 
-- NEG-003 — explicit moves classify with declared confidence and authored branches; ambiguous prose takes the honest fallback. Actual language interpretation and AI invocation await Phase 19; no fake keyword AI.
+- AI-009 — Worker-only provider and secret isolation implemented and tested. No real Anthropic preview request was verified: the implementation environment has no key. Do not interpret fixture results as live-provider evidence.
+
+- NEG-003 — Phase 19 now routes unstructured prose through the cheap classifier, with ≥0.8 confidence required for an authored strategy and deterministic fallback otherwise. Explicit actions remain authoritative. Live language quality remains unverified without Anthropic credentials; status stays PARTIAL.
 - DATA-001 — Phase 12: moving a workflow node is a draft edit and saving is one event on the existing path; the offline workflow save was not probed separately. the whole chain `UI → local state → IndexedDB → sync queue → server` runs end to end and is verified across two browser contexts on the local and deployed preview (`npm run review:sync`): a note written on device A lands in Dexie and the outbox before any network call, syncs to D1, and appears on device B. Remaining acceptance interactions — moving a workflow node and completing a deterministic exercise offline — belong to Phases 12 and 9. Phase 8: finishing a unit writes exposure evidence and its outbox rows locally with no network call; the Academy probe finishes a second unit with the page and service worker offline, keeps it across an offline reload, and the queued operations sync once online (unit test with the fake server: the other device converges on LEARNING). Phase 9: finalizing an exercise writes the attempt, its evidence and the outbox rows locally with no network call; the exercise probe submits with the page and service worker offline, keeps the result across an offline reload, and the queue drains when the connection returns.
 - SYNC-007 — Phase 12: a node drag is a draft edit and a save is one `WORKFLOW_UPDATED` event (D-107, probe `drag-move`: 90 frames, one edit, zero events), which is the "not every drag coordinate" evidence; the status is left for the next cross-cutting audit. every synced record carries `id, learner_id, updated_at, revision, device_id, deleted_at` (plus `created_at`), the outbox coalesces repeated pending changes per record so a keystroke stream becomes one operation, the Worker rejects writes for another learner, and soft deletes travel as tombstones. Remaining: "not every drag coordinate" is proven only once workflow nodes exist (Phase 12).
 - CUR-002 — `CAMP-FIELD_READY` defines gates 0–12 as competency gates (placement plus twelve progression gates) and the engine resolves them on evidence only; gates 6 (Conversion and Copy) and 12 (Capstone) have no authored skills yet, so their §11 competencies are not mapped to skills until Phase 24.
@@ -348,4 +354,4 @@ Phase 19 — AI Gateway implementation is current. Phase 18 is merged and produc
 
 ## ROLL-UP
 
-313 requirements registered · 171 PASSED · 21 IN_PROGRESS · 21 PARTIAL · 0 BLOCKED · 2 DEFERRED · 98 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 183 PASSED · 8 IN_PROGRESS · 22 PARTIAL · 0 BLOCKED · 2 DEFERRED · 98 NOT_STARTED. Run the validator for the live count by status and priority.
