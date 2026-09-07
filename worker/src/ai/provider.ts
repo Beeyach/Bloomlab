@@ -1,6 +1,6 @@
 import { providerSchema } from './jsonSchema';
 import { z } from 'zod';
-import type { Model, Usage } from './catalog';
+import { MODELS, type Model, type Usage } from './catalog';
 export interface ProviderRequest {
   model: Model;
   stable: string;
@@ -44,6 +44,10 @@ export function anthropic(key: string, transport: typeof fetch = fetch): Provide
         body: JSON.stringify({
           model: input.model.id,
           max_tokens: 2048,
+          // Sonnet 5 enables adaptive thinking by default. Bloomlab reserves a bounded 2048-token
+          // structured response, so turn it off explicitly rather than letting hidden thinking
+          // consume that hard output cap. Haiku 4.5 already runs without thinking by default.
+          ...(input.model.id === MODELS.strong.id ? { thinking: { type: 'disabled' } } : {}),
           system: [
             { type: 'text', text: input.stable, cache_control: { type: 'ephemeral', ttl: '5m' } },
           ],
