@@ -322,4 +322,6 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 - Queued recoverable rubric submissions, pure minimum-of-independently-passing-halves combination, and persisted rubric feedback. Grader `2026.09.17`; content, rubric, simulator, mastery and IndexedDB versions unchanged.
 - Cheap negotiation language classification selects authored strategies only; settings at `/settings/ai`. Live Anthropic verification remains open without the Worker secret.
 
-- Phase 19 local verification: 1,632 tests across 95 files; typecheck, lint, format, docs, content and production build pass. AI, exercise, sales, pricing, negotiation, keyboard and touch probes pass. AI-009 and NEG-003 remain PARTIAL for live-provider evidence.
+- Phase 19 local verification: 1,634 tests across 95 files; typecheck, lint, format, docs, content and production build pass. AI, exercise, sales, pricing, negotiation, keyboard and touch probes pass. AI-009 and NEG-003 remain PARTIAL for live-provider evidence.
+
+- AI-003 accounting hardening: usage insertion and reservation reduction are atomic; storage failure after either provider response cannot release unrecorded paid usage.

@@ -103,7 +103,8 @@ describe('AI-006/009/011/012 gateway', () => {
     expect(provider).toHaveBeenCalledTimes(2);
     expect(provider.mock.calls[1]![0].repair).toBe(true);
     expect((await settings(env.DB, session.learnerId)).spent_usd).toBeCloseTo(
-      2 * cost(MODELS.strong, usage),
+      2 * cost(MODELS.cheap, usage),
+      12,
     );
   });
   it('fails after exactly two invalid responses and allows explicit retry', async () => {
@@ -295,3 +296,34 @@ it('AI-002/013 settings persist canonically, expose categories, and refuse a lim
   expect((await put('Off', 30)).status).toBe(200);
   expect((await settings(env.DB, session.learnerId)).mode).toBe('Off');
 });
+
+it.each([1, 2])(
+  'AI-003 retains unaccounted paid usage when accounting transaction %s fails',
+  async (failAt) => {
+    const { session } = await learner();
+    let batches = 0;
+    let responses = 0;
+    const failingDb = new Proxy(env.DB, {
+      get(target, property) {
+        if (property === 'batch')
+          return (statements: D1PreparedStatement[]) => {
+            if (++batches === failAt) {
+              return Promise.reject(new Error('storage unavailable'));
+            }
+            return target.batch(statements);
+          };
+        const value = Reflect.get(target, property);
+        return typeof value === 'function' ? value.bind(target) : value;
+      },
+    });
+    await expect(
+      evaluate(request(), session, failingDb, async () => ({
+        value: responses++ === 0 ? null : valid(),
+        usage,
+      })),
+    ).rejects.toThrow('storage unavailable');
+    const policy = await settings(env.DB, session.learnerId);
+    expect(policy.spent_usd).toBeCloseTo((failAt - 1) * cost(MODELS.cheap, usage), 12);
+    expect(policy.spent_usd + policy.reserved_usd).toBeCloseTo(maximumCost(MODELS.cheap), 12);
+  },
+);

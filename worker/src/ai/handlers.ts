@@ -175,7 +175,8 @@ export async function evaluate(
     throw new AiError('budget_refused', 403);
   }
   let actual = 0;
-  let calls = 0;
+  let accounted = 0;
+  let accountedCalls = 0;
   try {
     for (let repair = 0; repair <= 1; repair++) {
       const response = await provider({
@@ -187,31 +188,32 @@ export async function evaluate(
       });
       const charged = cost(model, response.usage);
       actual += charged;
-      calls++;
-      await db
-        .prepare(
-          'INSERT INTO ai_usage(usage_id,learner_id,created_at,purpose,model,input_tokens,output_tokens,cached_input_tokens,cache_creation_input_tokens,cost_usd,exercise_id,run_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
-        )
-        .bind(
-          crypto.randomUUID(),
-          session.learnerId,
-          new Date().toISOString(),
-          category,
-          model.id,
-          response.usage.input_tokens,
-          response.usage.output_tokens,
-          response.usage.cache_read_input_tokens,
-          response.usage.cache_creation_input_tokens,
-          charged,
-          exercise.id,
-          runId,
-        )
-        .run();
-      // Accounting and reduction are atomic; reservation continues to cover any remaining call.
-      await db
-        .prepare('UPDATE ai_usage SET reserved_usd=? WHERE usage_id=?')
-        .bind(Math.max(0, bound - actual), usageId)
-        .run();
+      // Commit usage and its reservation reduction in the same D1 transaction.
+      await db.batch([
+        db
+          .prepare(
+            'INSERT INTO ai_usage(usage_id,learner_id,created_at,purpose,model,input_tokens,output_tokens,cached_input_tokens,cache_creation_input_tokens,cost_usd,exercise_id,run_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+          )
+          .bind(
+            crypto.randomUUID(),
+            session.learnerId,
+            new Date().toISOString(),
+            category,
+            model.id,
+            response.usage.input_tokens,
+            response.usage.output_tokens,
+            response.usage.cache_read_input_tokens,
+            response.usage.cache_creation_input_tokens,
+            charged,
+            exercise.id,
+            runId,
+          ),
+        db
+          .prepare('UPDATE ai_usage SET reserved_usd=? WHERE usage_id=?')
+          .bind(Math.max(0, bound - actual), usageId),
+      ]);
+      accounted = actual;
+      accountedCalls++;
       let result;
       try {
         result = validateGrading(response.value, rubric);
@@ -259,7 +261,7 @@ export async function evaluate(
       db.prepare("UPDATE rubric_runs SET status='failed' WHERE run_id=?").bind(runId),
       db
         .prepare('UPDATE ai_usage SET reserved_usd=?,status=? WHERE usage_id=?')
-        .bind(calls === 2 ? 0 : Math.max(0, bound - actual), 'failed', usageId),
+        .bind(accountedCalls === 2 ? 0 : Math.max(0, bound - accounted), 'failed', usageId),
     ]);
     throw error;
   }
