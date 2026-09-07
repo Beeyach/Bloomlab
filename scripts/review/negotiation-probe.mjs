@@ -71,9 +71,18 @@ async function finish(page) {
 }
 async function grade(page) {
   await click(page, 'Run it');
-  if (!(await waitFor(page, `!!document.querySelector('[data-outcome]')`)))
+  if (
+    !(await waitFor(
+      page,
+      `!!document.querySelector('[data-outcome]') || [...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Retry evaluation')`,
+    ))
+  )
     throw new Error('No saved grade');
-  return saved(page, 'exercise_attempts');
+  const finalized = await saved(page, 'exercise_attempts');
+  if (finalized) return finalized;
+  const checkpoint = await saved(page);
+  if (!checkpoint?.submitted) throw new Error('No saved submission checkpoint');
+  return { grade: checkpoint.submitted.report, pending: true };
 }
 async function hiddenAudit(page) {
   return page.evaluate(
@@ -146,14 +155,9 @@ try {
     conversation: (await text(page, 'neg-dialogue')).includes('smaller brief'),
     hidden: await hiddenAudit(page),
   });
-  await click(page, 'Try again');
-  await waitFor(page, exists('neg-reply'));
-  await move(page, null, { text: 'Begin a new attempt without inheriting the old relationship.' });
-  s = await state(page);
-  section('fresh-retry', {
-    trustReset: s.hidden.trust === 55,
-    frustrationReset: s.hidden.frustration === 30,
-    oneNewTurn: s.turns.length === 1,
+  section('saved-ai-failure', {
+    checkpoint: Boolean((await saved(page))?.submitted),
+    noFinalizedHistory: !(await saved(page, 'exercise_attempts')),
   });
   await fresh(page);
   s = await move(page, 'hold_price', { select: { approach: 'pitch' } });
@@ -191,6 +195,15 @@ try {
     won: s.status === 'won',
     failed: result.grade.outcome === 'failed',
     critical: result.grade.reason === 'critical_failure',
+  });
+  await click(page, 'Try again');
+  await waitFor(page, exists('neg-reply'));
+  await move(page, null, { text: 'Begin a new attempt without inheriting the old relationship.' });
+  s = await state(page);
+  section('fresh-retry', {
+    trustReset: s.hidden.trust === 55,
+    frustrationReset: s.hidden.frustration === 30,
+    oneNewTurn: s.turns.length === 1,
   });
   await fresh(page);
   await diagnose(page);

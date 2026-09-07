@@ -273,3 +273,25 @@ describe('AI-011 authored rubric audit', () => {
     }
   });
 });
+
+it('AI-002/013 settings persist canonically, expose categories, and refuse a limit below committed spend', async () => {
+  const { session, token } = await learner();
+  const put = (mode: string, monthly_limit_usd: number) =>
+    handleAi(
+      new Request('https://test/api/ai/settings', {
+        method: 'PUT',
+        headers: { authorization: `Bearer ${token}` },
+        body: JSON.stringify({ mode, monthly_limit_usd }),
+      }),
+      env,
+    );
+  expect((await settings(env.DB, session.learnerId)).mode).toBe('Limited');
+  expect((await put('Full', 30)).status).toBe(200);
+  await evaluate(request(), session, env.DB, async () => ({ value: valid(), usage }));
+  const current = await settings(env.DB, session.learnerId);
+  expect(current.mode).toBe('Full');
+  expect(current.categories[0]?.category).toBe('written_coaching');
+  expect((await put('Limited', 0)).status).toBe(409);
+  expect((await put('Off', 30)).status).toBe(200);
+  expect((await settings(env.DB, session.learnerId)).mode).toBe('Off');
+});

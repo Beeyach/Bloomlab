@@ -22,7 +22,7 @@ try {
 
   // Transport fixture for visual success only; this is not live Anthropic evidence.
   const rubricText = readFileSync('content/rubrics/SYSTEM_DESIGN_RUBRIC_V1.yaml', 'utf8');
-  const rubricIds = [...rubricText.matchAll(/  - id: (r[0-9]+)/g)].map((m) => m[1]);
+  const rubricIds = [...rubricText.matchAll(/ {2}- id: (r[0-9]+)/g)].map((m) => m[1]);
   const answer = {
     run_id: 'visual-fixture',
     rubric_id: 'SYSTEM_DESIGN_RUBRIC_V1',
@@ -65,7 +65,8 @@ try {
     const recovered = await page.evaluate(
       "document.querySelector('textarea').value==='A contact custom field printed as a merge field.' && document.querySelector('textarea').disabled",
     );
-    await screenshot(page, `${out}/ai-retry-${width}.png`, { x: 0, y: 0, width, height: 900 });
+    await page.evaluate("document.getElementById('submit-title').scrollIntoView({block:'center'})");
+    await screenshot(page, `${out}/ai-retry-${width}.png`, undefined, false);
     await page.evaluate(
       `new Promise((resolve,reject)=>{const r=indexedDB.open('bloomlab');r.onsuccess=()=>{const db=r.result;const tx=db.transaction('device','readwrite');const table=tx.objectStore('device');const all=table.getAll();all.onsuccess=()=>{table.put({...all.result[0],session_token:'visual-fixture-only'});};tx.oncomplete=()=>{db.close();resolve(true);};tx.onerror=()=>reject(tx.error);};})`,
     );
@@ -75,7 +76,8 @@ try {
     await click(page, 'Retry evaluation');
     const passed = await waitFor(page, "document.querySelector('[data-outcome=passed]')!==null");
     const overflow = await page.evaluate('document.documentElement.scrollWidth<=innerWidth');
-    await screenshot(page, `${out}/ai-result-${width}.png`, { x: 0, y: 0, width, height: 900 });
+    await page.evaluate("document.querySelector('[data-outcome]').scrollIntoView({block:'start'})");
+    await screenshot(page, `${out}/ai-result-${width}.png`, undefined, false);
     const checks = { failure, recovered, passed, overflow };
     results.push({ width, state: 'retry-and-fixture-result', checks });
     console.log(width, checks);

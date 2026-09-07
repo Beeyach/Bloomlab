@@ -276,11 +276,19 @@ export async function handleAi(
     if (path === '/api/ai/settings') {
       if (request.method === 'PUT') {
         const value = settingsSchema.parse(await boundedJson(request));
-        await env.DB.prepare(
-          'UPDATE learners SET ai_mode=?,ai_monthly_limit_usd=? WHERE learner_id=?',
+        const changed = await env.DB.prepare(
+          'UPDATE learners SET ai_mode=?,ai_monthly_limit_usd=? WHERE learner_id=? AND ? >= COALESCE((SELECT SUM(cost_usd+reserved_usd) FROM ai_usage WHERE learner_id=? AND created_at>=?),0)',
         )
-          .bind(value.mode, value.monthly_limit_usd, session.learnerId)
+          .bind(
+            value.mode,
+            value.monthly_limit_usd,
+            session.learnerId,
+            value.monthly_limit_usd,
+            session.learnerId,
+            monthStart(),
+          )
           .run();
+        if (!changed.meta.changes) throw new AiError('limit_below_committed_usage', 409);
       } else if (request.method !== 'GET') throw new AiError('method_not_allowed', 405);
       return json(await settings(env.DB, session.learnerId));
     }
