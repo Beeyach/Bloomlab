@@ -46,3 +46,7 @@ NEG-003 remains PARTIAL pending live language-quality verification, though class
 An abrupt Worker termination while a rubric run is active needs operational reconciliation; caught provider failures support retry. Uncertain billed outcomes retain reservations through the UTC month. Historical finalized attempts stay immutable. Full adds no optional product feature. No voice, Boss Client continuity or new content was introduced.
 
 Grader changed to `2026.09.17`. App, content (`2026.09.16`), rubric, simulator (`2026.09.11-r2`), mastery and IndexedDB versions deliberately remain unchanged.
+
+## Preview evidence
+
+CI run `34097678637` at code/document head `a394f446b6bfb78002122a3efdc15fc343898b31`: Checks SUCCESS, preview deploy SUCCESS (including the preview D1 migration step), production correctly skipped. Final documentation cleanup does not alter executable code. The PR handoff reports its final exact-head CI separately. No live Anthropic call was made.

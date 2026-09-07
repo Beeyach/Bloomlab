@@ -370,6 +370,8 @@ Last updated: 2026-09-06 (end of Phase 17)
 
 ## Phase 16 — Sales Exercises
 
+The prose-grading boundary below records Phase 16 at closure. Phase 19 now executes these exact rubrics; live-provider verification remains open.
+
 - **No prose is judged yet.** Every selling exercise is `mixed`: the deterministic half runs now
   and the written half names a rubric the AI gateway executes in Phase 19. A learner who does
   everything right sees a score of 100 and `rubric_pending`, not a pass. Nothing here reads whether
@@ -422,7 +424,7 @@ Last updated: 2026-09-06 (end of Phase 17)
   consequence: what the line leaves the client with, and any requirement nothing in the deal
   answers any more. The economic consequence appears in full after submitting, where the floor
   moves with the scope. PRI-001 stays PARTIAL with the unmet half named (D-162).
-- **No pricing reasoning is judged.** The Summit exercise is `mixed` and names
+- **Phase 17 closure boundary (superseded by the Phase 19 gateway below): no pricing reasoning was judged.** The Summit exercise is `mixed` and names
   `PRICING_REASONING_RUBRIC_V1`; the explanation is collected and kept with the attempt, and
   nothing reads it until the AI gateway (Phase 19). The rubric was not edited even though its first
   item now duplicates a deterministic check, because changing it would change a contract attempts
@@ -457,7 +459,7 @@ Last updated: 2026-09-06 (end of Phase 17)
 ## Phase 18 — Negotiation
 
 - At Phase 18 closure, NEG-003 was PARTIAL because only explicit actions were classified. Phase 19 now implements the Worker language classifier and fallback boundary; status remains PARTIAL pending live language-quality verification.
-- The Summit negotiation is mixed: deterministic success remains rubric_pending for `PRICING_REASONING_RUBRIC_V1`. Written quality and whether prose matches the selected move await Phase 19. The existing rubric is unchanged.
+- At Phase 18 closure the Summit negotiation was mixed: deterministic success remained rubric_pending for `PRICING_REASONING_RUBRIC_V1`. Written quality and whether prose matches the selected move await Phase 19. The existing rubric is unchanged.
 - One standalone starting deal and ten executable situations cover the required objections. This is not broad language coverage or persistent Boss Client continuity. New attempts start from client state plus scenario overrides, never another exercise's price or a completed attempt's hidden state.
 - Phasing uses authored dependency-valid two-stage plans. It is not an unrestricted planner for restructuring an already-phased deal; incomplete or unsupported reconfiguration takes the clarification path without altering the offer.
 - Hidden numeric state is absent from learner-rendered HTML. Local simulation state and bundled fictional content are inspectable in developer tools; they are not security secrets.
