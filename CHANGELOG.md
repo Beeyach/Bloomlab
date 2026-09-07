@@ -4,6 +4,15 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 18 · Negotiation
+
+- Standalone Summit NEGOTIATE IT with six actions, seven authored strategies, ten executable objections, configurable scope/phase/concession terms and natural multi-turn client replies.
+- Pure attempt-local transition engine and authoritative negotiation grading projection. Typed hidden overrides, bounded deltas and state-dependent reactions/decisions; no hidden numeric UI.
+- Phase 17 economics reused per real scope and delivery stage. Harmful offers remain in grading history; professional loss can score highly and an accepted below-cost deal fails critically.
+- Shared queued persistence for every draft field and turn, completed transcripts, fresh retries and legacy saves. Save failure prevents stale sending; incomplete conversations cannot finalize.
+- Build-time strategy/target/fallback/scope/economics/coverage/reachability/path validation, engine and screen regression tests, and `review:negotiation`.
+- Content and grader version `2026.09.16`; simulator/mastery/rubric unchanged. NEG-003 remains PARTIAL for real language interpretation; mixed success stays rubric_pending. No Phase 19/20/21/24 work.
+
 ### Added — Phase 17 · Pricing Arena
 
 - The authored half of pricing in content: `pricing` on a PRICE IT exercise carries the currency, the hourly delivery cost, the risk contingency per point, the margin band, the timeline policy, what a revision round costs, the client's own requirements and the scope lines that answer them. Each line names its hours, what removing it leaves the client with, what it depends on, whether it can be removed at all, and which of SAL-016's thirteen dimensions it makes the learner think about. Strict validation refuses a dependency loop, a removable line with nothing said about removing it, a requirement pointing at scope that does not exist, a scope-training exercise missing a dimension, a pricing block on anything but PRICE IT, and a proposal that is not all eight sections.

@@ -711,7 +711,8 @@ export function crossValidate(parsed: ParsedContent, issues: IssueList): GraphRe
     // The deal's hours and the scenario's own estimate have to be the same number. Without this
     // an exercise could price 40 hours of scope against a scenario that says the job is 22, and
     // every figure the engine derived from either would be defensible on its own (PRI-002).
-    if (exercise.pricing && scenario) {
+    const pricedScope = exercise.pricing ?? exercise.negotiation?.pricing;
+    if (pricedScope && scenario) {
       if (!scenario.economics) {
         issues.error(
           'PRICING_ECONOMICS_MISSING',
@@ -720,7 +721,7 @@ export function crossValidate(parsed: ParsedContent, issues: IssueList): GraphRe
           { id: exercise.id, path: 'pricing' },
         );
       } else {
-        const hours = exercise.pricing.scope.reduce((sum, item) => sum + item.hours, 0);
+        const hours = pricedScope.scope.reduce((sum, item) => sum + item.hours, 0);
         if (Math.abs(hours - scenario.economics.estimated_labor_hours) > 0.001) {
           issues.error(
             'PRICING_HOURS_MISMATCH',

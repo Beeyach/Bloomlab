@@ -548,3 +548,12 @@
 .dimension:last-child {
   border-bottom: 0;
 }
+
+/* Negotiation owns a conversation beside its agreement; a third brief column squeezes both. */
+.negotiation .columns {
+  grid-template-columns: minmax(0, 1fr);
+}
+.negotiation .brief {
+  position: static;
+  max-width: 48rem;
+}

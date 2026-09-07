@@ -1,3 +1,4 @@
+import { HiddenStateSchema } from './client.ts';
 import { z } from 'zod';
 
 import { eventTypeFromContent, isSimulatorEventType } from '@bloomlab/simulator-core';
@@ -560,7 +561,7 @@ export const ScenarioSchema = z
     incident: incident.nullable().default(null),
     economics: PricingEconomicsSchema.optional(),
     /** Overrides of the client's hidden roleplay state for this situation (spec §39). */
-    hidden_state_overrides: z.record(z.string(), z.number()).default({}),
+    hidden_state_overrides: HiddenStateSchema.partial().default({}),
   })
   .superRefine((scenario, ctx) => {
     requireUnique(

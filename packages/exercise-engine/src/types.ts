@@ -123,6 +123,7 @@ export const LEARNER_STATE_ROOTS = [
    * produces the figures the deal desk shows and the figures a check reads.
    */
   'price',
+  'negotiation',
 ] as const;
 
 export interface GradingContext {

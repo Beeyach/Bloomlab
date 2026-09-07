@@ -1,3 +1,6 @@
+import { negotiationOf } from './negotiation/context';
+import { transitionNegotiation, type NegotiationAction } from './negotiation/engine';
+import { economicsFor } from './pricing';
 import { useLiveQuery } from 'dexie-react-hooks';
 
 import type { Exercise } from '@bloomlab/content-schema';
@@ -119,7 +122,7 @@ export const loadAttempt = (
  * grade depends on — and a retrieval never inherits a normal run's draft.
  */
 export async function startAttempt(
-  exercise: Pick<Exercise, 'id' | 'skills'>,
+  exercise: Pick<Exercise, 'id' | 'skills'> & Partial<Pick<Exercise, 'negotiation' | 'scenario'>>,
   context: AttemptContext = NORMAL_RUN,
   options: { now?: Date } = {},
   database: BloomlabDatabase = db,
@@ -140,6 +143,13 @@ export async function startAttempt(
     hints_revealed: [],
     response: emptyResponse(),
   };
+  if (exercise.negotiation && exercise.scenario) {
+    const initial = negotiationOf({
+      negotiation: exercise.negotiation,
+      scenario: exercise.scenario,
+    });
+    if (initial) attempt.response.negotiation = initial;
+  }
   await saveWorkspace(attemptKey(exercise.id, context), attempt, database);
   return attempt;
 }
@@ -154,11 +164,12 @@ export async function startAttempt(
  */
 const writes = new Map<string, Promise<unknown>>();
 
-function enqueue<T>(key: string, work: () => Promise<T>): Promise<T> {
+function enqueue<T>(key: string, work: () => Promise<T>, recoverPrevious = true): Promise<T> {
   // Recover from an earlier failed edit before running the next one, but keep this edit's own
   // rejection visible in the queue. Finalization can then refuse to record stale work if the
   // latest save failed instead of silently grading the previous persisted draft.
-  const queued = (writes.get(key) ?? Promise.resolve()).catch(() => undefined).then(work);
+  const previous = writes.get(key) ?? Promise.resolve();
+  const queued = (recoverPrevious ? previous.catch(() => undefined) : previous).then(work);
   writes.set(key, queued);
   return queued;
 }
@@ -183,15 +194,20 @@ async function update(
   context: AttemptContext,
   change: (attempt: ActiveAttempt) => ActiveAttempt,
   database: BloomlabDatabase,
+  recoverPrevious = true,
 ): Promise<ActiveAttempt | null> {
   const key = attemptKey(exerciseId, context);
-  return enqueue(key, async () => {
-    const current = await loadAttempt(exerciseId, context, database);
-    if (!current) return null;
-    const next = change(current);
-    await saveWorkspace(key, next, database);
-    return next;
-  });
+  return enqueue(
+    key,
+    async () => {
+      const current = await loadAttempt(exerciseId, context, database);
+      if (!current) return null;
+      const next = change(current);
+      await saveWorkspace(key, next, database);
+      return next;
+    },
+    recoverPrevious,
+  );
 }
 
 export const saveResponse = (
@@ -233,3 +249,56 @@ export const discardAttempt = (
   context: AttemptContext = NORMAL_RUN,
   database: BloomlabDatabase = db,
 ): Promise<void> => clearWorkspace(attemptKey(exerciseId, context), database);
+
+/** Negotiation edits and turns share the original per-attempt queue. A turn reads the persisted
+ * draft inside that queue, so an immediate Send includes the latest field and move edits. */
+export const saveNegotiationDraft = (
+  exercise: Exercise,
+  context: AttemptContext,
+  patch: Partial<NegotiationAction>,
+  database: BloomlabDatabase = db,
+) =>
+  update(
+    exercise.id,
+    context,
+    (attempt) => {
+      const state = negotiationOf(exercise, attempt.response.negotiation);
+      if (!state || state.status !== 'open') return attempt;
+      return {
+        ...attempt,
+        response: {
+          ...attempt.response,
+          negotiation: { ...state, draft: { ...state.draft, ...patch } },
+        },
+      };
+    },
+    database,
+  );
+
+export const sendNegotiationTurn = (
+  exercise: Exercise,
+  context: AttemptContext,
+  database: BloomlabDatabase = db,
+) =>
+  update(
+    exercise.id,
+    context,
+    (attempt) => {
+      const state = negotiationOf(exercise, attempt.response.negotiation);
+      if (!state || !exercise.negotiation) return attempt;
+      return {
+        ...attempt,
+        response: {
+          ...attempt.response,
+          negotiation: transitionNegotiation(
+            state,
+            state.draft,
+            exercise.negotiation,
+            economicsFor(exercise),
+          ),
+        },
+      };
+    },
+    database,
+    false,
+  );

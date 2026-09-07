@@ -158,7 +158,11 @@ export default function ExerciseRunner() {
     <Stack
       as="article"
       gap={6}
-      className={cx(styles.screen, styles[treatment.tone])}
+      className={cx(
+        styles.screen,
+        styles[treatment.tone],
+        exercise.negotiation && styles.negotiation,
+      )}
       aria-labelledby="exercise-title"
     >
       <header className={styles.masthead}>
@@ -209,7 +213,16 @@ export default function ExerciseRunner() {
               </h2>
               {gradable ? (
                 <>
-                  <Button variant="primary" loading={busy} onClick={() => void submit()}>
+                  <Button
+                    variant="primary"
+                    loading={busy}
+                    disabled={Boolean(
+                      exercise.negotiation &&
+                      (!attempt.response.negotiation ||
+                        attempt.response.negotiation.status === 'open'),
+                    )}
+                    onClick={() => void submit()}
+                  >
                     Run it
                   </Button>
                   <p className={styles.help}>

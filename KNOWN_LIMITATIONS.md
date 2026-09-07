@@ -452,3 +452,14 @@ Last updated: 2026-09-06 (end of Phase 17)
   network to create a sync key, so the two-device half of the probe never starts. It is the
   environment rather than a regression, and it is the same limitation recorded at the end of
   Phase 16.
+
+
+## Phase 18 — Negotiation
+
+- NEG-003 remains PARTIAL: the classifier understands the explicit action protocol, not free prose. Unselected language takes an authored clarification with confidence zero. No real interpreter, AI call or fake keyword AI exists.
+- The Summit negotiation is mixed: deterministic success remains rubric_pending for `PRICING_REASONING_RUBRIC_V1`. Written quality and whether prose matches the selected move await Phase 19. The existing rubric is unchanged.
+- One standalone starting deal and ten executable situations cover the required objections. This is not broad language coverage or persistent Boss Client continuity. New attempts start from client state plus scenario overrides, never another exercise's price or a completed attempt's hidden state.
+- Phasing uses authored dependency-valid two-stage plans. It is not an unrestricted planner for restructuring an already-phased deal; incomplete or unsupported reconfiguration takes the clarification path without altering the offer.
+- Hidden numeric state is absent from learner-rendered HTML. Local simulation state and bundled fictional content are inspectable in developer tools; they are not security secrets.
+- Node 26 on the review host breaks an existing localStorage database test. The unchanged suite passes under the pinned Node 22 runtime. Browser probes requiring offline reload need the built service worker, not the development server.
+- Independent review remains pending. Phase 19/20/21/24 were not started and this task must not merge the PR.

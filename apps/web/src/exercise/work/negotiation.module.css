@@ -1,0 +1,76 @@
+.negotiation {
+  min-width: 0;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(240px, 1fr);
+  gap: var(--bl-space-6);
+  align-items: start;
+}
+.agreement {
+  min-width: 0;
+  padding: var(--bl-space-4);
+  background: var(--bl-color-lilac-soft);
+  border-radius: var(--bl-radius-lg);
+}
+.scope {
+  padding-inline-start: var(--bl-space-5);
+}
+.scope li {
+  margin-block: var(--bl-space-4);
+}
+.scope p {
+  margin-block: var(--bl-space-2);
+}
+.terms {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: var(--bl-space-4);
+}
+.terms input,
+.terms select,
+.terms textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 16px;
+  color: var(--bl-color-ink);
+  background: var(--bl-color-snow);
+  padding: var(--bl-space-3);
+  border: 1px solid var(--bl-color-ink-soft);
+  border-radius: var(--bl-radius-sm);
+  min-height: 44px;
+}
+.terms input[type='checkbox'] {
+  width: 22px;
+  min-width: 22px;
+  min-height: 22px;
+}
+.negotiation p {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .agreement {
+    grid-row: 1;
+  }
+}
+
+.scopeDetails summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding-block: var(--bl-space-3);
+  box-sizing: border-box;
+  font-weight: var(--bl-font-weight-semibold);
+}
+.scopeDetails summary:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}

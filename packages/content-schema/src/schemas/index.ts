@@ -156,3 +156,5 @@ export {
   type Lock,
   type Manifest,
 } from './manifest.ts';
+
+export * from './negotiation.ts';

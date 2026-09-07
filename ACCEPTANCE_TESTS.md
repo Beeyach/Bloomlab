@@ -312,10 +312,15 @@ Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine a
 ## Phase 18 — Negotiation
 
 - **NEG-001** Hidden state fields exist in scenario data; no UI element renders them; grep confirms.
+  - **PASSED.** Eleven client fields with typed overrides. Numeric-canary renderer tests cover text and every attribute before/after completion; browser DOM audit repeats at five widths and completed reload. No hidden numeric meters or debug markup.
 - **NEG-002 / EXR-017** All six actions available; a walk-away scenario can score high (test).
+  - **PASSED.** Multi-turn NEGOTIATE IT executes all six actions. A diagnosed walk-away scores 100 with rubric_pending; an accepted below-cost offer fails critically. Scope removal, two delivery stages and concrete concession trades are separate modeled consequences. Shared-queue tests and real browser probe cover immediate text/action submission, reloads, retry and old saves.
 - **NEG-003** Classifier maps sample responses to the seven strategies; authored reactions exist for each; AI is invoked only when classification confidence is low (test with AI Off shows authored path).
+  - **PARTIAL.** Seven strategies execute from explicit structured moves at confidence 1. Unselected prose has confidence 0 and takes an authored clarification without changing economics. Every node supplies all seven reactions. No actual language interpreter or AI invocation exists until Phase 19, and none is faked.
 - **NEG-004** Scenarios exist for all ten objections.
+  - **PASSED.** Ten reachable authored situations execute through real UI turns; a missing category or branch fails schema validation. See `docs/reviews/phase-18-negotiation.md` for the situation map.
 - **NEG-005** Dialogue actions change hidden state per rules (tests for the three examples).
+  - **PASSED.** Pure transitions pin trust 55 → 65 for supported diagnosis, 55 → 47 for premature pitch, frustration 30 → 45 for ignored objection. Real-app probe repeats all three. Tests change each hidden field and prove later reactions or acceptance differ; percentage deltas clamp to 0–100.
 
 ## Phase 19 — AI gateway
 

@@ -1,3 +1,4 @@
+import { NegotiationConfigSchema, NEGOTIATION_METRICS } from './negotiation.ts';
 import { z } from 'zod';
 
 import { EXERCISE_TYPES, type ExerciseType } from '../ids.ts';
@@ -281,6 +282,7 @@ interface SalesPathSubject {
   sales: { frame: { element: string }[] };
   conversation: { nodes: { covers: string[]; situation?: string }[] } | null;
   pricing: { scope: { id: string }[] } | null;
+  negotiation: unknown | null;
 }
 
 const listing = (values: readonly string[]): string => values.join(', ');
@@ -337,6 +339,13 @@ function salesPathIssues(exercise: SalesPathSubject, root: string, rest: string[
       } else known(EXPLANATION_METRICS);
       break;
     }
+    case 'negotiation':
+      needs(
+        exercise.type === 'NEGOTIATE_IT' && exercise.negotiation !== null,
+        'negotiation.* needs NEGOTIATE IT content',
+      );
+      known(NEGOTIATION_METRICS);
+      break;
     case 'price': {
       needs(exercise.pricing !== null, 'price.* needs an authored pricing block');
       if (rest[0] === 'scope') {
@@ -415,6 +424,7 @@ export const ExerciseSchema = z
     conversation: ConversationSchema.nullable().default(null),
     /** The deal this exercise prices: its scope, its cost basis and its policies (Phase 17). */
     pricing: PricingConfigSchema.nullable().default(null),
+    negotiation: NegotiationConfigSchema.nullable().default(null),
     fieldwork: fieldwork.nullable().default(null),
     portfolio: portfolioRef.nullable().default(null),
     /** WRITE IT / SAY IT / EXPLAIN IT: what kind of piece, in the spec's own words. */
@@ -604,7 +614,11 @@ export const ExerciseSchema = z
         // A check on one of the sales projections must name a figure that projection produces,
         // for an exercise whose family produces it at all. Otherwise it is a criterion the
         // learner can never meet, however well they do the work.
-        const projected = [...SALES_STATE_ROOTS, ...PRICING_STATE_ROOTS] as readonly string[];
+        const projected = [
+          ...SALES_STATE_ROOTS,
+          ...PRICING_STATE_ROOTS,
+          'negotiation',
+        ] as readonly string[];
         if (projected.includes(root ?? '')) {
           for (const message of salesPathIssues(exercise, root ?? '', rest)) {
             issue(at('path'), message);
@@ -711,6 +725,10 @@ export const ExerciseSchema = z
         );
       }
     }
+    if (exercise.type === 'NEGOTIATE_IT' && (!exercise.negotiation || !exercise.scenario))
+      issue(['negotiation'], 'NEGOTIATE IT requires negotiation content and a scenario');
+    if (exercise.type !== 'NEGOTIATE_IT' && exercise.negotiation)
+      issue(['negotiation'], 'Only NEGOTIATE IT carries negotiation content');
     // ---- pricing and the proposal (Phase 17).
     if (exercise.type === 'PRICE_IT' && !exercise.pricing) {
       issue(['pricing'], 'PRICE IT prices a deal; author its scope and cost basis');
