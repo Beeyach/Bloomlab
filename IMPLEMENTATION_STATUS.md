@@ -24,7 +24,7 @@ Phase 17 — Pricing Arena: **a learner prices a deal on what the client asked f
 
 Phase 18 — Negotiation: the authored engine, standalone deal, ten-objection conversation and attempt-local persistence are implemented. All six actions and seven strategies have executable reactions; hidden state changes later responses and outcomes. Grading reuses Phase 17 economics, retains every harmful offer and permits a high-scoring professional walk-away. NEG-003 remains PARTIAL for actual free-form interpretation; mixed success remains rubric_pending. See `docs/reviews/phase-18-negotiation.md` for evidence and review boundaries. Merged and production-green at `154a00a73d659b92f0cc871f636462a9cb094f4b` (PR #20). Main CI `34072172459`: SUCCESS; 1,570 tests across 93 files; Checks, production D1 migration (no pending migration), and production Wrangler deploy SUCCESS; preview correctly skipped on main.
 
-Phase 19 — AI Gateway: Worker-only Anthropic routing, canonical AI settings, conservative atomic budget reservations, structured validation with one repair, exact rubric persistence and recoverable submitted attempts are implemented. Independent audit fixes: the provider test creates fresh response bodies; canonical AI settings refresh reconciles the existing local cache, with immediate Off and in-flight response guards (D-176). Full Node 22 local verification: 1,642 tests across 97 files. Browser review evidence is recorded in the Phase 19 report. AI-009 remains PARTIAL for live Anthropic verification; NEG-003 remains PARTIAL for live language quality. PR #21 stays open for independent audit. See `docs/reviews/phase-19-ai-gateway.md`.
+Phase 19 — AI Gateway: Worker-only Anthropic routing, canonical AI settings, conservative atomic budget reservations, structured validation with one repair, exact rubric persistence and recoverable submitted attempts are implemented. Independent audit fixes: the provider test creates fresh response bodies; canonical AI settings refresh reconciles the existing local cache, with immediate Off and in-flight response guards (D-176). Full Node 22 local verification: 1,642 tests across 97 files. Browser review evidence is recorded in the Phase 19 report. AI-009 is PASSED after real deployed-preview Anthropic verification, exact rubric/version validation, D1 persistence, usage accounting and device revocation. NEG-003 remains PARTIAL: one real hold classification at 0.95 is verified, but broad language quality is not established. PR #21 stays open for independent audit. See `docs/reviews/phase-19-ai-gateway.md`.
 
 ## VERSIONS
 
@@ -36,7 +36,7 @@ Phase 19 — AI Gateway: Worker-only Anthropic routing, canonical AI settings, c
 
 ## PASSED
 
-- AI-001, AI-002, AI-003, AI-004, AI-005, AI-006, AI-007, AI-008, AI-010, AI-011, AI-012, AI-013 — Worker gateway, canonical policy, atomic conservative reservations, structured validation/repair, exact rubric records and recoverable queued submission verified with injected providers and browser probes. See `docs/reviews/phase-19-ai-gateway.md`; live-provider acceptance remains open.
+- AI-001, AI-002, AI-003, AI-004, AI-005, AI-006, AI-007, AI-008, AI-010, AI-011, AI-012, AI-013 — Worker gateway, canonical policy, atomic conservative reservations, structured validation/repair, exact rubric records and recoverable queued submission verified with injected providers and browser probes. See `docs/reviews/phase-19-ai-gateway.md`; AI-009 live-provider evidence is recorded separately below.
 
 Phase 0–1:
 
@@ -266,6 +266,10 @@ Phase 18:
 - NEG-004 — evidence: ten reachable objection nodes, each with seven authored strategy branches; build-time coverage and real-app traversal.
 - NEG-005 — evidence: one pure transition layer; trust +10, trust -8 and frustration +15 tests plus browser evidence; every hidden field affects a later reaction or decision.
 
+Phase 19 live-provider closeout:
+
+- AI-009 — Real preview Haiku evaluation returned HTTP 200 for `WRITTEN_COMMUNICATION_RUBRIC_V2`, version 2, passed structured validation, and persisted matching D1 feedback, completed rubric run and non-zero usage. One permitted repair retry cost $0.013323; a real `hold` classification at 0.95 brought total cost to $0.013774. Reservations returned to $0; the disposable device was revoked and subsequent access returned HTTP 401. Worker-only routing and secret isolation are demonstrated on deployed preview; CI `34105051578`, attempt 3, Checks and Preview deploy SUCCESS. Production secret readiness remains an independent pre-merge gate.
+
 ## IN PROGRESS
 
 
@@ -281,9 +285,7 @@ Phase 18:
 
 ## PARTIAL
 
-- AI-009 — Worker-only provider and secret isolation implemented and tested. No real Anthropic preview request was verified: the implementation environment has no key. Do not interpret fixture results as live-provider evidence.
-
-- NEG-003 — Phase 19 now routes unstructured prose through the cheap classifier, with ≥0.8 confidence required for an authored strategy and deterministic fallback otherwise. Explicit actions remain authoritative. Live language quality remains unverified without Anthropic credentials; status stays PARTIAL.
+- NEG-003 — Phase 19 now routes unstructured prose through the cheap classifier, with ≥0.8 confidence required for an authored strategy and deterministic fallback otherwise. Explicit actions remain authoritative. One real preview hold classification at confidence 0.95 verifies the path and authored consequences; broad language quality is not established, so status stays PARTIAL.
 - DATA-001 — Phase 12: moving a workflow node is a draft edit and saving is one event on the existing path; the offline workflow save was not probed separately. the whole chain `UI → local state → IndexedDB → sync queue → server` runs end to end and is verified across two browser contexts on the local and deployed preview (`npm run review:sync`): a note written on device A lands in Dexie and the outbox before any network call, syncs to D1, and appears on device B. Remaining acceptance interactions — moving a workflow node and completing a deterministic exercise offline — belong to Phases 12 and 9. Phase 8: finishing a unit writes exposure evidence and its outbox rows locally with no network call; the Academy probe finishes a second unit with the page and service worker offline, keeps it across an offline reload, and the queued operations sync once online (unit test with the fake server: the other device converges on LEARNING). Phase 9: finalizing an exercise writes the attempt, its evidence and the outbox rows locally with no network call; the exercise probe submits with the page and service worker offline, keeps the result across an offline reload, and the queue drains when the connection returns.
 - SYNC-007 — Phase 12: a node drag is a draft edit and a save is one `WORKFLOW_UPDATED` event (D-107, probe `drag-move`: 90 frames, one edit, zero events), which is the "not every drag coordinate" evidence; the status is left for the next cross-cutting audit. every synced record carries `id, learner_id, updated_at, revision, device_id, deleted_at` (plus `created_at`), the outbox coalesces repeated pending changes per record so a keystroke stream becomes one operation, the Worker rejects writes for another learner, and soft deletes travel as tombstones. Remaining: "not every drag coordinate" is proven only once workflow nodes exist (Phase 12).
 - CUR-002 — `CAMP-FIELD_READY` defines gates 0–12 as competency gates (placement plus twelve progression gates) and the engine resolves them on evidence only; gates 6 (Conversion and Copy) and 12 (Capstone) have no authored skills yet, so their §11 competencies are not mapped to skills until Phase 24.
