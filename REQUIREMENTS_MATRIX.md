@@ -387,6 +387,8 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 ## AI — Runtime AI
 
+AI-002 audit correction: canonical refresh now reconciles the local mode before display, with immediate local Off and delayed-response protection (D-176). Regression evidence: `apps/web/src/ai/client.test.tsx`; server Off remains covered by `worker/src/ai/gateway.test.ts`. Status remains PASSED.
+
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
 | AI-001 | Minimal runtime AI. Preferred order: code → deterministic rules → authored branches → lightweight classifier → full LLM judgment. AI is the coach, not the course engine. | P0 | 19 | PASSED | §106 |

@@ -50,3 +50,18 @@ Grader changed to `2026.09.17`. App, content (`2026.09.16`), rubric, simulator (
 ## Preview evidence
 
 CI run `34097678637` at code/document head `a394f446b6bfb78002122a3efdc15fc343898b31`: Checks SUCCESS, preview deploy SUCCESS (including the preview D1 migration step), production correctly skipped. Final documentation cleanup does not alter executable code. The PR handoff reports its final exact-head CI separately. No live Anthropic call was made.
+
+## Independent audit fixes — 2026-09-07
+
+Executed `docs/handoffs/phase-19-independent-audit-fixes.md` from branch head `4e33835c8a9f9071e8d8edaee9216e07233eb2ae` on the existing PR #21 branch. The Sonnet/Haiku fixture now creates a fresh Response per transport call; provider implementation is unchanged.
+
+AI-002 / D-176: `getAiSettings` reconciles the canonical Worker mode into the existing `ai.mode` workspace cache before returning the effective mode to Settings. Local Off takes effect synchronously on selection and persists before the PUT, including offline failures. Transient revision/write guards prevent older reads and reads started during a write from re-enabling AI. A later successful canonical Limited/Full refresh replaces stale Off without another Save. Settings uses the reconciled mode for refresh and successful writes. No second persistent settings store, server gate change, or changes to attempt queues, grading, classification authority, reservations or required-secret declarations.
+
+Observed local verification on Node 22.22.1:
+
+- Focused AI client + Worker suites: 60 tests across four files, including seven new client/UI cases and the corrected provider test.
+- Full suite: 1,642 tests across 97 files pass. Typecheck, lint (one existing hook warning), format, docs validation, content check and production build pass; an explicit `CLOUDFLARE_ENV=production npm run build` also passes.
+- AI probe passes Settings and failed-submission/reload/successful-fixture retry at 1440/1024/768/390/320. Exercise, negotiation (zero failures), keyboard and touch probes pass. Local artifacts: `.review/phase19-audit/` plus keyboard/touch probe output. These use fixture Anthropic responses, not live provider evidence.
+- Initial browser runs hit blank pages/timeouts. Rerunning with Chromium container flags `--no-sandbox --disable-dev-shm-usage` passed all five probes; the failed initial runs are not counted as passes.
+
+AI-009 and NEG-003 remain PARTIAL. Live Anthropic verification was not performed. Required preview and production secrets remain declared; final pushed-head CI status and any preview secret blocker are reported in the task handoff, separately from historical CI evidence above. PR #21 remains open and must not be merged by this task.

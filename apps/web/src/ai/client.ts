@@ -7,6 +7,47 @@ import type {
 } from '@bloomlab/shared';
 import { db, type BloomlabDatabase } from '../data/db';
 import { loadWorkspace, saveWorkspace } from '../data/workspace';
+// Transient race protection only; ai.mode in the existing workspace remains the local cache.
+const modeGuards = new WeakMap<
+  BloomlabDatabase,
+  { revision: number; off: boolean; writes: number }
+>();
+function guard(database: BloomlabDatabase) {
+  let state = modeGuards.get(database);
+  if (!state) {
+    state = { revision: 0, off: false, writes: 0 };
+    modeGuards.set(database, state);
+  }
+  return state;
+}
+export async function selectAiOff(database: BloomlabDatabase = db): Promise<void> {
+  const state = guard(database);
+  state.revision++;
+  state.off = true;
+  await saveWorkspace('ai.mode', 'Off', database);
+}
+async function isOff(database: BloomlabDatabase) {
+  const cached = await loadWorkspace<AiMode>('ai.mode', database);
+  return guard(database).off || cached === 'Off';
+}
+async function reconcileSettings(
+  settings: AiSettings,
+  revision: number,
+  database: BloomlabDatabase,
+) {
+  return database.transaction('rw', database.workspace, async () => {
+    const state = guard(database);
+    if (state.revision === revision && state.writes === 0) {
+      await saveWorkspace('ai.mode', settings.mode, database);
+      if (state.revision === revision) {
+        state.off = false;
+        return settings;
+      }
+    }
+    const mode = state.off ? 'Off' : await loadWorkspace<AiMode>('ai.mode', database);
+    return { ...settings, mode: mode ?? settings.mode };
+  });
+}
 export async function aiRequest<T>(
   path: string,
   body?: unknown,
@@ -45,20 +86,36 @@ export async function evaluateSubmission(
   request: AiEvaluationRequest,
   database: BloomlabDatabase = db,
 ): Promise<AiEvaluationResponse> {
-  if ((await loadWorkspace<AiMode>('ai.mode', database)) === 'Off')
+  if (await isOff(database))
     throw new Error('AI Coaching is Off. Your work is saved. Enable AI in Settings to retry.');
   return aiRequest('evaluate', request, database);
 }
-export async function getAiSettings(): Promise<AiSettings> {
-  return aiRequest('settings');
+export async function getAiSettings(database: BloomlabDatabase = db): Promise<AiSettings> {
+  const state = guard(database);
+  const revision = state.revision;
+  // A read begun during a write cannot establish a newer canonical value.
+  const duringWrite = state.writes > 0;
+  const result = await aiRequest<AiSettings>('settings', undefined, database);
+  return reconcileSettings(result, duringWrite ? -1 : revision, database);
 }
-export async function setAiSettings(mode: AiMode, monthly_limit_usd: number): Promise<AiSettings> {
-  // Local Off takes effect immediately, even if the server is unreachable. Server confirmation
-  // is required before claiming another device or direct server requests are disabled.
-  if (mode === 'Off') await saveWorkspace('ai.mode', mode);
-  const result = await aiRequest<AiSettings>('settings', { mode, monthly_limit_usd }, db, 'PUT');
-  await saveWorkspace('ai.mode', result.mode);
-  return result;
+export async function setAiSettings(
+  mode: AiMode,
+  monthly_limit_usd: number,
+  database: BloomlabDatabase = db,
+): Promise<AiSettings> {
+  const state = guard(database);
+  state.revision++;
+  state.writes++;
+  let result: AiSettings;
+  let revision: number;
+  try {
+    if (mode === 'Off') await selectAiOff(database);
+    revision = state.revision;
+    result = await aiRequest<AiSettings>('settings', { mode, monthly_limit_usd }, database, 'PUT');
+  } finally {
+    state.writes--;
+  }
+  return reconcileSettings(result, revision, database);
 }
 
 export async function classifyLanguage(
@@ -70,7 +127,7 @@ export async function classifyLanguage(
   strategy: NegotiationStrategy;
   confidence: number;
 } | null> {
-  if ((await loadWorkspace<AiMode>('ai.mode', database)) === 'Off') return null;
+  if (await isOff(database)) return null;
   try {
     return await aiRequest('classify', { exercise_id, request_id, text }, database);
   } catch {

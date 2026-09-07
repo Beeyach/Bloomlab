@@ -325,7 +325,7 @@ Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine a
 ## Phase 19 — AI gateway
 
 - **AI-001** Code review confirms no AI call for any deterministic grade; classifier runs before LLM.
-- **AI-002** Setting persists; Off disables all AI routes; default is Limited.
+- **AI-002** Setting persists; Off disables all AI routes; default is Limited. Canonical Limited/Full refresh replaces stale local Off before Settings displays it; evaluation/classification agree. Selecting Off suppresses requests before Save and during failed/in-flight writes; older refreshes cannot undo that selection. Server Off still refuses stale enabled clients.
 - **AI-003** Governor unit tests for the four spend bands; a request above the limit is refused with a clear message; limit is configurable.
 - **AI-004** `ai_usage` rows carry all eight fields.
 - **AI-005** Routing table maps request types to model classes; no request type defaults to the most expensive model.

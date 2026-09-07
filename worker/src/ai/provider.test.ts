@@ -11,7 +11,7 @@ const usage = {
 };
 
 it('disables Sonnet 5 adaptive thinking and leaves Haiku on default', async () => {
-  const transport = vi.fn().mockResolvedValue(
+  const transport = vi.fn().mockImplementation(() =>
     Response.json({
       usage,
       stop_reason: 'end_turn',

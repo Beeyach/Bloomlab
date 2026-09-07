@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import type { AiMode, AiSettings } from '@bloomlab/shared';
-import { getAiSettings, setAiSettings } from '../ai/client';
+import { getAiSettings, selectAiOff, setAiSettings } from '../ai/client';
 import { loadWorkspace } from '../data/workspace';
 import styles from './AiSettingsScreen.module.css';
 export default function AiSettingsScreen() {
@@ -36,6 +36,7 @@ export default function AiSettingsScreen() {
     try {
       const s = await setAiSettings(mode, Number(limit));
       setSettings(s);
+      setMode(s.mode);
       setMessage('AI settings saved for your learner account.');
     } catch (e) {
       setMessage(e instanceof Error ? e.message : 'Settings could not be saved.');
@@ -49,7 +50,18 @@ export default function AiSettingsScreen() {
       <p>AI helps evaluate reasoning. Your Labs and deterministic exercises work with AI Off.</p>
       <label>
         AI Coaching
-        <select value={mode} onChange={(e) => setMode(e.target.value as AiMode)}>
+        <select
+          value={mode}
+          disabled={busy}
+          onChange={(e) => {
+            const next = e.target.value as AiMode;
+            setMode(next);
+            if (next === 'Off')
+              void selectAiOff().catch((e: unknown) => {
+                setMessage(e instanceof Error ? e.message : 'Local settings could not be saved.');
+              });
+          }}
+        >
           <option>Off</option>
           <option>Limited</option>
           <option>Full</option>

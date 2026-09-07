@@ -325,3 +325,9 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 - Phase 19 local verification: 1,634 tests across 95 files; typecheck, lint, format, docs, content and production build pass. AI, exercise, sales, pricing, negotiation, keyboard and touch probes pass. AI-009 and NEG-003 remain PARTIAL for live-provider evidence.
 
 - AI-003 accounting hardening: usage insertion and reservation reduction are atomic; storage failure after either provider response cannot release unrecorded paid usage.
+
+## 2026-09-07 — Phase 19 independent audit fixes (AI-002)
+
+- Correct the provider fixture to return a fresh response for Sonnet and Haiku without changing provider behavior.
+- Reconcile canonical settings into the existing local AI mode cache before Settings displays them. Selecting Off suppresses local requests before Save, during settings writes and after network failure; older responses cannot undo it.
+- Add seven client/UI regression cases; full Node 22 suite passes 1,642 tests across 97 files. Required preview/production secrets and server-side policy gates remain intact.
