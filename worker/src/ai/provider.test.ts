@@ -18,19 +18,22 @@ const response = () =>
   });
 
 describe('Anthropic model configuration', () => {
-  it('disables Sonnet 5 adaptive thinking so the structured-output cap is fully available', async () => {
-    const transport = vi.fn().mockResolvedValue(response());
-    await anthropic('test', transport)({
-      model: MODELS.strong,
-      stable: 'stable',
-      submission: 'work',
-      schema: { type: 'object' },
-      repair: false,
-    });
-    const body = JSON.parse(transport.mock.calls[0]![1].body);
-    expect(body.thinking).toEqual({ type: 'disabled' });
-    expect(body.max_tokens).toBe(2048);
-  });
+  it(
+    'disables Sonnet 5 adaptive thinking so the structured-output cap is fully available',
+    async () => {
+      const transport = vi.fn().mockResolvedValue(response());
+      await anthropic('test', transport)({
+        model: MODELS.strong,
+        stable: 'stable',
+        submission: 'work',
+        schema: { type: 'object' },
+        repair: false,
+      });
+      const body = JSON.parse(transport.mock.calls[0]![1].body);
+      expect(body.thinking).toEqual({ type: 'disabled' });
+      expect(body.max_tokens).toBe(2048);
+    },
+  );
 
   it('leaves Haiku 4.5 on its no-thinking default', async () => {
     const transport = vi.fn().mockResolvedValue(response());
