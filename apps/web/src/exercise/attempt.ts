@@ -1,3 +1,5 @@
+import type { GradeReport } from '@bloomlab/exercise-engine';
+import { classifyLanguage } from '../ai/client';
 import { negotiationOf } from './negotiation/context';
 import { transitionNegotiation, type NegotiationAction } from './negotiation/engine';
 import { economicsFor } from './pricing';
@@ -28,6 +30,7 @@ export interface ActiveAttempt {
   /** Stable from the first keystroke; becomes the `exercise_attempts` row id on finalize. */
   attempt_id: string;
   exercise_id: string;
+  rubric_id?: string;
   /**
    * The capability this attempt is for. On a retrieval run it is the capability under review and
    * the only one the attempt writes evidence for (D-072); on a normal run it is merely where the
@@ -39,6 +42,7 @@ export interface ActiveAttempt {
   started_at: string;
   hints_revealed: HintLevel[];
   response: LearnerResponse;
+  submitted?: { report: GradeReport; rubric_id: string };
 }
 
 export type RunMode = 'normal' | 'retrieval';
@@ -122,7 +126,8 @@ export const loadAttempt = (
  * grade depends on — and a retrieval never inherits a normal run's draft.
  */
 export async function startAttempt(
-  exercise: Pick<Exercise, 'id' | 'skills'> & Partial<Pick<Exercise, 'negotiation' | 'scenario'>>,
+  exercise: Pick<Exercise, 'id' | 'skills'> &
+    Partial<Pick<Exercise, 'negotiation' | 'scenario' | 'grading'>>,
   context: AttemptContext = NORMAL_RUN,
   options: { now?: Date } = {},
   database: BloomlabDatabase = db,
@@ -137,6 +142,7 @@ export async function startAttempt(
   const attempt: ActiveAttempt = {
     attempt_id: randomId(),
     exercise_id: exercise.id,
+    rubric_id: exercise.grading?.rubric,
     skill_id: context.skill_id,
     run: context.run,
     started_at: (options.now ?? new Date()).toISOString(),
@@ -192,7 +198,7 @@ export async function flushAttemptWrites(
 async function update(
   exerciseId: string,
   context: AttemptContext,
-  change: (attempt: ActiveAttempt) => ActiveAttempt,
+  change: (attempt: ActiveAttempt) => ActiveAttempt | Promise<ActiveAttempt>,
   database: BloomlabDatabase,
   recoverPrevious = true,
 ): Promise<ActiveAttempt | null> {
@@ -202,7 +208,11 @@ async function update(
     async () => {
       const current = await loadAttempt(exerciseId, context, database);
       if (!current) return null;
-      const next = change(current);
+      if (current.submitted)
+        throw new Error(
+          'This work is submitted. Retry evaluation before starting another attempt.',
+        );
+      const next = await change(current);
       await saveWorkspace(key, next, database);
       return next;
     },
@@ -283,9 +293,17 @@ export const sendNegotiationTurn = (
   update(
     exercise.id,
     context,
-    (attempt) => {
+    async (attempt) => {
       const state = negotiationOf(exercise, attempt.response.negotiation);
       if (!state || !exercise.negotiation) return attempt;
+      const interpretation = state.draft.action
+        ? null
+        : await classifyLanguage(
+            exercise.id,
+            `${attempt.attempt_id}:${state.turns.length}`,
+            state.draft.text,
+            database,
+          );
       return {
         ...attempt,
         response: {
@@ -295,6 +313,7 @@ export const sendNegotiationTurn = (
             state.draft,
             exercise.negotiation,
             economicsFor(exercise),
+            interpretation,
           ),
         },
       };
@@ -302,3 +321,29 @@ export const sendNegotiationTurn = (
     database,
     false,
   );
+
+/** Submission checkpoint shares the edit queue and refuses an edit that arrived during grading. */
+export async function checkpointSubmission(
+  exerciseId: string,
+  context: AttemptContext,
+  expected: ActiveAttempt,
+  database: BloomlabDatabase = db,
+): Promise<void> {
+  await enqueue(
+    attemptKey(exerciseId, context),
+    async () => {
+      const latest = await loadAttempt(exerciseId, context, database);
+      if (
+        !latest ||
+        latest.attempt_id !== expected.attempt_id ||
+        JSON.stringify(latest.response) !== JSON.stringify(expected.response) ||
+        JSON.stringify(latest.hints_revealed) !== JSON.stringify(expected.hints_revealed)
+      )
+        throw new Error(
+          'Your work changed during submission. Submit again to evaluate the latest saved work.',
+        );
+      await saveWorkspace(attemptKey(exerciseId, context), expected, database);
+    },
+    false,
+  );
+}

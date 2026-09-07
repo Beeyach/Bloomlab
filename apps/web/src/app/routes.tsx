@@ -88,6 +88,11 @@ export const APP_ROUTES: readonly AppRoute[] = [
     Component: lazy(() => import('../playground/Playground')),
   },
   {
+    id: 'ai-settings',
+    path: '/settings/ai',
+    Component: lazy(() => import('../screens/AiSettingsScreen')),
+  },
+  {
     id: 'sync',
     path: '/sync',
     Component: lazy(() => import('../screens/SyncScreen')),

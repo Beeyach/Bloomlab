@@ -1,3 +1,4 @@
+import { fakeEvaluation } from '../ai/testGateway';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -195,3 +196,8 @@ it('refuses finalization of an open conversation while preserving its attempt', 
   await expect(finalizeAttempt(exercise, started)).rejects.toThrow('Finish the negotiation');
   expect((await loadAttempt(exercise.id))?.attempt_id).toBe(started.attempt_id);
 });
+
+vi.mock('../ai/client', () => ({
+  evaluateSubmission: (...args: Parameters<typeof fakeEvaluation>) => fakeEvaluation(...args),
+  classifyLanguage: vi.fn().mockResolvedValue(null),
+}));

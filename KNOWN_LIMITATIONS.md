@@ -463,3 +463,11 @@ Last updated: 2026-09-06 (end of Phase 17)
 - Hidden numeric state is absent from learner-rendered HTML. Local simulation state and bundled fictional content are inspectable in developer tools; they are not security secrets.
 - Node 26 on the review host breaks an existing localStorage database test. The unchanged suite passes under the pinned Node 22 runtime. Browser probes requiring offline reload need the built service worker, not the development server.
 - Phase 18 closed through PR #20 at `154a00a73d659b92f0cc871f636462a9cb094f4b`; main CI `34072172459`, Checks, production migration (none pending), and deployment succeeded (1,570 tests / 93 files). Preview correctly skipped on main. Phase 19 is now current; Phases 20/21/24 remain unstarted.
+
+## Phase 19 — verification boundaries
+
+- No Anthropic secret is available in this implementation environment. A real preview gateway call has not been verified. AI-009 and phase-wide acceptance remain open; ordinary tests use injected providers and spend no API money.
+- The governor reserves the full model input-context ceiling at cache-write pricing plus bounded output, for two calls. This deliberately conservative maximum includes unobservable structured-output overhead and can refuse small requests while a visible balance remains. It downgrades to Haiku before refusal. Unknown provider outcomes retain reservations for the UTC month rather than silently risking double spending.
+- A Worker termination while a rubric run is active currently requires operational reconciliation; ordinary caught provider failures support retry. Reservations are not automatically refunded on timeout.
+- Full permits optional work but adds no speculative coaching buttons. Settings are reached from Sync and devices; the rail and mobile navigation are unchanged.
+- Historical finalized rubric_pending attempts remain unchanged. New successful evaluations finalize once; old rubric IDs retained in content remain resolvable. Voice-only SAY IT still needs its later runtime.

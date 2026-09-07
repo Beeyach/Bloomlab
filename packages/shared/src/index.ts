@@ -43,3 +43,11 @@ export {
   normalizeSyncKey,
   type SyncKeyCheck,
 } from './syncKey';
+export type {
+  AiMode,
+  AiCategory,
+  AiGrading,
+  AiEvaluationRequest,
+  AiEvaluationResponse,
+  AiSettings,
+} from './ai';

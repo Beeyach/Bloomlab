@@ -264,6 +264,8 @@ Phase 18:
 
 ## IN PROGRESS
 
+- AI-001, AI-002, AI-003, AI-004, AI-005, AI-006, AI-007, AI-008, AI-009, AI-010, AI-011, AI-012, AI-013 — Phase 19 implemented and undergoing verification. Live Anthropic verification remains gated on the Worker secret; no phase-wide green claim.
+
 - DES-006 — cross-cutting: Phase 2 gallery reviewed against the §70 list (no gradient heroes, gradient text, glassmorphism, blobs, icon-per-heading, card-everything, fake stats, emoji nav, trophies, huge shadows, confetti); re-checked every phase.
 - DES-008 — density mechanism (`data-density`, `--bl-density-row`) implemented in ToolPanel and rows; Phase 7 assigns the Skill Map its high-visual / low-text density (typographic territory objects, one line of scope, one count) and the Command Center a low-medium content density; the Academy, labs, Call Room and Pricing Arena take theirs with their phases.
 - DES-012 — ClientCaseCover with the abstract IdentityMark exists; three persistent clients are seeded as content (Phase 5); the Clients environment is Phase 24.
@@ -346,4 +348,4 @@ Phase 19 — AI Gateway implementation is current. Phase 18 is merged and produc
 
 ## ROLL-UP
 
-313 requirements registered · 171 PASSED · 8 IN_PROGRESS · 21 PARTIAL · 0 BLOCKED · 2 DEFERRED · 111 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 171 PASSED · 21 IN_PROGRESS · 21 PARTIAL · 0 BLOCKED · 2 DEFERRED · 98 NOT_STARTED. Run the validator for the live count by status and priority.

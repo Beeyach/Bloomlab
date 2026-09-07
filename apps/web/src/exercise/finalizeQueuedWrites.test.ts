@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { fakeEvaluation } from '../ai/testGateway';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { content } from '../content/bundle';
 import { db } from '../data/db';
@@ -38,3 +39,8 @@ describe('submission waits for queued attempt writes', () => {
     expect(await loadAttempt(ID, NORMAL_RUN, db)).toBeUndefined();
   });
 });
+
+vi.mock('../ai/client', () => ({
+  evaluateSubmission: (...args: Parameters<typeof fakeEvaluation>) => fakeEvaluation(...args),
+  classifyLanguage: vi.fn().mockResolvedValue(null),
+}));

@@ -430,3 +430,7 @@ offline mid-exercise · refresh mid-simulation · duplicate events · missing ph
 ## Field-Ready Complete gate (§167)
 
 All P0 PASSED · Field Ready P1 PASSED · content validation passing · simulator regression passing · sync passing · AI fallback passing · responsive review passing · accessibility core flows passing · GHL Field Ready registry current · placement-to-capstone completable · real-GHL fieldwork recordable · design review passing · no major core interface is a stub.
+
+## Phase 19 — implementation verification
+
+AI-001 through AI-013 are IN_PROGRESS pending complete browser/preview and live-provider evidence. Worker tests in `worker/src/ai/gateway.test.ts` cover routing, cost including both cache categories, reservations under concurrency, Off, authentication, missing secret, exact rubric persistence, idempotency, repair success/failure and sanitized HTTP failures. `apps/web/src/ai/evaluation.test.ts` covers checkpoint recovery, retry, one finalization and objective authority. NEG-003 language classification has pure-engine strategy/fallback tests; live language quality remains unverified. No adjacent requirement is promoted by these tests alone.

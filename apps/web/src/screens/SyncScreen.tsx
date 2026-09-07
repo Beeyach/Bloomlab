@@ -402,6 +402,7 @@ export default function SyncScreen() {
       <h1 id="sync-title" className={styles.title}>
         Sync across devices
       </h1>
+      <Link to="/settings/ai">AI settings</Link>
       {!device && (
         <p className={styles.muted} role="status">
           Preparing this device…

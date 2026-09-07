@@ -1,9 +1,10 @@
+import { fakeEvaluation } from '../ai/testGateway';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { EXERCISE_GRADER_VERSION } from '@bloomlab/exercise-engine';
 import { getFeatureFlags } from '@bloomlab/shared';
@@ -333,18 +334,18 @@ describe('grading, evidence and mastery', () => {
     const attempt = await answerDecision();
     const { report, attempt: row } = await finalizeAttempt(decision, attempt, db);
     expect(report.score).toBe(100);
-    // The rubric half belongs to Phase 19, so the honest outcome is partial, never a fake pass.
-    expect(report.outcome).toBe('partial');
-    expect(report.reason).toBe('rubric_pending');
-    expect(report.rubric_pending).toBe('SYSTEM_DESIGN_RUBRIC_V1');
-    expect(row.result).toBe('partial');
+    // Phase 19 combines the independently passing deterministic checks and fixture judgment.
+    expect(report.outcome).toBe('passed');
+    expect(report.reason).toBe('threshold_met');
+    expect(report.rubric_pending).toBeNull();
+    expect(row.result).toBe('passed');
     expect(row.grade?.grader_version).toBe(EXERCISE_GRADER_VERSION);
     expect(row.versions.content).toBe(content.content_version);
 
     const snapshot = await evaluateLearner(db);
     const evaluation = snapshot.evaluations.get(DECISION_SKILL)!;
-    expect(evaluation.state).toBe('LEARNING');
-    expect(evaluation.counts.independent_passes).toBe(0);
+    expect(evaluation.state).toBe('INDEPENDENT');
+    expect(evaluation.counts.independent_passes).toBe(1);
   });
 
   it('a wrong decision reports where it diverged', async () => {
@@ -361,7 +362,7 @@ describe('grading, evidence and mastery', () => {
     expect(failed.observed).toBe('decision.choice = "tag"');
   });
 
-  it('an open-ended answer is captured and its authored marker evaluated, with the rubric left owed', async () => {
+  it('an open-ended answer is captured and its authored marker evaluated, with the exact rubric evaluated', async () => {
     const exercise = byId(OPEN_ENDED);
     await startAttempt(exercise, NORMAL_RUN, {}, db);
     await saveResponse(
@@ -378,12 +379,12 @@ describe('grading, evidence and mastery', () => {
       db,
     );
     expect(report.tiers.required[0]?.passed).toBe(true);
-    expect(report.outcome).toBe('partial');
-    expect(report.rubric_pending).toBe('SYSTEM_DESIGN_RUBRIC_V1');
+    expect(report.outcome).toBe('passed');
+    expect(report.rubric_pending).toBeNull();
     // The whole answer is preserved for the rubric that will judge it.
     expect(row.grade?.score).toBe(100);
     const evidence = await db.skill_evidence.toArray();
-    expect(evidence.every((entry) => entry.result === 'partial')).toBe(true);
+    expect(evidence.every((entry) => entry.result === 'passed')).toBe(true);
   });
 
   it('a retrieval run records retrieval evidence and never an independent demonstration (D-052)', async () => {
@@ -417,7 +418,7 @@ describe('grading, evidence and mastery', () => {
     await finalizeAttempt(decision, await answerDecision(), db);
     await recomputeProgress(db);
     const row = await db.skill_progress.toArray();
-    expect(row.find((entry) => entry.skill_id === DECISION_SKILL)?.state).toBe('LEARNING');
+    expect(row.find((entry) => entry.skill_id === DECISION_SKILL)?.state).toBe('INDEPENDENT');
   });
 });
 
@@ -425,9 +426,7 @@ describe('the result view (spec §158)', () => {
   it('leads with the result, shows each check against what happened, and offers the next step', async () => {
     await finalizeAttempt(decision, await answerDecision(), db);
     await openRunner();
-    expect(
-      await screen.findByRole('heading', { level: 2, name: 'Partly evaluated' }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 2, name: 'Passed' })).toBeInTheDocument();
     expect(screen.getByText(/100% · pass mark 70%/)).toBeInTheDocument();
     expect(screen.getAllByText(/SYSTEM_DESIGN_RUBRIC_V1/).length).toBeGreaterThan(0);
     expect(screen.getByRole('heading', { level: 3, name: /Required checks/ })).toBeInTheDocument();
@@ -442,14 +441,10 @@ describe('the result view (spec §158)', () => {
   it('survives a reload: the same result, from the recorded attempt', async () => {
     await finalizeAttempt(decision, await answerDecision(), db);
     const { unmount } = renderAt(`/exercise/${DECISION}`);
-    expect(
-      await screen.findByRole('heading', { level: 2, name: 'Partly evaluated' }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 2, name: 'Passed' })).toBeInTheDocument();
     unmount();
     await openRunner();
-    expect(
-      await screen.findByRole('heading', { level: 2, name: 'Partly evaluated' }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 2, name: 'Passed' })).toBeInTheDocument();
   });
 
   it('Try again clears the work area and keeps the earlier attempt', async () => {
@@ -550,3 +545,8 @@ describe('completed attempts sync; separate attempts stay separate', () => {
     }
   });
 });
+
+vi.mock('../ai/client', () => ({
+  evaluateSubmission: (...args: Parameters<typeof fakeEvaluation>) => fakeEvaluation(...args),
+  classifyLanguage: vi.fn().mockResolvedValue(null),
+}));

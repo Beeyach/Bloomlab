@@ -140,7 +140,9 @@ export default function ExerciseRunner() {
       setFailure(
         error instanceof RuntimeUnavailableError
           ? 'This one is graded from a Lab account, and this device has no account for its scenario yet. Open the CRM Lab or the Workflow Lab, do the work there, then come back.'
-          : 'This attempt could not be saved on this device. Your work is still here.',
+          : error instanceof Error
+            ? error.message
+            : 'This attempt could not be saved on this device. Your work is still here.',
       );
     } finally {
       setBusy(false);
@@ -196,10 +198,10 @@ export default function ExerciseRunner() {
               exercise={exercise}
               attempt={attempt}
               context={context}
-              disabled={busy}
+              disabled={busy || Boolean(attempt.submitted)}
             />
           )}
-          {attempt && (
+          {attempt && !attempt.submitted && (
             <HintDrawer
               exercise={exercise}
               revealed={attempt.hints_revealed}
@@ -223,11 +225,11 @@ export default function ExerciseRunner() {
                     )}
                     onClick={() => void submit()}
                   >
-                    Run it
+                    {attempt.submitted ? 'Retry evaluation' : 'Run it'}
                   </Button>
                   <p className={styles.help}>
                     {preview?.rubric_pending
-                      ? 'The deterministic checks run now. The written half waits for its rubric.'
+                      ? 'The deterministic checks run first. AI evaluates the written rubric when enabled.'
                       : 'Graded against the checks this exercise authored.'}
                   </p>
                 </>
