@@ -241,6 +241,20 @@ export function ResultView({
         <Tier tier="critical" results={report.tiers.critical} />
       )}
 
+      {report?.rubric_evaluation && (
+        <section aria-label="Rubric feedback">
+          <h3>Rubric feedback</h3>
+          <p>Rubric version: {report.rubric_evaluation.rubric_id}</p>
+          <ul>
+            {report.rubric_evaluation.result.rubric_results.map((item) => (
+              <li key={item.id}>
+                {item.passed ? 'Held' : 'Needs work'}: {item.reason}
+              </li>
+            ))}
+          </ul>
+          <p>{report.rubric_evaluation.result.next_probe}</p>
+        </section>
+      )}
       <section aria-labelledby="assistance-title" className={styles.tier}>
         <h3 id="assistance-title" className={styles.tierTitle}>
           Assistance used
@@ -256,7 +270,7 @@ export function ResultView({
         {report?.rubric_pending && (
           <p className={styles.help}>
             Rubric {report.rubric_pending} is not evaluated yet; the written half of this exercise
-            waits for the AI gateway (Phase 19).
+            was not evaluated in this historical attempt.
           </p>
         )}
         <p className={styles.help}>

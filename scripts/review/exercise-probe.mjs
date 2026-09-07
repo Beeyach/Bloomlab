@@ -94,7 +94,7 @@ try {
 
   // Choose an architecture by tapping the row, not a 13 px dot.
   const option = await page.evaluate(
-    "(() => { const l = [...document.querySelectorAll('label')].find((x) => x.textContent.includes('Contact custom field')); l.scrollIntoView({ block: 'center' }); const r = l.getBoundingClientRect(); return { cx: r.x + r.width / 2, cy: r.y + r.height / 2, h: Math.round(r.height) }; })()",
+    "(() => { const l = [...document.querySelectorAll('label')].find((x) => x.textContent.trim() === 'Tag'); l.scrollIntoView({ block: 'center' }); const r = l.getBoundingClientRect(); return { cx: r.x + r.width / 2, cy: r.y + r.height / 2, h: Math.round(r.height) }; })()",
   );
   await tap(page, option.cx, option.cy);
   await sleep(250);
@@ -103,6 +103,8 @@ try {
     "document.querySelector('input[type=radio]:checked')?.value ?? null",
   );
 
+  // Phase 19: deliberately fail the objective choice so this offline/append-only probe
+  // needs no AI. ai-probe covers correct rubric work, failure recovery and a fixture result.
   // Write the reasoning.
   const area = await rectOf(page, 'textarea');
   await tap(page, area.cx, area.cy);
@@ -242,7 +244,7 @@ try {
   if (!openedOffline) throw new Error('the runner did not render offline');
 
   await page.evaluate(
-    "[...document.querySelectorAll('label')].find((x) => x.textContent.includes('Contact custom field')).click()",
+    "[...document.querySelectorAll('label')].find((x) => x.textContent.trim() === 'Tag').click()",
   );
   await page.evaluate("document.querySelector('textarea').focus()");
   await page.send('Input.insertText', { text: 'Contact custom field, printed as a merge field.' });

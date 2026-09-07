@@ -1,3 +1,7 @@
+import { combineRubric, objectiveReport } from '@bloomlab/exercise-engine';
+import { evaluateSubmission } from '../ai/client';
+import { content } from '../content/bundle';
+import { checkpointSubmission } from './attempt';
 import type { Exercise } from '@bloomlab/content-schema';
 import { gradeExercise, type GradeReport, type GradingContext } from '@bloomlab/exercise-engine';
 import {
@@ -204,11 +208,35 @@ export async function finalizeAttempt(
   // Read the runtime's own state now, once, so the report is of the account as it stood at
   // submission and cannot drift while the evidence is being written.
   const runtime = runtimeFor(exercise);
-  const context = runtime
-    ? await runtime.context(exercise, learnerState(exercise, current.response))
-    : null;
-  if (runtime && !context) throw new RuntimeUnavailableError(exercise.id, runtime.id);
-  const report = gradeAttempt(exercise, current, context);
+  const context =
+    runtime && !current.submitted
+      ? await runtime.context(exercise, learnerState(exercise, current.response))
+      : null;
+  if (runtime && !context && !current.submitted)
+    throw new RuntimeUnavailableError(exercise.id, runtime.id);
+  let report = objectiveReport(
+    current.submitted?.report ?? gradeAttempt(exercise, current, context),
+  );
+  if (report.reason === 'rubric_pending') {
+    const rubricId = current.submitted?.rubric_id ?? current.rubric_id ?? report.rubric_pending!;
+    report = { ...report, rubric_pending: rubricId };
+    const rubric = content.rubrics.find((r) => r.id === rubricId);
+    if (!rubric) throw new Error('The exact submitted rubric is unavailable. Your work is saved.');
+    current.submitted = { report, rubric_id: rubricId };
+    await checkpointSubmission(exercise.id, attemptContext, current, database);
+    const evaluation = await evaluateSubmission(
+      {
+        attempt_id: current.attempt_id,
+        exercise_id: exercise.id,
+        rubric_id: rubricId,
+        submission: JSON.stringify({ response: current.response, deterministic: report }),
+      },
+      database,
+    );
+    if (evaluation.rubric_id !== rubricId || evaluation.rubric_version !== rubric.version)
+      throw new Error('Evaluation rubric mismatch');
+    report = { ...combineRubric(report, rubric, evaluation.result), rubric_evaluation: evaluation };
+  }
   const completedAt = (options.now ?? new Date()).toISOString();
   const { attempt: row } = await recordEvidence(
     {

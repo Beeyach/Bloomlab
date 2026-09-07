@@ -370,6 +370,8 @@ Last updated: 2026-09-06 (end of Phase 17)
 
 ## Phase 16 — Sales Exercises
 
+The prose-grading boundary below records Phase 16 at closure. Phase 19 now executes these exact rubrics; the deployed-preview Worker/provider path is verified by the live evidence below.
+
 - **No prose is judged yet.** Every selling exercise is `mixed`: the deterministic half runs now
   and the written half names a rubric the AI gateway executes in Phase 19. A learner who does
   everything right sees a score of 100 and `rubric_pending`, not a pass. Nothing here reads whether
@@ -422,7 +424,7 @@ Last updated: 2026-09-06 (end of Phase 17)
   consequence: what the line leaves the client with, and any requirement nothing in the deal
   answers any more. The economic consequence appears in full after submitting, where the floor
   moves with the scope. PRI-001 stays PARTIAL with the unmet half named (D-162).
-- **No pricing reasoning is judged.** The Summit exercise is `mixed` and names
+- **Phase 17 closure boundary (superseded by the Phase 19 gateway below): no pricing reasoning was judged.** The Summit exercise is `mixed` and names
   `PRICING_REASONING_RUBRIC_V1`; the explanation is collected and kept with the attempt, and
   nothing reads it until the AI gateway (Phase 19). The rubric was not edited even though its first
   item now duplicates a deterministic check, because changing it would change a contract attempts
@@ -456,10 +458,19 @@ Last updated: 2026-09-06 (end of Phase 17)
 
 ## Phase 18 — Negotiation
 
-- NEG-003 remains PARTIAL: the classifier understands the explicit action protocol, not free prose. Unselected language takes an authored clarification with confidence zero. No real interpreter, AI call or fake keyword AI exists.
-- The Summit negotiation is mixed: deterministic success remains rubric_pending for `PRICING_REASONING_RUBRIC_V1`. Written quality and whether prose matches the selected move await Phase 19. The existing rubric is unchanged.
+- At Phase 18 closure, NEG-003 was PARTIAL because only explicit actions were classified. Phase 19 now implements the Worker language classifier and fallback boundary; one live hold classification at 0.95 is now verified, but status remains PARTIAL because broad language quality is not established.
+- At Phase 18 closure the Summit negotiation was mixed: deterministic success remained rubric_pending for `PRICING_REASONING_RUBRIC_V1`. Written quality and whether prose matches the selected move await Phase 19. The existing rubric is unchanged.
 - One standalone starting deal and ten executable situations cover the required objections. This is not broad language coverage or persistent Boss Client continuity. New attempts start from client state plus scenario overrides, never another exercise's price or a completed attempt's hidden state.
 - Phasing uses authored dependency-valid two-stage plans. It is not an unrestricted planner for restructuring an already-phased deal; incomplete or unsupported reconfiguration takes the clarification path without altering the offer.
 - Hidden numeric state is absent from learner-rendered HTML. Local simulation state and bundled fictional content are inspectable in developer tools; they are not security secrets.
 - Node 26 on the review host breaks an existing localStorage database test. The unchanged suite passes under the pinned Node 22 runtime. Browser probes requiring offline reload need the built service worker, not the development server.
-- Independent review remains pending. Phase 19/20/21/24 were not started and this task must not merge the PR.
+- Phase 18 closed through PR #20 at `154a00a73d659b92f0cc871f636462a9cb094f4b`; main CI `34072172459`, Checks, production migration (none pending), and deployment succeeded (1,570 tests / 93 files). Preview correctly skipped on main. Phase 19 is now current; Phases 20/21/24 remain unstarted.
+
+## Phase 19 — verification boundaries
+
+- AI-009 is PASSED after real preview Anthropic evaluation, structured validation, D1 persistence/accounting and revoked-session verification (see `docs/reviews/phase-19-ai-gateway.md`). Ordinary tests still use injected providers. NEG-003 remains PARTIAL: one live hold classification at 0.95 is insufficient for broad language quality. The user is configuring production secrets separately; independent audit must confirm required production ANTHROPIC_API_KEY before merge.
+- Structured validity does not establish judgment quality. The live rubric sample scored 58 with a critical issue and mischaracterized qualified “may” wording as “will”; no general grading-quality claim follows from the successful provider-path check.
+- The governor reserves the full model input-context ceiling at cache-write pricing plus bounded output, for two calls. This deliberately conservative maximum includes unobservable structured-output overhead and can refuse small requests while a visible balance remains. It downgrades to Haiku before refusal. Unknown provider outcomes retain reservations for the UTC month rather than silently risking double spending.
+- A Worker termination while a rubric run is active currently requires operational reconciliation; ordinary caught provider failures support retry. Reservations are not automatically refunded on timeout.
+- Full permits optional work but adds no speculative coaching buttons. Settings are reached from Sync and devices; the rail and mobile navigation are unchanged.
+- Historical finalized rubric_pending attempts remain unchanged. New successful evaluations finalize once; old rubric IDs retained in content remain resolvable. Voice-only SAY IT still needs its later runtime.

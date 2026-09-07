@@ -73,3 +73,4 @@ export {
   type GradingWorkflow,
   type ScoringDimension,
 } from './types.ts';
+export { combineRubric, objectiveReport } from './combine';

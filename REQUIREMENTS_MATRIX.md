@@ -249,7 +249,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 |---|---|---|---|---|---|
 | NEG-001 | Hidden client state (trust, urgency, price sensitivity, frustration, technical sophistication, actual budget, stated budget, decision authority, fear, previous bad experience, alternative provider strength) is tracked and never shown numerically to the learner. | P0 | 18 | PASSED | §39, §121, TA§50 |
 | NEG-002 | Learner actions: clarify, hold price, reduce scope, phase, concession, walk away. Winning is not the only success; a lost deal can score high. | P1 | 18 | PASSED | §27, §20 |
-| NEG-003 | Authored branching first: learner responses classified into strategies (discount, hold, clarify, reduce_scope, phase, walk_away, defensive) with pre-authored reactions; AI only for language that genuinely needs interpretation. | P1 | 18 | PARTIAL | §40, TA§51 |
+| NEG-003 | Authored branching first: learner responses classified into strategies (discount, hold, clarify, reduce_scope, phase, walk_away, defensive) with pre-authored reactions; AI only for language that genuinely needs interpretation. One real hold classification at confidence 0.95 verifies the path; broad language quality is not established. | P1 | 18 | PARTIAL | §40, TA§51 |
 | NEG-004 | Objection coverage: budget, competitor price, discount request, scope reduction, phased project, payment terms, deposit, concessions, silence, walking away. | P1 | 18 | PASSED | §20 |
 | NEG-005 | Scenario engine: current state + learner action + rules → updated scenario; dialogue actions modify hidden state (e.g. strong diagnosis trust +10, premature pitch trust −8, ignored objection frustration +15). | P0 | 18 | PASSED | §40, TA§50 |
 
@@ -387,21 +387,25 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 ## AI — Runtime AI
 
+AI-009 live evidence: Real preview Haiku evaluation returned HTTP 200 for `WRITTEN_COMMUNICATION_RUBRIC_V2`, version 2, passed structured validation, and persisted matching D1 feedback, completed rubric run and non-zero usage. One permitted repair retry cost $0.013323; a real `hold` classification at 0.95 brought total cost to $0.013774. Reservations returned to $0; the disposable device was revoked and subsequent access returned HTTP 401. CI `34105051578`, attempt 3: Checks and Preview deploy SUCCESS. See `docs/reviews/phase-19-ai-gateway.md`.
+
+AI-002 audit correction: canonical refresh now reconciles the local mode before display, with immediate local Off and delayed-response protection (D-176). Regression evidence: `apps/web/src/ai/client.test.tsx`; server Off remains covered by `worker/src/ai/gateway.test.ts`. Status remains PASSED.
+
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| AI-001 | Minimal runtime AI. Preferred order: code → deterministic rules → authored branches → lightweight classifier → full LLM judgment. AI is the coach, not the course engine. | P0 | 19 | NOT_STARTED | §106 |
-| AI-002 | AI setting: Off / Limited / Full; default Limited; core Bloomlab functions with AI Off. | P0 | 19 | NOT_STARTED | §107 |
-| AI-003 | Budget ≈ $20/month with server-side cost tracking and governor; thresholds $0–12 normal, $12–16 prefer cheaper models, $16–19 important tasks only, $19+ optional AI blocked; configurable; never silently exceeded. | P0 | 19 | NOT_STARTED | §108, TA§37 |
-| AI-004 | Usage log stores model, input tokens, cached input tokens, output tokens, estimated cost, request type, exercise, timestamp. | P0 | 19 | NOT_STARTED | §108, TA§37 |
-| AI-005 | Model routing: no model for deterministic tasks; cheaper Claude model for classification, extraction, simple rubric checks; stronger model for open-ended sales critique, diagnosis, proposal review, negotiation, call evaluation, hard client reasoning. Most expensive model never default at runtime. | P0 | 19 | NOT_STARTED | §109, TA§36 |
-| AI-006 | Schema-driven structured output (`score, rubric_results[], critical_issue, strengths[], improvements[], next_probe, confidence`), validated before acceptance; one repair-prompt retry; then save learner work and report evaluation failure. Never parse arbitrary prose. | P0 | 19 | NOT_STARTED | §110, TA§40 |
-| AI-007 | AI cannot override objective deterministic failure (expected SMS 1, actual 2 → failed). | P0 | 19 | NOT_STARTED | §111, TA§34 |
-| AI-008 | AI failure handling: save submission, preserve transcript and deterministic state, offer retry, allow other non-AI study. Never lose work. | P0 | 19 | NOT_STARTED | §112 |
-| AI-009 | Claude is called only through the Worker (`browser → Worker → budget check → normalisation → Claude → schema validation → stored`). API key never reaches the browser. | P0 | 19 | NOT_STARTED | §105, TA§35 |
-| AI-010 | Prompt caching for stable context (grading philosophy, rubrics, negotiation rules, client profile, skill criteria); the whole curriculum is never sent per call. | P1 | 19 | NOT_STARTED | TA§39 |
-| AI-011 | Every AI rubric is versioned (e.g. `SALES_DISCOVERY_RUBRIC_V3`); old attempts stay bound to their original version. | P0 | 19 | NOT_STARTED | TA§42 |
-| AI-012 | AI feedback storage: submission, rubric version, model, result, cost, timestamp; giant prompts not stored forever. | P1 | 19 | NOT_STARTED | TA§41 |
-| AI-013 | Settings show "AI this month $x / $20" with breakdown (call feedback, written coaching, negotiation, diagnosis); cost not shown obsessively during learning. | P2 | 19 | NOT_STARTED | TA§38 |
+| AI-001 | Minimal runtime AI. Preferred order: code → deterministic rules → authored branches → lightweight classifier → full LLM judgment. AI is the coach, not the course engine. | P0 | 19 | PASSED | §106 |
+| AI-002 | AI setting: Off / Limited / Full; default Limited; core Bloomlab functions with AI Off. | P0 | 19 | PASSED | §107 |
+| AI-003 | Budget ≈ $20/month with server-side cost tracking and governor; thresholds $0–12 normal, $12–16 prefer cheaper models, $16–19 important tasks only, $19+ optional AI blocked; configurable; never silently exceeded. | P0 | 19 | PASSED | §108, TA§37 |
+| AI-004 | Usage log stores model, input tokens, cached input tokens, output tokens, estimated cost, request type, exercise, timestamp. | P0 | 19 | PASSED | §108, TA§37 |
+| AI-005 | Model routing: no model for deterministic tasks; cheaper Claude model for classification, extraction, simple rubric checks; stronger model for open-ended sales critique, diagnosis, proposal review, negotiation, call evaluation, hard client reasoning. Most expensive model never default at runtime. | P0 | 19 | PASSED | §109, TA§36 |
+| AI-006 | Schema-driven structured output (`score, rubric_results[], critical_issue, strengths[], improvements[], next_probe, confidence`), validated before acceptance; one repair-prompt retry; then save learner work and report evaluation failure. Never parse arbitrary prose. | P0 | 19 | PASSED | §110, TA§40 |
+| AI-007 | AI cannot override objective deterministic failure (expected SMS 1, actual 2 → failed). | P0 | 19 | PASSED | §111, TA§34 |
+| AI-008 | AI failure handling: save submission, preserve transcript and deterministic state, offer retry, allow other non-AI study. Never lose work. | P0 | 19 | PASSED | §112 |
+| AI-009 | Claude is called only through the Worker (`browser → Worker → budget check → normalisation → Claude → schema validation → stored`). API key never reaches the browser. | P0 | 19 | PASSED | §105, TA§35 |
+| AI-010 | Prompt caching for stable context (grading philosophy, rubrics, negotiation rules, client profile, skill criteria); the whole curriculum is never sent per call. | P1 | 19 | PASSED | TA§39 |
+| AI-011 | Every AI rubric is versioned (e.g. `SALES_DISCOVERY_RUBRIC_V3`); old attempts stay bound to their original version. | P0 | 19 | PASSED | TA§42 |
+| AI-012 | AI feedback storage: submission, rubric version, model, result, cost, timestamp; giant prompts not stored forever. | P1 | 19 | PASSED | TA§41 |
+| AI-013 | Settings show "AI this month $x / $20" with breakdown (call feedback, written coaching, negotiation, diagnosis); cost not shown obsessively during learning. | P2 | 19 | PASSED | TA§38 |
 
 ## VOI — Voice
 

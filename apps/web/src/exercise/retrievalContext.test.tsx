@@ -1,6 +1,7 @@
+import { fakeEvaluation } from '../ai/testGateway';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getFeatureFlags } from '@bloomlab/shared';
 
@@ -399,3 +400,8 @@ describe('cross-device semantics are unchanged', () => {
     }
   });
 });
+
+vi.mock('../ai/client', () => ({
+  evaluateSubmission: (...args: Parameters<typeof fakeEvaluation>) => fakeEvaluation(...args),
+  classifyLanguage: vi.fn().mockResolvedValue(null),
+}));

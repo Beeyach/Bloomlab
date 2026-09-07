@@ -1,6 +1,7 @@
 import {
   HIDDEN_PERCENT_KEYS,
   NEGOTIATION_ACTIONS,
+  NEGOTIATION_STRATEGIES,
   type HiddenState,
   type NegotiationActionKind,
   type NegotiationConfig,
@@ -39,7 +40,7 @@ export const emptyNegotiationAction = (): NegotiationAction => ({
 export interface Classification {
   strategy: NegotiationStrategy | null;
   confidence: number;
-  source: 'explicit_move' | 'needs_interpretation';
+  source: 'explicit_move' | 'needs_interpretation' | 'language';
 }
 export interface NegotiatedDeal {
   quote: PricingResponse;
@@ -313,12 +314,22 @@ export function transitionNegotiation(
   action: NegotiationAction,
   config: NegotiationConfig,
   economics: DealEconomics | null,
+  interpretation?: { strategy: NegotiationStrategy; confidence: number } | null,
 ): NegotiationState {
   if (state.status !== 'open' || !action.text.trim()) return state;
   const node = config.nodes.find((n) => n.id === state.node);
   if (!node) throw new Error('Saved negotiation node no longer exists');
   const next = structuredClone(state);
-  const classification = classifyNegotiation(action, config);
+  const explicit = classifyNegotiation(action, config);
+  const classification: Classification =
+    !action.action &&
+    interpretation &&
+    Number.isFinite(interpretation.confidence) &&
+    interpretation.confidence >= 0.8 &&
+    interpretation.confidence <= 1 &&
+    NEGOTIATION_STRATEGIES.includes(interpretation.strategy)
+      ? { ...interpretation, source: 'language' }
+      : explicit;
   const proposal =
     classification.strategy && action.approach !== 'defensive'
       ? proposedDeal(state, action, config)

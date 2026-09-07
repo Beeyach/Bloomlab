@@ -415,3 +415,50 @@ it('a term already granted cannot count again as a new reciprocal concession tra
   expect(smallerDeposit.deal.quote.timeline_days).toBe(28);
   expect(projection(smallerDeposit).trades_kept).toBe(false);
 });
+
+describe('NEG-003 language interpretation boundary', () => {
+  it.each(NEGOTIATION_STRATEGIES)(
+    'confident %s selects only an authored strategy without inventing a deal',
+    (strategy) => {
+      const start = initial();
+      const next = transitionNegotiation(
+        start,
+        { ...emptyNegotiationAction(), text: 'Free-form learner language' },
+        config,
+        economics,
+        { strategy, confidence: 0.9 },
+      );
+      expect(next.turns[0]!.classification).toEqual({
+        strategy,
+        confidence: 0.9,
+        source: 'language',
+      });
+      expect(next.deal).toEqual(start.deal);
+      expect(next.turns[0]!.reply).toBeTruthy();
+    },
+  );
+  it.each([0, 0.79, NaN, 1.1])(
+    'low or invalid confidence %s takes authored fallback',
+    (confidence) => {
+      const next = transitionNegotiation(
+        initial(),
+        { ...emptyNegotiationAction(), text: 'Maybe' },
+        config,
+        economics,
+        { strategy: 'hold', confidence },
+      );
+      expect(next.turns[0]!.fallback).toBe(true);
+    },
+  );
+  it('explicit structured action overrides contrary language classification', () => {
+    const next = transitionNegotiation(
+      initial(),
+      action({ action: 'hold_price' }),
+      config,
+      economics,
+      { strategy: 'discount', confidence: 1 },
+    );
+    expect(next.turns[0]!.classification.source).toBe('explicit_move');
+    expect(next.turns[0]!.classification.strategy).toBe('hold');
+  });
+});

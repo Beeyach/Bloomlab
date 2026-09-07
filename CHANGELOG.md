@@ -4,6 +4,10 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Documentation — Phase 18 closure
+
+- PR #20 merged at `154a00a73d659b92f0cc871f636462a9cb094f4b`. Main CI `34072172459` SUCCESS: 1,570 tests across 93 files, Checks SUCCESS, production D1 migration SUCCESS with none pending, production Wrangler deploy SUCCESS; preview correctly skipped on main. Historical Phase 18 review evidence remains unchanged. Phase 19 is current.
+
 ### Added — Phase 18 · Negotiation
 
 - Standalone Summit NEGOTIATE IT with six actions, seven authored strategies, ten executable objections, configurable scope/phase/concession terms and natural multi-turn client replies.
@@ -311,3 +315,26 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 - app: 0.1.0
 - content: none (`CONTENT_VERSION = null` until the content compiler exists)
 - simulator: 0.0.0 (no engine yet)
+
+### Added — Phase 19 · AI Gateway (initial implementation evidence)
+
+- Worker-only Anthropic HTTP provider, model catalog verified 2026-09-07, structured rubric validation with one repair, learner settings, usage accounting, atomic budget reservations and exact rubric records in the existing D1 tables (`0002_ai_gateway.sql`).
+- Queued recoverable rubric submissions, pure minimum-of-independently-passing-halves combination, and persisted rubric feedback. Grader `2026.09.17`; content, rubric, simulator, mastery and IndexedDB versions unchanged.
+- Cheap negotiation language classification selects authored strategies only; settings at `/settings/ai`. At initial implementation, live Anthropic verification awaited the Worker secret; the live closeout below supersedes that boundary.
+
+- Phase 19 local verification: 1,634 tests across 95 files; typecheck, lint, format, docs, content and production build pass. AI, exercise, sales, pricing, negotiation, keyboard and touch probes pass. At that initial verification, AI-009 and NEG-003 were PARTIAL pending live-provider evidence; see the later closeout below.
+
+- AI-003 accounting hardening: usage insertion and reservation reduction are atomic; storage failure after either provider response cannot release unrecorded paid usage.
+
+## 2026-09-07 — Phase 19 independent audit fixes (AI-002)
+
+- Correct the provider fixture to return a fresh response for Sonnet and Haiku without changing provider behavior.
+- Reconcile canonical settings into the existing local AI mode cache before Settings displays them. Selecting Off suppresses local requests before Save, during settings writes and after network failure; older responses cannot undo it.
+- Add seven client/UI regression cases; full Node 22 suite passes 1,642 tests across 97 files. Required preview/production secrets and server-side policy gates remain intact.
+
+## 2026-09-07 — Phase 19 live-provider evidence closeout
+
+- Real preview Haiku evaluation returned HTTP 200 for `WRITTEN_COMMUNICATION_RUBRIC_V2`, version 2, passed structured validation, and persisted matching D1 feedback, completed rubric run and non-zero usage. One permitted repair retry cost $0.013323; a real `hold` classification at 0.95 brought total cost to $0.013774. Reservations returned to $0; the disposable device was revoked and subsequent access returned HTTP 401. The deterministic negotiation engine retained authored consequences and explicit structured-action precedence.
+- AI-009 moves to PASSED. NEG-003 remains PARTIAL because one live sample does not establish general language quality. All adjacent statuses remain unchanged.
+- CI `34105051578`, attempt 3: Checks and Preview deploy SUCCESS on implementation head `264794eb8f2cf9efec252f782394c951c9a004d0`; preview health HTTP 200. Current local implementation verification: 1,642 tests across 97 files.
+- Documentation/evidence only: no runtime or version changes. Production required-secret readiness remains for the independent pre-merge audit; PR #21 stays open.

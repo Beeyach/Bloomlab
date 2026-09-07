@@ -262,6 +262,20 @@ export type GradeReason =
   | 'nothing_to_grade';
 
 export interface GradeReport {
+  rubric_evaluation?: {
+    run_id: string;
+    rubric_id: string;
+    rubric_version: number;
+    result: {
+      score: number;
+      rubric_results: { id: string; passed: boolean; reason: string }[];
+      critical_issue: string | null;
+      strengths: string[];
+      improvements: string[];
+      next_probe: string;
+      confidence: number;
+    };
+  };
   exercise_id: string;
   /** The rules that judged this attempt; stored with it so a later change cannot rewrite it. */
   grader_version: string;

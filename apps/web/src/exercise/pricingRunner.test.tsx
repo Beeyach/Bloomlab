@@ -1,6 +1,7 @@
+import { fakeEvaluation } from '../ai/testGateway';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { Exercise } from '@bloomlab/content-schema';
 import { getFeatureFlags } from '@bloomlab/shared';
@@ -274,3 +275,8 @@ describe('the desk survives a reload (EXR-016)', () => {
     expect(screen.getByTestId('deal-project')).toHaveValue(2400);
   });
 });
+
+vi.mock('../ai/client', () => ({
+  evaluateSubmission: (...args: Parameters<typeof fakeEvaluation>) => fakeEvaluation(...args),
+  classifyLanguage: vi.fn().mockResolvedValue(null),
+}));

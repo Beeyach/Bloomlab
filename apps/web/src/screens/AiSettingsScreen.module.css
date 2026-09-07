@@ -1,0 +1,28 @@
+.screen {
+  max-width: 44rem;
+  margin-inline: auto;
+  padding: 24px;
+  display: grid;
+  gap: 20px;
+  overflow-wrap: anywhere;
+}
+.screen label {
+  display: grid;
+  gap: 8px;
+}
+.screen select,
+.screen input,
+.screen button,
+.screen a {
+  font: inherit;
+  font-size: 16px;
+  min-height: 44px;
+  max-width: 100%;
+  min-width: 0;
+}
+.screen select,
+.screen input,
+.screen button {
+  padding: 10px 14px;
+  border-radius: 12px;
+}

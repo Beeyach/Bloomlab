@@ -1,3 +1,4 @@
+import { handleAi } from './ai/handlers';
 import contentVersion from 'virtual:bloomlab-content/version';
 
 import { APP_VERSION, parseRuntimeEnvironment } from '@bloomlab/shared';
@@ -16,6 +17,7 @@ import {
 } from './sync/handlers';
 
 export interface Env {
+  ANTHROPIC_API_KEY?: string;
   BLOOMLAB_ENV: string;
   ASSETS: Fetcher;
   DB: D1Database;
@@ -68,6 +70,7 @@ async function handleSync(request: Request, env: Env, path: string): Promise<Res
 
 /** Only /api/* reaches this handler (see wrangler.jsonc `run_worker_first`). */
 async function handleApi(request: Request, url: URL, env: Env): Promise<Response> {
+  if (url.pathname.startsWith('/api/ai/')) return handleAi(request, env);
   if (url.pathname === '/api/health') {
     const body: HealthResponse = {
       ok: true,
