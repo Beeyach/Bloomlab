@@ -1,0 +1,553 @@
+{
+  "baseline_head": "6735ee1a364a443559c834a65fe3a49877979911",
+  "content_hash": "ff28e95f24c63778ef33bcf55ada2f42d461dd4b969c23ebdf3daa298533565d",
+  "counts": {
+    "skills": 22,
+    "ghl-features": 41,
+    "campaigns": 2,
+    "learning-units": 5,
+    "exercises": 35,
+    "scenarios": 18,
+    "clients": 5,
+    "voice-characters": 5,
+    "rubrics": 8,
+    "projects": 2,
+    "portfolio": 2,
+    "glossary": 8
+  },
+  "gates": [
+    {
+      "id": "GATE-0",
+      "number": 0,
+      "name": "Placement",
+      "summary": "Discover what the learner can already do; strong basics clear early requirements.",
+      "skills": [],
+      "placement": true,
+      "assesses": [
+        "SK-STRATEGIZE-funnel-math",
+        "SK-BUILD-lead-capture-form",
+        "SK-AUTOMATE-workflow-foundations",
+        "SK-ARCHITECT-tags-vs-custom-fields",
+        "SK-ARCHITECT-pipeline-design",
+        "SK-SELL-project-pricing"
+      ],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 1,
+        "pressure_test_required": false,
+        "fieldwork_required": false,
+        "notes": "Placement never blocks; it only clears what is already demonstrated."
+      },
+      "projects": []
+    },
+    {
+      "id": "GATE-1",
+      "number": 1,
+      "name": "Funnel Thinking",
+      "summary": "Customer journey, funnel purpose, offers, friction, conversion and funnel math.",
+      "skills": ["SK-STRATEGIZE-funnel-math", "SK-STRATEGIZE-bottleneck-diagnosis"],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 2,
+        "pressure_test_required": true,
+        "fieldwork_required": false
+      },
+      "projects": []
+    },
+    {
+      "id": "GATE-2",
+      "number": 2,
+      "name": "Lead Systems",
+      "summary": "Lead capture, forms, confirmation, follow-up, CRM capture, next action.",
+      "skills": ["SK-BUILD-lead-capture-form"],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 2,
+        "pressure_test_required": false,
+        "fieldwork_required": true
+      },
+      "projects": []
+    },
+    {
+      "id": "GATE-3",
+      "number": 3,
+      "name": "GHL Data Foundations",
+      "summary": "Contacts, tags, custom fields, custom values, opportunities, pipelines.",
+      "skills": [
+        "SK-ARCHITECT-tags-vs-custom-fields",
+        "SK-ARCHITECT-pipeline-design",
+        "SK-ARCHITECT-custom-values"
+      ],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 2,
+        "pressure_test_required": true,
+        "fieldwork_required": false
+      },
+      "projects": []
+    },
+    {
+      "id": "GATE-4",
+      "number": 4,
+      "name": "Workflow Foundations",
+      "summary": "Triggers, filters, actions, waits, If/Else, re-entry, timing.",
+      "skills": [
+        "SK-AUTOMATE-workflow-foundations",
+        "SK-AUTOMATE-reentry-and-duplicates",
+        "SK-JUDGMENT-automation-appropriateness"
+      ],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 2,
+        "pressure_test_required": true,
+        "fieldwork_required": true
+      },
+      "projects": []
+    },
+    {
+      "id": "GATE-5",
+      "number": 5,
+      "name": "Booking and Qualification",
+      "summary": "Calendars, reminders, cancellations, reschedules, no-shows.",
+      "skills": [
+        "SK-BUILD-consultation-calendar",
+        "SK-AUTOMATE-appointment-reminders",
+        "SK-AUTOMATE-no-show-recovery"
+      ],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 2,
+        "pressure_test_required": true,
+        "fieldwork_required": true
+      },
+      "projects": ["PRJ-consultation-booking-system"]
+    },
+    {
+      "id": "GATE-6",
+      "number": 6,
+      "name": "Conversion and Copy",
+      "summary": "Page hierarchy, message match, CTA placement, conversion copy, proof, mobile conversion design.",
+      "skills": [],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 2,
+        "pressure_test_required": false,
+        "fieldwork_required": false,
+        "notes": "Curriculum for this gate is authored in Phase 24."
+      },
+      "projects": []
+    },
+    {
+      "id": "GATE-7",
+      "number": 7,
+      "name": "Diagnosis and QA",
+      "summary": "Workflow and funnel troubleshooting, logs, edge cases, pre-launch QA.",
+      "skills": ["SK-DIAGNOSE-workflow-troubleshooting"],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 3,
+        "pressure_test_required": true,
+        "fieldwork_required": false
+      },
+      "projects": []
+    },
+    {
+      "id": "GATE-8",
+      "number": 8,
+      "name": "Prospecting and Audits",
+      "summary": "ICP, prospect selection, evidence, research, outreach, audit quality.",
+      "skills": ["SK-SELL-evidence-based-audit", "SK-SELL-prospect-selection"],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 2,
+        "pressure_test_required": true,
+        "fieldwork_required": false
+      },
+      "projects": []
+    },
+    {
+      "id": "GATE-9",
+      "number": 9,
+      "name": "Discovery and Selling",
+      "summary": "Discovery calls, listening, diagnosis, explaining systems, pitching outcomes.",
+      "skills": ["SK-SELL-discovery-call", "SK-DELIVER-client-explanation"],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 2,
+        "pressure_test_required": true,
+        "fieldwork_required": false
+      },
+      "projects": []
+    },
+    {
+      "id": "GATE-10",
+      "number": 10,
+      "name": "Pricing and Negotiation",
+      "summary": "Scope, fixed and recurring pricing, deposits, negotiation, walking away.",
+      "skills": ["SK-SELL-project-pricing", "SK-SELL-negotiation-basics"],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 2,
+        "pressure_test_required": true,
+        "fieldwork_required": false
+      },
+      "projects": ["PRJ-application-funnel-proposal"]
+    },
+    {
+      "id": "GATE-11",
+      "number": 11,
+      "name": "Proposal and Delivery",
+      "summary": "Proposal, acceptance, onboarding, build order, client updates, handoff.",
+      "skills": ["SK-DELIVER-proposal-writing"],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 2,
+        "pressure_test_required": false,
+        "fieldwork_required": false
+      },
+      "projects": []
+    },
+    {
+      "id": "GATE-12",
+      "number": 12,
+      "name": "Field Ready Capstone",
+      "summary": "No instructional handholding \u2014 diagnose, design, price, negotiate, propose, build, test, explain; part of it in real GHL.",
+      "skills": [],
+      "placement": false,
+      "assesses": [],
+      "pass_criteria": {
+        "independent_evidence_per_skill": 1,
+        "pressure_test_required": true,
+        "fieldwork_required": true,
+        "notes": "The capstone project (Full Bloomwired Client) is authored in Phase 24."
+      },
+      "projects": []
+    }
+  ],
+  "skill_coverage": [
+    {
+      "skill": "SK-ARCHITECT-custom-values",
+      "title": "Custom values",
+      "territory": "ARCHITECT",
+      "tier": "field_ready",
+      "learn": 1,
+      "guided": 0,
+      "practice": 0,
+      "fix": 0,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["practice", "independent"]
+    },
+    {
+      "skill": "SK-ARCHITECT-pipeline-design",
+      "title": "Pipeline design",
+      "territory": "ARCHITECT",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 1,
+      "practice": 0,
+      "fix": 0,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["learn", "independent", "pressure", "fieldwork"]
+    },
+    {
+      "skill": "SK-ARCHITECT-tags-vs-custom-fields",
+      "title": "Tags vs custom fields",
+      "territory": "ARCHITECT",
+      "tier": "field_ready",
+      "learn": 1,
+      "guided": 0,
+      "practice": 2,
+      "fix": 1,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["independent", "pressure"]
+    },
+    {
+      "skill": "SK-AUTOMATE-appointment-reminders",
+      "title": "Appointment reminders",
+      "territory": "AUTOMATE",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 0,
+      "fix": 0,
+      "independent": 0,
+      "pressure": 2,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["learn", "practice", "independent", "fieldwork"]
+    },
+    {
+      "skill": "SK-AUTOMATE-no-show-recovery",
+      "title": "No-show recovery",
+      "territory": "AUTOMATE",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 1,
+      "practice": 0,
+      "fix": 0,
+      "independent": 1,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["learn", "pressure", "fieldwork"]
+    },
+    {
+      "skill": "SK-AUTOMATE-reentry-and-duplicates",
+      "title": "Re-entry and duplicate messages",
+      "territory": "AUTOMATE",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 1,
+      "fix": 1,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["learn", "independent", "pressure"]
+    },
+    {
+      "skill": "SK-AUTOMATE-workflow-foundations",
+      "title": "Workflow foundations",
+      "territory": "AUTOMATE",
+      "tier": "field_ready",
+      "learn": 1,
+      "guided": 1,
+      "practice": 0,
+      "fix": 0,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["independent", "pressure", "fieldwork"]
+    },
+    {
+      "skill": "SK-BUILD-consultation-calendar",
+      "title": "Consultation calendar",
+      "territory": "BUILD",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 1,
+      "fix": 0,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["learn", "independent", "fieldwork"]
+    },
+    {
+      "skill": "SK-BUILD-lead-capture-form",
+      "title": "Lead capture form",
+      "territory": "BUILD",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 1,
+      "fix": 0,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["learn", "independent", "fieldwork"]
+    },
+    {
+      "skill": "SK-DELIVER-client-explanation",
+      "title": "Client explanation",
+      "territory": "DELIVER",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 3,
+      "fix": 0,
+      "independent": 1,
+      "pressure": 1,
+      "fieldwork": 0,
+      "sales_use": 5,
+      "gaps": ["learn"]
+    },
+    {
+      "skill": "SK-DELIVER-proposal-writing",
+      "title": "Proposal writing",
+      "territory": "DELIVER",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 3,
+      "fix": 0,
+      "independent": 2,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 5,
+      "gaps": ["learn"]
+    },
+    {
+      "skill": "SK-DIAGNOSE-workflow-troubleshooting",
+      "title": "Workflow troubleshooting",
+      "territory": "DIAGNOSE",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 1,
+      "fix": 1,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["learn", "independent", "pressure"]
+    },
+    {
+      "skill": "SK-JUDGMENT-automation-appropriateness",
+      "title": "Is automation the answer?",
+      "territory": "JUDGMENT",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 0,
+      "fix": 0,
+      "independent": 1,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["learn", "practice", "pressure", "sales_use"]
+    },
+    {
+      "skill": "SK-SELL-discovery-call",
+      "title": "Discovery call",
+      "territory": "SELL",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 1,
+      "practice": 3,
+      "fix": 0,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 4,
+      "gaps": ["learn", "independent", "pressure"]
+    },
+    {
+      "skill": "SK-SELL-evidence-based-audit",
+      "title": "Evidence-based audit",
+      "territory": "SELL",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 2,
+      "fix": 0,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 2,
+      "gaps": ["learn", "independent", "pressure"]
+    },
+    {
+      "skill": "SK-SELL-negotiation-basics",
+      "title": "Negotiation basics",
+      "territory": "SELL",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 2,
+      "fix": 0,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 2,
+      "gaps": ["learn", "independent", "pressure"]
+    },
+    {
+      "skill": "SK-SELL-project-pricing",
+      "title": "Project pricing",
+      "territory": "SELL",
+      "tier": "field_ready",
+      "learn": 2,
+      "guided": 0,
+      "practice": 1,
+      "fix": 0,
+      "independent": 1,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 2,
+      "gaps": ["pressure"]
+    },
+    {
+      "skill": "SK-SELL-prospect-selection",
+      "title": "Prospect selection",
+      "territory": "SELL",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 1,
+      "fix": 0,
+      "independent": 1,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 2,
+      "gaps": ["learn"]
+    },
+    {
+      "skill": "SK-STRATEGIZE-bottleneck-diagnosis",
+      "title": "Bottleneck diagnosis",
+      "territory": "STRATEGIZE",
+      "tier": "field_ready",
+      "learn": 0,
+      "guided": 0,
+      "practice": 2,
+      "fix": 1,
+      "independent": 1,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["learn", "pressure", "sales_use"]
+    },
+    {
+      "skill": "SK-STRATEGIZE-funnel-math",
+      "title": "Funnel math",
+      "territory": "STRATEGIZE",
+      "tier": "field_ready",
+      "learn": 1,
+      "guided": 0,
+      "practice": 2,
+      "fix": 1,
+      "independent": 0,
+      "pressure": 0,
+      "fieldwork": 0,
+      "sales_use": 0,
+      "gaps": ["independent", "pressure", "sales_use"]
+    }
+  ],
+  "placement_areas": 6,
+  "missing_placement_areas": ["written prospect response", "short spoken discovery"],
+  "identity_metadata_present": false,
+  "topic_metadata_present": false,
+  "minutes": {
+    "instruction": 109,
+    "exercise_minutes_unclassified": 742
+  },
+  "client_industries": ["coach", "gym_fitness", "hvac", "med_spa", "roofing"],
+  "projects": ["PRJ-application-funnel-proposal", "PRJ-consultation-booking-system"],
+  "notes": [
+    "Captured before Phase 24 authoring. Exercise minutes are not yet classified.",
+    "Metadata does not establish substantive coverage; review the actual cited work."
+  ]
+}

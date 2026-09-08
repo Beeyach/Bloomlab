@@ -1,3 +1,4 @@
+import { curriculumTopics } from './fieldReady.ts';
 import { z } from 'zod';
 
 import { TERRITORIES } from '../ids.ts';
@@ -52,6 +53,7 @@ export const LearningUnitFrontMatterSchema = z
      * "the curriculum covers all ten" is something a test walks rather than something a document
      * claims; the unit still has to actually teach them.
      */
+    topics: curriculumTopics,
     pricing_concepts: z.array(z.enum(PRICING_CONCEPTS)).default([]),
   })
   .superRefine((unit, ctx) => {

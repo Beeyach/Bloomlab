@@ -1,3 +1,4 @@
+import { FIELD_READY_IDENTITIES, FIELD_READY_EVIDENCE_AREAS } from './fieldReady.ts';
 import { z } from 'zod';
 
 import { TERRITORIES } from '../ids.ts';
@@ -18,6 +19,8 @@ export const SkillSchema = z
   .strictObject({
     id: ref('skills'),
     title,
+    identities: z.array(z.enum(FIELD_READY_IDENTITIES)).default([]),
+    evidence_areas: z.array(z.enum(FIELD_READY_EVIDENCE_AREAS)).default([]),
     territory: z.enum(TERRITORIES),
     tier,
     /** One or two sentences: what the learner can do once this is mastered. */

@@ -36,6 +36,7 @@ export const CampaignSchema = z
     /** Campaigns whose skills count as already available (prerequisite resolution). */
     requires_campaigns: z.array(campaignRef).default([]),
     gates: z.array(gate).min(1),
+    coverage_enforced: z.boolean().default(false),
   })
   .superRefine((campaign, ctx) => {
     requireUnique(

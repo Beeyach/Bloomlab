@@ -1,3 +1,4 @@
+import { curriculumTopics } from './fieldReady.ts';
 import { FieldworkSchema } from './fieldwork.ts';
 import { CallConfigSchema, CALL_METRICS } from './call.ts';
 import { NegotiationConfigSchema, NEGOTIATION_METRICS } from './negotiation.ts';
@@ -429,6 +430,8 @@ export const ExerciseSchema = z
     fieldwork: FieldworkSchema.nullable().default(null),
     portfolio: portfolioRef.nullable().default(null),
     /** WRITE IT / SAY IT / EXPLAIN IT: what kind of piece, in the spec's own words. */
+    topics: curriculumTopics,
+    time_category: z.enum(['practical', 'retrieval']).default('practical'),
     format: z.string().optional(),
   })
   .superRefine((exercise, ctx) => {

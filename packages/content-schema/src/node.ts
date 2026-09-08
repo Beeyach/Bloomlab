@@ -99,6 +99,7 @@ export async function writeReports(bundle: ContentBundle, outDir: string): Promi
   const outputs: [string, string][] = [
     ['bundle.json', JSON.stringify(bundle, null, 2)],
     ['coverage-content.md', renderContentCoverage(bundle)],
+    ['coverage-field-ready.json', JSON.stringify(bundle.coverage.field_ready, null, 2)],
     ['coverage-ghl.md', renderGhlCoverage(bundle)],
     ['freshness.md', renderFreshness(bundle)],
     ['summary.txt', renderSummary(bundle)],

@@ -1,3 +1,4 @@
+import { fieldReadyCoverage, validateFieldReady } from './fieldReady.ts';
 import type { ContentBundle, ContentIssue } from '../bundle.ts';
 import { CONTENT_TYPES, type ContentType } from '../ids.ts';
 import { LockSchema, ManifestSchema, type Lock, type Manifest } from '../schemas/index.ts';
@@ -143,6 +144,7 @@ export async function validateSources(
   const parsed = await parseAndValidateFiles(files, issues);
   const { graph } = crossValidate(parsed, issues);
 
+  validateFieldReady(parsed, issues);
   const errors = issues.errors;
   const fatal = options.strict ? issues.issues : errors;
   if (fatal.length > 0 || !manifest) {
@@ -193,7 +195,11 @@ export async function validateSources(
     graph,
     campaign_paths: buildCampaignPaths(parsed, graph),
     indexes: buildIndexes(parsed),
-    coverage: { content: buildContentCoverage(parsed), ghl: buildGhlCoverage(parsed) },
+    coverage: {
+      content: buildContentCoverage(parsed),
+      ghl: buildGhlCoverage(parsed),
+      field_ready: fieldReadyCoverage(parsed),
+    },
     freshness: buildFreshness(parsed, now, options.staleAfterDays),
     search: buildSearchIndex(parsed),
     warnings: issues.warnings,
