@@ -7,6 +7,9 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  define: {
+    __BLOOMLAB_BUILD_ID__: JSON.stringify(process.env.BLOOMLAB_BUILD_ID ?? 'local'),
+  },
   // Root-level public/ per the spec §102 layout.
   publicDir: fileURLToPath(new URL('../../public', import.meta.url)),
   plugins: [
@@ -17,7 +20,7 @@ export default defineConfig({
     // Installable PWA (DATA-003, spec §87): the service worker precaches the app shell and
     // stable assets; `/api/*` is never cached; curriculum (Phase 5) is served stale-while-revalidate.
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg', 'icons/*.png'],
       manifest: {
         id: '/',
@@ -48,7 +51,7 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        skipWaiting: true,
+        skipWaiting: false,
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.startsWith('/api/'),

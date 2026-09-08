@@ -197,6 +197,11 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+.room .restart {
+  color: var(--bl-color-cloud);
+  background: var(--call-surface);
+  border: 1px solid var(--call-border);
+}
 .room .error {
   color: var(--bl-color-peach);
   border-left: 3px solid currentColor;

@@ -4,6 +4,7 @@ import type { CallRecording } from '@bloomlab/shared';
 import { db } from '../data/db';
 import { callFetch, callRequest } from './client';
 import { CallAction } from './CallAction';
+import { updates } from '../pwa/updates';
 
 /** Deletion lives outside immutable attempt history. Metadata is fetched from the media store. */
 export function Recordings({ attemptId, revision }: { attemptId: string; revision: string }) {
@@ -49,6 +50,7 @@ export function Recordings({ attemptId, revision }: { attemptId: string; revisio
   async function play(id: string) {
     if (operation.current) return;
     operation.current = true;
+    const release = updates.hold();
     setBusy({ id, action: 'play' });
     setError('');
     try {
@@ -60,12 +62,14 @@ export function Recordings({ attemptId, revision }: { attemptId: string; revisio
       setError(failure instanceof Error ? failure.message : 'Playback is unavailable.');
     } finally {
       operation.current = false;
+      release();
       setBusy(null);
     }
   }
   async function remove(id: string) {
     if (operation.current) return;
     operation.current = true;
+    const release = updates.hold();
     setBusy({ id, action: 'delete' });
     setError('');
     if (playing?.id === id) {
@@ -86,6 +90,7 @@ export function Recordings({ attemptId, revision }: { attemptId: string; revisio
       );
     } finally {
       operation.current = false;
+      release();
       setBusy(null);
     }
   }

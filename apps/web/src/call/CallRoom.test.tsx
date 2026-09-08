@@ -1,5 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
+import { Blob as NodeBlob } from 'node:buffer';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Exercise } from '@bloomlab/content-schema';
 import type { CallSnapshot } from '@bloomlab/shared';
@@ -15,6 +16,10 @@ import {
 } from '../exercise/attempt';
 import CallRoom from './CallRoom';
 import { captureAudio } from './recording';
+import type { CapturedAudio } from './recording';
+import * as localAudio from './local';
+import { updates } from '../pwa/updates';
+import { UpdateNotice } from '../pwa/UpdateNotice';
 import { gradeAttempt } from '../exercise/finalize';
 
 vi.mock('./recording', () => ({
@@ -151,6 +156,7 @@ function expectProgress(label: string) {
   expect(button).toHaveAttribute('aria-busy', 'true');
   expect(button.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
   expect(screen.getAllByRole('status').some((status) => status.textContent === label)).toBe(true);
+  expect(updates.snapshot().blocked).toBeGreaterThan(0);
   return button;
 }
 function fallback(snapshot: CallSnapshot): CallSnapshot {
@@ -176,6 +182,87 @@ function fallback(snapshot: CallSnapshot): CallSnapshot {
   };
 }
 describe('CALL-001/004/006 call work area', () => {
+  it('announces updates during recording and pending Blob storage, then offers reload at the saved checkpoint', async () => {
+    await open();
+    fireEvent.click(screen.getByRole('button', { name: 'Start call' }));
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Continue with client text' })).toBeEnabled(),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Continue with client text' }));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Record reply' })).toBeEnabled());
+    let finish!: (audio: CapturedAudio) => void;
+    const finished = new Promise<CapturedAudio>((resolve) => {
+      finish = resolve;
+    });
+    vi.mocked(captureAudio).mockResolvedValue({ stop: vi.fn(), finished });
+    let save!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      save = resolve;
+    });
+    const original = localAudio.storeLocalRecording;
+    const held = vi.spyOn(localAudio, 'storeLocalRecording').mockImplementation(async (...args) => {
+      await gate;
+      return original(...args);
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Record reply' }));
+    await screen.findByRole('button', { name: 'Stop recording' });
+    act(() => updates.available());
+    render(<UpdateNotice />);
+    expect(screen.getByRole('region', { name: 'App update' })).toHaveTextContent(
+      'Finish the current call step',
+    );
+    expect(screen.getByRole('button', { name: 'Reload to update' })).toBeDisabled();
+    await act(async () =>
+      finish({
+        blob: new NodeBlob(['audio']) as Blob,
+        mime_type: 'audio/mp4',
+        duration_ms: 1000,
+        stop_reason: 'manual',
+      }),
+    );
+    expect(screen.getByRole('button', { name: 'Reload to update' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Start fresh call' })).toBeDisabled();
+    await act(async () => save());
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Transcribe recording' })).toBeEnabled(),
+    );
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Reload to update' })).toBeEnabled(),
+    );
+    expect(await db.call_recordings.count()).toBe(1);
+    held.mockRestore();
+  });
+  it('requires explicit retained-audio deletion consent and exposes cleanup failure/retry in the restart dialog', async () => {
+    const a = await open(cold, true);
+    const original = a.network.getMockImplementation()!;
+    const deleting = deferred();
+    a.network.mockImplementation((path, init) =>
+      init?.method === 'DELETE' ? deleting.promise : original(path, init),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Start fresh call' }));
+    expect(screen.getByRole('dialog')).toHaveTextContent('including recordings you chose to keep');
+    expect(a.network.mock.calls.some(([, init]) => init?.method === 'DELETE')).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: 'Keep this call' }));
+    expect((await loadAttempt(cold.id))?.attempt_id).toBe(a.attempt.attempt_id);
+    fireEvent.click(screen.getByRole('button', { name: 'Start fresh call' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete recordings and start fresh' }));
+    expectProgress('Deleting audio and starting fresh…');
+    await act(async () =>
+      deleting.resolve(Response.json({ error: 'unavailable' }, { status: 503 })),
+    );
+    expect(await screen.findByRole('alert')).toHaveTextContent('Audio cleanup did not finish');
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Retry deletion and start fresh' })).toBeEnabled(),
+    );
+    expect((await loadAttempt(cold.id))?.attempt_id).toBe(a.attempt.attempt_id);
+    a.network.mockImplementation(original);
+    fireEvent.click(screen.getByRole('button', { name: 'Retry deletion and start fresh' }));
+    await waitFor(async () =>
+      expect((await loadAttempt(cold.id))?.attempt_id).not.toBe(a.attempt.attempt_id),
+    );
+    expect(await db.exercise_attempts.count()).toBe(0);
+    expect(await db.skill_evidence.count()).toBe(0);
+  });
   it('announces initial feedback and retry immediately and prevents duplicate submission until completion', async () => {
     const a = await open(cold, 'complete', (snapshot) => ({ ...snapshot, complete: true }));
     a.unmount();

@@ -1,0 +1,313 @@
+{
+  "scope": "Local controlled browser and real two-build service-worker probes, virtual/prerecorded audio only; no human/provider acceptance promotion. Final deployed SHA/CI/Worker identity are recorded in the PR description.",
+  "focused": {
+    "files": 4,
+    "tests_passed": 54
+  },
+  "pwa": {
+    "scope": "Real A/B PWA lifecycle and native virtual-microphone capture; controlled HTTP providers.",
+    "scenarios": [
+      {
+        "kind": "idle",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 1,
+          "audio": [],
+          "completed": 0
+        },
+        "result": "passed"
+      },
+      {
+        "kind": "recording",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 1,
+          "audio": [
+            {
+              "bytes": 28496
+            }
+          ],
+          "completed": 0
+        },
+        "result": "passed"
+      },
+      {
+        "kind": "local-save",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 1,
+          "audio": [
+            {
+              "bytes": 780
+            }
+          ],
+          "completed": 0
+        },
+        "result": "passed"
+      },
+      {
+        "kind": "review",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 1,
+          "audio": [],
+          "completed": 0
+        },
+        "result": "passed"
+      },
+      {
+        "kind": "pending-turn",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 1,
+          "audio": [],
+          "completed": 0
+        },
+        "result": "passed"
+      },
+      {
+        "kind": "feedback",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 0,
+          "audio": [],
+          "completed": 1
+        },
+        "result": "passed"
+      }
+    ],
+    "widths": [1440, 1024, 768, 390, 320],
+    "status": "passed"
+  },
+  "call": {
+    "infrastructure": "Browser, real IndexedDB and MediaRecorder; virtual microphone and controlled HTTP fixtures. No live provider acceptance or paid provider requests.",
+    "base": "http://127.0.0.1:5174",
+    "widths": [
+      {
+        "width": 1440,
+        "scroll": 1440,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 1024,
+        "scroll": 1024,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 768,
+        "scroll": 768,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "scroll": 390,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 320,
+        "scroll": 320,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      }
+    ],
+    "checks": [
+      "Immediate Starting call\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Loading client audio\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Native MediaRecorder Blob saved before upload",
+      "Immediate Transcribing\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Transcribing\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Transcribing\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "STT failure preserves audio; retry sends no second upload",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Failed confirmation restores retry; exact saved turn resubmitted",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Deleting audio\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Reload preserves notes, confirmed transcript and retained Blob; explicit delete removes audio",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Getting feedback\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Immediate Getting feedback\u2026 spinner/live status; duplicate blocked; reduced motion",
+      "Full four-turn call through feedback at 390px using touch",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Getting feedback\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Full desktop keyboard call through feedback, visible focus and microphone denial recovery",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Two guided fallback turns show current authored guidance at five widths; advancing clears it",
+      "Immediate Deleting audio and starting fresh\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Deleting audio and starting fresh\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Restart confirmation and cleanup retry preserve recovery until deletion; new ID resumes at opening and authored replies reach done in four turns",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+      "Independent/pressure anchors and fallback coaching absent from DOM, including after off-path turns"
+    ],
+    "loaded_build": "local",
+    "worker_build": "local",
+    "recording": {
+      "seconds": 0.9,
+      "channels": 1,
+      "sampleRate": 44100
+    },
+    "evidence": {
+      "attempts": 1,
+      "dimensions": [
+        "questions",
+        "listening",
+        "diagnosis",
+        "clarity",
+        "jargon",
+        "pitch_timing",
+        "objection_handling",
+        "next_step"
+      ],
+      "queued": 4,
+      "rawInQueue": false,
+      "audio": 0
+    },
+    "fresh_restart": {
+      "new_attempt": true,
+      "old_not_resumed": true,
+      "retained_unsent_deleted": true,
+      "no_abandonment_evidence": true,
+      "turn": 4,
+      "node": "done",
+      "complete": true
+    },
+    "status": "passed"
+  },
+  "statuses": "CALL-005 and seven broader human rows unchanged; PR draft/open, no merge.",
+  "full_ci": {
+    "node": "22.22.1",
+    "files_passed": 111,
+    "tests_passed": 1810,
+    "status": "passed",
+    "checks": [
+      "typecheck",
+      "lint (existing ExerciseRunner dependency warning only)",
+      "format",
+      "control docs",
+      "content",
+      "voice manifest",
+      "build",
+      "browser secrets/provider boundary scan"
+    ]
+  }
+}

@@ -1,4 +1,3 @@
-/* global window, document, location, indexedDB */
 // Browser/IndexedDB/MediaRecorder review with explicit API fixtures and a virtual microphone.
 // This does NOT establish live Google, ElevenLabs, IAM, or private remote R2 acceptance.
 import assert from 'node:assert/strict';
@@ -7,6 +6,7 @@ import { validateContentDir } from '@bloomlab/content-schema/node';
 import { resolve } from 'node:path';
 import { session, openPage, setViewport, screenshot, sleep } from './cdp.mjs';
 import { probeHelpers } from './probe-lib.mjs';
+import { callFixtures as fixtures } from './call-fixtures.mjs';
 
 const base = process.env.BASE ?? 'http://127.0.0.1:5174';
 const out = resolve(process.env.REVIEW_OUT ?? '.review/phase-21-call');
@@ -33,264 +33,6 @@ const report = {
   requests: [],
 };
 
-function fixtures(exercises, rubric, version) {
-  const originalFetch = window.fetch.bind(window);
-  const saved = JSON.parse(
-    sessionStorage.getItem('phase21-probe-server') ?? '{"calls":{},"recordings":{}}',
-  );
-  const probe = (window.__callProbe = {
-    ...saved,
-    requests: [],
-    microphoneRequests: 0,
-    failSTT: false,
-    denyMic: false,
-    audioDelay: 0,
-    failFeedback: false,
-    failTurn: false,
-    turnBodies: [],
-  });
-  const gates = {};
-  probe.hold = (name) => {
-    let release;
-    const promise = new Promise((resolve) => {
-      release = resolve;
-    });
-    gates[name] = { promise, release };
-  };
-  probe.release = (name) => gates[name]?.release();
-  const waiting = (name) => gates[name]?.promise;
-  probe.clicks = [];
-  document.addEventListener('click', (event) =>
-    probe.clicks.push(event.target.closest('button')?.textContent?.trim() ?? 'other'),
-  );
-  const persist = () =>
-    sessionStorage.setItem(
-      'phase21-probe-server',
-      JSON.stringify({ calls: probe.calls, recordings: probe.recordings }),
-    );
-  probe.rows = (name) =>
-    new Promise((resolve, reject) => {
-      const request = indexedDB.open('bloomlab');
-      request.onsuccess = () => {
-        const db = request.result;
-        const tx = db.transaction(name);
-        const read = tx.objectStore(name).getAll();
-        read.onsuccess = () => {
-          resolve(read.result);
-          db.close();
-        };
-        read.onerror = () => reject(read.error);
-      };
-      request.onerror = () => reject(request.error);
-    });
-  const microphone = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-  navigator.mediaDevices.getUserMedia = (...args) => {
-    probe.microphoneRequests++;
-    if (probe.denyMic) {
-      probe.denyMic = false;
-      return Promise.reject(new DOMException('Probe permission denial', 'NotAllowedError'));
-    }
-    return microphone(...args);
-  };
-  window.fetch = async (input, init = {}) => {
-    const url = new URL(typeof input === 'string' ? input : input.url, location.href);
-    const origins = new Set(JSON.parse(sessionStorage.getItem('call-probe-origins') ?? '[]'));
-    if (url.protocol === 'http:' || url.protocol === 'https:') origins.add(url.origin);
-    sessionStorage.setItem('call-probe-origins', JSON.stringify([...origins]));
-    if (url.pathname.startsWith('/api/sync/'))
-      return Response.json(
-        { error: 'Sync is offline in this controlled browser fixture' },
-        { status: 503 },
-      );
-    if (!url.pathname.startsWith('/api/call/') && url.pathname !== '/api/ai/evaluate')
-      return originalFetch(input, init);
-    const method = init.method ?? 'GET';
-    probe.requests.push({ path: url.pathname, method });
-    const ok = (value, status = 200) => Response.json(value, { status });
-    if (new Headers(init.headers).get('authorization') !== 'Bearer call-probe-session')
-      return ok({ error: 'device_not_linked' }, 401);
-    const path = url.pathname.replace('/api/call/', '');
-    const body = typeof init.body === 'string' ? JSON.parse(init.body) : null;
-    if (path === 'config') return ok({ enabled: true });
-    if (url.pathname === '/api/ai/evaluate') {
-      await waiting('feedback');
-      if (probe.failFeedback) {
-        probe.failFeedback = false;
-        return ok({ error: 'evaluation_invalid' }, 502);
-      }
-      return ok({
-        run_id: crypto.randomUUID(),
-        rubric_id: rubric.id,
-        rubric_version: rubric.version,
-        result: {
-          score: 100,
-          rubric_results: rubric.items.map((item) => ({
-            id: item.id,
-            passed: true,
-            reason: 'Controlled browser-review feedback fixture.',
-          })),
-          critical_issue: null,
-          strengths: ['Controlled fixture.'],
-          improvements: ['Live feedback remains to be verified.'],
-          next_probe: 'Try another call mode.',
-          confidence: 0.9,
-        },
-      });
-    }
-    if (path === 'attempts' && method === 'POST') {
-      await waiting('start');
-      const exercise = exercises.find((e) => e.id === body.exercise_id);
-      const node = exercise.conversation?.nodes.find(
-        (n) => n.id === exercise.conversation.opening,
-      ) ?? {
-        id: exercise.negotiation.start,
-        client_message: exercise.negotiation.nodes.find((n) => n.id === exercise.negotiation.start)
-          .message,
-      };
-      probe.calls[body.attempt_id] ??= {
-        attempt_id: body.attempt_id,
-        exercise_id: exercise.id,
-        content_version: version,
-        turn: 0,
-        current: { node: node.id, text: node.client_message, dynamic: false },
-        turns: [],
-        complete: false,
-        projection: {
-          complete: false,
-          turns: 0,
-          talk_ratio_learner: null,
-          pitched_before_diagnosis: false,
-          diagnosis_agreed: false,
-          next_step_agreed: false,
-          economically_sound: true,
-          structurally_sound: true,
-        },
-      };
-      persist();
-      return ok(probe.calls[body.attempt_id]);
-    }
-    const [kind, id, action] = path.split('/');
-    if (kind === 'attempts') {
-      const call = probe.calls[id];
-      if (!call) return ok({ error: 'attempt_not_found' }, 404);
-      if (!action) return ok(call);
-      if (action === 'recordings') {
-        await waiting('cleanup');
-        return ok(Object.values(probe.recordings).filter((r) => r.attempt_id === id));
-      }
-      if (action === 'audio') {
-        if (probe.audioDelay) await new Promise((resolve) => setTimeout(resolve, probe.audioDelay));
-        return ok({ error: 'audio_unavailable' }, 404);
-      }
-      if (action === 'turn') {
-        probe.turnBodies.push(JSON.stringify(body));
-        await waiting('confirm');
-        if (probe.failTurn) {
-          probe.failTurn = false;
-          return ok({ error: 'turn_in_progress' }, 409);
-        }
-        if (call.turn > body.turn) return ok(call);
-        const exercise = exercises.find((e) => e.id === call.exercise_id);
-        const node = exercise.conversation.nodes.find((n) => n.id === call.current.node);
-        const move =
-          body.move ??
-          exercise.call.rules.find(
-            (rule) =>
-              rule.node === node.id &&
-              rule.phrases.some((phrase) => body.transcript.toLowerCase().includes(phrase)),
-          )?.move;
-        const next = exercise.conversation.nodes.find(
-          (n) => n.id === (node.moves.find((m) => m.id === move)?.next ?? node.fallback),
-        );
-        const response = { node: next.id, text: next.client_message, dynamic: false };
-        const recording = probe.recordings[body.recording_id];
-        recording.confirmed_transcript = body.transcript;
-        recording.status = 'confirmed';
-        call.turns.push({
-          turn: call.turn,
-          recording_id: body.recording_id,
-          original_transcript: recording.original_transcript,
-          confirmed_transcript: body.transcript,
-          client: call.current,
-          response,
-          move: move ?? null,
-          interpretation: body.move ? 'explicit' : move ? 'rule' : 'fallback',
-        });
-        call.turn++;
-        call.current = response;
-        call.complete = Boolean(next.end);
-        call.projection = {
-          ...call.projection,
-          complete: call.complete,
-          turns: call.turn,
-          diagnosis_agreed: Boolean(next.diagnosis_agreed),
-          next_step_agreed: Boolean(next.covers?.includes('next_step')),
-          talk_ratio_learner: 0.3,
-        };
-        persist();
-        return ok(call);
-      }
-    }
-    if (kind === 'recordings') {
-      if (method === 'PUT') {
-        await waiting('upload');
-        const local = (await probe.rows('call_recordings')).find((r) => r.recording_id === id);
-        if (
-          !local?.blob?.size ||
-          local.checksum !== new Headers(init.headers).get('x-audio-checksum')
-        )
-          throw new Error('Upload preceded the local Blob checkpoint');
-        const call = probe.calls[url.searchParams.get('attempt_id')];
-        probe.recordings[id] ??= {
-          recording_id: id,
-          attempt_id: call.attempt_id,
-          exercise_id: call.exercise_id,
-          turn: Number(url.searchParams.get('turn')),
-          mime_type: local.mime_type,
-          byte_length: local.blob.size,
-          checksum: local.checksum,
-          duration_ms: local.duration_ms,
-          retain: url.searchParams.get('retain') === 'true',
-          created_at: new Date().toISOString(),
-          status: 'uploaded',
-          original_transcript: null,
-          confirmed_transcript: null,
-          deleted_at: null,
-        };
-        persist();
-        return ok(probe.recordings[id]);
-      }
-      const recording = probe.recordings[id];
-      if (!recording) return ok({ error: 'recording_not_found' }, 404);
-      if (method === 'DELETE' || (action === 'ack' && !recording.retain)) {
-        await waiting('delete');
-        recording.deleted_at = new Date().toISOString();
-        recording.status = 'deleted';
-        recording.retain = false;
-        persist();
-        return ok(recording);
-      }
-      if (method === 'PATCH') {
-        recording.retain = body.retain;
-        persist();
-        return ok(recording);
-      }
-      if (action === 'transcribe') {
-        await waiting('transcribe');
-        if (probe.failSTT) {
-          probe.failSTT = false;
-          return ok({ error: 'speech_timeout' }, 503);
-        }
-        recording.original_transcript ??= 'Could I ask about your coat follow-up?';
-        recording.status = 'review';
-        persist();
-        return ok(recording);
-      }
-      return ok(recording);
-    }
-    return ok({ error: 'not_found' }, 404);
-  };
-}
 await page.send('Page.addScriptToEvaluateOnNewDocument', {
   source: `(${fixtures.toString()})(${JSON.stringify(exercises)},${JSON.stringify(rubric)},${JSON.stringify(bundle.content_version)})`,
 });
@@ -420,10 +162,10 @@ async function speak(method = 'touch') {
 }
 async function confirm(move, method = 'touch', failOnce = false) {
   const replies = {
-    permission: 'Could I ask about unanswered quotes for a minute?',
-    process: 'Who handles quote follow-up today, and when do they contact the customer?',
-    reflect: 'So the gap is unanswered quotes, not replacing dispatch. Have I understood that?',
-    next_step: 'Could we agree a short process review with Tina before deciding on a build?',
+    permission: 'Do you have a minute to ask about unanswered quotes?',
+    process: 'Who handles quote follow-up today?',
+    reflect: 'The gap is unanswered quotes, not replacing dispatch. Is that right?',
+    next_step: 'Could we arrange a short process review with Tina?',
     unrelated: 'Purple umbrellas dance around the moon.',
   };
   assert(await waitFor(page, "document.querySelector('#call-transcript')?.disabled===false"));
@@ -472,6 +214,15 @@ async function confirm(move, method = 'touch', failOnce = false) {
 try {
   await openPage(page, `${base}/`);
   assert(await waitFor(page, '!!window.__callProbe'));
+  assert(await waitFor(page, '!!document.querySelector("[data-build-id]")'));
+  report.loaded_build = await page.evaluate(
+    'document.querySelector("[data-build-id]").dataset.buildId',
+  );
+  report.worker_build = await page.evaluate(
+    "fetch('/api/health',{cache:'no-store'}).then(r=>r.json()).then(r=>r.build_id)",
+  );
+  assert.equal(report.loaded_build, report.worker_build);
+  if (process.env.REVIEW_HEAD) assert.equal(report.loaded_build, process.env.REVIEW_HEAD);
   await page.evaluate(
     `(async()=>{await window.__callProbe.rows('device');await new Promise((resolve,reject)=>{const r=indexedDB.open('bloomlab');r.onsuccess=()=>{const db=r.result,tx=db.transaction('device','readwrite'),s=tx.objectStore('device'),q=s.getAll();q.onsuccess=()=>s.put({...q.result[0],session_token:'call-probe-session'});tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>reject(tx.error);};});})()`,
   );
@@ -697,6 +448,104 @@ try {
   );
   report.checks.push(
     'Two guided fallback turns show current authored guidance at five widths; advancing clears it',
+  );
+  // Explicitly abandon this off-path unfinished call, including a retained unsent Blob.
+  await setViewport(page, 390, 900, { mobile: true });
+  await activate('Continue with client text');
+  await tapSelector('input[type=checkbox]');
+  await speak();
+  const activeId = `window.__callProbe.rows('workspace').then(rows=>rows.find(r=>r.key==='exercise.attempt.${cold.id}').value.attempt_id)`;
+  const abandoned = await page.evaluate(activeId);
+  const historyBefore = await page.evaluate(
+    "window.__callProbe.rows('exercise_attempts').then(r=>r.length)",
+  );
+  await activate('Start fresh call');
+  assert(
+    await page.evaluate(
+      "document.querySelector('dialog[open]').textContent.includes('including recordings you chose to keep')",
+    ),
+  );
+  await page.evaluate(
+    "Promise.all(document.querySelector('dialog').getAnimations().map(a=>a.finished))",
+  );
+  for (const width of [1440, 1024, 768, 390, 320]) {
+    await setViewport(page, width, 900, { mobile: width < 768 });
+    assert(await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'));
+    await screenshot(page, resolve(out, `restart-${width}.png`), undefined, false);
+  }
+  await setViewport(page, 390, 900, { mobile: true });
+  await activate('Keep this call');
+  assert.equal(await page.evaluate(activeId), abandoned);
+  await activate('Start fresh call');
+  await page.evaluate('window.__callProbe.failDelete=true');
+  await holdAction(
+    'Delete recordings and start fresh',
+    'Deleting audio and starting fresh…',
+    'delete',
+    '/recordings/',
+    'touch',
+    'DELETE',
+  );
+  await page.evaluate("window.__callProbe.release('delete')");
+  await holdAction(
+    'Retry deletion and start fresh',
+    'Deleting audio and starting fresh…',
+    'delete',
+    '/recordings/',
+    'touch',
+    'DELETE',
+  );
+  assert.equal(await page.evaluate(activeId), abandoned);
+  assert(
+    await page.evaluate(
+      "window.__callProbe.rows('call_recordings').then(rows=>rows.some(r=>r.retain&&r.blob.size>0))",
+    ),
+  );
+  await page.evaluate("window.__callProbe.release('delete')");
+  assert(await waitFor(page, `(${activeId}).then(id=>id!==${JSON.stringify(abandoned)})`));
+  const fresh = await page.evaluate(activeId);
+  assert.equal(
+    await page.evaluate("window.__callProbe.rows('call_recordings').then(r=>r.length)"),
+    0,
+  );
+  assert.equal(
+    await page.evaluate("window.__callProbe.rows('exercise_attempts').then(r=>r.length)"),
+    historyBefore,
+  );
+  await activate('Start call');
+  assert(await waitFor(page, `window.__callProbe.calls[${JSON.stringify(fresh)}]?.turn===0`));
+  assert.equal(
+    await page.evaluate(`window.__callProbe.calls[${JSON.stringify(fresh)}].current.node`),
+    'opening',
+  );
+  report.requests.push(...(await page.evaluate('window.__callProbe.requests')));
+  await openPage(page, `${base}/exercise/${cold.id}`);
+  assert.equal(await page.evaluate(activeId), fresh);
+  for (const move of ['permission', 'process', 'reflect', 'next_step']) {
+    if (
+      await page.evaluate(
+        "[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Continue with client text')",
+      )
+    )
+      await activate('Continue with client text');
+    await speak();
+    await activate('Transcribe recording');
+    await phase('transcript_review');
+    await confirm(move);
+  }
+  const freshEnd = await page.evaluate(
+    `({turn:window.__callProbe.calls[${JSON.stringify(fresh)}].turn,node:window.__callProbe.calls[${JSON.stringify(fresh)}].current.node,complete:window.__callProbe.calls[${JSON.stringify(fresh)}].complete})`,
+  );
+  assert.deepEqual(freshEnd, { turn: 4, node: 'done', complete: true });
+  report.fresh_restart = {
+    new_attempt: true,
+    old_not_resumed: true,
+    retained_unsent_deleted: true,
+    no_abandonment_evidence: true,
+    ...freshEnd,
+  };
+  report.checks.push(
+    'Restart confirmation and cleanup retry preserve recovery until deletion; new ID resumes at opening and authored replies reach done in four turns',
   );
   for (const exercise of exercises.filter((e) => ['independent', 'pressure'].includes(e.mode))) {
     await openPage(page, `${base}/exercise/${exercise.id}`);

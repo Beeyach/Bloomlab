@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Exercise } from '@bloomlab/content-schema';
+import { Sheet } from '@bloomlab/design-system';
 import {
   CALL_LIMITS,
   type CallPhase,
@@ -23,6 +24,9 @@ import { NegotiationTerms } from './NegotiationTerms';
 import { Recordings } from './Recordings';
 import { CallAction } from './CallAction';
 import { recoveryCue } from './recovery';
+import { restartCall } from './restart';
+import { updates } from '../pwa/updates';
+import { useReloadBlock } from '../pwa/useReloadBlock';
 import styles from './call.module.css';
 
 const PHASE_LABEL: Record<CallPhase, string> = {
@@ -86,9 +90,25 @@ export default function CallRoom({
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [notesOpen, setNotesOpen] = useState(false);
+  const [restartOpen, setRestartOpen] = useState(false);
   const [original, setOriginal] = useState('');
   const transcript = useRef<HTMLTextAreaElement>(null);
   const readOnly = !attempt || Boolean(attempt.submitted);
+  useReloadBlock(
+    busy ||
+      submitting ||
+      Boolean(call.pending_turn) ||
+      [
+        'microphone_permission',
+        'recording',
+        'uploading',
+        'transcribing',
+        'transcript_review',
+        'evaluating',
+        'resolving',
+        'tts_loading',
+      ].includes(call.phase),
+  );
   const client = content.clients.find(
     (c) =>
       c.id === exercise.client ||
@@ -116,7 +136,12 @@ export default function CallRoom({
     checkpointRevision.current++;
     live.current = { ...live.current, ...patch };
     if (mounted.current) setCall(live.current);
-    await saveCall(exercise.id, context, attempt.attempt_id, patch);
+    const release = updates.hold();
+    try {
+      await saveCall(exercise.id, context, attempt.attempt_id, patch);
+    } finally {
+      release();
+    }
   }
   function failure(cause: unknown) {
     if (mounted.current)
@@ -127,8 +152,9 @@ export default function CallRoom({
       );
   }
   async function perform(work: () => Promise<void>) {
-    if (operation.current) return;
+    if (operation.current || updates.snapshot().applying) return;
     operation.current = true;
+    const release = updates.hold();
     setBusy(true);
     setError('');
     try {
@@ -139,6 +165,7 @@ export default function CallRoom({
       if (attempt && !attempt.submitted) await patch({ phase: 'recoverable_error' }).catch(failure);
     } finally {
       operation.current = false;
+      release();
       if (mounted.current) setBusy(false);
     }
   }
@@ -299,6 +326,8 @@ export default function CallRoom({
       pending_turn: null,
     });
     const recorder = await captureAudio();
+    // Keep the update hold after unmount/Stop until the actual Blob and checkpoint settle.
+    const releaseRecording = updates.hold();
     capture.current = recorder;
     if (!mounted.current) recorder.stop();
     void recorder.finished
@@ -326,7 +355,8 @@ export default function CallRoom({
       .catch(async (cause) => {
         failure(cause);
         await patch({ phase: 'recoverable_error', recording_id: null }).catch(failure);
-      });
+      })
+      .finally(releaseRecording);
     await patch({ phase: 'recording' });
   }
   async function transcribe() {
@@ -391,6 +421,12 @@ export default function CallRoom({
   const node = exercise.conversation?.nodes.find((n) => n.id === snapshot?.current.node);
   const transcribing = ['uploading', 'transcribing'].includes(call.phase);
   const confirming = ['evaluating', 'resolving'].includes(call.phase);
+  const canRestart =
+    !busy &&
+    !submitting &&
+    !transcribing &&
+    !confirming &&
+    !['recording', 'microphone_permission', 'tts_loading', 'client_speaking'].includes(call.phase);
   const updatingAudio =
     busy && !transcribing && !confirming && call.phase !== 'microphone_permission';
   const cue = recoveryCue(exercise, snapshot);
@@ -559,6 +595,64 @@ export default function CallRoom({
               Review and correct the transcript before confirming.
             </p>
           )}
+          {!readOnly && !snapshot?.complete && (
+            <div>
+              <button
+                type="button"
+                disabled={!canRestart}
+                onClick={() => {
+                  setError('');
+                  setRestartOpen(true);
+                }}
+              >
+                Start fresh call
+              </button>
+            </div>
+          )}
+          {restartOpen && (
+            <Sheet
+              open
+              title="Start a fresh call?"
+              className={styles.restart}
+              onClose={() => {
+                if (!busy) setRestartOpen(false);
+              }}
+            >
+              <p>
+                This replaces this unfinished call and its notes. It will not be graded or added to
+                your results.
+              </p>
+              <p>
+                All recordings for this call will be deleted from this device and the server,
+                including recordings you chose to keep. Private server transcript records remain.
+              </p>
+              <p>
+                If cleanup fails, this call stays available so you can retry. Once ready, choose
+                Start call to begin at the opening.
+              </p>
+              {error && <p role="alert">{error}</p>}
+              <div className={styles.controls}>
+                <button type="button" disabled={busy} onClick={() => setRestartOpen(false)}>
+                  Keep this call
+                </button>
+                <CallAction
+                  loading={busy}
+                  disabled={!canRestart}
+                  pendingLabel="Deleting audio and starting fresh…"
+                  onClick={() =>
+                    void perform(async () => {
+                      stopPlayback();
+                      // Invalidate a restore that started before this explicit replacement.
+                      checkpointRevision.current++;
+                      if (attempt) await restartCall(exercise, context, attempt, true);
+                    })
+                  }
+                >
+                  {error ? 'Retry deletion and start fresh' : 'Delete recordings and start fresh'}
+                </CallAction>
+              </div>
+            </Sheet>
+          )}
           {showReview && (
             <section className={styles.review} aria-label="Transcript review">
               <h2>What you said</h2>
@@ -621,7 +715,7 @@ export default function CallRoom({
               </CallAction>
             </section>
           )}
-          {error && (
+          {error && !restartOpen && (
             <p className={styles.error} role="alert">
               {error}
             </p>

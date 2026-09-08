@@ -18,6 +18,16 @@ const MESSAGES: Record<string, string> = {
   transcription_in_progress:
     'This recording is still being transcribed. Wait a moment, then retry.',
 };
+export class CallServiceError extends Error {
+  constructor(
+    readonly code: string,
+    readonly status: number,
+  ) {
+    super(
+      MESSAGES[code] ?? 'The call service is unavailable. Your work is saved; retry when ready.',
+    );
+  }
+}
 export async function callFetch(
   path: string,
   init: RequestInit = {},
@@ -43,9 +53,7 @@ export async function callFetch(
     } catch {
       /* no upstream detail */
     }
-    throw new Error(
-      MESSAGES[code] ?? 'The call service is unavailable. Your work is saved; retry when ready.',
-    );
+    throw new CallServiceError(code, response.status);
   }
   return response;
 }

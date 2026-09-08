@@ -262,6 +262,50 @@ export const discardAttempt = (
   database: BloomlabDatabase = db,
 ): Promise<void> => clearWorkspace(attemptKey(exerciseId, context), database);
 
+/** Replace one unfinished call atomically, after its caller has completed confirmed audio
+ * deletion. No empty-workspace gap, finalization, history, outbox or mastery evidence write. */
+export async function replaceUnfinishedCall(
+  exercise: Exercise,
+  context: AttemptContext,
+  expectedId: string,
+  database: BloomlabDatabase = db,
+): Promise<ActiveAttempt> {
+  const key = attemptKey(exercise.id, context);
+  return enqueue(key, () =>
+    database.transaction('rw', database.workspace, database.call_recordings, async () => {
+      const current = await loadAttempt(exercise.id, context, database);
+      if (
+        !exercise.call ||
+        current?.attempt_id !== expectedId ||
+        current.submitted ||
+        current.response.call?.snapshot?.complete ||
+        [
+          'microphone_permission',
+          'recording',
+          'uploading',
+          'transcribing',
+          'evaluating',
+          'resolving',
+        ].includes(current.response.call?.phase ?? '') ||
+        (await database.call_recordings.where('attempt_id').equals(expectedId).count()) > 0
+      )
+        throw new Error('This call changed or still has saved audio. Review it before restarting.');
+      const fresh: ActiveAttempt = {
+        attempt_id: randomId(),
+        exercise_id: exercise.id,
+        rubric_id: exercise.grading.rubric,
+        skill_id: context.skill_id,
+        run: context.run,
+        started_at: new Date().toISOString(),
+        hints_revealed: [],
+        response: emptyResponse(),
+      };
+      await saveWorkspace(key, fresh, database);
+      return fresh;
+    }),
+  );
+}
+
 /** Negotiation edits and turns share the original per-attempt queue. A turn reads the persisted
  * draft inside that queue, so an immediate Send includes the latest field and move edits. */
 export const saveNegotiationDraft = (

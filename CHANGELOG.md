@@ -4,6 +4,12 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Fixed — Phase 21 clean restart and PWA freshness
+
+- Start fresh call now confirms deletion of all raw recordings, including retained audio, cleans up through authenticated routes and atomically replaces an unfinished attempt. Cleanup errors preserve the old attempt and remaining audio for retry. No abandonment grade or mastery evidence is written; private server transcript/turn metadata and generated client audio remain documented.
+- A waiting/new service worker or uncached Worker build mismatch shows Update available. Reload requires a click and waits through capture, Blob saves, STT, transcript confirmation and final feedback. The browser and Worker expose the same public immutable CI head; offline precaching and API NetworkOnly remain active.
+- Added restart/reload-safety regressions and real two-version PWA probes alongside fresh four-turn Northwind and existing loading/AI/voice checks. Existing conversation/loading components and all grading, speaker, privacy and budget safeguards retain their contracts. Physical Safari findings and broader unverified rows remain explicit; see `docs/reviews/phase-21-session-freshness.md`.
+
 ### Fixed — Phase 21 final UX polish
 
 - Long Call Room actions now show a spinner, specific busy label and accessible live status at the invoked control. Confirmation and its retry keep the saved text/control visible; feedback, client replay, recording replay/deletion and audio updates explain their waits. Existing phases/request state own progress; reduced motion retains static busy indicators and text, and duplicate submission stays blocked.

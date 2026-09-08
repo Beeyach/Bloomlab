@@ -94,6 +94,50 @@ async function setup(mode = 'cold_call', dependencies: CallDependencies = {}) {
   return { request, upload, ready, learner, deviceId, exercise, attemptId, speech, deps };
 }
 describe('CALL-002/006 private recording and durable recovery', () => {
+  it('routes a genuinely fresh Northwind call to done in four confirmed authored replies without a classifier purchase', async () => {
+    const phrases = [
+      'Do you have a minute to ask about unanswered quotes?',
+      'Who handles quote follow-up today?',
+      'The gap is unanswered quotes, not replacing dispatch. Is that right?',
+      'Could we arrange a short process review with Tina?',
+    ];
+    const speech = vi.fn();
+    for (const phrase of phrases) speech.mockResolvedValueOnce(phrase);
+    const ai = vi.fn<Provider>();
+    const a = await setup('cold_call', { speech, ai });
+    const opening = (await (await a.request(`attempts/${a.attemptId}`)).json()) as CallSnapshot;
+    expect(opening).toMatchObject({
+      attempt_id: a.attemptId,
+      turn: 0,
+      current: { node: 'opening' },
+      complete: false,
+    });
+    const nodes = ['problem', 'process', 'agreed', 'done'];
+    for (let turn = 0; turn < phrases.length; turn++) {
+      const recording_id = await a.ready(turn);
+      const recording = (await (
+        await a.request(`recordings/${recording_id}`)
+      ).json()) as CallRecording;
+      expect(recording.original_transcript).toBe(phrases[turn]);
+      const result = await a.request(`attempts/${a.attemptId}/turn`, {
+        turn,
+        recording_id,
+        transcript: recording.original_transcript,
+        move: null,
+      });
+      expect(result.status).toBe(200);
+      const snapshot = (await result.json()) as CallSnapshot;
+      expect(snapshot).toMatchObject({
+        turn: turn + 1,
+        current: { node: nodes[turn] },
+        complete: turn === 3,
+      });
+      expect(snapshot.turns.at(-1)?.interpretation).toBe('rule');
+    }
+    expect(speech).toHaveBeenCalledTimes(4);
+    expect(ai).not.toHaveBeenCalled();
+    expect(a.exercise.call!.max_turns).toBe(12);
+  });
   it('refuses new production calls even with preview-style vars and an injected provider', async () => {
     const a = await setup();
     const speech = vi.fn();

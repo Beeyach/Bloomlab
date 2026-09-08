@@ -4,7 +4,7 @@ import { handleVoice } from './voice/handlers';
 import { handleMedia } from './voice/playback';
 import contentVersion from 'virtual:bloomlab-content/version';
 
-import { APP_VERSION, parseRuntimeEnvironment } from '@bloomlab/shared';
+import { APP_VERSION, BUILD_ID, parseRuntimeEnvironment } from '@bloomlab/shared';
 import { SIMULATOR_VERSION } from '@bloomlab/simulator-core';
 
 import { authenticate } from './sync/auth';
@@ -31,6 +31,7 @@ export interface Env extends Omit<CloudflareBindings, 'BLOOMLAB_ENV'> {
 
 export interface HealthResponse {
   ok: true;
+  build_id: string;
   environment: string;
   versions: {
     app: string;
@@ -81,6 +82,7 @@ async function handleApi(request: Request, url: URL, env: Env): Promise<Response
   if (url.pathname === '/api/health') {
     const body: HealthResponse = {
       ok: true,
+      build_id: BUILD_ID,
       environment: parseRuntimeEnvironment(env.BLOOMLAB_ENV),
       versions: {
         app: APP_VERSION,

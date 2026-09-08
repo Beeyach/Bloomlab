@@ -17,6 +17,10 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# A PR checkout may use a synthetic merge commit. Report the immutable source head instead.
+env:
+  BLOOMLAB_BUILD_ID: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   checks:
     name: Checks
