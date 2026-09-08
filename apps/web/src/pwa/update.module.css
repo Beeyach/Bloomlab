@@ -1,0 +1,25 @@
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bl-space-3);
+  padding: var(--bl-space-4);
+  margin-bottom: var(--bl-space-5);
+  border: 1px solid var(--bl-color-lavender);
+  border-radius: var(--bl-radius-md);
+  background: var(--bl-color-cloud);
+  color: var(--bl-color-ink);
+  overflow-wrap: anywhere;
+}
+.notice > div {
+  flex: 1 1 240px;
+}
+.notice p {
+  margin: var(--bl-space-2) 0 0;
+  line-height: 1.5;
+}
+.notice button {
+  min-height: 44px;
+  white-space: normal;
+}

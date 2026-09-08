@@ -4,6 +4,46 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Fixed — Phase 21 update-check recovery
+
+- Failed app-update checks now show a visible retry even before a newer build is known. Retry shows progress, prevents duplicate checks and clears the notice when the loaded build is current. Discovering a newer build still requires an explicit reload after call work is safe.
+- Added UI regressions and a five-width browser probe for failed checks, touch retry, keyboard recovery and no unintended reload. See `docs/reviews/phase-21-update-check-recovery.md`.
+
+### Fixed — Phase 21 clean restart and PWA freshness
+
+- Start fresh call now confirms deletion of all raw recordings, including retained audio, cleans up through authenticated routes and atomically replaces an unfinished attempt. Cleanup errors preserve the old attempt and remaining audio for retry. No abandonment grade or mastery evidence is written; private server transcript/turn metadata and generated client audio remain documented.
+- A waiting/new service worker or uncached Worker build mismatch shows Update available. Reload requires a click and waits through capture, Blob saves, STT, transcript confirmation and final feedback. The browser and Worker expose the same public immutable CI head; offline precaching and API NetworkOnly remain active.
+- Added restart/reload-safety regressions and real two-version PWA probes alongside fresh four-turn Northwind and existing loading/AI/voice checks. Existing conversation/loading components and all grading, speaker, privacy and budget safeguards retain their contracts. Physical Safari findings and broader unverified rows remain explicit; see `docs/reviews/phase-21-session-freshness.md`.
+
+### Fixed — Phase 21 final UX polish
+
+- Long Call Room actions now show a spinner, specific busy label and accessible live status at the invoked control. Confirmation and its retry keep the saved text/control visible; feedback, client replay, recording replay/deletion and audio updates explain their waits. Existing phases/request state own progress; reduced motion retains static busy indicators and text, and duplicate submission stays blocked.
+- A delayed restore response can no longer replace newer local edits or a pending confirmed turn. Its regression holds the old response through confirmation and proves the same text and retry identity survive.
+- Guided/practice authored fallbacks show a secondary cue from the current move label or existing anchor/objective. The cue clears on progress and never mounts in independent/pressure calls. No scenario, turn limit, grading, provider, privacy or microphone lifecycle change. Scripted conversation and the Safari browser findings remain limitations.
+- Focused UI regressions and delayed browser probes cover loading/error/retry, exact saved confirmation, two fallback loops, advanced-aid DOM absence, five widths, touch, keyboard, reduced motion and local-first persistence. See `docs/reviews/phase-21-final-ux-polish.md`; no broader human acceptance promotion.
+
+### Fixed — Phase 21 proposal feedback reliability
+
+- A repeatable proposal failure exhausted the generic rubric array and then citation validation during repair. The call-specific provider schema now requires all eight named dimensions, converts them to the unchanged saved/public array, and guides the single repair using a fixed validation cause. Speaker, critical/required, citation, timeout, token-cap and budget safeguards remain in place.
+- Content-free diagnostic metadata is recorded with each accounted response through additive migration `0005`. A saved four-turn proposal can retry the same failed run without recording again; concurrent retries are refused, successful feedback replays without spend, and unknown prior billing stays reserved.
+- Human evidence now includes iPhone Safari microphone capture and completed Mac Chrome proposal mechanics. Mac Safari Private Blob failure, repeated microphone permission prompts, slow interaction and scripted conversation remain limitations. The deployed correction accepted a fresh eight-dimension proposal on its first response ($0.022658) with reviewed attribution and zero-cost replay. The original human four-turn proposal then recovered feedback on its first corrected response ($0.0154112, no remaining reservation), confirmed by the user and scoped metadata, with no re-recording. CALL-003 returns to PASSED; no unrelated acceptance promotion.
+
+### Added — Phase 21 · Call Room (live acceptance pending)
+
+- One content-driven dark Call Room in the existing exercise runner: cold call, discovery, proposal presentation, negotiation and client explanation. Explicit recording/transcript/branch/audio/recovery phases, notes drawer, guided anchors and advanced aid exclusion.
+- Native bounded MediaRecorder capture into a separate local-only Dexie v5 Blob table before authenticated upload. Private R2 recording CRUD, R2-first recovery, metadata-only additive migration `0004`, retained-audio replay/deletion and transcript-first default cleanup.
+- Worker-only Google STT V2 with RS256 service-account OAuth and in-memory token reuse; original/corrected transcript review and explicit confirmation. Existing conversation/negotiation/pricing engines are shared with the Worker, with durable turn claims, authored fallback, bounded classification and private cached authorized TTS.
+- Exact eight-dimension call rubric and `call_feedback` accounting. Server-confirmed text feeds feedback; objective critical/required gates stay authoritative. Guided assistance labels and fresh-attempt history are preserved correctly.
+- Content/grader `2026.09.18`; app, simulator and mastery unchanged. Controlled browser/provider tests and a dedicated five-width touch/keyboard probe; secure setup/recovery runbook and review evidence. Preview now has the Google `secret_text`, preview-only call gates and a required-secret deployment check. Supplementary live prerecorded-audio diagnostics verify recognition, private storage/recovery and grading; real microphone/full phone and keyboard calls remain outstanding; dynamic TTS and minimum grading acceptance are recorded below. Production stays off; Phase 21 is not marked complete.
+- Preview acceptance found inherited 14px call inputs. Notes, transcript and move controls now use 16px, with a browser regression at 390/320. Production refusal is also pinned by a regression even when preview-style settings and a test provider are supplied.
+
+### Fixed — Phase 21 acceptance remediation
+
+- Call feedback now receives numbered client context and confirmed learner evidence, with explicit attribution rules for every rubric explanation. Existing saved rubric runs retain their identity and are not repurchased.
+- Authorized open-response text selects a bounded literal quote deterministically; strong-model extraction is removed. Dynamic ElevenLabs usage receipts persist in the existing generation ledger and private R2 recovery metadata, including cache and uncertain-purchase regression coverage.
+- The full-suite run exposed an existing AI-settings test race: the default Limited selection was mistaken for a completed server refresh. The regression now waits for loaded account usage before checking persisted mode.
+- First deployed remediation acceptance proved dynamic ElevenLabs synthesis (69 billed characters) and cache reuse, but exposed a further client-only ServiceTitan citation in grading. Call feedback now verifies quoted evidence against confirmed learner text before accepting it, using the existing single repair path. Live validation also exposed the shared 30-second grading deadline; call feedback now gets a speaker-aware provider envelope and a tested 90-second bound. One fresh eight-dimension grade now passes manual attribution review ($0.018342, no reservation); the second proposal sample is a documented validation failure. CALL-003 and VOI-003 advance to PASSED. Seven rows still require real phone/desktop microphone acceptance, where execution stops for the user. Production stays disabled. An older timed-out review purchase retains its conservative reservation pending billing reconciliation.
+
 ### Added — Phase 20 · Voice Assets
 
 - Five first-class voice-character YAML records with verified ElevenLabs catalog IDs, the seven-field identity/settings contract and eight reusable lines per client. Bidirectional client references, line uniqueness, emotion bounds and generation inputs are validated; content advances to `2026.09.17` with a regenerated lock.

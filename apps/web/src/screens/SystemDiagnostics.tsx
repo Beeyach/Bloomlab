@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 
 import { Button, IconRefresh, Stack, Surface } from '@bloomlab/design-system';
-import { APP_VERSION, FEATURE_FLAGS } from '@bloomlab/shared';
+import { APP_VERSION, BUILD_ID, FEATURE_FLAGS } from '@bloomlab/shared';
 import { SIMULATOR_VERSION } from '@bloomlab/simulator-core';
 
 import { useFeatureFlags } from '../app/featureFlagsContext';
@@ -12,9 +12,11 @@ import { ContentDiagnostics } from './ContentDiagnostics';
 import { LearningDiagnostics } from './LearningDiagnostics';
 import { LocalDataDiagnostics } from './LocalDataDiagnostics';
 import styles from './SystemDiagnostics.module.css';
+import { updates } from '../pwa/updates';
 
 interface HealthPayload {
   ok: boolean;
+  build_id?: string;
   environment: string;
   versions: { app: string; content: string | null; simulator: string };
 }
@@ -83,6 +85,8 @@ export default function SystemDiagnostics() {
 
       <h2 className={styles.heading}>Client</h2>
       <Surface as="dl" padding="sm" className={styles.list}>
+        <dt>Loaded browser build</dt>
+        <dd data-testid="browser-build">{BUILD_ID}</dd>
         <dt>App version</dt>
         <dd>{APP_VERSION}</dd>
         <dt>Content version</dt>
@@ -94,6 +98,15 @@ export default function SystemDiagnostics() {
         <dt>Vite mode</dt>
         <dd>{import.meta.env.MODE}</dd>
       </Surface>
+
+      <Button
+        onClick={() => {
+          setAttempt((n) => n + 1);
+          void updates.check();
+        }}
+      >
+        Check for app updates
+      </Button>
 
       <h2 className={styles.heading}>API</h2>
       {health.status === 'loading' && (
@@ -123,6 +136,13 @@ export default function SystemDiagnostics() {
             {health.payload.environment}
             {health.payload.environment !== environment && (
               <span className={styles.warning}> — differs from client</span>
+            )}
+          </dd>
+          <dt>Deployed Worker build</dt>
+          <dd data-testid="worker-build">
+            {health.payload.build_id ?? 'Unavailable'}
+            {health.payload.build_id && health.payload.build_id !== BUILD_ID && (
+              <span className={styles.warning}> — differs from loaded browser</span>
             )}
           </dd>
           <dt>Worker app version</dt>

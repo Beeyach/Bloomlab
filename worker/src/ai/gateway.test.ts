@@ -6,8 +6,10 @@ import { link } from '../sync/handlers';
 import { evaluate, handleAi, settings } from './handlers';
 import { cost, MODELS } from './catalog';
 import { maximumCost, route } from './governor';
-import { anthropic, type Provider } from './provider';
+import { AiError, anthropic, type Provider } from './provider';
 import { validateGrading } from './output';
+import { getAttempt, startCall } from '../call/store';
+import type { CallState } from '../call/engine';
 const rubric = content.rubrics.find((r) => r.id === 'WRITTEN_COMMUNICATION_RUBRIC_V2')!;
 const valid = () => ({
   score: 100,
@@ -113,6 +115,15 @@ describe('AI-006/009/011/012 gateway', () => {
     const bad = vi.fn<Provider>().mockResolvedValue({ value: null, usage });
     await expect(evaluate(input, session, env.DB, bad)).rejects.toThrow('evaluation_invalid');
     expect(bad).toHaveBeenCalledTimes(2);
+    const diagnostics = await env.DB.prepare(
+      'SELECT diagnostic_json FROM ai_usage WHERE learner_id=? AND input_tokens>0 ORDER BY rowid',
+    )
+      .bind(session.learnerId)
+      .all<{ diagnostic_json: string }>();
+    expect(diagnostics.results.map((row) => JSON.parse(row.diagnostic_json))).toEqual([
+      expect.objectContaining({ phase: 'initial', validation: 'schema_invalid' }),
+      expect.objectContaining({ phase: 'repair', validation: 'schema_invalid' }),
+    ]);
     await expect(
       evaluate(input, session, env.DB, async () => ({ value: valid(), usage })),
     ).resolves.toHaveProperty('result');
@@ -173,6 +184,40 @@ describe('AI-006/009/011/012 gateway', () => {
       }),
     ).rejects.toThrow();
     expect((await settings(env.DB, session.learnerId)).reserved_usd).toBeGreaterThan(0);
+    const row = await env.DB.prepare('SELECT diagnostic_json FROM ai_usage WHERE learner_id=?')
+      .bind(session.learnerId)
+      .first<{ diagnostic_json: string }>();
+    expect(JSON.parse(row!.diagnostic_json)).toEqual({
+      failure: 'evaluation_failed',
+      accounted_calls: 0,
+    });
+    expect(row!.diagnostic_json).not.toContain('network');
+  });
+  it('keeps an unknown prior bill reserved after an explicit retry succeeds and replays', async () => {
+    const { session } = await learner();
+    const input = request();
+    await expect(
+      evaluate(input, session, env.DB, async () => {
+        throw new AiError('provider_timeout');
+      }),
+    ).rejects.toThrow('provider_timeout');
+    const reserved = (await settings(env.DB, session.learnerId)).reserved_usd;
+    expect(reserved).toBe(maximumCost(MODELS.cheap));
+    const provider = vi.fn<Provider>().mockResolvedValue({ value: valid(), usage });
+    const result = await evaluate(input, session, env.DB, provider);
+    expect(await evaluate(input, session, env.DB, provider)).toEqual(result);
+    expect(provider).toHaveBeenCalledTimes(1);
+    expect((await settings(env.DB, session.learnerId)).reserved_usd).toBe(reserved);
+    const old = await env.DB.prepare(
+      "SELECT reserved_usd,diagnostic_json FROM ai_usage WHERE learner_id=? AND status='failed'",
+    )
+      .bind(session.learnerId)
+      .first<{ reserved_usd: number; diagnostic_json: string }>();
+    expect(old?.reserved_usd).toBe(reserved);
+    expect(JSON.parse(old!.diagnostic_json)).toEqual({
+      failure: 'provider_timeout',
+      accounted_calls: 0,
+    });
   });
 });
 describe('direct Anthropic boundary', () => {
@@ -221,22 +266,28 @@ describe('AI-011 authored rubric audit', () => {
     async (exercise) => {
       const r = content.rubrics.find((r) => r.id === exercise.grading.rubric)!;
       const { session } = await learner();
-      const answer = await evaluate(
-        { ...request(), exercise_id: exercise.id, rubric_id: r.id },
-        session,
-        env.DB,
-        async () => ({
-          usage,
-          value: {
-            ...valid(),
-            rubric_results: r.items.map((i) => ({
-              id: i.id,
-              passed: true,
-              reason: 'Authored item evidence',
-            })),
-          },
-        }),
-      );
+      const input = { ...request(), exercise_id: exercise.id, rubric_id: r.id };
+      if (exercise.call) {
+        // This audit checks rubric identity. The call integration suite exercises real transitions.
+        await startCall(env.DB, session, input.attempt_id, exercise.id);
+        const row = await getAttempt(env.DB, session, input.attempt_id);
+        const state = JSON.parse(row.state_json) as CallState;
+        state.snapshot.complete = true;
+        await env.DB.prepare('UPDATE call_attempts SET state_json=? WHERE attempt_id=?')
+          .bind(JSON.stringify(state), input.attempt_id)
+          .run();
+      }
+      const answer = await evaluate(input, session, env.DB, async () => ({
+        usage,
+        value: {
+          ...valid(),
+          rubric_results: exercise.call
+            ? Object.fromEntries(
+                r.items.map((i) => [i.id, { passed: true, reason: 'Authored item evidence' }]),
+              )
+            : r.items.map((i) => ({ id: i.id, passed: true, reason: 'Authored item evidence' })),
+        },
+      }));
       expect(answer.rubric_id).toBe(exercise.grading.rubric);
       expect(answer.rubric_version).toBe(r.version);
     },

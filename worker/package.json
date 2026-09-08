@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Cloudflare Worker: API, AI gateway and sync (TECH_ARCHITECTURE.md §3)",
+  "description": "Cloudflare Worker: API, AI gateway and sync (TECH_ARCHITECTURE.md \u00a73)",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@bloomlab/content-schema": "*",
     "@bloomlab/shared": "*",
-    "@bloomlab/simulator-core": "*"
+    "@bloomlab/simulator-core": "*",
+    "@bloomlab/exercise-engine": "*"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.22.0",

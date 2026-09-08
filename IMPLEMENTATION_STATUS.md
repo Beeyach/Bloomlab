@@ -26,15 +26,21 @@ Phase 18 — Negotiation: the authored engine, standalone deal, ten-objection co
 
 Phase 19 — AI Gateway: Worker-only Anthropic routing, canonical AI settings, conservative atomic budget reservations, structured validation with one repair, exact rubric persistence and recoverable submitted attempts are implemented. Independent audit fixes: the provider test creates fresh response bodies; canonical AI settings refresh reconciles the existing local cache, with immediate Off and in-flight response guards (D-176). Full Node 22 local verification: 1,642 tests across 97 files. Browser review evidence is recorded in the Phase 19 report. AI-009 is PASSED after real deployed-preview Anthropic verification, exact rubric/version validation, D1 persistence, usage accounting and device revocation. NEG-003 remains PARTIAL: one real hold classification at 0.95 is verified, but broad language quality is not established. Phase 19 is closed and production-green at the Phase 20 handoff baseline `f21fe161d1016fe7996e6ef29057573a439d0ca9` (PR #21). See `docs/reviews/phase-19-ai-gateway.md`.
 
-Phase 20 — Voice Assets: five compiled voice characters resolve every current client reference. Preview-only authored generation, immutable private R2 audio, metadata-only D1 indexing, provider-free authenticated playback and a five-width diagnostics review are implemented. The reviewed manifest promotes the exact purchased bytes to production R2; production migration/index/deploy remain the independent post-merge path. See `docs/reviews/phase-20-voice-assets.md` for live evidence, usage, requirement boundaries and limitations. The implementation PR remains open for independent audit.
+Phase 20 — Voice Assets: independently merged in main `3fa36fe05872bdaeaf5c49105a198b911aa9adce`. Its 40 authored assets, rotated preview ElevenLabs Worker secret and provider-free private playback are the Phase 21 base. Historical review evidence remains in `docs/reviews/phase-20-voice-assets.md`.
+
+Phase 21 — Call Room: five turn-based SAY IT modes and local-first private recording/transcription are implemented. The user observed working iPhone Safari capture and a completed Mac Chrome proposal with local save, Google transcripts, correction, history and TTS text fallback. Final feedback failed twice; a scoped fictional reproduction found omitted rubric dimensions, then an unsupported learner quotation in the single repair. The corrected contract requires all eight dimensions and guides the one repair while preserving every validation and budget gate. Fresh Preview proposal grading passed with reviewed attribution and zero-cost replay. The user then recovered feedback on the original four-turn human attempt, with first-response acceptance ($0.0154112), no remaining reservation and no re-recording. CALL-003 returns to PASSED; the seven broader human rows remain IMPLEMENTED_UNVERIFIED. Mac Safari Private Blob persistence, repeated iPhone permission prompts, perceived slowness and scripted conversation remain limitations. Production calls stay off; PR #23 stays draft/open and unmerged. See `docs/reviews/phase-21-feedback-reliability.md` and `docs/operations/call-room.md`.
+
+Phase 21 session freshness: unfinished calls now offer a confirmed clean restart that deletes raw audio through authenticated paths, preserves remaining recovery state on cleanup failure, and atomically creates a new attempt ID without evidence. PWA updates announce a waiting/new controller or Worker build mismatch, defer reload through unsafe call work and require an explicit safe reload. Browser and Worker report the immutable CI head. Existing loading UI and four-turn Northwind routing are verified on controlled fresh attempts without engine changes. iPhone offline retry passed; retained deletion disabled replay but audible retained replay is still unverified. The resumed turn-7/stale-bundle session does not establish a routing defect or verify the prior UX. See `docs/reviews/phase-21-session-freshness.md`; no requirement promotion or new physical-device test request.
+
+Phase 21 update-check recovery: a failed update/build check is visible even when no update has yet been detected, with a safe retry and loading state. A successful current-build check dismisses the notice; a newer build keeps the existing explicit reload and call checkpoint guards. See `docs/reviews/phase-21-update-check-recovery.md`. DATA-003 and the seven broader human acceptance statuses retain their existing status.
 
 ## VERSIONS
 
 - app: 0.1.0
-- content: 2026.09.17 (`content/content.yaml`, locked by `content/content.lock.yaml`)
+- content: 2026.09.18 (`content/content.yaml`, locked by `content/content.lock.yaml`)
 - simulator: 2026.09.11-r2 (`SIMULATOR_VERSION`, carried on every run and saved run and stamped on evidence)
 - mastery rules: 2026.09.03-r4 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
-- exercise grader: 2026.09.16 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
+- exercise grader: 2026.09.18 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
 
 ## PASSED
 
@@ -280,6 +286,17 @@ Phase 20 live voice assets:
 - VOI-005 — The reusable library is purchased once with provider-reported usage retained. Exact-byte promotion and provider-free production playback remove any dependency on future ElevenLabs credits.
 - DATA-007 — Both R2 buckets remain private with r2.dev disabled. Valid sessions receive saved audio; unauthenticated/revoked sessions receive 401 and another learner's private scope receives 403. Only known metadata asset IDs are addressable.
 
+Phase 21 accepted interface/provider paths:
+
+- CALL-001 — One quiet dark Call Room has the six required elements. Final UX polish adds phase-derived, accessible loading feedback at the invoked controls, with full-opacity busy buttons, duplicate prevention and reduced-motion text/indicators. Delayed browser requests, five-width review, 390px touch and desktop keyboard flows pass. See `docs/reviews/phase-21-final-ux-polish.md`.
+- CALL-003 — Corrected Preview proposal grading accepted all eight dimensions with manual fictional-speaker attribution review, first-response acceptance and zero-cost replay. The user confirmed feedback on the original saved human proposal; scoped metadata verifies the same completed run, four unchanged turns, first-response acceptance and no residual reservation. No re-recording or transcription purchase was needed. Strict citation/grading validation, one repair and conservative unknown billing remain enforced; 97 focused regressions and 1,782 total tests pass. See `docs/reviews/phase-21-feedback-reliability.md`.
+- CALL-004 — Guided/practice anchors remain secondary. Authored fallback recovery now displays a current content-derived move cue only when needed; advancing removes it. Independent/pressure anchors and recovery coaching remain absent from the DOM, including actual off-path browser turns. Engine branching and max-turn behavior are unchanged; no answer text or hidden state is exposed.
+- VOI-003 — One real authorized dynamic ElevenLabs asset, 69 billed characters; identical retry reuses the private bytes and immutable receipt with zero second synthesis purchase.
+
+## IMPLEMENTED_UNVERIFIED
+
+- CALL-002, CALL-005, CALL-006, EXR-015, VOI-006, VOI-007, SEC-005 — Human evidence now includes iPhone Safari capture and a completed Mac Chrome proposal with local save, Google transcripts, correction, saved history and TTS fallback. Full touch/keyboard, recovery, retained replay/deletion and privacy acceptance is not established by those observations; no blanket promotion. Controlled and prerecorded diagnostics remain separately labeled.
+
 ## IN PROGRESS
 
 
@@ -335,7 +352,7 @@ None
 
 ## NEXT
 
-Phase 20 implementation awaits independent exact-head audit and merge. Production media indexing/deployment/verification follow merge; Phase 21 Call Room and Phase 24 continuity remain future work.
+The proposal feedback blocker is remediated and the saved human call recovered without re-recording. Continue independent review and only the outstanding human phone-touch, desktop-keyboard, retention/recovery and privacy checks using `docs/operations/call-room.md` and `docs/reviews/phase-21-feedback-reliability.md`. Do not ask for another four-turn proposal to reproduce the resolved feedback failure. Do not reinstall or expose the working Google credential. Keep PR #23 draft/open and unmerged. Production secrets/gates and independent acceptance remain prerequisites for production readiness; Phase 24 continuity remains future work.
 
 ## PHASE CHECKLIST (§163)
 
@@ -359,8 +376,8 @@ Phase 20 implementation awaits independent exact-head audit and merge. Productio
 - [x] Phase 17 — Pricing Arena: pricing logic and scenarios (the pricing rubric is executed in Phase 19; PRI-001's price-on-removal half and PRI-002's reasoning half stay PARTIAL)
 - [x] Phase 18 — Negotiation: merged and production-green; NEG-003 language interpretation PARTIAL
 - [x] Phase 19 — AI Gateway: server routes, model routing, budget governor, structured grading, retry/failure behavior
-- [x] Phase 20 — Voice Asset System: reusable ElevenLabs assets (implementation reviewed on preview; independent merge and production verification pending)
-- [ ] Phase 21 — Call Room: turn-based voice simulations
+- [x] Phase 20 — Voice Asset System: reusable ElevenLabs assets, independently merged base
+- [ ] Phase 21 — Call Room: dynamic TTS, corrected proposal grading and saved human feedback recovery accepted; broader human acceptance pending
 - [ ] Phase 22 — Fieldwork: real-GHL proof flow
 - [ ] Phase 23 — Portfolio: demonstration-project records
 - [ ] Phase 24 — Field Ready Content: placement through capstone
@@ -369,4 +386,4 @@ Phase 20 implementation awaits independent exact-head audit and merge. Productio
 
 ## ROLL-UP
 
-313 requirements registered · 189 PASSED · 8 IN_PROGRESS · 23 PARTIAL · 0 BLOCKED · 2 DEFERRED · 91 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 193 PASSED · 8 IN_PROGRESS · 23 PARTIAL · 7 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 80 NOT_STARTED. Run the validator for the live count by status and priority.

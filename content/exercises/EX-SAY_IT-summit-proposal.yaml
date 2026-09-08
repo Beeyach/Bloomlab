@@ -1,0 +1,146 @@
+id: EX-SAY_IT-summit-proposal
+type: SAY_IT
+title: Present the application funnel proposal
+mode: independent
+difficulty: 3
+estimated_minutes: 15
+skills:
+  - SK-DELIVER-proposal-writing
+client: CL-summit-coaching
+scenario: SC-summit-discovery
+format: proposal
+instructions: 'Present the already scoped application funnel to Marcus: qualification routing,
+  applicant replies, ownership and follow-up. Explain what the smaller option postpones, address the
+  cheaper quote without inventing promises, and agree a review of the written scope before
+  commitment.'
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: call.complete
+    operator: equals
+    value: true
+    description: The call reaches a decision or its authored turn limit.
+  - id: a2
+    type: state
+    path: call.next_step_agreed
+    operator: equals
+    value: true
+    description: An explicit next step or professional exit is agreed.
+critical_failures:
+  - id: c1
+    type: state
+    path: call.pitched_before_diagnosis
+    operator: equals
+    value: false
+    description: The learner waits for an agreed diagnosis before pitching.
+grading:
+  mode: mixed
+  rubric: CALL_PERFORMANCE_RUBRIC_V1
+  pass_threshold: 70
+hints: []
+conversation:
+  client: CL-summit-coaching
+  subject: Present the application funnel proposal
+  channel: chat
+  opening: opening
+  composer_help: Speak your reply, review the transcript, then confirm your intended move.
+  nodes:
+    - id: opening
+      client_message:
+        Walk me through what happens after someone applies. Who sees it, and what does the
+        applicant receive?
+      moves:
+        - id: explain
+          label: Walk through the agreed application process
+          kind: answer
+          next: objection
+        - id: question
+          label: Check what Marcus wants clarified
+          kind: ask
+          next: priorities
+      fallback: clarify
+      diagnosis_agreed: true
+      covers:
+        - current_process
+    - id: priorities
+      client_message: I'd rather talk to five right people than twenty wrong ones.
+      moves:
+        - id: explain
+          label: Connect the proposal to the agreed result
+          kind: answer
+          next: objection
+      fallback: clarify
+      diagnosis_agreed: true
+    - id: objection
+      client_message: Another person quoted nine hundred. What am I paying for beyond that?
+      moves:
+        - id: scope
+          label: Compare scope and responsibility
+          kind: answer
+          next: smaller
+        - id: discount
+          label: Promise the same full scope for less
+          kind: pitch
+          next: smaller
+      fallback: clarify
+      diagnosis_agreed: true
+      situation: proposal_follow_up
+    - id: smaller
+      client_message:
+        If we start with the smaller option, tell me exactly what we would postpone and how
+        we would know when to add it.
+      moves:
+        - id: tradeoff
+          label: State the smaller scope and explicit deferrals
+          kind: answer
+          next: decision
+      fallback: clarify
+      diagnosis_agreed: true
+    - id: decision
+      client_message:
+        I need the written scope to match what you have just said. How will we check the
+        application routing and handover before I sign off?
+      moves:
+        - id: next_step
+          label: Agree a scope and acceptance review
+          kind: next_step
+          next: done
+      fallback: clarify
+      diagnosis_agreed: true
+    - id: clarify
+      client_message: Which part of the proposed application process are you asking me to agree to?
+      moves:
+        - id: explain
+          label: Explain the application journey
+          kind: answer
+          next: objection
+        - id: scope
+          label: Clarify the smaller scope
+          kind: clarify
+          next: smaller
+      fallback: clarify
+      diagnosis_agreed: true
+    - id: done
+      client_message: Send the scope comparison and acceptance checks. We will review those together
+        before agreeing a project.
+      moves: []
+      end: true
+      covers:
+        - next_step
+      diagnosis_agreed: true
+call:
+  mode: proposal
+  objective: Explain the agreed application funnel, compare the smaller scope and address Marcus’s
+    cheaper quote. Agree how the written scope and acceptance checks will be reviewed.
+  anchors: []
+  max_turns: 12
+  voice_lines:
+    opening: scenario-01
+    priorities: recurring-01
+    objection: objection-01
+    smaller: scenario-02
+  rules: []
+  open_response:
+    node: clarify
+    question: What would that change in the process we are discussing?

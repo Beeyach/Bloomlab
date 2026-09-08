@@ -321,7 +321,7 @@ describe('devices (SYNC-004, SYNC-005)', () => {
 });
 
 describe('schema (DATA-004, DATA-005)', () => {
-  it('creates the spec §93 tables plus notes and media infrastructure, and no curriculum tables', async () => {
+  it('creates the spec §93 tables plus notes, media and call infrastructure, and no curriculum tables', async () => {
     const { results } = await env.DB.prepare(
       "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'd1_%' AND name NOT LIKE '_cf_%'",
     ).all<{ name: string }>();
@@ -352,6 +352,10 @@ describe('schema (DATA-004, DATA-005)', () => {
         'feature_flags',
         'media_assets',
         'voice_generation_jobs',
+        'call_attempts',
+        'call_recordings',
+        'call_turns',
+        'call_voice_assets',
       ].sort(),
     );
     for (const forbidden of ['skills', 'units', 'exercises', 'ghl_features', 'registry']) {

@@ -1,0 +1,86 @@
+id: CALL_PERFORMANCE_RUBRIC_V1
+version: 1
+title: Call performance — eight dimensions
+applies_to:
+  - SAY_IT
+model_class: strong
+items:
+  - id: questions
+    tier: required
+    criterion: Asks relevant questions at the appropriate point and checks assumptions before prescribing.
+    guidance: Evaluate only the learner-confirmed transcript against the authored call objective and
+      client context. Original STT mistakes and transcript corrections carry no penalty. Never infer
+      or score accent, pronunciation, native-like speech, voice quality, personal traits or fluency
+      as accent. For this mode, judge the dimension in context; do not demand redundant discovery
+      when diagnosis was already agreed.
+    weight: 1
+  - id: listening
+    tier: required
+    criterion: Responds to what the client actually said, reflects priorities and makes room for answers.
+    guidance: Evaluate only the learner-confirmed transcript against the authored call objective and
+      client context. Original STT mistakes and transcript corrections carry no penalty. Never infer
+      or score accent, pronunciation, native-like speech, voice quality, personal traits or fluency
+      as accent. For this mode, judge the dimension in context; do not demand redundant discovery
+      when diagnosis was already agreed.
+    weight: 1
+  - id: diagnosis
+    tier: required
+    criterion: Separates symptoms from causes, checks missing facts and verifies agreement on the problem.
+    guidance: Evaluate only the learner-confirmed transcript against the authored call objective and
+      client context. Original STT mistakes and transcript corrections carry no penalty. Never infer
+      or score accent, pronunciation, native-like speech, voice quality, personal traits or fluency
+      as accent. For this mode, judge the dimension in context; do not demand redundant discovery
+      when diagnosis was already agreed.
+    weight: 1
+  - id: clarity
+    tier: required
+    criterion: Explains the reasoning and sequence in concrete, understandable language without
+      inventing promises.
+    guidance: Evaluate only the learner-confirmed transcript against the authored call objective and
+      client context. Original STT mistakes and transcript corrections carry no penalty. Never infer
+      or score accent, pronunciation, native-like speech, voice quality, personal traits or fluency
+      as accent. For this mode, judge the dimension in context; do not demand redundant discovery
+      when diagnosis was already agreed.
+    weight: 1
+  - id: jargon
+    tier: required
+    criterion: Uses language appropriate for this client and explains necessary technical terms in
+      everyday words.
+    guidance: Evaluate only the learner-confirmed transcript against the authored call objective and
+      client context. Original STT mistakes and transcript corrections carry no penalty. Never infer
+      or score accent, pronunciation, native-like speech, voice quality, personal traits or fluency
+      as accent. For this mode, judge the dimension in context; do not demand redundant discovery
+      when diagnosis was already agreed.
+    weight: 1
+  - id: pitch_timing
+    tier: critical
+    criterion: Waits for the agreed diagnosis before proposing a solution; respects an already
+      established diagnosis in a proposal or handover.
+    guidance: Evaluate only the learner-confirmed transcript against the authored call objective and
+      client context. Original STT mistakes and transcript corrections carry no penalty. Never infer
+      or score accent, pronunciation, native-like speech, voice quality, personal traits or fluency
+      as accent. For this mode, judge the dimension in context; do not demand redundant discovery
+      when diagnosis was already agreed.
+    weight: 1
+  - id: objection_handling
+    tier: required
+    criterion:
+      Clarifies the real objection and answers it with supported facts and explicit tradeoffs,
+      without defensiveness or invented concessions.
+    guidance: Evaluate only the learner-confirmed transcript against the authored call objective and
+      client context. Original STT mistakes and transcript corrections carry no penalty. Never infer
+      or score accent, pronunciation, native-like speech, voice quality, personal traits or fluency
+      as accent. For this mode, judge the dimension in context; do not demand redundant discovery
+      when diagnosis was already agreed.
+    weight: 1
+  - id: next_step
+    tier: required
+    criterion: Agrees a specific next action, owner and verification or decision point; a reasoned
+      professional exit can satisfy this.
+    guidance: Evaluate only the learner-confirmed transcript against the authored call objective and
+      client context. Original STT mistakes and transcript corrections carry no penalty. Never infer
+      or score accent, pronunciation, native-like speech, voice quality, personal traits or fluency
+      as accent. For this mode, judge the dimension in context; do not demand redundant discovery
+      when diagnosis was already agreed.
+    weight: 1
+output_schema: ai_grading_v1

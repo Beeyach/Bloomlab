@@ -1,0 +1,135 @@
+id: EX-SAY_IT-glowhaus-client-explanation
+type: SAY_IT
+title: Explain the reminder handover to Priya
+mode: pressure
+difficulty: 3
+estimated_minutes: 15
+skills:
+  - SK-DELIVER-client-explanation
+client: CL-glowhaus-medspa
+scenario: SC-glowhaus-no-show
+format: explanation
+instructions: Explain the proposed reminder process to Priya in everyday language. Cover who acts,
+  when messages stop, how rescheduling is checked and how Dana can verify the handover. Address
+  ownership without promising an unverified integration or guaranteeing fewer no-shows.
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: call.complete
+    operator: equals
+    value: true
+    description: The call reaches a decision or its authored turn limit.
+  - id: a2
+    type: state
+    path: call.next_step_agreed
+    operator: equals
+    value: true
+    description: An explicit next step or professional exit is agreed.
+critical_failures:
+  - id: c1
+    type: state
+    path: call.pitched_before_diagnosis
+    operator: equals
+    value: false
+    description: The learner waits for an agreed diagnosis before pitching.
+grading:
+  mode: mixed
+  rubric: CALL_PERFORMANCE_RUBRIC_V1
+  pass_threshold: 70
+hints: []
+conversation:
+  client: CL-glowhaus-medspa
+  subject: Explain the reminder handover to Priya
+  channel: chat
+  opening: opening
+  composer_help: Speak your reply, review the transcript, then confirm your intended move.
+  nodes:
+    - id: opening
+      client_message:
+        So what would that actually look like for Dana? A lead comes in while she is on the
+        phone. Then what?
+      moves:
+        - id: explain
+          label: Explain the everyday sequence for Dana
+          kind: answer
+          next: reschedule
+        - id: question
+          label: Check the part Priya wants explained
+          kind: ask
+          next: ownership
+      fallback: clarify
+      diagnosis_agreed: true
+    - id: reschedule
+      client_message:
+        If someone cancels and books again, I need the old reminder to stop. I cannot have
+        us sending the wrong time.
+      moves:
+        - id: explain
+          label: Explain stopping old reminders and checking new time
+          kind: answer
+          next: ownership
+      fallback: clarify
+      diagnosis_agreed: true
+      covers:
+        - technical
+    - id: ownership
+      client_message: Dana already has enough to do. Who is going to keep this working when I am in a treatment?
+      moves:
+        - id: handover
+          label: Explain ownership and a practical handover check
+          kind: answer
+          next: check
+        - id: deflect
+          label: Promise the software will take care of everything
+          kind: pitch
+          next: check
+      fallback: clarify
+      diagnosis_agreed: true
+    - id: check
+      client_message:
+        Show me how Dana checks one cancellation and a new booking before we rely on this.
+        What should she do if the times do not match?
+      moves:
+        - id: next_step
+          label: Agree a supervised test and escalation path
+          kind: next_step
+          next: done
+      fallback: clarify
+      diagnosis_agreed: true
+    - id: clarify
+      client_message: What would Dana actually see and do at that point?
+      moves:
+        - id: explain
+          label: Return to the reminder sequence
+          kind: answer
+          next: reschedule
+        - id: handover
+          label: Explain the ownership and handover
+          kind: answer
+          next: check
+      fallback: clarify
+      diagnosis_agreed: true
+    - id: done
+      client_message:
+        Let us run that cancellation and rebooking check with Dana and write down who she
+        contacts if it fails. We can review the handover after that.
+      moves: []
+      end: true
+      diagnosis_agreed: true
+      covers:
+        - next_step
+call:
+  mode: explanation
+  objective: Explain the reminder handover to Priya in everyday language. Cover ownership, stopping
+    old messages, rescheduling checks and Dana’s escalation path.
+  anchors: []
+  max_turns: 12
+  voice_lines:
+    opening: scenario-01
+    reschedule: scenario-02
+    ownership: objection-02
+  rules: []
+  open_response:
+    node: clarify
+    question: What would that change in the process we are discussing?

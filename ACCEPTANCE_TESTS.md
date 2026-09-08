@@ -74,6 +74,7 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **DATA-001** Network throttled to offline: creating a note, moving a workflow node and completing a deterministic exercise succeed instantly and persist across reload.
 - **DATA-002** Dexie database contains the working data; `localStorage` holds at most device preferences; no custom ORM layer exists.
 - **DATA-003** Install prompt appears; after install and going offline the app shell, cached curriculum and stable assets load; API responses are not served from cache.
+- **DATA-003 update recovery** A failed update check before any newer build is known shows a polite status and Check for updates action. Repeated failure leaves retry available; retry shows progress and prevents duplicates. A successful same-build check dismisses the notice without reloading. Discovering a newer build during call work defers reload until the existing safe checkpoint and an explicit click.
 
 ## Phase 4 — D1 and sync
 
@@ -353,13 +354,21 @@ Phase 20 evidence (2026-09-07/08): `docs/reviews/phase-20-voice-assets.md`, `doc
 
 - **CALL-001** Call Room shows the six elements on a dark surface; no participant grid.
 - **CALL-002** Turn-based loop works end to end; no realtime streaming dependency.
-- **CALL-003** Call rubric has the eight dimensions and no accent criterion.
+- **CALL-003** Call rubric has the eight dimensions and no accent/pronunciation criterion; only learner-confirmed text is evaluated, corrections carry no penalty, and deterministic critical/required gates remain authoritative.
+- **CALL-004** Guided/practice anchors may appear; independent/pressure aids are absent from the DOM.
 - **CALL-005** Full call completes on a 390 px device with touch only.
 - **CALL-006** Transcript saved; raw audio deletable; retention optional.
 - **EXR-015** All five SAY IT modes exist.
-- **VOI-006** Recording uploads through the Worker to Google STT V2; transcript displayed before evaluation.
+- **VOI-003** Authorized open-ended client text may synthesize through ElevenLabs; available authored audio is preferred, and repeating the same private response/settings reuses cached bytes. No arbitrary caller-text synthesis. Deterministic quote selection must preserve literal containment and scenario/economic state, and reject unsafe input.
+- **VOI-006** A real browser recording is saved locally before upload through the authenticated Worker/private R2 to real Google STT V2; original/corrected transcript is displayed and confirmed before evaluation.
 - **VOI-007** TTS failure shows text; STT failure keeps the recording and offers retry.
-- **SEC-005** Audio is sent only to Google STT (and ElevenLabs for generation); no other endpoint receives it.
+- **SEC-005** Raw learner audio goes only to Bloomlab/private R2 and Google STT. Anthropic receives confirmed text; ElevenLabs receives authorized client-response text, never learner audio. The browser makes no direct provider request. Anonymous/revoked sessions and other learners cannot fetch/delete recordings.
+
+Phase 21 session-freshness verification: `docs/reviews/phase-21-session-freshness.md` covers turn-zero/confirmed/local-unsent/uploaded/retained restart, explicit deletion consent, partial cleanup failure and retry, new attempt ID, no old resume and no completed/mastery evidence. Two real built PWA versions verify idle notification and recording/local-save/review/pending-turn/feedback deferral, external activation without reload, explicit safe reload and persisted work. Browser and Worker build IDs must match the final CI source head before deployed UX evidence counts. Fresh normal confirmed Northwind phrases must reach done in four turns; the authored recovery ceiling remains 12. Previous resumed iPhone turn 7 is not routing evidence. Same-recording offline retry passed on iPhone; retained deletion disabled replay but audible retained replay is not established. CALL-005 and all seven broader human rows remain unchanged. No new physical run is requested by this follow-up. A first deployed prerecorded Google check restarted into a new ID and reached done in four rule-interpreted turns with only a hyphen correction, deleted all four recordings and revoked its disposable device; no engine change, grading purchase or physical acceptance promotion followed.
+
+Phase 21 final UX verification: `docs/reviews/phase-21-final-ux-polish.md` records immediate action-level spinner/text/live status during Transcribe, Confirm, feedback and retries, duplicate prevention, error/completion recovery, normal/reduced motion and audio-operation waits. Guided/practice authored fallback cues use current content, disappear after progress/completion and remain absent from independent/pressure DOM, including after off-path turns. Five widths, 390px touch, keyboard focus, transcript correction, TTS text fallback and local recording/sync boundaries remain covered. No engine, max-turn, provider or grading contract is relaxed.
+
+Phase 21 evidence (2026-09-08): `docs/reviews/phase-21-feedback-reliability.md` supersedes the prior all-human-pending summary. The user observed iPhone Safari microphone capture and a completed Mac Chrome proposal with local save, Google transcripts, visible correction, persisted history and TTS text fallback. Mac Safari Private Blob persistence failed, and proposal feedback failed twice. The corrected Preview accepted a fresh eight-dimension proposal on its first response, with reviewed attribution and zero-cost replay. The user subsequently confirmed feedback from the original saved four-turn proposal; the same rubric run completed on its first corrected response, with no new recording/STT and no remaining reservation. CALL-003 returns to PASSED; the seven broader human rows remain IMPLEMENTED_UNVERIFIED. CALL-001, CALL-004 and VOI-003 retain their supported acceptance. The provider contract must require all eight named dimensions, reject unsupported learner quotations, permit only one repair, preserve unknown billing, and reuse completed feedback without purchase. Recovery reused the existing human attempt; another four-turn proposal is not required for this resolved blocker. Prerecorded diagnostics remain separately labeled; production stays gated.
 
 ## Phase 22 — Fieldwork
 

@@ -197,10 +197,13 @@ export async function finalizeAttempt(
     };
   }
   if (
+    !exercise.call &&
     exercise.negotiation &&
     (!current.response.negotiation || current.response.negotiation.status === 'open')
   )
     throw new Error('Finish the negotiation conversation before submitting.');
+  if (exercise.call && !current.response.call?.snapshot?.complete)
+    throw new Error('Finish the call before requesting feedback.');
   if (!canGradeNow(exercise)) throw new NotGradableError(exercise.id);
   // Refused before anything is written, so a malformed retrieval can never reach the record.
   const skillIds = skillsForAttempt(exercise, current);
@@ -229,7 +232,9 @@ export async function finalizeAttempt(
         attempt_id: current.attempt_id,
         exercise_id: exercise.id,
         rubric_id: rubricId,
-        submission: JSON.stringify({ response: current.response, deterministic: report }),
+        submission: exercise.call
+          ? JSON.stringify({ call_attempt: current.attempt_id })
+          : JSON.stringify({ response: current.response, deterministic: report }),
       },
       database,
     );
@@ -251,6 +256,7 @@ export async function finalizeAttempt(
       exercise_type: exercise.type,
       score: report.score,
       hints_used: current.hints_revealed,
+      assistance: report.assistance,
       difficulty: exercise.difficulty,
       critical_failures: report.failed_critical,
       // A retrieval run carries no authored mode: it is review, not the exercise's normal use.

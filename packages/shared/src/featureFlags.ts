@@ -34,8 +34,8 @@ const ALL_OFF: FeatureFlagSet = {
 };
 
 const FLAGS_BY_ENVIRONMENT: Readonly<Record<RuntimeEnvironment, FeatureFlagSet>> = {
-  local: { ...ALL_OFF, system_diagnostics: true, design_gallery: true },
-  preview: { ...ALL_OFF, system_diagnostics: true, design_gallery: true },
+  local: { ...ALL_OFF, system_diagnostics: true, design_gallery: true, voice_calls: true },
+  preview: { ...ALL_OFF, system_diagnostics: true, design_gallery: true, voice_calls: true },
   production: ALL_OFF,
 };
 

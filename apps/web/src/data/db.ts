@@ -1,3 +1,4 @@
+import type { LocalCallRecording } from '../call/local';
 import Dexie, { type EntityTable, type Table } from 'dexie';
 
 import type {
@@ -19,7 +20,7 @@ import type {
 } from './types';
 
 export const DB_NAME = 'bloomlab';
-export const DB_VERSION = 4;
+export const DB_VERSION = 5;
 
 /**
  * The IndexedDB database behind every local-first flow (DATA-002). Dexie is the whole data
@@ -29,6 +30,7 @@ export const DB_VERSION = 4;
  * (curriculum cache in Phase 5, simulator projects and events in Phase 10, and so on).
  */
 export class BloomlabDatabase extends Dexie {
+  declare call_recordings: EntityTable<LocalCallRecording, 'recording_id'>;
   declare device: EntityTable<DeviceRecord, 'device_id'>;
   declare notes: EntityTable<NoteRecord, 'id'>;
   declare workspace: EntityTable<WorkspaceRecord, 'key'>;
@@ -72,10 +74,14 @@ export class BloomlabDatabase extends Dexie {
       review_queue: '&id, skill_id, due_at, updated_at',
     });
     // v4 (Phase 10): one row per simulator run, plus its append-only history and checkpoints.
-    this.version(DB_VERSION).stores({
+    this.version(4).stores({
       sim_projects: '&id, run_id, scenario_id, updated_at',
       sim_events: '&id, run_id, sequence, updated_at',
       sim_snapshots: '&id, run_id, log_length, updated_at',
+    });
+    // v5 (Phase 21): recoverable local audio, never a sync entity.
+    this.version(DB_VERSION).stores({
+      call_recordings: '&recording_id, attempt_id, [attempt_id+turn]',
     });
   }
 }

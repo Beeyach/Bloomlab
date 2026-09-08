@@ -1,0 +1,347 @@
+.room {
+  --call-surface: #211d36;
+  --call-border: rgb(207 248 255 / 18%);
+  color: var(--bl-color-cloud);
+  background: var(--bl-color-workspace-deep);
+  border: 1px solid var(--call-border);
+  border-radius: var(--bl-radius-xl);
+  padding: clamp(16px, 3vw, 36px);
+  max-width: 1180px;
+  margin-inline: auto;
+  overflow-wrap: anywhere;
+}
+.room h1 {
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.15;
+  margin: 6px 0 0;
+}
+.room h2 {
+  font-size: 17px;
+  line-height: 1.4;
+  margin: 0 0 8px;
+}
+.room p {
+  line-height: 1.6;
+  margin: 8px 0;
+  white-space: pre-line;
+}
+.room button,
+.room input,
+.room textarea,
+.room select {
+  font: inherit;
+}
+.room button,
+.room summary {
+  min-height: 44px;
+}
+.room button {
+  --button-bg-hover: var(--call-surface);
+  color: var(--bl-color-cloud);
+  background: var(--call-surface);
+  border: 1px solid var(--call-border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 1.4;
+  white-space: normal;
+}
+.room button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.room button[aria-busy='true'] {
+  opacity: 1;
+  cursor: progress;
+}
+.room button:not(:disabled):hover {
+  border-color: var(--bl-color-aqua);
+}
+.room button:focus-visible,
+.room summary:focus-visible,
+.room input:focus-visible,
+.room textarea:focus-visible,
+.room select:focus-visible {
+  outline: 3px solid var(--bl-color-aqua);
+  outline-offset: 3px;
+}
+.room .primary {
+  --button-bg-hover: var(--bl-color-aqua);
+  color: var(--bl-color-ink-deep);
+  background: var(--bl-color-aqua);
+  border-color: transparent;
+  font-weight: 650;
+}
+.room .stop {
+  background: var(--bl-color-peach);
+  color: var(--bl-color-ink-deep);
+  font-weight: 650;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--call-border);
+}
+.lineSpeaker {
+  color: var(--bl-color-aqua);
+  font-size: 14px;
+}
+.clock {
+  flex-shrink: 0;
+  white-space: nowrap;
+  display: grid;
+  gap: 5px;
+  color: var(--bl-color-ice);
+  font-size: 12px;
+  text-align: right;
+}
+.clock time {
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.42fr);
+  gap: 28px;
+  padding-top: 28px;
+}
+.main,
+.side {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.side {
+  padding-left: 24px;
+  border-left: 1px solid var(--call-border);
+  font-size: 14px;
+}
+.client {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.client h2 {
+  margin: 0;
+  font-size: 24px;
+}
+.client p {
+  color: #c7c2dd;
+  font-size: 14px;
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  background: var(--call-surface);
+  border: 1px solid var(--call-border);
+  color: var(--bl-color-lavender);
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  font-size: 20px;
+}
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--bl-color-ice);
+  font-size: 14px;
+}
+.dot,
+.recordingDot {
+  height: 8px;
+  width: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--bl-color-aqua);
+}
+.recordingDot {
+  background: var(--bl-color-peach);
+}
+.clientLine {
+  padding: 22px;
+  background: var(--call-surface);
+  border: 1px solid var(--call-border);
+  border-radius: 16px;
+  font-size: 18px;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.help,
+.side p {
+  color: #c7c2dd;
+  font-size: 14px;
+}
+.recovery {
+  color: var(--bl-color-ice);
+  border-left: 2px solid var(--bl-color-aqua);
+  padding-left: 12px;
+  font-size: 14px;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.room .restart {
+  color: var(--bl-color-cloud);
+  background: var(--call-surface);
+  border: 1px solid var(--call-border);
+}
+.room .error {
+  color: var(--bl-color-peach);
+  border-left: 3px solid currentColor;
+  padding-left: 12px;
+}
+.review {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid var(--call-border);
+  padding-top: 24px;
+}
+.room label {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.room textarea,
+.room select,
+.room input:not([type='checkbox']) {
+  font-size: 16px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  min-height: 44px;
+  color: var(--bl-color-cloud);
+  background: #171427;
+  border: 1px solid #79718f;
+  border-radius: 8px;
+  padding: 10px;
+}
+.room textarea {
+  resize: vertical;
+}
+.room select {
+  text-overflow: ellipsis;
+}
+.room input[type='checkbox'] {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  accent-color: var(--bl-color-aqua);
+}
+.room .toggle {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: 44px;
+}
+.room fieldset {
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+  border: 1px solid var(--call-border);
+  padding: 16px;
+  border-radius: 12px;
+}
+.room legend {
+  padding: 0 6px;
+}
+.room details {
+  border-top: 1px solid var(--call-border);
+  padding-top: 8px;
+}
+.room summary {
+  cursor: pointer;
+  padding-block: 12px;
+  box-sizing: border-box;
+  line-height: 1.4;
+}
+.room li {
+  margin-block: 12px;
+  line-height: 1.5;
+}
+.room li > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 10px;
+}
+.room ul,
+.room ol {
+  padding-left: 22px;
+}
+.room audio {
+  width: 100%;
+  min-width: 0;
+}
+.notes {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+.history {
+  margin-block: 28px;
+}
+@media (max-width: 767px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  .side {
+    padding: 24px 0 0;
+    border-left: none;
+    border-top: 1px solid var(--call-border);
+  }
+  .header {
+    gap: 16px;
+    flex-direction: column;
+  }
+  .clock {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    text-align: left;
+  }
+  .clock time {
+    font-size: 20px;
+  }
+  .clientLine {
+    padding: 16px;
+    font-size: 16px;
+  }
+  .controls > button {
+    flex: 1 1 150px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .room *,
+  .room *::before,
+  .room *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.result:not(:empty) {
+  background: var(--bl-color-cloud);
+  color: var(--bl-color-ink);
+  border-radius: 16px;
+  padding: 20px;
+}

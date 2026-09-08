@@ -1,3 +1,6 @@
+import { lazy, Suspense } from 'react';
+import { useFeatureFlags } from '../app/featureFlagsContext';
+const CallRoom = lazy(() => import('../call/CallRoom'));
 import { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 
@@ -83,6 +86,7 @@ function Brief({ exercise }: { exercise: Exercise }) {
  * the compiled exercise and branches on its **type**, never on its id.
  */
 export default function ExerciseRunner() {
+  const flags = useFeatureFlags();
   const { exerciseId = '' } = useParams();
   const [search] = useSearchParams();
   const exercise = content.exercises.find((candidate) => candidate.id === exerciseId) ?? null;
@@ -107,11 +111,17 @@ export default function ExerciseRunner() {
   // Resume the attempt in progress, or open a new one — but never over a finished result the
   // learner has not chosen to leave (that would hide their own history).
   useEffect(() => {
-    if (!exercise || attempt === undefined || history === undefined) return;
+    if (
+      !exercise ||
+      attempt === undefined ||
+      history === undefined ||
+      (exercise.call && !flags.voice_calls)
+    )
+      return;
     if (attempt === null && history.length === 0) {
       void startAttempt(exercise, context);
     }
-  }, [exercise, attempt, history, context.run, context.skill_id]);
+  }, [exercise, attempt, history, context.run, context.skill_id, flags.voice_calls]);
 
   if (!exercise) {
     return (
@@ -154,6 +164,43 @@ export default function ExerciseRunner() {
     // A new attempt in the same context: the finished one keeps its place in the history.
     await discardAttempt(exercise.id, context, db);
     await startAttempt(exercise, context);
+  }
+
+  if (exercise.call) {
+    if (!flags.voice_calls)
+      return (
+        <article className={styles.screen}>
+          <h1 className={styles.title}>{exercise.title}</h1>
+          <p>Voice calls are not enabled in this environment yet.</p>
+          <p>{exercise.call.objective}</p>
+        </article>
+      );
+    if (attempt === undefined || history === undefined)
+      return <p role="status">Loading your call…</p>;
+    return (
+      <Suspense fallback={<p role="status">Loading Call Room…</p>}>
+        <CallRoom
+          key={attempt?.attempt_id ?? finished?.id ?? exercise.id}
+          exercise={exercise}
+          attempt={attempt}
+          context={context}
+          saved={finished?.response?.call}
+          savedAttemptId={finished?.id}
+          onSubmit={() => void submit()}
+          submitting={busy}
+          submissionError={failure}
+        >
+          {!attempt && finished && (
+            <ResultView
+              attempt={finished}
+              skillId={skillId}
+              snapshot={snapshot}
+              onTryAgain={() => void tryAgain()}
+            />
+          )}
+        </CallRoom>
+      </Suspense>
+    );
   }
 
   return (

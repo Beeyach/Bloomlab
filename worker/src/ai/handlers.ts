@@ -1,3 +1,11 @@
+import { getAttempt } from '../call/store';
+import type { CallState } from '../call/engine';
+import {
+  CALL_GRADING_CONTRACT,
+  CALL_GRADING_INSTRUCTION,
+  callGradingContract,
+  validateLearnerQuotations,
+} from '../call/grading';
 import { classify } from './classify';
 import content from 'virtual:bloomlab-content';
 import { z } from 'zod';
@@ -7,6 +15,7 @@ import { cost, MODELS } from './catalog';
 import { maximumCost, route } from './governor';
 import { gradingFormat, validateGrading } from './output';
 import { AiError, anthropic, type Provider } from './provider';
+import { evaluationFailure, gradingFailure, type GradingFailure } from './diagnostics';
 
 const requestSchema = z.strictObject({
   attempt_id: z.string().min(1).max(160),
@@ -91,11 +100,51 @@ export async function evaluate(
   if (rubric.id.replace(/_V[0-9]+$/, '') !== exercise.grading.rubric?.replace(/_V[0-9]+$/, ''))
     throw new AiError('invalid_rubric', 400);
   if (exercise.grading.mode === 'deterministic') throw new AiError('deterministic_only', 400);
+  let requestIdentity = input;
+  let confirmedCallText: string[] | undefined;
+  if (exercise.call) {
+    let call;
+    try {
+      call = await getAttempt(db, session, input.attempt_id);
+    } catch {
+      throw new AiError('call_attempt_unavailable', 403);
+    }
+    const saved = (JSON.parse(call.state_json) as CallState).snapshot;
+    if (call.exercise_id !== exercise.id || !saved.complete)
+      throw new AiError('call_not_complete', 409);
+    confirmedCallText = saved.turns.map((turn) => turn.confirmed_transcript);
+    // Keep the established hash for saved rubric runs: a prompt repair must not repurchase
+    // feedback for an already graded, immutable call. Neither representation uses browser text.
+    requestIdentity = {
+      ...input,
+      submission: JSON.stringify({
+        transcript: saved.turns.map((t) => ({
+          client: t.client.text,
+          learner: t.confirmed_transcript,
+        })),
+        closing: saved.current.text,
+        deterministic: saved.projection,
+      }),
+    };
+    // Original STT, raw audio and notes are excluded. Client words remain context only.
+    input.submission = JSON.stringify({
+      turns: saved.turns.map((t) => ({
+        turn: t.turn + 1,
+        client_context: t.client.text,
+        learner_confirmed: t.confirmed_transcript,
+      })),
+      closing_client_context: saved.current.text,
+      deterministic: saved.projection,
+    });
+  }
   const policy = await settings(db, session.learnerId);
   if (policy.mode === 'Off') throw new AiError('ai_off', 403);
   const hash = Array.from(
     new Uint8Array(
-      await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(input))),
+      await crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode(JSON.stringify(requestIdentity)),
+      ),
     ),
   )
     .map((b) => b.toString(16).padStart(2, '0'))
@@ -147,7 +196,9 @@ export async function evaluate(
       ? 'negotiation'
       : exercise.type === 'AUDIT_IT'
         ? 'diagnosis'
-        : 'written_coaching';
+        : exercise.type === 'SAY_IT'
+          ? 'call_feedback'
+          : 'written_coaching';
   // INSERT SELECT is one SQLite statement: concurrent isolates cannot oversubscribe the balance.
   const reservation = await db
     .prepare(
@@ -177,22 +228,44 @@ export async function evaluate(
   let actual = 0;
   let accounted = 0;
   let accountedCalls = 0;
+  const callContract = exercise.call ? callGradingContract(rubric) : undefined;
+  let repairIssue: GradingFailure | undefined;
   try {
     for (let repair = 0; repair <= 1; repair++) {
       const response = await provider({
         model,
-        stable: `Bloomlab grades defensible reasoning, not confident prose. Judge only authored rubric items. Deterministic checks remain authoritative. Reward verified uncertainty. Exact rubric: ${JSON.stringify(rubric)}\nExercise brief: ${JSON.stringify({ title: exercise.title, instructions: exercise.instructions })}`,
+        ...(exercise.call ? { kind: 'call_grading' as const } : {}),
+        stable: `Bloomlab grades defensible reasoning, not confident prose. Judge only authored rubric items. Deterministic checks remain authoritative. Reward verified uncertainty.${exercise.call ? ' ' + CALL_GRADING_INSTRUCTION : ''}${exercise.call && repair ? ' Citation validation reminder: remove any client-only or nonverbatim quotation from rubric reasons, strengths and critical_issue. Verify every quoted span against learner_confirmed before returning.' : ''} Exact rubric: ${JSON.stringify(rubric)}\nExercise brief: ${JSON.stringify({ title: exercise.title, instructions: exercise.instructions })}`,
         submission: input.submission,
-        schema: gradingFormat,
+        schema: callContract?.format ?? gradingFormat,
         repair: repair === 1,
+        ...(repairIssue ? { repairIssue } : {}),
       });
       const charged = cost(model, response.usage);
       actual += charged;
+      let result;
+      let invalid: GradingFailure | undefined;
+      try {
+        result = callContract
+          ? callContract.parse(response.value)
+          : validateGrading(response.value, rubric);
+        if (confirmedCallText) validateLearnerQuotations(result, confirmedCallText);
+      } catch (error) {
+        invalid = gradingFailure(error);
+      }
+      const diagnostic = JSON.stringify({
+        contract: exercise.call ? CALL_GRADING_CONTRACT : 'rubric-v1',
+        phase: repair === 0 ? 'initial' : 'repair',
+        format: response.format ?? 'unknown',
+        validation: invalid ?? 'accepted',
+        submission_bytes: new TextEncoder().encode(input.submission).length,
+        reservation_id: usageId,
+      });
       // Commit usage and its reservation reduction in the same D1 transaction.
       await db.batch([
         db
           .prepare(
-            'INSERT INTO ai_usage(usage_id,learner_id,created_at,purpose,model,input_tokens,output_tokens,cached_input_tokens,cache_creation_input_tokens,cost_usd,exercise_id,run_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+            'INSERT INTO ai_usage(usage_id,learner_id,created_at,purpose,model,input_tokens,output_tokens,cached_input_tokens,cache_creation_input_tokens,cost_usd,exercise_id,run_id,diagnostic_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',
           )
           .bind(
             crypto.randomUUID(),
@@ -207,6 +280,7 @@ export async function evaluate(
             charged,
             exercise.id,
             runId,
+            diagnostic,
           ),
         db
           .prepare('UPDATE ai_usage SET reserved_usd=? WHERE usage_id=?')
@@ -214,10 +288,8 @@ export async function evaluate(
       ]);
       accounted = actual;
       accountedCalls++;
-      let result;
-      try {
-        result = validateGrading(response.value, rubric);
-      } catch {
+      if (invalid || !result) {
+        repairIssue = invalid;
         if (repair === 0) continue;
         throw new AiError('evaluation_invalid', 502);
       }
@@ -260,8 +332,13 @@ export async function evaluate(
     await db.batch([
       db.prepare("UPDATE rubric_runs SET status='failed' WHERE run_id=?").bind(runId),
       db
-        .prepare('UPDATE ai_usage SET reserved_usd=?,status=? WHERE usage_id=?')
-        .bind(accountedCalls === 2 ? 0 : Math.max(0, bound - accounted), 'failed', usageId),
+        .prepare('UPDATE ai_usage SET reserved_usd=?,status=?,diagnostic_json=? WHERE usage_id=?')
+        .bind(
+          accountedCalls === 2 ? 0 : Math.max(0, bound - accounted),
+          'failed',
+          JSON.stringify({ failure: evaluationFailure(error), accounted_calls: accountedCalls }),
+          usageId,
+        ),
     ]);
     throw error;
   }

@@ -6,6 +6,7 @@
 //   BASE=https://bloomlab-preview.example.workers.dev node scripts/review/offline-probe.mjs
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import assert from 'node:assert/strict';
 
 import {
   openPage,
@@ -31,6 +32,7 @@ async function clickButton(page, name) {
   const box = await page.evaluate(`(() => {
     const el = [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === ${JSON.stringify(name)});
     if (!el) return null;
+    el.scrollIntoView({ block: 'center' });
     const r = el.getBoundingClientRect();
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   })()`);
@@ -74,7 +76,8 @@ try {
   await setViewport(page, 1024, 900, { mobile: false });
 
   // ---------- first load: the service worker takes control, the manifest is installable ----------
-  await openPage(page, `${BASE}/`);
+  // The Phase 3 device controls now live in Sync; Home is the Command Center.
+  await openPage(page, `${BASE}/sync`);
   report.serviceWorker = await page.evaluate(`(async () => {
     const reg = await navigator.serviceWorker.ready;
     for (let i = 0; i < 100 && !navigator.serviceWorker.controller; i++) await new Promise((r) => setTimeout(r, 100));
@@ -89,6 +92,10 @@ try {
   report.storage = await page.evaluate(
     `(async () => ({ persisted: await navigator.storage.persisted(), databases: (await indexedDB.databases()).map((d) => d.name + '@' + d.version) }))()`,
   );
+  report.loadedBuild = await page.evaluate(
+    "document.querySelector('[data-build-id]')?.dataset.buildId",
+  );
+  if (process.env.REVIEW_HEAD) assert.equal(report.loadedBuild, process.env.REVIEW_HEAD);
 
   // ---------- go offline on the page *and* on the worker ----------
   const workers = await serviceWorkerSessions(browser, new URL(BASE).origin);
@@ -122,7 +129,7 @@ try {
   await clickButton(page, 'Rename');
   await sleep(200);
   await page.evaluate(
-    `(() => { const i = document.querySelector('input'); i.focus(); i.select(); })()`,
+    `(() => { const i = document.querySelector('[aria-labelledby=device-title] input'); i.focus(); i.select(); })()`,
   );
   await page.send('Input.insertText', { text: LABEL });
   await sleep(100);
@@ -152,7 +159,18 @@ try {
     apiFetch: await page.evaluate(
       `fetch('/api/health').then((r) => r.json()).then((j) => j.environment).catch((e) => 'failed: ' + e.message)`,
     ),
+    build: await page.evaluate(
+      "fetch('/api/health',{cache:'no-store'}).then(r=>r.json()).then(j=>j.build_id)",
+    ),
   };
+  assert(report.serviceWorker.controlled && report.offline.workersEmulated > 0);
+  assert(report.manifest.parsed && report.manifest.errors.length === 0);
+  assert.equal(report.installability.length, 0);
+  assert(!report.offline.navigatorOnLine && !report.offline.navigatorOnLineAfterReload);
+  assert(report.offline.heading && report.offline.apiFetch.startsWith('failed:'));
+  assert(report.offline.labelAfterSave && report.offline.labelAfterOfflineReload);
+  assert.equal(report.online.build, report.loadedBuild);
+  report.status = 'passed';
 } finally {
   writeFileSync(`${OUT}/offline-probe.json`, JSON.stringify(report, null, 2));
   console.log(JSON.stringify(report, null, 2));

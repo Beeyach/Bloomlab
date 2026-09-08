@@ -8,6 +8,7 @@ describe('BloomlabDatabase', () => {
     const database = freshDatabase();
     await database.open();
     expect(database.tables.map((table) => table.name).sort()).toEqual([
+      'call_recordings',
       'campaign_progress',
       'device',
       'exercise_attempts',

@@ -1,0 +1,483 @@
+{
+  "scope": "Sanitized proposal feedback reliability evidence; synthetic text is fictional, not human speech.",
+  "diagnostic": {
+    "started_at": "2026-09-08T08:38:57.739Z",
+    "head_sha": "5809eccf14eb71955e6b07cca4be522bee4df592",
+    "base": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+    "scope": "Fictional prerecorded proposal through real Preview Google and Anthropic. No human microphone evidence.",
+    "turns": [
+      {
+        "turn": 1,
+        "client_context": "Walk me through what happens after someone applies. Who sees it, and what does the applicant receive?",
+        "learner_confirmed": "The proposal covers qualification routing, an applicant reply, a named owner and follow-up. We will check each route against the agreed criteria with a sample application.",
+        "google_status": 200,
+        "original_present": true
+      },
+      {
+        "turn": 2,
+        "client_context": "Another person quoted nine hundred. What am I paying for beyond that?",
+        "learner_confirmed": "Let us compare what the nine-hundred quote includes before assuming it is equivalent. Our written scope must identify who owns routing checks, applicant replies and handover. I cannot promise the same result from an unknown scope.",
+        "google_status": 200,
+        "original_present": true
+      },
+      {
+        "turn": 3,
+        "client_context": "If we start with the smaller option, tell me exactly what we would postpone and how we would know when to add it.",
+        "learner_confirmed": "For a smaller first phase, I propose one agreed qualification route and its applicant reply. We would postpone additional routes and follow-up sequences. We should add those only after reviewing the first route and agreeing the need in writing.",
+        "google_status": 200,
+        "original_present": true
+      },
+      {
+        "turn": 4,
+        "client_context": "I need the written scope to match what you have just said. How will we check the application routing and handover before I sign off?",
+        "learner_confirmed": "Could we review the written scope together, test a sample application through each included route, check the applicant reply and confirm the named owner can take over before you sign off?",
+        "google_status": 200,
+        "original_present": true
+      }
+    ],
+    "cleanup": [
+      {
+        "recording_id": "9d74675d-621a-4613-ab36-f7d520bb18dc",
+        "delete_status": 200
+      },
+      {
+        "recording_id": "c34b5f98-7f51-4461-bff3-a3a19945f83b",
+        "delete_status": 200
+      },
+      {
+        "recording_id": "5268dff4-a160-49f6-8f45-7aa1001c86e7",
+        "delete_status": 200
+      },
+      {
+        "recording_id": "351296eb-9859-4278-bf6b-ea8a2166f788",
+        "delete_status": 200
+      }
+    ],
+    "config": {
+      "status": 200,
+      "body": {
+        "enabled": true
+      }
+    },
+    "attempt_id": "1c53cd25-7282-4907-93e5-d6c9ff6a2e61",
+    "source": {
+      "mime": "audio/webm;codecs=opus",
+      "bytes": 98828,
+      "duration_ms": 6177
+    },
+    "complete": true,
+    "projection": {
+      "complete": true,
+      "turns": 4,
+      "talk_ratio_learner": 0.5866666666666667,
+      "pitched_before_diagnosis": false,
+      "diagnosis_agreed": true,
+      "next_step_agreed": true,
+      "economically_sound": true,
+      "structurally_sound": true
+    },
+    "grading": {
+      "status": 502,
+      "body": {
+        "error": "evaluation_invalid"
+      }
+    },
+    "usage": [
+      {
+        "created_at": "2026-09-08T08:39:44.667Z",
+        "model": "claude-sonnet-5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0,
+        "reserved_usd": 0,
+        "status": "failed",
+        "diagnostic_json": "{\"failure\":\"evaluation_invalid\",\"accounted_calls\":2}"
+      },
+      {
+        "created_at": "2026-09-08T08:39:50.596Z",
+        "model": "claude-sonnet-5",
+        "input_tokens": 629,
+        "output_tokens": 92,
+        "cost_usd": 0.0096855,
+        "reserved_usd": 0,
+        "status": "complete",
+        "diagnostic_json": "{\"contract\":\"call-speakers-v1\",\"phase\":\"initial\",\"format\":\"json\",\"validation\":\"rubric_items_mismatch\",\"submission_bytes\":1824,\"reservation_id\":\"6c73e9c3-7826-44a1-9ceb-d47305b87034\"}"
+      },
+      {
+        "created_at": "2026-09-08T08:40:02.622Z",
+        "model": "claude-sonnet-5",
+        "input_tokens": 670,
+        "output_tokens": 1069,
+        "cost_usd": 0.019695,
+        "reserved_usd": 0,
+        "status": "complete",
+        "diagnostic_json": "{\"contract\":\"call-speakers-v1\",\"phase\":\"repair\",\"format\":\"json\",\"validation\":\"learner_quotation_mismatch\",\"submission_bytes\":1824,\"reservation_id\":\"6c73e9c3-7826-44a1-9ceb-d47305b87034\"}"
+      }
+    ],
+    "policy_after": {
+      "mode": "Limited",
+      "monthly_limit_usd": 10,
+      "spent_usd": 0.0293805,
+      "reserved_usd": 0,
+      "categories": [
+        {
+          "category": "call_feedback",
+          "cost_usd": 0.0293805
+        }
+      ]
+    },
+    "status": "grading_rejected_no_automatic_retry",
+    "device_revoked": true,
+    "finished_at": "2026-09-08T08:40:08.673Z"
+  },
+  "human_metadata": {
+    "attempt_id": "107cd1ba-c63f-4cdb-8274-b4a02637e202",
+    "run_id": "f0e714ad-1d43-4650-85ee-538cdc7f81fc",
+    "complete": true,
+    "turns": 4,
+    "revision": 4,
+    "status": "failed",
+    "known_feedback_cost_usd": 0.0693503,
+    "remaining_reservation_usd": 0,
+    "source": "Read-only Preview metadata and user handoff; no human transcript or raw recording read.",
+    "scope": "Initial diagnosis before remediation; final recovery metadata follows separately."
+  },
+  "corrected_preview": {
+    "head_sha": "0fc2f17883a5ccd4b0b5320a62ec197927c214a3",
+    "ci_run": 34208024016,
+    "checks": "success",
+    "preview_deploy": "success",
+    "production_deploy": "skipped",
+    "pending_development_migrations": 0,
+    "worker_version": "e79b4673-1c80-4fbe-ba9a-940f3f543ec1",
+    "deployed_at": "2026-09-08T09:11:31Z"
+  },
+  "setup_failure": {
+    "started_at": "2026-09-08T09:12:32.649Z",
+    "head_sha": "0fc2f17883a5ccd4b0b5320a62ec197927c214a3",
+    "base": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+    "scope": "Fictional prerecorded proposal through real Preview Google and Anthropic. No human microphone evidence.",
+    "turns": [],
+    "cleanup": [
+      {
+        "recording_id": "b9d16eeb-200c-409f-bb0e-ba679531871e",
+        "delete_status": 200
+      }
+    ],
+    "config": {
+      "status": 200,
+      "body": {
+        "enabled": true
+      }
+    },
+    "attempt_id": "0617f2b6-3e33-443b-a5a5-27e67d167420",
+    "source": {
+      "mime": "audio/webm;codecs=opus",
+      "bytes": 98828,
+      "duration_ms": 6177
+    },
+    "status": "probe_incomplete",
+    "device_revoked": true,
+    "finished_at": "2026-09-08T09:13:32.502Z",
+    "metadata_verification": {
+      "revision": 0,
+      "confirmed_turns": 0,
+      "rubric_runs": 0,
+      "anthropic_usage_rows": 0,
+      "original_transcript_present": false,
+      "confirmed_transcript_present": false,
+      "recording_status": "deleted",
+      "google_request_billing": "unknown",
+      "failure_subtype": "not_captured"
+    }
+  },
+  "fixed": {
+    "started_at": "2026-09-08T09:15:58.568Z",
+    "head_sha": "0fc2f17883a5ccd4b0b5320a62ec197927c214a3",
+    "base": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+    "scope": "Fictional prerecorded proposal through real Preview Google and Anthropic. No human microphone evidence.",
+    "turns": [
+      {
+        "turn": 1,
+        "client_context": "Walk me through what happens after someone applies. Who sees it, and what does the applicant receive?",
+        "learner_confirmed": "The proposal covers qualification routing, an applicant reply, a named owner and follow-up. We will check each route against the agreed criteria with a sample application.",
+        "google_status": 200,
+        "original_present": true
+      },
+      {
+        "turn": 2,
+        "client_context": "Another person quoted nine hundred. What am I paying for beyond that?",
+        "learner_confirmed": "Let us compare what the nine-hundred quote includes before assuming it is equivalent. Our written scope must identify who owns routing checks, applicant replies and handover. I cannot promise the same result from an unknown scope.",
+        "google_status": 200,
+        "original_present": true
+      },
+      {
+        "turn": 3,
+        "client_context": "If we start with the smaller option, tell me exactly what we would postpone and how we would know when to add it.",
+        "learner_confirmed": "For a smaller first phase, I propose one agreed qualification route and its applicant reply. We would postpone additional routes and follow-up sequences. We should add those only after reviewing the first route and agreeing the need in writing.",
+        "google_status": 200,
+        "original_present": true
+      },
+      {
+        "turn": 4,
+        "client_context": "I need the written scope to match what you have just said. How will we check the application routing and handover before I sign off?",
+        "learner_confirmed": "Could we review the written scope together, test a sample application through each included route, check the applicant reply and confirm the named owner can take over before you sign off?",
+        "google_status": 200,
+        "original_present": true
+      }
+    ],
+    "transcriptions": [
+      {
+        "turn": 1,
+        "status": 200,
+        "outcome": "accepted"
+      },
+      {
+        "turn": 2,
+        "status": 200,
+        "outcome": "accepted"
+      },
+      {
+        "turn": 3,
+        "status": 200,
+        "outcome": "accepted"
+      },
+      {
+        "turn": 4,
+        "status": 200,
+        "outcome": "accepted"
+      }
+    ],
+    "cleanup": [
+      {
+        "recording_id": "f905cc54-5233-4f53-b42f-96db5a7a808a",
+        "delete_status": 200
+      },
+      {
+        "recording_id": "a8a38cba-30ec-4e98-8701-4cdd858ce678",
+        "delete_status": 200
+      },
+      {
+        "recording_id": "c101c1e7-5e26-420f-83f4-1b24afa1af1e",
+        "delete_status": 200
+      },
+      {
+        "recording_id": "76fd0481-7ec5-4a00-b9e7-20cb07014adf",
+        "delete_status": 200
+      }
+    ],
+    "stage": "replay_feedback",
+    "config": {
+      "status": 200,
+      "body": {
+        "enabled": true
+      }
+    },
+    "attempt_id": "9567c977-ddf1-4c88-bd2d-dc6420b740b6",
+    "source": {
+      "mime": "audio/webm;codecs=opus",
+      "bytes": 98828,
+      "duration_ms": 6177
+    },
+    "complete": true,
+    "projection": {
+      "complete": true,
+      "turns": 4,
+      "talk_ratio_learner": 0.5866666666666667,
+      "pitched_before_diagnosis": false,
+      "diagnosis_agreed": true,
+      "next_step_agreed": true,
+      "economically_sound": true,
+      "structurally_sound": true
+    },
+    "grading": {
+      "status": 200,
+      "body": {
+        "run_id": "272f4441-3bbc-4de3-87b3-78974f14156f",
+        "rubric_id": "CALL_PERFORMANCE_RUBRIC_V1",
+        "rubric_version": 1,
+        "result": {
+          "score": 88,
+          "rubric_results": [
+            {
+              "id": "questions",
+              "passed": true,
+              "reason": "In turn 4 the learner asked to review the written scope together, test a sample application through each route, check the applicant reply and confirm the named owner can take over before sign-off, appropriately checking assumptions before finalizing."
+            },
+            {
+              "id": "listening",
+              "passed": true,
+              "reason": "The learner directly addressed the client's cost comparison question in turn 2 and the phased-postponement question in turn 3, reflecting the client's stated priorities rather than ignoring them."
+            },
+            {
+              "id": "diagnosis",
+              "passed": true,
+              "reason": "Diagnosis was already agreed per deterministic data; the learner respected this by restating scope components (turn 1) and clarifying what a smaller phase would postpone (turn 3) without re-litigating the problem."
+            },
+            {
+              "id": "clarity",
+              "passed": true,
+              "reason": "The learner explained the sequence concretely in turn 3, naming what would be postponed (additional routes and follow-up sequences) and the condition for adding them (reviewing the first route and agreeing the need in writing), without inventing promises."
+            },
+            {
+              "id": "jargon",
+              "passed": true,
+              "reason": "Terms like qualification routing and applicant reply were used consistently and tied to concrete actions (checking routes against agreed criteria, sample application) rather than left unexplained."
+            },
+            {
+              "id": "pitch_timing",
+              "passed": true,
+              "reason": "Deterministic data confirms pitched_before_diagnosis is false and diagnosis_agreed is true; the learner's turns proceed from an already-agreed scope to proposal detail, consistent with correct sequencing."
+            },
+            {
+              "id": "objection_handling",
+              "passed": true,
+              "reason": "In turn 2 the learner addressed the cheaper competing quote by proposing to compare what it actually includes and stating inability to promise equivalent results from an unknown scope, avoiding defensiveness or invented concessions."
+            },
+            {
+              "id": "next_step",
+              "passed": true,
+              "reason": "In turn 4 the learner proposed a specific joint review of the written scope, a sample-application test, and owner handover confirmation before sign-off, matching the deterministic next_step_agreed flag."
+            }
+          ],
+          "critical_issue": null,
+          "strengths": [
+            "In turn 2 the learner declined to assume equivalence with the cheaper competitor quote and instead proposed comparing scope contents directly, avoiding invented promises.",
+            "In turn 3 the learner clearly named what a smaller phase would postpone (additional routes and follow-up sequences) and specified a concrete condition for later expansion.",
+            "In turn 4 the learner proposed a specific verification sequence (scope review, sample application test, applicant reply check, owner handover confirmation) before client sign-off."
+          ],
+          "improvements": [
+            "The learner could explicitly ask Marcus what specifically he valued in the cheaper quote to sharpen the objection response beyond a general scope comparison.",
+            "When describing the smaller-phase tradeoff in turn 3, the learner could quantify or give an example of what postponing follow-up sequences would concretely mean for the applicant experience."
+          ],
+          "next_probe": "Ask Marcus what specific concern is driving interest in the cheaper quote (price alone, or a doubt about value) so the response can target the real objection.",
+          "confidence": 0.83
+        }
+      }
+    },
+    "replay_equal": true,
+    "replay_spend_delta": 0,
+    "usage": [
+      {
+        "created_at": "2026-09-08T09:16:43.757Z",
+        "model": "claude-sonnet-5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0,
+        "reserved_usd": 0,
+        "status": "complete",
+        "diagnostic_json": null
+      },
+      {
+        "created_at": "2026-09-08T09:16:59.461Z",
+        "model": "claude-sonnet-5",
+        "input_tokens": 629,
+        "output_tokens": 1051,
+        "cost_usd": 0.022658,
+        "reserved_usd": 0,
+        "status": "complete",
+        "diagnostic_json": "{\"contract\":\"call-speakers-v2\",\"phase\":\"initial\",\"format\":\"json\",\"validation\":\"accepted\",\"submission_bytes\":1824,\"reservation_id\":\"a6b219f2-87ca-42f6-9c10-fdd079402edc\"}"
+      }
+    ],
+    "policy_after": {
+      "mode": "Limited",
+      "monthly_limit_usd": 10,
+      "spent_usd": 0.022658,
+      "reserved_usd": 0,
+      "categories": [
+        {
+          "category": "call_feedback",
+          "cost_usd": 0.022658
+        }
+      ]
+    },
+    "status": "accepted_pending_attribution_review",
+    "device_revoked": true,
+    "finished_at": "2026-09-08T09:17:08.293Z"
+  },
+  "attribution_review": {
+    "result": "accepted",
+    "scope": "Manual comparison of all eight reasons and strengths with fictional confirmed turns and saved deterministic projection; future suggestions remain suggestions.",
+    "dimensions": {
+      "questions": "Turn 4 contains the review, sample test, applicant reply and owner handover checks.",
+      "listening": "Turns 2 and 3 answer the cost-comparison and smaller-phase questions.",
+      "diagnosis": "Already-agreed diagnosis is explicitly identified as deterministic context; learner credit is limited to turns 1 and 3 scope behavior.",
+      "clarity": "Turn 3 specifies postponed routes/sequences and written agreement before adding them.",
+      "jargon": "Qualification routing and applicant reply are present in learner turn 1.",
+      "pitch_timing": "Explicitly grounded in saved pitched_before_diagnosis=false and diagnosis_agreed=true.",
+      "objection_handling": "Turn 2 compares scope and declines to promise equivalent outcomes from unknown scope.",
+      "next_step": "Turn 4 proposes concrete review/testing/handover; saved next_step_agreed=true."
+    },
+    "client_only_evidence_misattributed": false,
+    "accent_or_correction_penalty": false,
+    "human_microphone_acceptance": false
+  },
+  "followup_cost": {
+    "known_anthropic_usd": 0.0674497,
+    "diagnostic_usd": 0.0293805,
+    "accepted_proposal_usd": 0.022658,
+    "remaining_feedback_reservation_usd": 0,
+    "replay_additional_usd": 0,
+    "google_successful_recognitions": 8,
+    "google_unsuccessful_requests": 1,
+    "google_cost": "not_observed",
+    "prior_human_feedback_usd": 0.0693503,
+    "older_unrelated_unknown_reservation_usd": 5.04096,
+    "older_unrelated_reservation_changed": false,
+    "synthetic_anthropic_usd": 0.0520385,
+    "human_retry_usd": 0.0154112
+  },
+  "human_recovery": {
+    "attempt_id": "107cd1ba-c63f-4cdb-8274-b4a02637e202",
+    "run_id": "f0e714ad-1d43-4650-85ee-538cdc7f81fc",
+    "result": "complete",
+    "user_confirmed_results": true,
+    "same_saved_identity_reused": true,
+    "call_revision": 4,
+    "confirmed_turns": 4,
+    "original_call_updated_at": "2026-09-08T08:01:45.247Z",
+    "new_microphone_turns": 0,
+    "new_transcription_requests": 0,
+    "retry_started_at": "2026-09-08T09:20:11.615Z",
+    "accepted_at": "2026-09-08T09:21:05.595Z",
+    "rubric_dimensions": [
+      "questions",
+      "listening",
+      "diagnosis",
+      "clarity",
+      "jargon",
+      "pitch_timing",
+      "objection_handling",
+      "next_step"
+    ],
+    "provider_responses": 1,
+    "repair_responses": 0,
+    "model": "claude-sonnet-5",
+    "input_tokens": 615,
+    "output_tokens": 1331,
+    "cost_usd": 0.0154112,
+    "reserved_usd": 0,
+    "diagnostic": {
+      "contract": "call-speakers-v2",
+      "phase": "initial",
+      "format": "json",
+      "validation": "accepted",
+      "submission_bytes": 1783,
+      "reservation_id": "c2b0efbc-1c83-4a46-a26f-e55a052bca29"
+    },
+    "human_run_known_feedback_cost_usd": 0.0847615,
+    "prior_failed_purchases_preserved": true,
+    "recordings_deleted": 4,
+    "original_transcript_fields_present": 4,
+    "confirmed_transcript_fields_present": 4,
+    "human_session_key_audio_transcript_or_feedback_prose_inspected": false,
+    "scope": "User confirms displayed results; only content-free run, usage and recording metadata independently checked. Semantic manual review concerns the fictional sample."
+  },
+  "acceptance_status": {
+    "CALL-003": "PASSED",
+    "other_rows_promoted": false,
+    "broader_human_rows": "IMPLEMENTED_UNVERIFIED",
+    "pr": "draft/open/unmerged",
+    "production_calls_enabled": false
+  }
+}

@@ -1,3 +1,4 @@
+import { CALL_DIMENSIONS } from '../schemas/call.ts';
 import type { ZodType } from 'zod';
 
 import {
@@ -705,6 +706,34 @@ export function crossValidate(parsed: ParsedContent, issues: IssueList): GraphRe
           `${exercise.id} (${exercise.type}) uses ${rubric.id}, which applies to ${rubric.applies_to.join(', ')}`,
           { id: exercise.id, path: 'grading.rubric' },
         );
+      }
+    }
+    if (exercise.call) {
+      const rubric = look.rubrics.get(exercise.grading.rubric ?? '');
+      if (
+        !rubric ||
+        rubric.items.length !== CALL_DIMENSIONS.length ||
+        CALL_DIMENSIONS.some((id) => !rubric.items.some((item) => item.id === id))
+      )
+        issues.error(
+          'SCHEMA',
+          fileOf(exercise.id),
+          'A call rubric must identify exactly the eight CALL-003 dimensions',
+          { id: exercise.id, path: 'grading.rubric' },
+        );
+      const client = look.clients.get(scenario?.client ?? exercise.client ?? '');
+      const voice = client ? look.voices.get(client.voice.character) : undefined;
+      for (const [nodeId, lineId] of Object.entries(exercise.call.voice_lines)) {
+        const text =
+          exercise.conversation?.nodes.find((n) => n.id === nodeId)?.client_message ??
+          exercise.negotiation?.nodes.find((n) => n.id === nodeId)?.message;
+        if (!voice?.lines.some((line) => line.id === lineId && line.text.trim() === text?.trim()))
+          issues.error(
+            'SCHEMA',
+            fileOf(exercise.id),
+            `Call node ${nodeId} must match an existing line of its client's voice exactly`,
+            { id: exercise.id, path: 'call.voice_lines' },
+          );
       }
     }
     if (exercise.portfolio)

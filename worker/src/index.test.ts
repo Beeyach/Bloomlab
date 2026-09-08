@@ -21,6 +21,8 @@ describe('worker', () => {
     expect(response.headers.get('content-type')).toContain('application/json');
     const body = (await response.json()) as HealthResponse;
     expect(body.ok).toBe(true);
+    expect(body.build_id).toBe('local');
+    expect(response.headers.get('cache-control')).toBe('no-store');
     expect(body.environment).toBe('local');
     expect(body.versions).toEqual({
       app: '0.1.0',

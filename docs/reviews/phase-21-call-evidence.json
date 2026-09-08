@@ -1,0 +1,1207 @@
+{
+  "recorded_at": "2026-09-08T03:41:42.607753+00:00",
+  "base_sha": "3fa36fe05872bdaeaf5c49105a198b911aa9adce",
+  "branch": "codex/phase-21-call-room",
+  "content_version": "2026.09.18",
+  "infrastructure": "Local browser, real IndexedDB and MediaRecorder; virtual microphone and controlled HTTP fixtures. No live provider acceptance.",
+  "call_probe": {
+    "status": "passed",
+    "widths": [
+      {
+        "width": 1440,
+        "scroll": 1440,
+        "room": true,
+        "notes": true
+      },
+      {
+        "width": 1024,
+        "scroll": 1024,
+        "room": true,
+        "notes": true
+      },
+      {
+        "width": 768,
+        "scroll": 768,
+        "room": true,
+        "notes": true
+      },
+      {
+        "width": 390,
+        "scroll": 390,
+        "room": true,
+        "notes": true
+      },
+      {
+        "width": 320,
+        "scroll": 320,
+        "room": true,
+        "notes": true
+      }
+    ],
+    "checks": [
+      "Native MediaRecorder Blob saved before upload",
+      "STT failure preserves audio; retry sends no second upload",
+      "Reload preserves notes, confirmed transcript and retained Blob; explicit delete removes audio",
+      "Full four-turn call through feedback at 390px using touch",
+      "Full desktop keyboard call through feedback, visible focus and microphone denial recovery",
+      "Independent/pressure anchors absent from DOM; reduced-motion rendering"
+    ],
+    "recording": {
+      "seconds": 0.84,
+      "channels": 1,
+      "sampleRate": 44100
+    },
+    "evidence": {
+      "attempts": 1,
+      "dimensions": [
+        "questions",
+        "listening",
+        "diagnosis",
+        "clarity",
+        "jargon",
+        "pitch_timing",
+        "objection_handling",
+        "next_step"
+      ],
+      "queued": 4,
+      "rawInQueue": false,
+      "audio": 0
+    },
+    "browser_fetch_origins": ["http://127.0.0.1:5174"]
+  },
+  "local_full_suite": {
+    "tests": 1740,
+    "files": 106,
+    "status": "passed"
+  },
+  "subsequent_boundary_suite": {
+    "tests": 24,
+    "files": 2,
+    "status": "passed"
+  },
+  "live_call_acceptance": {
+    "status": "partially_verified",
+    "gate": "Google preview secret_text is installed and recognition succeeds on prerecorded fictional audio. Actual microphone/local queue/full 390 touch and desktop keyboard calls and successful authorized dynamic TTS/cache remain unverified.",
+    "preview_voice_calls": true,
+    "production_voice_calls": false,
+    "requirements_promoted": []
+  },
+  "existing_built_preview_probes": {
+    "exercise": "passed",
+    "negotiation": "passed",
+    "rail": "passed",
+    "ai": "passed; successful AI responses are explicit fixtures"
+  },
+  "implementation_ci": {
+    "head_sha": "9ee8b3c6f971d783969719f6cdcdaf3f618afa10",
+    "run_id": 34184504981,
+    "url": "https://github.com/Beeyach/Bloomlab/actions/runs/34184504981",
+    "checks": "success",
+    "tests": 1741,
+    "files": 106,
+    "preview_deploy": "success",
+    "production_deploy": "skipped",
+    "applied_development_migration": "0004_call_room.sql",
+    "preview_version_id": "6043553d-a23d-4c56-9e54-de7a5ae8cee3"
+  },
+  "live_preview_gate": {
+    "checked_at": "2026-09-08T03:51:01.908Z",
+    "base": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+    "api": {
+      "health": {
+        "ok": true,
+        "environment": "preview",
+        "versions": {
+          "app": "0.1.0",
+          "content": "2026.09.18",
+          "simulator": "2026.09.11-r2"
+        }
+      },
+      "config": {
+        "status": 200,
+        "enabled": false
+      },
+      "anonymous": 401
+    },
+    "browser_call_room_disabled": true,
+    "device_revoked": true
+  },
+  "live_saved_voice": {
+    "infrastructure": "Live preview Worker, D1 and R2",
+    "widths": [
+      {
+        "width": 1440,
+        "method": "keyboard",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 1024,
+        "method": "mouse",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 768,
+        "method": "mouse",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 390,
+        "method": "touch",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 320,
+        "method": "touch",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      }
+    ],
+    "auditions": [
+      {
+        "character": "VC-blunt-tradesman",
+        "line": "greeting-01",
+        "duration": 4.272471655328798,
+        "sampleRate": 44100,
+        "rms": 0.06712624205899953,
+        "peak": 0.5754332542419434,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-830131db4721291660c88a03bcacaeb32667f1d0795b34222bfe07b37c01ba7e"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-measured-founder",
+        "line": "greeting-01",
+        "duration": 4.4117913832199545,
+        "sampleRate": 44100,
+        "rms": 0.064195062976817,
+        "peak": 0.4721398651599884,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-storm-season-roofer",
+        "line": "greeting-01",
+        "duration": 4.08671201814059,
+        "sampleRate": 44100,
+        "rms": 0.060175907791655964,
+        "peak": 0.6012741327285767,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-0c38a93a39b36e09a1a1a4f97c557da08ece452ff30f07bc251ddf3e5111e043"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-studio-manager",
+        "line": "greeting-01",
+        "duration": 5.526349206349207,
+        "sampleRate": 44100,
+        "rms": 0.0764949230728158,
+        "peak": 0.7601538300514221,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-3bf2945c01098879e6909d153f1ffcb07473971887bee9deefa67c68d0cdd176"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-warm-owner",
+        "line": "greeting-01",
+        "duration": 5.201269841269841,
+        "sampleRate": 44100,
+        "rms": 0.13167795884987676,
+        "peak": 0.8244251608848572,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-66bcf9e3698aab7eaf143546f11fd5ee50380f01a9a80bc48947258633b5a8b2"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      }
+    ],
+    "revocation": true,
+    "text_survives_revocation": true,
+    "purchases": 0,
+    "scope": "Existing Phase 20 saved assets only; no live call/dynamic synthesis claim."
+  },
+  "live_sync": {
+    "status": "passed",
+    "steps": [
+      "A created a key and linked",
+      "A wrote a note: local write first, then the queue drained",
+      "B linked with the key",
+      "B received the synced state",
+      "both edited offline",
+      "reconnect: conflict shown on B, nothing discarded",
+      "resolved: both devices agree",
+      "deletion propagated A → B (tombstone kept)",
+      "B revoked from A"
+    ],
+    "review_devices": 2,
+    "revoked_devices": 2
+  },
+  "independent_audit_preview_execution": {
+    "audited_head": "bd51ea70d72aededcd6f6aaf2394ade79e4337a0",
+    "handoff_head": "54ced15fce53f8808d5e0ef416539a0c2175d6a3",
+    "pre_execution_delta": "Only docs/handoffs/phase-21-independent-audit-live-acceptance.md; no unrelated runtime changes.",
+    "gate_ci": {
+      "head_sha": "0a53c9b1c47df7f79d46707297ab273b52be575c",
+      "run_id": 34189056984,
+      "url": "https://github.com/Beeyach/Bloomlab/actions/runs/34189056984",
+      "checks": "success",
+      "tests": 1743,
+      "files": 106,
+      "preview_deploy": "success",
+      "production_deploy": "skipped",
+      "pending_development_migrations": 0,
+      "preview_version_id": "d3e2888f-e7a1-413b-95fb-cc292f115b58"
+    },
+    "input_fix_ci": {
+      "head_sha": "1b89de9325466fbf3d243c14105a3aa07e4070bf",
+      "run_id": 34190127856,
+      "url": "https://github.com/Beeyach/Bloomlab/actions/runs/34190127856",
+      "checks": "success",
+      "tests": 1743,
+      "files": 106,
+      "preview_deploy": "success",
+      "production_deploy": "skipped",
+      "pending_development_migrations": 0,
+      "preview_version_id": "c1b9b495-2dd7-45cb-901b-39540444b1c2"
+    },
+    "google_binding": {
+      "name": "GOOGLE_CLOUD_CREDENTIAL",
+      "type": "secret_text",
+      "environment": "preview",
+      "value_inspected": false,
+      "project_identifier_inspected": false,
+      "verification": "Successful recognition through the deployed Worker only"
+    },
+    "google_recognition": {
+      "status": 200,
+      "successful_requests": 7,
+      "location": "us",
+      "model": "chirp_3",
+      "language": "en-US",
+      "original_test_transcript": "Gary here Northwind Heating and Air. I've got a tech on a roof. Make it quick.",
+      "exact_iam_role_inspected": false,
+      "source": "Existing fictional Phase 20 saved greeting, converted in browser by Web Audio and MediaRecorder. No human microphone. No fixture HTTP/provider responses.",
+      "recording_samples": [
+        {
+          "mime": "audio/webm;codecs=opus",
+          "bytes": 68882,
+          "duration_ms": 4273,
+          "checksum": "e5455bb4a6f7262b0d29e6ea4b597841130b116cae883cd94f55e91f8bad6e96"
+        },
+        {
+          "mime": "audio/webm;codecs=opus",
+          "bytes": 68882,
+          "duration_ms": 4273,
+          "checksum": "50f223c80e98e3007a542f5f8947b3b5d2d0a1c837e76fdd8a95cd2d7bd11d72"
+        },
+        {
+          "mime": "audio/webm;codecs=opus",
+          "bytes": 68882,
+          "duration_ms": 4273,
+          "checksum": "a52b048fe85a27e50b53851bc0c3618295b2ecacb67b2d5dd5b2d7c7c76245b7"
+        }
+      ]
+    },
+    "real_microphone": {
+      "status": "not_verified",
+      "audio_inputs": 0,
+      "human_participation_result_received": false,
+      "local_before_upload": "Controlled browser regression only; supplementary provider diagnostics used authenticated API upload of browser-converted prerecorded audio."
+    },
+    "recordings": [
+      {
+        "recording_id": "b59f5145-edf6-41f7-9fb8-79f595aa7563",
+        "attempt_id": "7de4db33-0813-41f0-95b4-15979f375d5a",
+        "turn": 0,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "e5455bb4a6f7262b0d29e6ea4b597841130b116cae883cd94f55e91f8bad6e96",
+        "stt_status": 200
+      },
+      {
+        "recording_id": "ea1a4ef9-0bfd-4019-ac2d-14225620e15e",
+        "attempt_id": "7de4db33-0813-41f0-95b4-15979f375d5a",
+        "turn": 1,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "e5455bb4a6f7262b0d29e6ea4b597841130b116cae883cd94f55e91f8bad6e96",
+        "stt_status": 200
+      },
+      {
+        "recording_id": "079d09e4-a383-4b0b-837c-66b022821d9a",
+        "attempt_id": "7de4db33-0813-41f0-95b4-15979f375d5a",
+        "turn": 2,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "e5455bb4a6f7262b0d29e6ea4b597841130b116cae883cd94f55e91f8bad6e96",
+        "stt_status": 200
+      },
+      {
+        "recording_id": "7409547b-4583-492d-8e8c-7856e3bbacb3",
+        "attempt_id": "7de4db33-0813-41f0-95b4-15979f375d5a",
+        "turn": 3,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "e5455bb4a6f7262b0d29e6ea4b597841130b116cae883cd94f55e91f8bad6e96",
+        "stt_status": 200
+      },
+      {
+        "recording_id": "add5d52d-feb4-488f-bbfe-dbe828870a47",
+        "attempt_id": "7de4db33-0813-41f0-95b4-15979f375d5a",
+        "turn": 4,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "e5455bb4a6f7262b0d29e6ea4b597841130b116cae883cd94f55e91f8bad6e96",
+        "stt_status": 200
+      },
+      {
+        "recording_id": "5ace5ee0-55bb-407b-ad20-a635197e3afe",
+        "attempt_id": "d3258c85-2a86-4d7b-aff0-44b91110702b",
+        "turn": 0,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "50f223c80e98e3007a542f5f8947b3b5d2d0a1c837e76fdd8a95cd2d7bd11d72",
+        "stt_status": 200
+      },
+      {
+        "recording_id": "31c801f7-4fec-4ff5-aa69-4ba22605285e",
+        "attempt_id": "df90d25d-1777-40e6-aed4-82438cbba04b",
+        "turn": 0,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "a52b048fe85a27e50b53851bc0c3618295b2ecacb67b2d5dd5b2d7c7c76245b7",
+        "stt_status": 200
+      }
+    ],
+    "storage": {
+      "bucket": "bloomlab-media-dev",
+      "database": "bloomlab-dev",
+      "private_r2_exists_before_stt": true,
+      "d1_metadata": [
+        {
+          "recording_id": "b59f5145-edf6-41f7-9fb8-79f595aa7563",
+          "attempt_id": "7de4db33-0813-41f0-95b4-15979f375d5a",
+          "turn": 0,
+          "mime_type": "audio/webm;codecs=opus",
+          "byte_length": 68882,
+          "duration_ms": 4273,
+          "checksum": "e5455bb4a6f7262b0d29e6ea4b597841130b116cae883cd94f55e91f8bad6e96",
+          "status": "uploaded",
+          "retain": 1,
+          "deleted_at": null
+        }
+      ],
+      "d1_columns": [
+        {
+          "name": "recording_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "learner_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "attempt_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "exercise_id",
+          "type": "TEXT"
+        },
+        {
+          "name": "turn",
+          "type": "INTEGER"
+        },
+        {
+          "name": "object_key",
+          "type": "TEXT"
+        },
+        {
+          "name": "mime_type",
+          "type": "TEXT"
+        },
+        {
+          "name": "byte_length",
+          "type": "INTEGER"
+        },
+        {
+          "name": "duration_ms",
+          "type": "INTEGER"
+        },
+        {
+          "name": "checksum",
+          "type": "TEXT"
+        },
+        {
+          "name": "created_at",
+          "type": "TEXT"
+        },
+        {
+          "name": "updated_at",
+          "type": "TEXT"
+        },
+        {
+          "name": "status",
+          "type": "TEXT"
+        },
+        {
+          "name": "original_transcript",
+          "type": "TEXT"
+        },
+        {
+          "name": "confirmed_transcript",
+          "type": "TEXT"
+        },
+        {
+          "name": "retain",
+          "type": "INTEGER"
+        },
+        {
+          "name": "deleted_at",
+          "type": "TEXT"
+        }
+      ],
+      "audio_columns": false
+    },
+    "recovery": {
+      "attempt_id": "d3258c85-2a86-4d7b-aff0-44b91110702b",
+      "fault": "Disposable D1 byte_length mismatch only; live Worker bounds failure, not a Google outage. Restored before retry; R2 bytes are never changed.",
+      "failure": {
+        "status": 404,
+        "body": {
+          "error": "recording_not_found"
+        }
+      },
+      "saved_after_failure": [
+        {
+          "recording_id": "5ace5ee0-55bb-407b-ad20-a635197e3afe",
+          "status": "stt_failed",
+          "deleted_at": null
+        }
+      ],
+      "r2_survives": true,
+      "metadata_restored": true,
+      "retry_status": 200,
+      "observed_uploads": 1,
+      "before": {
+        "status": 200,
+        "bytes": 68882,
+        "checksum": "50f223c80e98e3007a542f5f8947b3b5d2d0a1c837e76fdd8a95cd2d7bd11d72"
+      },
+      "replayed_after_retry": {
+        "status": 200,
+        "bytes": 68882,
+        "checksum": "50f223c80e98e3007a542f5f8947b3b5d2d0a1c837e76fdd8a95cd2d7bd11d72",
+        "duration": 4.259977324263039,
+        "error": null
+      }
+    },
+    "deletion": {
+      "default_acknowledgements": [
+        {
+          "recording_id": "ea1a4ef9-0bfd-4019-ac2d-14225620e15e",
+          "ack_status": 200,
+          "r2_exists_after": false,
+          "transcript_survives": true
+        },
+        {
+          "recording_id": "079d09e4-a383-4b0b-837c-66b022821d9a",
+          "ack_status": 200,
+          "r2_exists_after": false,
+          "transcript_survives": true
+        },
+        {
+          "recording_id": "7409547b-4583-492d-8e8c-7856e3bbacb3",
+          "ack_status": 200,
+          "r2_exists_after": false,
+          "transcript_survives": true
+        },
+        {
+          "recording_id": "add5d52d-feb4-488f-bbfe-dbe828870a47",
+          "ack_status": 200,
+          "r2_exists_after": false,
+          "transcript_survives": true
+        }
+      ],
+      "explicit_deletions": [
+        {
+          "recording_id": "b59f5145-edf6-41f7-9fb8-79f595aa7563",
+          "explicit_delete_status": 200,
+          "r2_exists_after": false
+        },
+        {
+          "recording_id": "ea1a4ef9-0bfd-4019-ac2d-14225620e15e",
+          "explicit_delete_status": 200,
+          "r2_exists_after": false
+        },
+        {
+          "recording_id": "079d09e4-a383-4b0b-837c-66b022821d9a",
+          "explicit_delete_status": 200,
+          "r2_exists_after": false
+        },
+        {
+          "recording_id": "7409547b-4583-492d-8e8c-7856e3bbacb3",
+          "explicit_delete_status": 200,
+          "r2_exists_after": false
+        },
+        {
+          "recording_id": "add5d52d-feb4-488f-bbfe-dbe828870a47",
+          "explicit_delete_status": 200,
+          "r2_exists_after": false
+        },
+        {
+          "recording_id": "5ace5ee0-55bb-407b-ad20-a635197e3afe",
+          "explicit_delete_status": 200,
+          "r2_exists_after": false,
+          "playback_after_delete": 410
+        },
+        {
+          "recording_id": "31c801f7-4fec-4ff5-aa69-4ba22605285e",
+          "explicit_delete_status": 200,
+          "r2_exists_after": false,
+          "playback_after_delete": 410
+        }
+      ],
+      "local_checkpoint_order": "Covered by controlled browser/queue tests; actual human microphone UI flow remains outstanding."
+    },
+    "authorization": {
+      "recording": {
+        "anonymous": 401,
+        "other_learner_get": 403,
+        "other_learner_delete": 403
+      },
+      "revoked_recording_requests": [
+        {
+          "device_id": "cf22371e-7541-4bbb-b160-d1a2a4c8730d",
+          "revocation": 200,
+          "request_after_revocation": 401
+        },
+        {
+          "device_id": "ca4d18bc-7bb3-4d17-a944-dda3302cd913",
+          "revocation": 200,
+          "request_after_revocation": 401
+        }
+      ],
+      "owner_revocation_metadata": [
+        {
+          "device_id": "3e2dff8e-8f7a-416f-bd04-47c5e0eb620c",
+          "revoked_at": "2026-09-08T05:12:58.383Z"
+        },
+        {
+          "device_id": "0119f21a-77e6-444b-8c1f-c6740bba8d27",
+          "revoked_at": "2026-09-08T05:15:35.871Z"
+        },
+        {
+          "device_id": "ceca7ce4-8e50-4afe-8a7c-7c27b74e6a23",
+          "revoked_at": "2026-09-08T05:17:49.830Z"
+        }
+      ],
+      "cleanup_observer_limitation": "Two owner cleanup callbacks lost their request log after the actual revoke request; D1 independently confirms both revoked. No failed callback is counted as an HTTP assertion pass."
+    },
+    "authored_audio": {
+      "status": 200,
+      "body": {
+        "url": "/api/media/voice/VA-830131db4721291660c88a03bcacaeb32667f1d0795b34222bfe07b37c01ba7e",
+        "source": "authored",
+        "cached": true
+      }
+    },
+    "dynamic_tts": {
+      "status": "not_verified",
+      "candidate_attempts": [
+        {
+          "attempt_id": "d3258c85-2a86-4d7b-aff0-44b91110702b",
+          "confirmation": "An invisible handoff feels unclear to me.",
+          "interpretation": "fallback",
+          "response": {
+            "node": "clarify",
+            "text": "Which part of following up a replacement quote do you want to understand?",
+            "dynamic": false
+          },
+          "mode": "Full",
+          "monthly_limit_usd": 10
+        },
+        {
+          "attempt_id": "df90d25d-1777-40e6-aed4-82438cbba04b",
+          "confirmation": "Seamless handoffs and workflow synergy.",
+          "interpretation": "fallback",
+          "response": {
+            "node": "clarify",
+            "text": "Which part of following up a replacement quote do you want to understand?",
+            "dynamic": false
+          },
+          "mode": "Full",
+          "monthly_limit_usd": 10
+        }
+      ],
+      "dynamic_audio_requests_issued": 0,
+      "successful_syntheses": 0,
+      "cache_reuse": "not_verified",
+      "provider_billing_delta": "not_available",
+      "reason": "Both real Full-mode candidates retained authored fallback. No authorized dynamic:true line was returned."
+    },
+    "ai": {
+      "completed_attempt_id": "7de4db33-0813-41f0-95b4-15979f375d5a",
+      "turns": [
+        {
+          "turn": 0,
+          "confirmed_test_text": "I am thinking about an invisible handoff.",
+          "interpretation": "fallback",
+          "repeat_equal": true
+        },
+        {
+          "turn": 1,
+          "confirmed_test_text": "An invisible handoff feels unclear to me.",
+          "interpretation": "fallback",
+          "repeat_equal": true
+        },
+        {
+          "turn": 2,
+          "confirmed_test_text": "Please explain the current process.",
+          "interpretation": "explicit",
+          "repeat_equal": true
+        },
+        {
+          "turn": 3,
+          "confirmed_test_text": "Tina sends the quote, then unanswered quotes have no follow-up. Is that the gap?",
+          "interpretation": "rule",
+          "repeat_equal": true
+        },
+        {
+          "turn": 4,
+          "confirmed_test_text": "Could we arrange a short process review with Tina about one unanswered quote?",
+          "interpretation": "rule",
+          "repeat_equal": true
+        }
+      ],
+      "off_spend_usd": 0,
+      "budget_fallback_limit_usd": 1,
+      "rubric_status": 200,
+      "rubric_run_id": "f5ae4b4a-f50b-41ed-8268-608f0b6e8761",
+      "rubric_id": "CALL_PERFORMANCE_RUBRIC_V1",
+      "score": 82,
+      "dimensions": [
+        "questions",
+        "listening",
+        "diagnosis",
+        "clarity",
+        "jargon",
+        "pitch_timing",
+        "objection_handling",
+        "next_step"
+      ],
+      "arbitrary_browser_payloads_same_server_result": true,
+      "usage_category": "call_feedback",
+      "usage": [
+        {
+          "purpose": "call_feedback",
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 297,
+          "output_tokens": 14,
+          "cost_usd": 0.000367,
+          "reserved_usd": 0,
+          "status": "complete",
+          "run_id": "887b5bc8-d150-4b06-8fda-37f5ae9799b6:7de4db33-0813-41f0-95b4-15979f375d5a:1:c8568b65ec239f4f9a8ee6751c0b9d17126e62aa6491d686d65709f14ddc48ce"
+        },
+        {
+          "purpose": "call_feedback",
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cost_usd": 0,
+          "reserved_usd": 0,
+          "status": "complete",
+          "run_id": "f5ae4b4a-f50b-41ed-8268-608f0b6e8761"
+        },
+        {
+          "purpose": "call_feedback",
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 2130,
+          "output_tokens": 741,
+          "cost_usd": 0.005835,
+          "reserved_usd": 0,
+          "status": "complete",
+          "run_id": "f5ae4b4a-f50b-41ed-8268-608f0b6e8761"
+        },
+        {
+          "attempt_id": "d3258c85-2a86-4d7b-aff0-44b91110702b",
+          "purpose": "call_feedback",
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 303,
+          "output_tokens": 13,
+          "cost_usd": 0.000368,
+          "reserved_usd": 0,
+          "status": "complete"
+        },
+        {
+          "attempt_id": "d3258c85-2a86-4d7b-aff0-44b91110702b",
+          "purpose": "call_feedback",
+          "model": "claude-sonnet-5",
+          "input_tokens": 393,
+          "output_tokens": 29,
+          "cost_usd": 0.001076,
+          "reserved_usd": 0,
+          "status": "complete"
+        },
+        {
+          "attempt_id": "df90d25d-1777-40e6-aed4-82438cbba04b",
+          "purpose": "call_feedback",
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 304,
+          "output_tokens": 13,
+          "cost_usd": 0.000369,
+          "reserved_usd": 0,
+          "status": "complete"
+        },
+        {
+          "attempt_id": "df90d25d-1777-40e6-aed4-82438cbba04b",
+          "purpose": "call_feedback",
+          "model": "claude-sonnet-5",
+          "input_tokens": 394,
+          "output_tokens": 34,
+          "cost_usd": 0.001128,
+          "reserved_usd": 0,
+          "status": "complete"
+        }
+      ],
+      "total_spent_usd": 0.009143,
+      "residual_reservations_usd": 0,
+      "deterministic_override": "Exact-head regression suite; no separate live favorable-model critical-failure case claimed.",
+      "feedback_quality_issue": {
+        "kind": "speaker_misattribution",
+        "rubric_item": "questions",
+        "reason": "Learner asked clarifying questions at appropriate points: 'Which part of following up a replacement quote do you want to understand?' prompted Gary to explain the process, and 'Is that the gap?' confirmed understanding before proposing next steps.",
+        "client_line_misattributed_to_learner": "Which part of following up a replacement quote do you want to understand?",
+        "decision": "HTTP 200/score 82 proves provider completion only; feedback quality is not accepted."
+      }
+    },
+    "egress": {
+      "observed_browser_origins": ["https://bloomlab-preview.cool-sunset-2169.workers.dev"],
+      "raw_to_anthropic_or_elevenlabs": "Excluded by independently audited Worker code and exact-head tests; no provider packet trace claimed."
+    },
+    "deployed_ui": {
+      "checked_at": "2026-09-08T05:27:58.573Z",
+      "head_sha": "1b89de9325466fbf3d243c14105a3aa07e4070bf",
+      "base": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+      "widths": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "font": 16,
+          "buttons": true,
+          "six_elements": true
+        },
+        {
+          "width": 1024,
+          "scroll": 1024,
+          "font": 16,
+          "buttons": true,
+          "six_elements": true
+        },
+        {
+          "width": 768,
+          "scroll": 768,
+          "font": 16,
+          "buttons": true,
+          "six_elements": true
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "font": 16,
+          "buttons": true,
+          "six_elements": true
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "font": 16,
+          "buttons": true,
+          "six_elements": true
+        }
+      ],
+      "advanced": [
+        {
+          "id": "EX-SAY_IT-summit-proposal",
+          "width": 1440,
+          "scroll": 1440,
+          "anchors": 0
+        },
+        {
+          "id": "EX-SAY_IT-summit-proposal",
+          "width": 1024,
+          "scroll": 1024,
+          "anchors": 0
+        },
+        {
+          "id": "EX-SAY_IT-summit-proposal",
+          "width": 768,
+          "scroll": 768,
+          "anchors": 0
+        },
+        {
+          "id": "EX-SAY_IT-summit-proposal",
+          "width": 390,
+          "scroll": 390,
+          "anchors": 0
+        },
+        {
+          "id": "EX-SAY_IT-summit-proposal",
+          "width": 320,
+          "scroll": 320,
+          "anchors": 0
+        },
+        {
+          "id": "EX-SAY_IT-glowhaus-client-explanation",
+          "width": 1440,
+          "scroll": 1440,
+          "anchors": 0
+        },
+        {
+          "id": "EX-SAY_IT-glowhaus-client-explanation",
+          "width": 1024,
+          "scroll": 1024,
+          "anchors": 0
+        },
+        {
+          "id": "EX-SAY_IT-glowhaus-client-explanation",
+          "width": 768,
+          "scroll": 768,
+          "anchors": 0
+        },
+        {
+          "id": "EX-SAY_IT-glowhaus-client-explanation",
+          "width": 390,
+          "scroll": 390,
+          "anchors": 0
+        },
+        {
+          "id": "EX-SAY_IT-glowhaus-client-explanation",
+          "width": 320,
+          "scroll": 320,
+          "anchors": 0
+        }
+      ],
+      "scope": "Actual deployed UI, emulated viewports, native microphone unavailable; no complete real microphone call.",
+      "config": {
+        "status": 200,
+        "enabled": true
+      },
+      "microphone_before_record": 0,
+      "text_fallback": {
+        "phase": "text_fallback",
+        "text": "Gary Lindqvist · Turn 1Gary here, Northwind Heating and Air. I've got a tech on a roof, make it quick."
+      },
+      "fallback_continues": true,
+      "keyboard_focus": {
+        "label": "Record reply",
+        "visible": true
+      },
+      "audio_inputs": 0,
+      "microphone_after_record": 1,
+      "microphone_phase": "recoverable_error",
+      "microphone_result": "Native permission request initiated after Record; no human response or microphone recording in this unattended Codespace browser.",
+      "requests": [
+        {
+          "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+          "path": "/api/call/attempts",
+          "method": "POST",
+          "status": 200
+        },
+        {
+          "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+          "path": "/api/call/attempts/ba080924-255e-4870-ac67-8392a1df2e4a/recordings",
+          "method": "GET"
+        },
+        {
+          "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+          "path": "/api/call/attempts/ba080924-255e-4870-ac67-8392a1df2e4a/recordings",
+          "method": "GET"
+        },
+        {
+          "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+          "path": "/api/call/attempts/ba080924-255e-4870-ac67-8392a1df2e4a/audio",
+          "method": "POST",
+          "fault": "browser transport failure before request"
+        },
+        {
+          "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+          "path": "/api/call/attempts/ba080924-255e-4870-ac67-8392a1df2e4a/recordings",
+          "method": "GET"
+        },
+        {
+          "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+          "path": "/api/call/attempts/ba080924-255e-4870-ac67-8392a1df2e4a/recordings",
+          "method": "GET"
+        },
+        {
+          "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+          "path": "/api/call/attempts/ba080924-255e-4870-ac67-8392a1df2e4a/recordings",
+          "method": "GET"
+        },
+        {
+          "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+          "path": "/api/call/attempts/ba080924-255e-4870-ac67-8392a1df2e4a/recordings",
+          "method": "GET"
+        }
+      ],
+      "status": "passed_for_stated_scope",
+      "revocation": {
+        "device_id": "b5c4f6f9-7cff-4e9f-bb0b-f1e79dd11f5e",
+        "status": 200,
+        "after": 401
+      }
+    },
+    "input_regression": [
+      {
+        "width": 1440,
+        "scroll": 1440,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 1024,
+        "scroll": 1024,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 768,
+        "scroll": 768,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "scroll": 390,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 320,
+        "scroll": 320,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      }
+    ],
+    "pending": [
+      "Actual microphone -> IndexedDB checkpoint -> upload -> visible transcript correction -> confirmation",
+      "Full actual microphone/STT call with 390px touch",
+      "Full actual microphone/STT call with desktop keyboard",
+      "Successful authorized dynamic ElevenLabs synthesis and repeated private cache reuse",
+      "Physical Safari/iOS and assistive technology",
+      "Live feedback quality: one rubric explanation credited a client question to the learner"
+    ],
+    "production_calls_enabled": false,
+    "production_deployment_run": false,
+    "pr_state": "draft/open/unmerged"
+  },
+  "final_acceptance_remediation": {
+    "report": "docs/reviews/phase-21-final-remediation.md",
+    "evidence": "docs/reviews/phase-21-final-remediation-evidence.json",
+    "runtime_head": "5ad85acdb149d2990edfa8705e330583a0233bd4",
+    "ci": 34196331756,
+    "passed": ["CALL-003", "VOI-003"],
+    "human_microphone": "pending explicit user step",
+    "production": "disabled; PR draft/open and unmerged"
+  }
+}

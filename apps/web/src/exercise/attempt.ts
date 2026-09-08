@@ -1,3 +1,5 @@
+import { content } from '../content/bundle';
+import type { CallResponse } from '@bloomlab/shared';
 import type { GradeReport } from '@bloomlab/exercise-engine';
 import { classifyLanguage } from '../ai/client';
 import { negotiationOf } from './negotiation/context';
@@ -127,7 +129,7 @@ export const loadAttempt = (
  */
 export async function startAttempt(
   exercise: Pick<Exercise, 'id' | 'skills'> &
-    Partial<Pick<Exercise, 'negotiation' | 'scenario' | 'grading'>>,
+    Partial<Pick<Exercise, 'negotiation' | 'scenario' | 'grading' | 'call'>>,
   context: AttemptContext = NORMAL_RUN,
   options: { now?: Date } = {},
   database: BloomlabDatabase = db,
@@ -149,7 +151,7 @@ export async function startAttempt(
     hints_revealed: [],
     response: emptyResponse(),
   };
-  if (exercise.negotiation && exercise.scenario) {
+  if (exercise.negotiation && exercise.scenario && !exercise.call) {
     const initial = negotiationOf({
       negotiation: exercise.negotiation,
       scenario: exercise.scenario,
@@ -260,6 +262,50 @@ export const discardAttempt = (
   database: BloomlabDatabase = db,
 ): Promise<void> => clearWorkspace(attemptKey(exerciseId, context), database);
 
+/** Replace one unfinished call atomically, after its caller has completed confirmed audio
+ * deletion. No empty-workspace gap, finalization, history, outbox or mastery evidence write. */
+export async function replaceUnfinishedCall(
+  exercise: Exercise,
+  context: AttemptContext,
+  expectedId: string,
+  database: BloomlabDatabase = db,
+): Promise<ActiveAttempt> {
+  const key = attemptKey(exercise.id, context);
+  return enqueue(key, () =>
+    database.transaction('rw', database.workspace, database.call_recordings, async () => {
+      const current = await loadAttempt(exercise.id, context, database);
+      if (
+        !exercise.call ||
+        current?.attempt_id !== expectedId ||
+        current.submitted ||
+        current.response.call?.snapshot?.complete ||
+        [
+          'microphone_permission',
+          'recording',
+          'uploading',
+          'transcribing',
+          'evaluating',
+          'resolving',
+        ].includes(current.response.call?.phase ?? '') ||
+        (await database.call_recordings.where('attempt_id').equals(expectedId).count()) > 0
+      )
+        throw new Error('This call changed or still has saved audio. Review it before restarting.');
+      const fresh: ActiveAttempt = {
+        attempt_id: randomId(),
+        exercise_id: exercise.id,
+        rubric_id: exercise.grading.rubric,
+        skill_id: context.skill_id,
+        run: context.run,
+        started_at: new Date().toISOString(),
+        hints_revealed: [],
+        response: emptyResponse(),
+      };
+      await saveWorkspace(key, fresh, database);
+      return fresh;
+    }),
+  );
+}
+
 /** Negotiation edits and turns share the original per-attempt queue. A turn reads the persisted
  * draft inside that queue, so an immediate Send includes the latest field and move edits. */
 export const saveNegotiationDraft = (
@@ -346,4 +392,50 @@ export async function checkpointSubmission(
     },
     false,
   );
+}
+
+export const emptyCallResponse = (): CallResponse => ({
+  version: 1,
+  phase: 'ready',
+  notes: '',
+  retain_audio: false,
+  elapsed_ms: 0,
+  recording_id: null,
+  transcript_draft: '',
+  snapshot: null,
+});
+/** Call edits use the same queue as notes, hints and final submission. */
+export async function saveCall(
+  exerciseId: string,
+  context: AttemptContext,
+  attemptId: string,
+  patch: Partial<CallResponse>,
+  database: BloomlabDatabase = db,
+): Promise<CallResponse> {
+  const saved = await update(
+    exerciseId,
+    context,
+    (current) => {
+      if (current.attempt_id !== attemptId)
+        throw new Error('This call is no longer the active attempt.');
+      return {
+        ...current,
+        ...(!current.response.call
+          ? {
+              rubric_id:
+                content.exercises.find((e) => e.id === exerciseId)?.grading.rubric ??
+                current.rubric_id,
+            }
+          : {}),
+        response: {
+          ...current.response,
+          call: { ...emptyCallResponse(), ...current.response.call, ...patch },
+        },
+      };
+    },
+    database,
+  );
+  if (!saved?.response.call)
+    throw new Error('This call could not be checkpointed. Keep this page open and retry.');
+  return saved.response.call;
 }

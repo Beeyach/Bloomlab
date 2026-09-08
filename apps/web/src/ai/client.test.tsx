@@ -60,6 +60,9 @@ it.each(['Limited', 'Full'] as const)(
         <AiSettingsScreen />
       </MemoryRouter>,
     );
+    // Limited is also the initial select value. Wait for the canonical response and
+    // its persisted cache before asserting that stale Off has been reconciled.
+    await screen.findByRole('heading', { name: /AI this month/ });
     await waitFor(() =>
       expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe(mode),
     );

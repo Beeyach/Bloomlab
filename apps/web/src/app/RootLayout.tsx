@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router';
+import { BUILD_ID } from '@bloomlab/shared';
 
 import {
   db,
@@ -13,6 +14,7 @@ import { AppRail } from './AppRail';
 import { ConflictChooser } from './ConflictChooser';
 import styles from './RootLayout.module.css';
 import { SyncStatusIndicator } from './SyncStatusIndicator';
+import { UpdateNotice } from '../pwa/UpdateNotice';
 
 /**
  * The app frame: skip link, the compact rail (spec §73, DES-009), the main region.
@@ -35,13 +37,14 @@ export function RootLayout() {
   }, []);
 
   return (
-    <div className={styles.frame}>
+    <div className={styles.frame} data-build-id={BUILD_ID}>
       <a className={styles.skipLink} href="#main">
         Skip to content
       </a>
       <AppRail />
       <SyncStatusIndicator className={styles.status} />
       <main id="main" className={styles.main} tabIndex={-1}>
+        <UpdateNotice />
         <Outlet />
       </main>
       <ConflictChooser />
