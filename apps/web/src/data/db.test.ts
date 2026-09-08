@@ -11,6 +11,7 @@ describe('BloomlabDatabase', () => {
       'call_recordings',
       'campaign_progress',
       'device',
+      'evidence_assets',
       'exercise_attempts',
       'notes',
       'review_queue',

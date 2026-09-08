@@ -1,3 +1,4 @@
+import { Fieldwork } from '../fieldwork/Fieldwork';
 import { lazy, Suspense } from 'react';
 import { useFeatureFlags } from '../app/featureFlagsContext';
 const CallRoom = lazy(() => import('../call/CallRoom'));
@@ -203,6 +204,12 @@ export default function ExerciseRunner() {
     );
   }
 
+  if (
+    exercise.type === 'FIELDWORK' &&
+    (attempt === undefined || history === undefined || (!attempt && !finished))
+  )
+    return <p role="status">Loading your fieldwork…</p>;
+
   return (
     <Stack
       as="article"
@@ -239,23 +246,45 @@ export default function ExerciseRunner() {
       <div className={styles.columns}>
         <Brief exercise={exercise} />
         <div className={styles.side}>
-          {attempt && (
-            <WorkSurface
-              key={attempt.attempt_id}
+          {exercise.type === 'FIELDWORK' ? (
+            <Fieldwork
+              key={attempt?.attempt_id ?? finished?.id ?? exercise.id}
               exercise={exercise}
-              attempt={attempt}
+              attempt={attempt ?? null}
               context={context}
-              disabled={busy || Boolean(attempt.submitted)}
-            />
+              saved={finished?.response?.fieldwork}
+              submitting={busy}
+              submissionError={failure}
+              onSubmit={() => void submit()}
+            >
+              {!attempt && finished && (
+                <ResultView
+                  attempt={finished}
+                  skillId={skillId}
+                  snapshot={snapshot}
+                  onTryAgain={() => void tryAgain()}
+                />
+              )}
+            </Fieldwork>
+          ) : (
+            attempt && (
+              <WorkSurface
+                key={attempt.attempt_id}
+                exercise={exercise}
+                attempt={attempt}
+                context={context}
+                disabled={busy || Boolean(attempt.submitted)}
+              />
+            )
           )}
-          {attempt && !attempt.submitted && (
+          {exercise.type !== 'FIELDWORK' && attempt && !attempt.submitted && (
             <HintDrawer
               exercise={exercise}
               revealed={attempt.hints_revealed}
               onReveal={(level: HintLevel) => void revealHint(exercise.id, context, level)}
             />
           )}
-          {attempt && (
+          {exercise.type !== 'FIELDWORK' && attempt && (
             <section aria-labelledby="submit-title" className={styles.submit}>
               <h2 id="submit-title" className={styles.sectionTitle}>
                 Submit
@@ -293,7 +322,7 @@ export default function ExerciseRunner() {
               )}
             </section>
           )}
-          {!attempt && finished && (
+          {exercise.type !== 'FIELDWORK' && !attempt && finished && (
             <ResultView
               attempt={finished}
               skillId={skillId}

@@ -118,7 +118,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-017 | NEGOTIATE IT: client pushes back; learner may clarify, hold price, reduce scope, phase, concede, or walk away; winning is not the only success. | P1 | 18 | PASSED | §27 |
 | EXR-018 | EXPLAIN IT: technical explanation for different audiences (business owner, another GHL builder). | P1 | 16 | PASSED | §27 |
 | EXR-019 | REBUILD BLIND: no lesson, no step-by-step support; hints reduce independence evidence. Phase 12: a reminder system built through the command layer and graded from the two texts the engine sent 24 h and 2 h before the appointment (`exerciseRuntime.test.ts`). | P1 | 9 | PASSED | §27 |
-| EXR-020 | FIELDWORK: real GHL work; Bloomlab collects screenshots, configuration answers, explanation, test results, then questions reasoning. | P1 | 22 | NOT_STARTED | §27 |
+| EXR-020 | FIELDWORK: real GHL work; Bloomlab collects screenshots, configuration answers, explanation, test results, then questions reasoning. | P1 | 22 | IMPLEMENTED_UNVERIFIED | §27 |
 | EXR-021 | BOSS CLIENT: persistent multi-stage engagement (audit → discovery → architecture → pricing → negotiation → proposal → implementation → QA → launch → reporting → change request); earlier decisions affect later consequences. | P1 | 24 | NOT_STARTED | §27 |
 | EXR-022 | Hint system: Nudge, Concept Reminder, Worked Example; assistance tracked per attempt. | P1 | 9 | PASSED | §28 |
 | EXR-023 | Workflow scoring example (correctness 45%, edge cases 20%, architecture 15%, maintainability 10%, explanation 10%) with critical-failure override. Phase 12: weighted dimensions with critical override in `packages/exercise-engine` (D-113, `grade.test.ts`) and applied to the authored workflow exercises (`authoredGrading.test.ts`). | P1 | 12 | PASSED | §31 |
@@ -268,10 +268,10 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| FLD-001 | Real-GHL proof flow: screenshots where helpful, configuration answers, explanation, test results; Bloomlab then questions reasoning. | P1 | 22 | NOT_STARTED | §27, §153 |
-| FLD-002 | v1 never requires a GHL API connection or production GHL credentials; fieldwork uses the learner's real training/subaccount manually. | P0 | all | NOT_STARTED | §153, TA§63 |
+| FLD-001 | Real-GHL proof flow: screenshots where helpful, configuration answers, explanation, test results; Bloomlab then questions reasoning. | P1 | 22 | IMPLEMENTED_UNVERIFIED | §27, §153 |
+| FLD-002 | v1 never requires a GHL API connection or production GHL credentials; fieldwork uses the learner's real training/subaccount manually. | P0 | all | PASSED | §153, TA§63 |
 | FLD-003 | Optional later GHL verification via approved Private Integration (workflow/field/pipeline/opportunity/calendar existence). | P3 | — | DEFERRED | TA§64 |
-| FLD-004 | Selected mastery requires real-GHL evidence (REAL_GHL fidelity features). | P1 | 22 | NOT_STARTED | §26, §30 |
+| FLD-004 | Selected mastery requires real-GHL evidence (REAL_GHL fidelity features). | P1 | 22 | PASSED | §26, §30 |
 
 ## PORT — Portfolio
 

@@ -9,26 +9,25 @@ skills:
   - SK-SCALE-snapshot-portability
 scenario: SC-glowhaus-no-show
 instructions: |
-  In your real GHL account, rebuild the Glowhaus no-show recovery system using custom values
-  for the booking link and front-desk phone, create a snapshot of it, and load the snapshot into
-  a second sub-account. Then confirm what did and did not come across.
+  Build a portable no-show recovery system for the fictional Glowhaus clinic in a dedicated
+  GHL training subaccount, then load its Snapshot into a second empty training subaccount.
+  You need agency access to Account Snapshots and permission to use both training subaccounts.
+  Keep the workflows in Draft and use fictional test records; do not send messages to customers.
+  No production account, credentials or API connection is needed by Bloomlab.
+
+  Record configuration descriptions, not account URLs, phone numbers or access details.
+  This exercise records your manual proof; it does not automatically inspect GHL.
 allowed_features:
   - GHL-SNAP-SNAPSHOTS
   - GHL-CRM-CUSTOM-VALUES
 starting_state: {}
 expected_outcomes:
-  - id: a1
+  - id: proof_complete
     type: state
-    path: answers.custom_values_used
+    path: answer.fieldwork_complete
     operator: equals
     value: true
-    description: The booking link and phone are custom values, not hard-coded.
-  - id: a2
-    type: state
-    path: answers.contacts_included_in_snapshot
-    operator: equals
-    value: false
-    description: The learner knows contacts do not travel with a snapshot.
+    description: Required manual proof, passing recorded tests and post-proof reasoning are complete.
 critical_failures: []
 grading:
   mode: deterministic
@@ -37,15 +36,38 @@ hints: []
 fieldwork:
   required: true
   tasks:
-    - Rebuild the workflow with custom values for the booking link and the front-desk phone.
-    - Create a snapshot containing the workflow, calendar, form, custom fields and custom values.
-    - Load it into a second sub-account and set the two custom values there.
-  evidence:
-    - screenshot
-    - configuration_answers
-    - explanation
-    - test_results
+    - Use two dedicated training subaccounts with agency permission to create and load Snapshots. Keep customer data out of both. Use a clean destination to avoid overriding existing assets.
+    - In the source training subaccount, build the Glowhaus no-show recovery workflow in Draft. Use Custom Values for the booking destination and front-desk contact, with fictional training values. Include its calendar, form and required Custom Fields. Do not publish or send messages.
+    - In Agency View, open Account Snapshots, create a named Snapshot from the source, and select only this system's assets. Load those assets into the empty destination training subaccount using the current GHL load flow.
+    - Inspect the destination workflow, calendar, form, Custom Fields and Custom Values. Set destination-specific values and check references before any future activation. Keep the destination workflow in Draft too.
+    - Perform the three authored inspection tests below in GHL. Record observations and correct any failed required test before saving your proof checkpoint.
+  evidence: [screenshot, configuration_answers, explanation, test_results]
+  proof:
+    screenshots:
+      - key: destination_workflow
+        prompt: Show the loaded destination workflow in Draft, with its relevant configuration visible and account details cropped.
+        required: true
+      - key: selected_assets
+        prompt: Show the selected Snapshot assets if that helps explain your transfer.
+        required: false
+    configuration:
+      - key: asset_inventory
+        prompt: Which workflow, calendar, form and Custom Fields did you select, and which appeared in the destination? Use descriptive names only.
+      - key: destination_values
+        prompt: Which Custom Values and references did you configure again in the destination, and how did you check they point to the training setup? Do not paste actual URLs or phone numbers.
+    explanations:
+      - key: portability
+        prompt: Explain what you changed after loading and what would have broken if you had activated the system immediately.
+    tests:
+      - key: assets_loaded
+        prompt: Inspect the destination and confirm the selected workflow, calendar, form and Custom Fields exist. Record the assets you checked and any discrepancy.
+      - key: references_checked
+        prompt: Inspect each destination workflow and form reference plus both Custom Values. Confirm they use the destination training configuration, and record how you checked.
+      - key: safe_draft
+        prompt: Confirm both workflows remain in Draft and that no customer messages were sent. Check that live contacts and appointment records were not copied by the Snapshot.
   reasoning_questions:
-    - Which assets did the snapshot not include, and what would break for the second location because of that?
-    - Why is the booking link a custom value rather than typed into the SMS template?
+    - key: missing_dependencies
+      prompt: Which dependencies does a Snapshot leave for you to configure or verify, and how would you detect a missing one before launch?
+    - key: custom_value_choice
+      prompt: Why use Custom Values for location-specific details rather than typing those details into each message?
 portfolio: PF-consultation-booking-system

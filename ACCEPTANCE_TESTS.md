@@ -372,6 +372,14 @@ Phase 21 evidence (2026-09-08): `docs/reviews/phase-21-feedback-reliability.md` 
 
 ## Phase 22 — Fieldwork
 
+Implementation evidence: `docs/reviews/phase-22-fieldwork.md`; operational recovery and the mandatory actual GHL run: `docs/operations/fieldwork.md`. Controlled browser evidence and private Preview assets never substitute for human real-GHL acceptance.
+
+- Required failed tests, incomplete configuration/explanation, missing/deleted private screenshots, uncheckpointed proof, unanswered reasoning and absent training-account confirmation must prevent completion.
+- Draft text, selected local Blob, failed-upload retry, reasoning and finalized evidence must survive reload. Replayed/concurrent finalization writes one attempt and one fieldwork evidence per taught skill. Sync contains metadata/references only.
+- PNG/JPEG/WebP type signatures, bytes and dimensions are bounded server-side; foreign/anonymous/revoked requests cannot read/delete. Delete is truthful and retryable, including after submission and when it overtakes upload.
+- Review exactly 1440, 1024, 768, 390 and 320, with keyboard, touch, visible focus, reduced motion, loading/errors and no horizontal overflow. No GHL, public R2, AI or voice-provider browser egress.
+- FLD-001 / EXR-020 remain IMPLEMENTED_UNVERIFIED until Ary completes the actual two-training-subaccount Snapshot exercise, reloads the saved result and verifies the targeted capability no longer lacks real-GHL fieldwork. FLD-003 remains DEFERRED.
+
 - **FLD-001 / EXR-020** Fieldwork flow collects screenshots, configuration answers, explanation, test results, then asks reasoning questions.
 - **FLD-004** A REAL_GHL skill cannot reach MASTERED without fieldwork evidence (test).
 

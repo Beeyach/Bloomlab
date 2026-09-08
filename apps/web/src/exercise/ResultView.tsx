@@ -169,7 +169,11 @@ export function ResultView({
                 {report.score}% · pass mark {report.pass_threshold}%
               </span>
             )}
-            <span>{reasonSentence(report)}</span>
+            <span>
+              {attempt.exercise_type === 'FIELDWORK'
+                ? 'Manual proof completeness. GHL configuration and reasoning quality were not independently verified.'
+                : reasonSentence(report)}
+            </span>
           </p>
         )}
         {independent && (

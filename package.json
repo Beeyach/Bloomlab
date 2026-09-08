@@ -54,7 +54,8 @@
     "review:sales": "node scripts/review/sales-probe.mjs",
     "review:negotiation": "node scripts/review/negotiation-probe.mjs",
     "review:pricing": "node scripts/review/pricing-probe.mjs",
-    "review:call": "node scripts/review/call-probe.mjs"
+    "review:call": "node scripts/review/call-probe.mjs",
+    "review:fieldwork": "node scripts/review/fieldwork-probe.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

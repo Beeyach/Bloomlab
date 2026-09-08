@@ -351,6 +351,7 @@ describe('schema (DATA-004, DATA-005)', () => {
         'sync_operations',
         'feature_flags',
         'media_assets',
+        'evidence_assets',
         'voice_generation_jobs',
         'call_attempts',
         'call_recordings',

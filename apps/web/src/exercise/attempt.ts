@@ -1,5 +1,6 @@
+import { emptyFieldwork } from '../fieldwork/proof';
 import { content } from '../content/bundle';
-import type { CallResponse } from '@bloomlab/shared';
+import type { CallResponse, FieldworkResponse } from '@bloomlab/shared';
 import type { GradeReport } from '@bloomlab/exercise-engine';
 import { classifyLanguage } from '../ai/client';
 import { negotiationOf } from './negotiation/context';
@@ -438,4 +439,25 @@ export async function saveCall(
   if (!saved?.response.call)
     throw new Error('This call could not be checkpointed. Keep this page open and retry.');
   return saved.response.call;
+}
+
+/** Fieldwork uses the existing serialized attempt queue, including its proof checkpoint. */
+export async function editFieldwork(
+  exercise: Exercise,
+  context: AttemptContext,
+  change: (proof: FieldworkResponse) => FieldworkResponse | Promise<FieldworkResponse>,
+  database: BloomlabDatabase = db,
+) {
+  return update(
+    exercise.id,
+    context,
+    async (attempt) => ({
+      ...attempt,
+      response: {
+        ...attempt.response,
+        fieldwork: await change(attempt.response.fieldwork ?? emptyFieldwork(exercise)),
+      },
+    }),
+    database,
+  );
 }

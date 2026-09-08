@@ -1,5 +1,7 @@
 # Phase 21 human acceptance follow-up: feedback reliability
 
+> Historical record. Phase 21 PR #23 was merged on 2026-09-08 as `59ec678910cb51559d84af3c4200590f9c7e29ec`. Main CI `34267608095` Checks and Production deploy succeeded; production migrations `0004`/`0005`, 40 voice metadata rows and Worker `291517ab-8f2b-44d3-96aa-6dd7a615cc6c` were verified. Draft/unmerged instructions below describe the earlier review stage. All acceptance limitations and seven unverified rows are preserved.
+
 PR: #23
 Branch: `codex/phase-21-call-room`
 Current audited head before this handoff: `82a0d33010e99077870732fb0d2e7cf0e424cba2`
