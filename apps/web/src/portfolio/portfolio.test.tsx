@@ -255,9 +255,10 @@ describe('PORT-002 truthful archive UI', () => {
   });
   it('preserves work and exposes a retry when local reads fail', async () => {
     await ensureDevice();
-    vi.spyOn(db, 'transaction').mockRejectedValueOnce(new Error('quota'));
+    const failingStorage = vi.spyOn(db, 'transaction').mockRejectedValue(new Error('quota'));
     renderPortfolio();
     expect(await screen.findByRole('alert')).toHaveTextContent('preserved');
+    failingStorage.mockRestore();
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
     await waitFor(() =>
       expect(screen.getByText('Your archive starts with the work.')).toBeInTheDocument(),
