@@ -36,6 +36,7 @@
   min-height: 44px;
 }
 .room button {
+  --button-bg-hover: var(--call-surface);
   color: var(--bl-color-cloud);
   background: var(--call-surface);
   border: 1px solid var(--call-border);
@@ -44,10 +45,15 @@
   cursor: pointer;
   text-align: center;
   line-height: 1.4;
+  white-space: normal;
 }
 .room button:disabled {
   opacity: 0.55;
   cursor: default;
+}
+.room button[aria-busy='true'] {
+  opacity: 1;
+  cursor: progress;
 }
 .room button:not(:disabled):hover {
   border-color: var(--bl-color-aqua);
@@ -61,6 +67,7 @@
   outline-offset: 3px;
 }
 .room .primary {
+  --button-bg-hover: var(--bl-color-aqua);
   color: var(--bl-color-ink-deep);
   background: var(--bl-color-aqua);
   border-color: transparent;
@@ -173,6 +180,22 @@
 .side p {
   color: #c7c2dd;
   font-size: 14px;
+}
+.recovery {
+  color: var(--bl-color-ice);
+  border-left: 2px solid var(--bl-color-aqua);
+  padding-left: 12px;
+  font-size: 14px;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 .room .error {
   color: var(--bl-color-peach);

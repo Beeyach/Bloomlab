@@ -25,7 +25,8 @@ const { page, close } = await session();
 const { waitFor, typeInto } = probeHelpers({ base });
 const report = {
   infrastructure:
-    'Local browser, real IndexedDB and MediaRecorder; virtual microphone and controlled HTTP fixtures. No live provider acceptance.',
+    'Browser, real IndexedDB and MediaRecorder; virtual microphone and controlled HTTP fixtures. No live provider acceptance or paid provider requests.',
+  head_sha: process.env.REVIEW_HEAD,
   base,
   widths: [],
   checks: [],
@@ -44,7 +45,20 @@ function fixtures(exercises, rubric, version) {
     failSTT: false,
     denyMic: false,
     audioDelay: 0,
+    failFeedback: false,
+    failTurn: false,
+    turnBodies: [],
   });
+  const gates = {};
+  probe.hold = (name) => {
+    let release;
+    const promise = new Promise((resolve) => {
+      release = resolve;
+    });
+    gates[name] = { promise, release };
+  };
+  probe.release = (name) => gates[name]?.release();
+  const waiting = (name) => gates[name]?.promise;
   probe.clicks = [];
   document.addEventListener('click', (event) =>
     probe.clicks.push(event.target.closest('button')?.textContent?.trim() ?? 'other'),
@@ -98,7 +112,12 @@ function fixtures(exercises, rubric, version) {
     const path = url.pathname.replace('/api/call/', '');
     const body = typeof init.body === 'string' ? JSON.parse(init.body) : null;
     if (path === 'config') return ok({ enabled: true });
-    if (url.pathname === '/api/ai/evaluate')
+    if (url.pathname === '/api/ai/evaluate') {
+      await waiting('feedback');
+      if (probe.failFeedback) {
+        probe.failFeedback = false;
+        return ok({ error: 'evaluation_invalid' }, 502);
+      }
       return ok({
         run_id: crypto.randomUUID(),
         rubric_id: rubric.id,
@@ -117,7 +136,9 @@ function fixtures(exercises, rubric, version) {
           confidence: 0.9,
         },
       });
+    }
     if (path === 'attempts' && method === 'POST') {
+      await waiting('start');
       const exercise = exercises.find((e) => e.id === body.exercise_id);
       const node = exercise.conversation?.nodes.find(
         (n) => n.id === exercise.conversation.opening,
@@ -153,13 +174,21 @@ function fixtures(exercises, rubric, version) {
       const call = probe.calls[id];
       if (!call) return ok({ error: 'attempt_not_found' }, 404);
       if (!action) return ok(call);
-      if (action === 'recordings')
+      if (action === 'recordings') {
+        await waiting('cleanup');
         return ok(Object.values(probe.recordings).filter((r) => r.attempt_id === id));
+      }
       if (action === 'audio') {
         if (probe.audioDelay) await new Promise((resolve) => setTimeout(resolve, probe.audioDelay));
         return ok({ error: 'audio_unavailable' }, 404);
       }
       if (action === 'turn') {
+        probe.turnBodies.push(JSON.stringify(body));
+        await waiting('confirm');
+        if (probe.failTurn) {
+          probe.failTurn = false;
+          return ok({ error: 'turn_in_progress' }, 409);
+        }
         if (call.turn > body.turn) return ok(call);
         const exercise = exercises.find((e) => e.id === call.exercise_id);
         const node = exercise.conversation.nodes.find((n) => n.id === call.current.node);
@@ -184,8 +213,8 @@ function fixtures(exercises, rubric, version) {
           confirmed_transcript: body.transcript,
           client: call.current,
           response,
-          move,
-          interpretation: body.move ? 'explicit' : 'authored_rule',
+          move: move ?? null,
+          interpretation: body.move ? 'explicit' : move ? 'rule' : 'fallback',
         });
         call.turn++;
         call.current = response;
@@ -204,6 +233,7 @@ function fixtures(exercises, rubric, version) {
     }
     if (kind === 'recordings') {
       if (method === 'PUT') {
+        await waiting('upload');
         const local = (await probe.rows('call_recordings')).find((r) => r.recording_id === id);
         if (
           !local?.blob?.size ||
@@ -233,6 +263,7 @@ function fixtures(exercises, rubric, version) {
       const recording = probe.recordings[id];
       if (!recording) return ok({ error: 'recording_not_found' }, 404);
       if (method === 'DELETE' || (action === 'ack' && !recording.retain)) {
+        await waiting('delete');
         recording.deleted_at = new Date().toISOString();
         recording.status = 'deleted';
         recording.retain = false;
@@ -245,6 +276,7 @@ function fixtures(exercises, rubric, version) {
         return ok(recording);
       }
       if (action === 'transcribe') {
+        await waiting('transcribe');
         if (probe.failSTT) {
           probe.failSTT = false;
           return ok({ error: 'speech_timeout' }, 503);
@@ -334,6 +366,51 @@ async function phase(value) {
     `Expected phase ${value}`,
   );
 }
+async function requestCount(pathPart, method) {
+  return page.evaluate(
+    `window.__callProbe.requests.filter(r=>r.path.includes(${JSON.stringify(pathPart)})${method ? `&&r.method===${JSON.stringify(method)}` : ''}).length`,
+  );
+}
+async function progress(label, pathPart, method, expectedCount) {
+  const measure = await page.evaluate(`(()=>{
+    const b=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===${JSON.stringify(label)});
+    if(!b)return null;
+    const spinner=b.querySelector('[aria-hidden=true]');
+    const status=[...document.querySelectorAll('[role=status]')].some(e=>e.textContent===${JSON.stringify(label)});
+    b.click();b.click();
+    return {label:b.textContent.trim(),disabled:b.disabled,busy:b.getAttribute('aria-busy'),spinner:!!spinner,announcement:status,animation:spinner&&getComputedStyle(spinner).animationName,opacity:getComputedStyle(b).opacity};
+  })()`);
+  assert(
+    measure?.disabled && measure.busy === 'true' && measure.spinner && measure.announcement,
+    `Immediate visible and announced progress: ${label}`,
+  );
+  assert.equal(measure.opacity, '1', 'Busy action stays legible');
+  const reduced = await page.evaluate('matchMedia("(prefers-reduced-motion: reduce)").matches');
+  if (reduced) assert.equal(measure.animation, 'none');
+  else assert.notEqual(measure.animation, 'none');
+  await sleep(150);
+  assert(
+    (await requestCount(pathPart, method)) <= expectedCount,
+    `Duplicate operation during ${label}`,
+  );
+  report.checks.push(
+    `Immediate ${label} spinner/live status; duplicate blocked; ${reduced ? 'reduced' : 'normal'} motion`,
+  );
+  return measure;
+}
+async function holdAction(label, pendingLabel, gate, pathPart, input = 'touch', method) {
+  const expected = (await requestCount(pathPart, method)) + 1;
+  await page.evaluate(`window.__callProbe.hold(${JSON.stringify(gate)})`);
+  await activate(label, input);
+  await progress(pendingLabel, pathPart, method, expected);
+  assert(
+    await waitFor(
+      page,
+      `window.__callProbe.requests.filter(r=>r.path.includes(${JSON.stringify(pathPart)})${method ? `&&r.method===${JSON.stringify(method)}` : ''}).length===${expected}`,
+    ),
+  );
+  return expected;
+}
 async function speak(method = 'touch') {
   await activate('Record reply', method);
   await phase('recording');
@@ -341,12 +418,13 @@ async function speak(method = 'touch') {
   await activate('Stop recording', method);
   await phase('locally_saved');
 }
-async function confirm(move, method = 'touch') {
+async function confirm(move, method = 'touch', failOnce = false) {
   const replies = {
     permission: 'Could I ask about unanswered quotes for a minute?',
     process: 'Who handles quote follow-up today, and when do they contact the customer?',
     reflect: 'So the gap is unanswered quotes, not replacing dispatch. Have I understood that?',
     next_step: 'Could we agree a short process review with Tina before deciding on a build?',
+    unrelated: 'Purple umbrellas dance around the moon.',
   };
   assert(await waitFor(page, "document.querySelector('#call-transcript')?.disabled===false"));
   await typeInto(page, '#call-transcript', replies[move]);
@@ -356,7 +434,34 @@ async function confirm(move, method = 'touch') {
       `document.querySelector('#call-transcript')?.value===${JSON.stringify(replies[move])}`,
     ),
   );
-  await activate('Confirm transcript and continue', method);
+  await page.evaluate(`window.__callProbe.hold('cleanup');window.__callProbe.failTurn=${failOnce}`);
+  let expected = await holdAction(
+    'Confirm transcript and continue',
+    'Evaluating…',
+    'confirm',
+    '/turn',
+    method,
+  );
+  await page.evaluate("window.__callProbe.release('confirm')");
+  if (failOnce) {
+    await phase('recoverable_error');
+    expected = await holdAction('Retry confirmed turn', 'Evaluating…', 'confirm', '/turn', method);
+    await page.evaluate("window.__callProbe.release('confirm')");
+    assert(
+      await page.evaluate(
+        'window.__callProbe.turnBodies.at(-1)===window.__callProbe.turnBodies.at(-2)',
+      ),
+    );
+    report.checks.push('Failed confirmation restores retry; exact saved turn resubmitted');
+  }
+  await phase('resolving');
+  await progress('Saving turn…', '/turn', undefined, expected);
+  assert.equal(
+    await page.evaluate("document.querySelector('#call-transcript').value"),
+    replies[move],
+  );
+  await screenshot(page, resolve(out, `saving-${method}.png`), undefined, false);
+  await page.evaluate("window.__callProbe.release('cleanup')");
   assert(
     await waitFor(
       page,
@@ -377,7 +482,10 @@ try {
   });
   assert.equal(await page.evaluate('window.__callProbe.microphoneRequests'), 0);
   await page.evaluate('window.__callProbe.audioDelay=2000');
-  await activate('Start call');
+  await holdAction('Start call', 'Starting call…', 'start', '/api/call/attempts', 'touch', 'POST');
+  await page.evaluate("window.__callProbe.release('start')");
+  await phase('tts_loading');
+  await progress('Loading client audio…', '/audio', 'POST', 1);
   await activate('Continue with client text');
   await activate('Open notes');
   await typeInto(page, '#call-notes', 'Ask who owns quote follow-up.');
@@ -388,8 +496,20 @@ try {
   );
   assert(local[0].bytes > 0 && !local[0].uploaded);
   report.checks.push('Native MediaRecorder Blob saved before upload');
-  await page.evaluate('window.__callProbe.failSTT=true');
-  await activate('Transcribe recording');
+  await page.evaluate("window.__callProbe.failSTT=true;window.__callProbe.hold('transcribe')");
+  await holdAction(
+    'Transcribe recording',
+    'Transcribing…',
+    'upload',
+    '/recordings/',
+    'touch',
+    'PUT',
+  );
+  await screenshot(page, resolve(out, 'transcribing-390.png'), undefined, false);
+  await page.evaluate("window.__callProbe.release('upload')");
+  await phase('transcribing');
+  await progress('Transcribing…', '/transcribe', undefined, 1);
+  await page.evaluate("window.__callProbe.release('transcribe')");
   await phase('recoverable_error');
   assert.equal(
     await page.evaluate("window.__callProbe.rows('call_recordings').then(r=>r.length)"),
@@ -398,7 +518,8 @@ try {
   const uploads = await page.evaluate(
     "window.__callProbe.requests.filter(r=>r.method==='PUT').length",
   );
-  await activate('Retry transcription');
+  await holdAction('Retry transcription', 'Transcribing…', 'transcribe', '/transcribe');
+  await page.evaluate("window.__callProbe.release('transcribe')");
   await phase('transcript_review');
   assert.equal(
     await page.evaluate("window.__callProbe.requests.filter(r=>r.method==='PUT').length"),
@@ -426,7 +547,7 @@ try {
     await screenshot(page, resolve(out, `call-${width}.png`), undefined, false);
   }
   await setViewport(page, 390, 900, { mobile: true });
-  await confirm('permission');
+  await confirm('permission', 'touch', true);
   await activate('Continue with client text');
   const decoding = await page.evaluate(
     `(async()=>{const row=(await window.__callProbe.rows('call_recordings'))[0];const context=new AudioContext();const decoded=await context.decodeAudioData(await row.blob.arrayBuffer());const result={seconds:decoded.duration,channels:decoded.numberOfChannels,sampleRate:decoded.sampleRate};await context.close();return result;})()`,
@@ -441,7 +562,9 @@ try {
     await page.evaluate("document.querySelector('#call-notes').value"),
     'Ask who owns quote follow-up.',
   );
-  await activate('Delete audio');
+  await holdAction('Delete audio', 'Deleting audio…', 'delete', '/recordings/', 'touch', 'DELETE');
+  await page.evaluate("window.__callProbe.release('delete')");
+  assert(await waitFor(page, "window.__callProbe.rows('call_recordings').then(r=>r.length===0)"));
   assert.equal(
     await page.evaluate("window.__callProbe.rows('call_recordings').then(r=>r.length)"),
     0,
@@ -464,7 +587,12 @@ try {
   }
   await activate('Continue with client text');
   await phase('complete');
-  await activate('Get call feedback');
+  await page.evaluate('window.__callProbe.failFeedback=true');
+  await holdAction('Get call feedback', 'Getting feedback…', 'feedback', '/api/ai/evaluate');
+  await screenshot(page, resolve(out, 'feedback-390.png'), undefined, false);
+  await page.evaluate("window.__callProbe.release('feedback')");
+  await holdAction('Retry call feedback', 'Getting feedback…', 'feedback', '/api/ai/evaluate');
+  await page.evaluate("window.__callProbe.release('feedback')");
   assert(await waitFor(page, "document.body.textContent.includes('CALL_PERFORMANCE_RUBRIC_V1')"));
   const evidence = await page.evaluate(
     "Promise.all([window.__callProbe.rows('exercise_attempts'),window.__callProbe.rows('sync_queue'),window.__callProbe.rows('call_recordings')]).then(([attempts,queue,audio])=>({attempts:attempts.length,dimensions:attempts[0].grade.rubric_evaluation.result.rubric_results.map(r=>r.id),queued:queue.length,rawInQueue:queue.some(r=>JSON.stringify(r).includes('audio/webm')),audio:audio.length}))",
@@ -476,6 +604,9 @@ try {
   report.checks.push('Full four-turn call through feedback at 390px using touch');
   // A second complete call uses desktop keyboard input, including a microphone denial/retry.
   await setViewport(page, 1440, 900);
+  await page.send('Emulation.setEmulatedMedia', {
+    features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
+  });
   await activate('Try again', 'keyboard');
   await activate('Start call', 'keyboard');
   await activate('Continue with client text', 'keyboard');
@@ -508,12 +639,64 @@ try {
   }
   await activate('Continue with client text', 'keyboard');
   await phase('complete');
-  await activate('Get call feedback', 'keyboard');
+  await holdAction(
+    'Get call feedback',
+    'Getting feedback…',
+    'feedback',
+    '/api/ai/evaluate',
+    'keyboard',
+  );
+  await page.evaluate("window.__callProbe.release('feedback')");
   assert(
     await waitFor(page, "window.__callProbe.rows('exercise_attempts').then(rows=>rows.length===2)"),
   );
   report.checks.push(
     'Full desktop keyboard call through feedback, visible focus and microphone denial recovery',
+  );
+  await activate('Try again', 'keyboard');
+  await activate('Start call', 'keyboard');
+  await activate('Continue with client text', 'keyboard');
+  const clarify = cold.conversation.nodes.find(
+    (n) =>
+      n.id === cold.conversation.nodes.find((n) => n.id === cold.conversation.opening).fallback,
+  );
+  const expectedCue = clarify.moves.find(
+    (m) => m.next !== clarify.id && ['ask', 'clarify', 'reflect'].includes(m.kind),
+  ).label;
+  for (let turn = 0; turn < 2; turn++) {
+    await speak('keyboard');
+    await activate('Transcribe recording', 'keyboard');
+    await phase('transcript_review');
+    await confirm('unrelated', 'keyboard');
+    assert.equal(
+      await page.evaluate("document.querySelector('[data-testid=call-recovery]')?.textContent"),
+      `The call needs clarification. Try: ${expectedCue}.`,
+    );
+    await activate('Continue with client text', 'keyboard');
+  }
+  for (const width of [1440, 1024, 768, 390, 320]) {
+    await setViewport(page, width, 900, { mobile: width < 768 });
+    assert(
+      await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),
+      `Recovery cue overflow at ${width}`,
+    );
+    await screenshot(page, resolve(out, `recovery-${width}.png`), undefined, false);
+  }
+  await speak();
+  await activate('Transcribe recording');
+  await phase('transcript_review');
+  // The controlled server has no language classifier. Use the current authored move to
+  // exercise real UI recovery without pretending the fixture interprets arbitrary speech.
+  await page.evaluate(
+    `(()=>{const select=document.querySelector('[data-testid=call-room] select');select.value=${JSON.stringify(clarify.moves.find((m) => m.next !== clarify.id && ['ask', 'clarify', 'reflect'].includes(m.kind)).id)};select.dispatchEvent(new Event('change',{bubbles:true}));})()`,
+  );
+  await confirm('process');
+  assert.equal(
+    await page.evaluate("!!document.querySelector('[data-testid=call-recovery]')"),
+    false,
+  );
+  report.checks.push(
+    'Two guided fallback turns show current authored guidance at five widths; advancing clears it',
   );
   for (const exercise of exercises.filter((e) => ['independent', 'pressure'].includes(e.mode))) {
     await openPage(page, `${base}/exercise/${exercise.id}`);
@@ -521,8 +704,24 @@ try {
       await page.evaluate('!!document.querySelector("[data-testid=call-anchors]")'),
       false,
     );
+    await activate('Start call');
+    await activate('Continue with client text');
+    await speak();
+    await activate('Transcribe recording');
+    await phase('transcript_review');
+    await confirm('unrelated');
+    assert.equal(
+      await page.evaluate("!!document.querySelector('[data-testid=call-recovery]')"),
+      false,
+    );
+    assert.equal(
+      await page.evaluate("document.body.textContent.includes('The call needs clarification')"),
+      false,
+    );
   }
-  report.checks.push('Independent/pressure anchors absent from DOM; reduced-motion rendering');
+  report.checks.push(
+    'Independent/pressure anchors and fallback coaching absent from DOM, including after off-path turns',
+  );
   report.requests.push(...(await page.evaluate('window.__callProbe.requests')));
   report.browser_fetch_origins = await page.evaluate(
     "JSON.parse(sessionStorage.getItem('call-probe-origins')??'[]')",

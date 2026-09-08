@@ -21,6 +21,8 @@ import { storeLocalRecording } from './local';
 import { cleanConfirmedAudio, confirmTurn, transcribeSaved } from './pipeline';
 import { NegotiationTerms } from './NegotiationTerms';
 import { Recordings } from './Recordings';
+import { CallAction } from './CallAction';
+import { recoveryCue } from './recovery';
 import styles from './call.module.css';
 
 const PHASE_LABEL: Record<CallPhase, string> = {
@@ -71,6 +73,7 @@ export default function CallRoom({
     attempt ? (attempt.response.call ?? emptyCallResponse()) : (saved ?? emptyCallResponse()),
   );
   const live = useRef(call);
+  const checkpointRevision = useRef(0);
   const mounted = useRef(true);
   const capture = useRef<Capture | null>(null);
   const playback = useRef<{ audio: HTMLAudioElement; url: string } | null>(null);
@@ -110,6 +113,7 @@ export default function CallRoom({
   }
   async function patch(patch: Partial<CallResponse>) {
     if (!attempt) return;
+    checkpointRevision.current++;
     live.current = { ...live.current, ...patch };
     if (mounted.current) setCall(live.current);
     await saveCall(exercise.id, context, attempt.attempt_id, patch);
@@ -155,6 +159,7 @@ export default function CallRoom({
     if (attempt?.response.call)
       void (async () => {
         const held = attempt.response.call!;
+        const restoringRevision = checkpointRevision.current;
         let recovered = held;
         if (held.snapshot) {
           try {
@@ -185,7 +190,8 @@ export default function CallRoom({
           }
           try {
             const row = await callRequest<CallRecording>(`recordings/${recovered.recording_id}`);
-            if (active) setOriginal(row.original_transcript ?? '');
+            if (active && checkpointRevision.current === restoringRevision)
+              setOriginal(row.original_transcript ?? '');
           } catch {
             /* Local audio can still be uploaded. */
           }
@@ -194,7 +200,8 @@ export default function CallRoom({
           recovered = { ...recovered, phase: 'text_fallback' };
         if (['uploading', 'transcribing', 'evaluating', 'resolving'].includes(recovered.phase))
           recovered = { ...recovered, phase: 'recoverable_error' };
-        if (active) {
+        // A late restore must not replace a newer edit or the immutable pending retry identity.
+        if (active && checkpointRevision.current === restoringRevision) {
           afterAudio.current = recovered.snapshot?.complete ? 'complete' : 'learner_ready';
           live.current = recovered;
           setCall(recovered);
@@ -324,6 +331,8 @@ export default function CallRoom({
   }
   async function transcribe() {
     if (!attempt || !call.recording_id) return;
+    // Paint progress before the first IndexedDB read; upload still waits for the local checkpoint.
+    await patch({ phase: 'uploading' });
     const row = await transcribeSaved(attempt, context, call.recording_id, db, (phase) =>
       patch({ phase }),
     );
@@ -380,6 +389,17 @@ export default function CallRoom({
     snapshot && !snapshot.complete && idlePhases.includes(call.phase) && !call.pending_turn,
   );
   const node = exercise.conversation?.nodes.find((n) => n.id === snapshot?.current.node);
+  const transcribing = ['uploading', 'transcribing'].includes(call.phase);
+  const confirming = ['evaluating', 'resolving'].includes(call.phase);
+  const updatingAudio =
+    busy && !transcribing && !confirming && call.phase !== 'microphone_permission';
+  const cue = recoveryCue(exercise, snapshot);
+  const showReview =
+    !readOnly && (call.phase === 'transcript_review' || Boolean(call.pending_turn) || confirming);
+  const reviewText =
+    call.phase === 'resolving'
+      ? (snapshot?.turns.at(-1)?.confirmed_transcript ?? '')
+      : (call.pending_turn?.transcript ?? call.transcript_draft);
   return (
     <article
       className={styles.room}
@@ -431,17 +451,24 @@ export default function CallRoom({
               <p>{snapshot.current.text}</p>
             </section>
           )}
+          {cue && (
+            <p className={styles.recovery} role="status" data-testid="call-recovery">
+              The call needs clarification. Try: {cue}.
+            </p>
+          )}
           {!readOnly && (
             <div className={styles.controls}>
               {!snapshot && (
-                <button
+                <CallAction
                   className={styles.primary}
                   type="button"
                   disabled={busy || !enabled}
+                  loading={busy || enabled === null}
+                  pendingLabel={enabled === null ? 'Checking call availability…' : 'Starting call…'}
                   onClick={() => void perform(start)}
                 >
-                  {enabled === null ? 'Checking call availability…' : 'Start call'}
-                </button>
+                  Start call
+                </CallAction>
               )}
               {snapshot &&
                 ['text_fallback', 'client_speaking', 'tts_loading'].includes(call.phase) && (
@@ -460,21 +487,30 @@ export default function CallRoom({
                   </button>
                 )}
               {snapshot &&
-                !busy &&
-                !['recording', 'microphone_permission', 'evaluating'].includes(call.phase) && (
-                  <button type="button" onClick={() => void playClient(snapshot).catch(failure)}>
+                !transcribing &&
+                !confirming &&
+                !['recording', 'microphone_permission'].includes(call.phase) && (
+                  <CallAction
+                    type="button"
+                    disabled={busy}
+                    loading={call.phase === 'tts_loading'}
+                    pendingLabel="Loading client audio…"
+                    onClick={() => void playClient(snapshot).catch(failure)}
+                  >
                     Replay client
-                  </button>
+                  </CallAction>
                 )}
-              {canRecord && (
-                <button
+              {(canRecord || call.phase === 'microphone_permission') && (
+                <CallAction
                   className={styles.primary}
                   type="button"
                   disabled={busy || !supported || !enabled}
+                  loading={call.phase === 'microphone_permission'}
+                  pendingLabel="Waiting for microphone…"
                   onClick={() => void perform(record)}
                 >
                   {call.recording_id ? 'Record again' : 'Record reply'}
-                </button>
+                </CallAction>
               )}
               {call.phase === 'recording' && (
                 <button
@@ -489,27 +525,20 @@ export default function CallRoom({
               )}
               {call.recording_id &&
                 !call.pending_turn &&
+                !confirming &&
                 !['recording', 'microphone_permission'].includes(call.phase) && (
-                  <button
+                  <CallAction
                     type="button"
                     disabled={busy || !enabled}
+                    loading={transcribing}
+                    pendingLabel="Transcribing…"
                     onClick={() => void perform(transcribe)}
                   >
                     {call.phase === 'locally_saved'
                       ? 'Transcribe recording'
                       : 'Retry transcription'}
-                  </button>
+                  </CallAction>
                 )}
-              {call.pending_turn && (
-                <button
-                  className={styles.primary}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => void perform(confirm)}
-                >
-                  Retry confirmed turn
-                </button>
-              )}
             </div>
           )}
           {!supported && !readOnly && (
@@ -530,25 +559,31 @@ export default function CallRoom({
               Review and correct the transcript before confirming.
             </p>
           )}
-          {!readOnly && call.phase === 'transcript_review' && !call.pending_turn && (
+          {showReview && (
             <section className={styles.review} aria-label="Transcript review">
               <h2>What you said</h2>
-              <p>Correct any transcription mistakes. Corrections carry no score penalty.</p>
+              <p>
+                {confirming
+                  ? 'Using your confirmed reply below.'
+                  : call.pending_turn
+                    ? 'Retry will use your confirmed reply below.'
+                    : 'Correct any transcription mistakes. Corrections carry no score penalty.'}
+              </p>
               <label htmlFor="call-transcript">Transcript to confirm</label>
               <textarea
                 id="call-transcript"
                 ref={transcript}
-                value={call.transcript_draft}
+                value={reviewText}
                 maxLength={CALL_LIMITS.maxTranscript}
                 rows={5}
-                disabled={busy}
+                disabled={busy || Boolean(call.pending_turn) || confirming}
                 onChange={(e) => void patch({ transcript_draft: e.target.value }).catch(failure)}
               />
               <details>
                 <summary>Original transcription</summary>
                 <p>{original}</p>
               </details>
-              {node && (
+              {node && !call.pending_turn && !confirming && (
                 <label>
                   My intended move (optional)
                   <select
@@ -565,7 +600,7 @@ export default function CallRoom({
                   </select>
                 </label>
               )}
-              {snapshot && (
+              {snapshot && !call.pending_turn && !confirming && (
                 <NegotiationTerms
                   exercise={exercise}
                   snapshot={snapshot}
@@ -574,14 +609,16 @@ export default function CallRoom({
                   disabled={busy}
                 />
               )}
-              <button
+              <CallAction
                 type="button"
                 className={styles.primary}
-                disabled={busy || !call.transcript_draft.trim()}
+                disabled={busy || !reviewText.trim()}
+                loading={confirming}
+                pendingLabel={call.phase === 'resolving' ? 'Saving turn…' : 'Evaluating…'}
                 onClick={() => void perform(confirm)}
               >
-                Confirm transcript and continue
-              </button>
+                {call.pending_turn ? 'Retry confirmed turn' : 'Confirm transcript and continue'}
+              </CallAction>
             </section>
           )}
           {error && (
@@ -597,18 +634,16 @@ export default function CallRoom({
                 Feedback covers questions, listening, diagnosis, clarity, jargon, pitch timing,
                 objection handling and next step. Accent and pronunciation are never graded.
               </p>
-              <button
+              <CallAction
                 type="button"
                 className={styles.primary}
                 disabled={busy || submitting}
+                loading={submitting}
+                pendingLabel="Getting feedback…"
                 onClick={onSubmit}
               >
-                {submitting
-                  ? 'Evaluating call…'
-                  : attempt.submitted
-                    ? 'Retry call feedback'
-                    : 'Get call feedback'}
-              </button>
+                {attempt.submitted ? 'Retry call feedback' : 'Get call feedback'}
+              </CallAction>
               {submissionError && <p role="alert">{submissionError}</p>}
             </section>
           )}
@@ -693,6 +728,7 @@ export default function CallRoom({
                   onChange={(e) => void perform(() => retention(e.target.checked))}
                 />
                 Keep recordings after transcript confirmation
+                {updatingAudio && <span role="status">Updating saved audio…</span>}
               </label>
             )}
             <p>
@@ -700,9 +736,11 @@ export default function CallRoom({
               transcriptions keep audio for retry. Retained audio can be deleted below.
             </p>
             {attemptId && snapshot && (
-              <button
+              <CallAction
                 type="button"
                 disabled={busy || call.phase === 'recording'}
+                loading={updatingAudio}
+                pendingLabel="Updating saved audio…"
                 onClick={() =>
                   void perform(async () => {
                     await cleanConfirmedAudio(snapshot);
@@ -711,7 +749,7 @@ export default function CallRoom({
                 }
               >
                 Retry audio cleanup
-              </button>
+              </CallAction>
             )}
           </section>
         </aside>

@@ -1,4 +1,5 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Exercise } from '@bloomlab/content-schema';
 import type { CallSnapshot } from '@bloomlab/shared';
@@ -14,6 +15,7 @@ import {
 } from '../exercise/attempt';
 import CallRoom from './CallRoom';
 import { captureAudio } from './recording';
+import { gradeAttempt } from '../exercise/finalize';
 
 vi.mock('./recording', () => ({
   recordingMime: () => 'audio/webm;codecs=opus',
@@ -52,9 +54,14 @@ afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
-async function open(exercise = cold, review = false) {
+async function open(
+  exercise = cold,
+  review: boolean | 'locally_saved' | 'complete' = false,
+  configure: (snapshot: CallSnapshot) => CallSnapshot = (snapshot) => snapshot,
+  restoredRecording?: Promise<Response>,
+) {
   let attempt = await startAttempt(exercise);
-  let snapshot = initial(exercise, attempt.attempt_id);
+  let snapshot = configure(initial(exercise, attempt.attempt_id));
   const id = crypto.randomUUID();
   let original = 'Could I ask about your coat follow-up?';
   let confirmed: string | null = null;
@@ -62,7 +69,7 @@ async function open(exercise = cold, review = false) {
     await saveCall(exercise.id, NORMAL_RUN, attempt.attempt_id, {
       ...emptyCallResponse(),
       snapshot,
-      phase: 'transcript_review',
+      phase: typeof review === 'string' ? review : 'transcript_review',
       recording_id: id,
       transcript_draft: original,
     });
@@ -107,29 +114,260 @@ async function open(exercise = cold, review = false) {
     }
     if (path.endsWith('/recordings')) return Response.json([]);
     if (path.includes(`/recordings/${id}`))
-      return Response.json({
-        recording_id: id,
-        original_transcript: original,
-        confirmed_transcript: confirmed,
-      });
+      return (
+        restoredRecording ??
+        Response.json({
+          recording_id: id,
+          original_transcript: original,
+          confirmed_transcript: confirmed,
+        })
+      );
     if (path.includes('/attempts')) return Response.json(snapshot);
     throw new Error(`Unexpected path ${path}`);
   });
   vi.stubGlobal('fetch', network);
-  const view = render(
-    <CallRoom
-      exercise={exercise}
-      attempt={attempt}
-      context={NORMAL_RUN}
-      onSubmit={vi.fn()}
-      submitting={false}
-      submissionError={null}
-    />,
-  );
+  const props = {
+    exercise,
+    attempt,
+    context: NORMAL_RUN,
+    onSubmit: vi.fn(),
+    submitting: false,
+    submissionError: null,
+  };
+  const view = render(<CallRoom {...props} />);
   await waitFor(() => expect(network).toHaveBeenCalled());
-  return { ...view, attempt, network, id };
+  return { ...view, attempt, network, id, props };
+}
+function deferred() {
+  let resolve!: (response: Response) => void;
+  const promise = new Promise<Response>((done) => {
+    resolve = done;
+  });
+  return { promise, resolve };
+}
+function expectProgress(label: string) {
+  const button = screen.getByRole('button', { name: label });
+  expect(button).toBeDisabled();
+  expect(button).toHaveAttribute('aria-busy', 'true');
+  expect(button.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
+  expect(screen.getAllByRole('status').some((status) => status.textContent === label)).toBe(true);
+  return button;
+}
+function fallback(snapshot: CallSnapshot): CallSnapshot {
+  const node = cold.conversation!.nodes.find((n) => n.id === cold.conversation!.opening)!;
+  const next = cold.conversation!.nodes.find((n) => n.id === node.fallback)!;
+  const response = { node: next.id, text: next.client_message, dynamic: false };
+  return {
+    ...snapshot,
+    turn: 1,
+    current: response,
+    turns: [
+      {
+        turn: 0,
+        recording_id: crypto.randomUUID(),
+        original_transcript: 'Unrelated fictional sentence.',
+        confirmed_transcript: 'Unrelated fictional sentence.',
+        client: snapshot.current,
+        response,
+        move: null,
+        interpretation: 'fallback',
+      },
+    ],
+  };
 }
 describe('CALL-001/004/006 call work area', () => {
+  it('announces initial feedback and retry immediately and prevents duplicate submission until completion', async () => {
+    const a = await open(cold, 'complete', (snapshot) => ({ ...snapshot, complete: true }));
+    a.unmount();
+    let gate = deferred();
+    const request = vi.fn(() => gate.promise);
+    function SubmissionOwner() {
+      const [attempt, setAttempt] = useState(a.attempt);
+      const [submitting, setSubmitting] = useState(false);
+      const [failure, setFailure] = useState<string | null>(null);
+      const [complete, setComplete] = useState(false);
+      return (
+        <CallRoom
+          {...a.props}
+          attempt={complete ? null : attempt}
+          submitting={submitting}
+          submissionError={failure}
+          onSubmit={() => {
+            setSubmitting(true);
+            setAttempt({
+              ...a.attempt,
+              submitted: { report: gradeAttempt(cold, a.attempt), rubric_id: cold.grading.rubric! },
+            });
+            void request().then((response) => {
+              setFailure(response.ok ? null : 'Feedback unavailable. Your call is saved.');
+              setComplete(response.ok);
+              setSubmitting(false);
+            });
+          }}
+        >
+          {complete && <p>Saved feedback result</p>}
+        </CallRoom>
+      );
+    }
+    render(<SubmissionOwner />);
+    fireEvent.click(screen.getByRole('button', { name: 'Get call feedback' }));
+    fireEvent.click(expectProgress('Getting feedback…'));
+    expect(request).toHaveBeenCalledTimes(1);
+    await act(async () => gate.resolve(new Response(null, { status: 503 })));
+    expect(screen.getByRole('alert')).toHaveTextContent('Your call is saved');
+    expect(screen.getByRole('button', { name: 'Retry call feedback' })).toBeEnabled();
+    gate = deferred();
+    fireEvent.click(screen.getByRole('button', { name: 'Retry call feedback' }));
+    fireEvent.click(expectProgress('Getting feedback…'));
+    expect(request).toHaveBeenCalledTimes(2);
+    await act(async () => gate.resolve(new Response(null, { status: 200 })));
+    expect(screen.getByText('Saved feedback result')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Getting feedback…' })).not.toBeInTheDocument();
+  });
+  it('shows immediate upload/transcription progress, blocks duplicates and recovers the saved audio after failure', async () => {
+    const a = await open(cold, 'locally_saved');
+    await db.call_recordings.put({
+      recording_id: a.id,
+      attempt_id: a.attempt.attempt_id,
+      exercise_id: cold.id,
+      turn: 0,
+      mime_type: 'audio/webm;codecs=opus',
+      byte_length: 1,
+      duration_ms: 1000,
+      checksum: 'fixture',
+      created_at: new Date().toISOString(),
+      uploaded: false,
+      retain: false,
+      blob: new Blob(['a']),
+    });
+    const original = a.network.getMockImplementation()!;
+    const upload = deferred(),
+      stt = deferred();
+    a.network.mockImplementation((path, init) =>
+      init?.method === 'PUT'
+        ? upload.promise
+        : path.endsWith('/transcribe')
+          ? stt.promise
+          : original(path, init),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Transcribe recording' }));
+    fireEvent.click(expectProgress('Transcribing…'));
+    await waitFor(() =>
+      expect(a.network.mock.calls.filter(([, init]) => init?.method === 'PUT')).toHaveLength(1),
+    );
+    expect(a.network.mock.calls.filter(([path]) => path.endsWith('/transcribe'))).toHaveLength(0);
+    await act(async () => upload.resolve(Response.json({ recording_id: a.id })));
+    await waitFor(() =>
+      expect(a.network.mock.calls.filter(([path]) => path.endsWith('/transcribe'))).toHaveLength(1),
+    );
+    expectProgress('Transcribing…');
+    await act(async () => stt.resolve(Response.json({ error: 'speech_timeout' }, { status: 503 })));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Transcription timed out');
+    expect(await db.call_recordings.get(a.id)).toMatchObject({ uploaded: true });
+    a.network.mockImplementation(original);
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Retry transcription' })).toBeEnabled(),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Retry transcription' }));
+    expectProgress('Transcribing…');
+    await waitFor(() => expect(screen.getByLabelText('Transcript to confirm')).toBeEnabled());
+    expect(a.network.mock.calls.filter(([, init]) => init?.method === 'PUT')).toHaveLength(1);
+  });
+  it('keeps confirmation and its exact retry through a late restore, error and saving the turn', async () => {
+    const restore = deferred();
+    const a = await open(cold, true, (snapshot) => snapshot, restore.promise);
+    await waitFor(() =>
+      expect(a.network.mock.calls.some(([path]) => path.endsWith(`/recordings/${a.id}`))).toBe(
+        true,
+      ),
+    );
+    const original = a.network.getMockImplementation()!;
+    const first = deferred(),
+      cleanupGate = deferred();
+    a.network.mockImplementation((path, init) =>
+      path.endsWith('/turn') ? first.promise : original(path, init),
+    );
+    const button = screen.getByRole('button', { name: 'Confirm transcript and continue' });
+    fireEvent.click(button);
+    expect(expectProgress('Evaluating…')).toBe(button);
+    fireEvent.click(button);
+    await waitFor(() =>
+      expect(a.network.mock.calls.filter(([path]) => path.endsWith('/turn'))).toHaveLength(1),
+    );
+    expect(screen.getByLabelText('Transcript to confirm')).toHaveValue(
+      'Could I ask about your coat follow-up?',
+    );
+    await act(async () =>
+      restore.resolve(
+        Response.json({ recording_id: a.id, original_transcript: 'Older saved transcription.' }),
+      ),
+    );
+    expect(expectProgress('Evaluating…')).toBe(button);
+    expect(screen.getByLabelText('Transcript to confirm')).toHaveValue(
+      'Could I ask about your coat follow-up?',
+    );
+    await act(async () =>
+      first.resolve(Response.json({ error: 'turn_in_progress' }, { status: 409 })),
+    );
+    expect(await screen.findByRole('alert')).toHaveTextContent('still being resolved');
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Retry confirmed turn' })).toBeEnabled(),
+    );
+    a.network.mockImplementation((path, init) =>
+      path.endsWith('/recordings') ? cleanupGate.promise : original(path, init),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Retry confirmed turn' }));
+    expectProgress('Evaluating…');
+    await waitFor(() => expectProgress('Saving turn…'));
+    expect(screen.getByLabelText('Transcript to confirm')).toHaveValue(
+      'Could I ask about your coat follow-up?',
+    );
+    await act(async () => cleanupGate.resolve(Response.json([])));
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Continue with client text' })).toBeEnabled(),
+    );
+    expect(screen.queryByRole('button', { name: 'Saving turn…' })).not.toBeInTheDocument();
+    const submissions = a.network.mock.calls.filter(([path]) => path.endsWith('/turn'));
+    expect(submissions).toHaveLength(2);
+    expect(submissions[0]![1]?.body).toBe(submissions[1]![1]?.body);
+  });
+  it.each(['guided', 'practice'] as const)(
+    'shows current authored recovery guidance after fallback in %s mode, including loops',
+    async (mode) => {
+      const a = await open({ ...cold, mode }, true, fallback);
+      expect(screen.getByTestId('call-recovery')).toHaveTextContent(
+        'Ask about the current follow-up',
+      );
+      expect(screen.getByTestId('call-recovery')).not.toHaveTextContent('Tina emails');
+      a.unmount();
+      await open({ ...cold, mode }, true, (snapshot) => {
+        const result = fallback(snapshot);
+        result.turns[0]!.client = result.current;
+        return result;
+      });
+      expect(screen.getByTestId('call-recovery')).toBeInTheDocument();
+    },
+  );
+  it.each(['independent', 'pressure'] as const)(
+    'never mounts recovery coaching for a fallback in %s mode',
+    async (mode) => {
+      await open({ ...cold, mode }, true, fallback);
+      expect(screen.queryByTestId('call-recovery')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('call-anchors')).not.toBeInTheDocument();
+      expect(document.body.textContent).not.toContain('The call needs clarification');
+    },
+  );
+  it('does not coach an intended-path response or a call at its turn limit', async () => {
+    const a = await open(cold, true);
+    expect(screen.queryByTestId('call-recovery')).not.toBeInTheDocument();
+    a.unmount();
+    await open(cold, 'complete', (snapshot) => ({
+      ...fallback(snapshot),
+      complete: true,
+      turn: cold.call!.max_turns,
+    }));
+    expect(screen.queryByTestId('call-recovery')).not.toBeInTheDocument();
+  });
   it('starts a new attempt empty even when an older call result is available', async () => {
     const attempt = await startAttempt(cold);
     const historical = {

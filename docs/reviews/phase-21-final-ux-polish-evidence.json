@@ -1,0 +1,196 @@
+{
+  "scope": "Final UX polish: controlled browser fixtures and virtual microphone. No new human microphone or live provider acceptance; no paid provider requests.",
+  "baseline": "62f9ebbf5255e62f8c876537909a58037f785fc9",
+  "local_browser": {
+    "infrastructure": "Browser, real IndexedDB and MediaRecorder; virtual microphone and controlled HTTP fixtures. No live provider acceptance or paid provider requests.",
+    "base": "http://127.0.0.1:5174",
+    "widths": [
+      {
+        "width": 1440,
+        "scroll": 1440,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 1024,
+        "scroll": 1024,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 768,
+        "scroll": 768,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "scroll": 390,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      },
+      {
+        "width": 320,
+        "scroll": 320,
+        "room": true,
+        "notes": true,
+        "inputFonts": [
+          {
+            "label": "call-transcript",
+            "pixels": 16
+          },
+          {
+            "label": "My intended move (optional)Interpret my ",
+            "pixels": 16
+          },
+          {
+            "label": "call-notes",
+            "pixels": 16
+          }
+        ]
+      }
+    ],
+    "recording": {
+      "seconds": 0.84,
+      "channels": 1,
+      "sampleRate": 44100
+    },
+    "evidence": {
+      "attempts": 1,
+      "dimensions": [
+        "questions",
+        "listening",
+        "diagnosis",
+        "clarity",
+        "jargon",
+        "pitch_timing",
+        "objection_handling",
+        "next_step"
+      ],
+      "queued": 4,
+      "rawInQueue": false,
+      "audio": 0
+    },
+    "browser_fetch_origins": ["http://127.0.0.1:5174"],
+    "status": "passed"
+  },
+  "checks": [
+    "Immediate Starting call\u2026 spinner/live status; duplicate blocked; reduced motion",
+    "Immediate Loading client audio\u2026 spinner/live status; duplicate blocked; reduced motion",
+    "Native MediaRecorder Blob saved before upload",
+    "Immediate Transcribing\u2026 spinner/live status; duplicate blocked; reduced motion",
+    "STT failure preserves audio; retry sends no second upload",
+    "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; reduced motion",
+    "Failed confirmation restores retry; exact saved turn resubmitted",
+    "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; reduced motion",
+    "Immediate Deleting audio\u2026 spinner/live status; duplicate blocked; reduced motion",
+    "Reload preserves notes, confirmed transcript and retained Blob; explicit delete removes audio",
+    "Immediate Getting feedback\u2026 spinner/live status; duplicate blocked; reduced motion",
+    "Full four-turn call through feedback at 390px using touch",
+    "Immediate Evaluating\u2026 spinner/live status; duplicate blocked; normal motion",
+    "Immediate Saving turn\u2026 spinner/live status; duplicate blocked; normal motion",
+    "Immediate Getting feedback\u2026 spinner/live status; duplicate blocked; normal motion",
+    "Full desktop keyboard call through feedback, visible focus and microphone denial recovery",
+    "Two guided fallback turns show current authored guidance at five widths; advancing clears it",
+    "Independent/pressure anchors and fallback coaching absent from DOM, including after off-path turns"
+  ],
+  "manual_visual_review": {
+    "widths": [1440, 1024, 768, 390, 320],
+    "result": "passed",
+    "observations": [
+      "Quiet dark room retained; controls and text wrap without page overflow.",
+      "Busy buttons stay at full opacity with spinner and explicit text; reduced motion keeps static indicator and text.",
+      "Guided cue sits below the current client response and uses the authored current move label.",
+      "Phone inputs remain 16px; keyboard focus and 390px touch activation verified."
+    ]
+  },
+  "focused_ui_and_persistence_tests": {
+    "passed": 21,
+    "files": 3,
+    "late_restore_regression": "Delayed restore held through confirmation: fails without the checkpoint revision guard and passes with it; exact retry identity preserved."
+  },
+  "runtime_boundaries": {
+    "conversation_engine_changed": false,
+    "max_turns_changed": false,
+    "content_changed": false,
+    "grading_or_provider_changed": false,
+    "microphone_lifecycle_changed": false,
+    "raw_audio_auto_upload_added": false,
+    "production_enabled": false
+  },
+  "acceptance_statuses": "Existing CALL-001/CALL-003/CALL-004/VOI-003 results retained; no broader human acceptance promotion.",
+  "local_ci": {
+    "command": "npm run ci",
+    "node": "22.22.1",
+    "status": "passed",
+    "tests": 1791,
+    "files": 109,
+    "checks": [
+      "typecheck",
+      "lint",
+      "format",
+      "tests",
+      "control documents",
+      "content",
+      "voice",
+      "build"
+    ],
+    "existing_warning": "ExerciseRunner.tsx effect dependency; no lint errors."
+  }
+}

@@ -284,9 +284,9 @@ Phase 20 live voice assets:
 
 Phase 21 accepted interface/provider paths:
 
-- CALL-001 — One quiet dark Call Room has the six required elements, with five-width browser review and focused UI tests.
+- CALL-001 — One quiet dark Call Room has the six required elements. Final UX polish adds phase-derived, accessible loading feedback at the invoked controls, with full-opacity busy buttons, duplicate prevention and reduced-motion text/indicators. Delayed browser requests, five-width review, 390px touch and desktop keyboard flows pass. See `docs/reviews/phase-21-final-ux-polish.md`.
 - CALL-003 — Corrected Preview proposal grading accepted all eight dimensions with manual fictional-speaker attribution review, first-response acceptance and zero-cost replay. The user confirmed feedback on the original saved human proposal; scoped metadata verifies the same completed run, four unchanged turns, first-response acceptance and no residual reservation. No re-recording or transcription purchase was needed. Strict citation/grading validation, one repair and conservative unknown billing remain enforced; 97 focused regressions and 1,782 total tests pass. See `docs/reviews/phase-21-feedback-reliability.md`.
-- CALL-004 — Guided/practice anchors are secondary; independent/pressure anchors are absent from the DOM, checked in browser and UI tests.
+- CALL-004 — Guided/practice anchors remain secondary. Authored fallback recovery now displays a current content-derived move cue only when needed; advancing removes it. Independent/pressure anchors and recovery coaching remain absent from the DOM, including actual off-path browser turns. Engine branching and max-turn behavior are unchanged; no answer text or hidden state is exposed.
 - VOI-003 — One real authorized dynamic ElevenLabs asset, 69 billed characters; identical retry reuses the private bytes and immutable receipt with zero second synthesis purchase.
 
 ## IMPLEMENTED_UNVERIFIED

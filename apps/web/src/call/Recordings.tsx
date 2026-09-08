@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import type { CallRecording } from '@bloomlab/shared';
 import { db } from '../data/db';
 import { callFetch, callRequest } from './client';
+import { CallAction } from './CallAction';
 
 /** Deletion lives outside immutable attempt history. Metadata is fetched from the media store. */
 export function Recordings({ attemptId, revision }: { attemptId: string; revision: string }) {
@@ -13,7 +14,8 @@ export function Recordings({ attemptId, revision }: { attemptId: string; revisio
     ) ?? [];
   const [remote, setRemote] = useState<CallRecording[]>([]);
   const [error, setError] = useState('');
-  const [busy, setBusy] = useState<string | null>(null);
+  const [busy, setBusy] = useState<{ id: string; action: 'play' | 'delete' } | null>(null);
+  const operation = useRef(false);
   const [playing, setPlaying] = useState<{ id: string; url: string } | null>(null);
   const audio = useRef<HTMLAudioElement>(null);
   useEffect(() => {
@@ -45,7 +47,9 @@ export function Recordings({ attemptId, revision }: { attemptId: string; revisio
     ...new Set([...local.map((r) => r.recording_id), ...remote.map((r) => r.recording_id)]),
   ];
   async function play(id: string) {
-    setBusy(id);
+    if (operation.current) return;
+    operation.current = true;
+    setBusy({ id, action: 'play' });
     setError('');
     try {
       const blob =
@@ -55,11 +59,14 @@ export function Recordings({ attemptId, revision }: { attemptId: string; revisio
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : 'Playback is unavailable.');
     } finally {
+      operation.current = false;
       setBusy(null);
     }
   }
   async function remove(id: string) {
-    setBusy(id);
+    if (operation.current) return;
+    operation.current = true;
+    setBusy({ id, action: 'delete' });
     setError('');
     if (playing?.id === id) {
       audio.current?.pause();
@@ -78,6 +85,7 @@ export function Recordings({ attemptId, revision }: { attemptId: string; revisio
         'Audio deletion did not finish. Retry Delete audio; the transcript will stay saved.',
       );
     } finally {
+      operation.current = false;
       setBusy(null);
     }
   }
@@ -113,14 +121,26 @@ export function Recordings({ attemptId, revision }: { attemptId: string; revisio
               </span>
               <div>
                 {available && (
-                  <button type="button" disabled={busy !== null} onClick={() => void play(id)}>
+                  <CallAction
+                    type="button"
+                    disabled={busy !== null}
+                    loading={busy?.id === id && busy.action === 'play'}
+                    pendingLabel="Loading recording…"
+                    onClick={() => void play(id)}
+                  >
                     Replay recording
-                  </button>
+                  </CallAction>
                 )}
                 {(available || server?.status === 'deleting') && (
-                  <button type="button" disabled={busy !== null} onClick={() => void remove(id)}>
+                  <CallAction
+                    type="button"
+                    disabled={busy !== null}
+                    loading={busy?.id === id && busy.action === 'delete'}
+                    pendingLabel="Deleting audio…"
+                    onClick={() => void remove(id)}
+                  >
                     Delete audio
-                  </button>
+                  </CallAction>
                 )}
               </div>
             </li>

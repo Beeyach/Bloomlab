@@ -4,6 +4,13 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Fixed — Phase 21 final UX polish
+
+- Long Call Room actions now show a spinner, specific busy label and accessible live status at the invoked control. Confirmation and its retry keep the saved text/control visible; feedback, client replay, recording replay/deletion and audio updates explain their waits. Existing phases/request state own progress; reduced motion retains static busy indicators and text, and duplicate submission stays blocked.
+- A delayed restore response can no longer replace newer local edits or a pending confirmed turn. Its regression holds the old response through confirmation and proves the same text and retry identity survive.
+- Guided/practice authored fallbacks show a secondary cue from the current move label or existing anchor/objective. The cue clears on progress and never mounts in independent/pressure calls. No scenario, turn limit, grading, provider, privacy or microphone lifecycle change. Scripted conversation and the Safari browser findings remain limitations.
+- Focused UI regressions and delayed browser probes cover loading/error/retry, exact saved confirmation, two fallback loops, advanced-aid DOM absence, five widths, touch, keyboard, reduced motion and local-first persistence. See `docs/reviews/phase-21-final-ux-polish.md`; no broader human acceptance promotion.
+
 ### Fixed — Phase 21 proposal feedback reliability
 
 - A repeatable proposal failure exhausted the generic rubric array and then citation validation during repair. The call-specific provider schema now requires all eight named dimensions, converts them to the unchanged saved/public array, and guides the single repair using a fixed validation cause. Speaker, critical/required, citation, timeout, token-cap and budget safeguards remain in place.
