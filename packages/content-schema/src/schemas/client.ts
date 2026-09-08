@@ -124,8 +124,8 @@ export const ClientSchema = z
     ),
     hidden_facts: factRecord,
     voice: z.strictObject({
-      /** Voice character registry reference (TA§46); the registry itself is Phase 20. */
-      character: z.string().regex(/^VC-[a-z0-9]+(?:-[a-z0-9]+)*$/),
+      /** Voice character registry reference (TA§46), checked by the compiler. */
+      character: ref('voice-characters'),
       tone: z.string().min(3),
       speaking_style: z.string().min(3),
       sample_phrases: stringList.min(1),

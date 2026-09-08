@@ -1,10 +1,8 @@
 # Release stamp of the curriculum (spec §101, CNT-007). Bump content_version whenever any file
 # under content/ changes, then run `npm run content:lock`. Git = what Bloomlab teaches.
-content_version: '2026.09.16'
+content_version: '2026.09.17'
 schema_version: 1
 notes: >-
-  Phase 18 — Negotiation. A standalone Summit agreement, six learner actions, seven authored
-  strategy reactions and ten executable objections. Hidden state changes later behavior;
-  scope, phases and concessions reuse the Phase 17 economics. Attempt-local dialogue and
-  drafts persist through the shared queue. Actual language interpretation and the unchanged
-  pricing reasoning rubric remain pending until Phase 19.
+  Phase 20 — Voice assets. Five persistent voice characters with verified ElevenLabs catalog
+  IDs and eight reusable authored lines each. Generation and private storage are independent
+  of the simulator, mastery and exercise-grading contracts.

@@ -22,6 +22,7 @@ export const FOLDER_EXTENSIONS: Readonly<Record<ContentType, readonly string[]>>
   exercises: ['.yaml', '.yml'],
   scenarios: ['.yaml', '.yml'],
   clients: ['.yaml', '.yml'],
+  'voice-characters': ['.yaml', '.yml'],
   rubrics: ['.yaml', '.yml'],
   projects: ['.yaml', '.yml'],
   portfolio: ['.yaml', '.yml'],

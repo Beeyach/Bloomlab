@@ -1,0 +1,49 @@
+# Real account catalog selection; provenance and audition evidence: docs/reviews/phase-20-voice-assets.md
+id: VC-storm-season-roofer
+client: CL-ridgeline-roofing
+voice_id: iP95p4xoKVk53GoZ742B
+speech_rate: 1.08
+style: 0
+stability: 0.5
+allowed_emotion_range:
+  - warm
+  - hurried
+  - skeptical
+  - curious
+language: en
+lines:
+  - id: greeting-01
+    kind: greeting
+    text: Hey, Dale at Ridgeline Roofing. Give me the short version, I'm between jobs.
+    emotion: hurried
+  - id: objection-01
+    kind: objection
+    text: The network gives us the software. I don't know what I can change in it.
+    emotion: skeptical
+  - id: objection-02
+    kind: objection
+    text: Before you quote me, we need to find out what the contractor network will let us do.
+    emotion: skeptical
+  - id: interruption-01
+    kind: interruption
+    text: Hold on, my crew is calling. What is the one thing you need me to check?
+    emotion: hurried
+  - id: voicemail-01
+    kind: voicemail
+    text: This is Dale at Ridgeline Roofing. I'm probably on a job. Leave your name, number, and the
+      reason for your call.
+    emotion: warm
+  - id: recurring-01
+    kind: recurring
+    text: Storm weeks we drown, then it goes quiet for a month.
+    emotion: warm
+  - id: scenario-01
+    kind: scenario
+    text: Inspection requests come in overnight. By the time we call back, some have booked somebody
+      else. Where would you start?
+    emotion: curious
+  - id: scenario-02
+    kind: scenario
+    text: Corinne already chases the insurance paperwork. If we add follow-up, I want to know who
+      owns it during a storm week.
+    emotion: curious

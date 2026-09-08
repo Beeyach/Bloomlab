@@ -1,0 +1,51 @@
+# Real account catalog selection; provenance and audition evidence: docs/reviews/phase-20-voice-assets.md
+id: VC-studio-manager
+client: CL-halcyon-yoga
+voice_id: XrExE9yKIg1WjnnlVkGX
+speech_rate: 0.98
+style: 0
+stability: 0.6
+allowed_emotion_range:
+  - warm
+  - apologetic
+  - curious
+  - firm
+language: en
+lines:
+  - id: greeting-01
+    kind: greeting
+    text: Hi, this is Nina at Halcyon Yoga. I have a few minutes before the next class starts.
+    emotion: warm
+  - id: objection-01
+    kind: objection
+    text: I'd have to ask the operator about that.
+    emotion: apologetic
+  - id: objection-02
+    kind: objection
+    text: I can talk about the students and the schedule, but I cannot promise a change to the
+      booking app.
+    emotion: firm
+  - id: interruption-01
+    kind: interruption
+    text: Sorry to interrupt. Are you asking me to change the app, or just how we follow up with
+      students?
+    emotion: apologetic
+  - id: voicemail-01
+    kind: voicemail
+    text: You've reached Nina at Halcyon Yoga. We may be in class. Leave your name and number and we
+      will get back to you.
+    emotion: warm
+  - id: recurring-01
+    kind: recurring
+    text: We just use whatever the app does.
+    emotion: apologetic
+  - id: scenario-01
+    kind: scenario
+    text: Most people come once and I never see them again. What would you need to find out before
+      suggesting anything?
+    emotion: curious
+  - id: scenario-02
+    kind: scenario
+    text: Please send me the questions for the operator. I would rather check who can approve this
+      before we plan a project.
+    emotion: firm

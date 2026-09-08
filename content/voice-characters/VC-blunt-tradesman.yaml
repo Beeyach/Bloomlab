@@ -1,0 +1,49 @@
+# Real account catalog selection; provenance and audition evidence: docs/reviews/phase-20-voice-assets.md
+id: VC-blunt-tradesman
+client: CL-northwind-hvac
+voice_id: CwhRBWXzGAHq8TQ4Fs17
+speech_rate: 1.03
+style: 0
+stability: 0.55
+allowed_emotion_range:
+  - hurried
+  - skeptical
+  - firm
+  - warm
+language: en
+lines:
+  - id: greeting-01
+    kind: greeting
+    text: Gary here, Northwind Heating and Air. I've got a tech on a roof, make it quick.
+    emotion: hurried
+  - id: objection-01
+    kind: objection
+    text: We already pay for software. Why would I want another one?
+    emotion: skeptical
+  - id: objection-02
+    kind: objection
+    text: I am not replacing our scheduling system just to chase a few quotes.
+    emotion: firm
+  - id: interruption-01
+    kind: interruption
+    text: Hang on. Give me the point first. What job does this take off Tina's desk?
+    emotion: firm
+  - id: voicemail-01
+    kind: voicemail
+    text: You've reached Gary at Northwind Heating and Air. Leave your name, number, and what you
+      need. I'll call when I'm off the job.
+    emotion: warm
+  - id: recurring-01
+    kind: recurring
+    text: If it gets Tina off the phone for an hour a day, keep talking.
+    emotion: warm
+  - id: scenario-01
+    kind: scenario
+    text: A replacement quote goes out and the customer goes quiet. Show me how you would follow up
+      without pestering them.
+    emotion: skeptical
+  - id: scenario-02
+    kind: scenario
+    text: If the customer books a visit after that message, the follow-up needs to stop. Tina should
+      not have to remember it.
+    emotion: firm

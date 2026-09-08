@@ -137,6 +137,13 @@ export function buildSearchIndex(parsed: ParsedContent): SearchEntry[] {
     entries.push({ type: 'clients', id: c.id, title: c.business_name, keywords: [c.industry] });
   for (const r of parsed.rubrics)
     entries.push({ type: 'rubrics', id: r.id, title: r.title, keywords: r.applies_to });
+  for (const v of parsed.voice_characters)
+    entries.push({
+      type: 'voice-characters',
+      id: v.id,
+      title: v.id,
+      keywords: [v.client, v.language],
+    });
   for (const p of parsed.projects)
     entries.push({ type: 'projects', id: p.id, title: p.title, keywords: [p.tier] });
   for (const p of parsed.portfolio)
