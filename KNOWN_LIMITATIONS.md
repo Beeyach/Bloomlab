@@ -2,15 +2,15 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-08 (Phase 21 implementation review)
+Last updated: 2026-09-08 (Phase 21 partial preview acceptance)
 
 ## Phase 21 — Call Room acceptance gate
 
-- Implementation is under review with preview/production calls disabled. Preview lacks the `GOOGLE_CLOUD_CREDENTIAL` Worker secret; Google project/API/IAM and a real microphone → private R2 → Google STT → confirmed turn remain unverified. The exact secure action is in `docs/operations/call-room.md`. Existing rotated ElevenLabs preview binding is a Worker secret.
-- Local browser coverage uses a virtual microphone and explicit HTTP fixtures. It establishes interaction, Blob persistence/recovery and five-width layout, not live Google/dynamic ElevenLabs/private remote recording acceptance. Physical mobile/Safari recording and assistive technology are unverified.
+- Preview calls are enabled and `GOOGLE_CLOUD_CREDENTIAL` is a required preview `secret_text`; recognition authorization succeeds through the deployed Worker using prerecorded fictional audio. Credential contents and exact IAM role configuration were not inspected. A real microphone → local checkpoint → private R2 → Google STT → confirmed turn, including full phone/keyboard calls, remains unverified: the Codespace exposes zero microphone inputs. Production calls remain disabled. See `docs/operations/call-room.md`.
+- Local browser coverage uses a virtual microphone and explicit HTTP fixtures. Supplementary deployed diagnostics separately establish Google recognition, private R2 authorization/deletion, bounded failure/retry and AI feedback using prerecorded synthetic client speech. They do not establish real microphone UX. Physical mobile/Safari recording and assistive technology remain unverified. The phone-input audit found 14px inherited text; the Call Room now fixes notes/transcript/move inputs at 16px with a browser regression.
 - There is no timed deletion sweep: unsuccessful/abandoned raw recordings remain private until resume or manual deletion. Default cleanup follows a durable confirmed branch; retained audio requires explicit deletion. Browser eviction can remove a local copy, and a reload before MediaRecorder finishes cannot recover unfinished bytes.
-- Dynamic speech is narrowly constrained to a verified confirmed-text quote plus an authored question. Missing static audio uses text; uncertain provider purchases require operator reconciliation. No arbitrary-text synthesis, full-duplex streaming, background STT, active-call cross-device resume or Boss Client continuity is claimed.
-- Nine Phase 21 targets remain IMPLEMENTED_UNVERIFIED. Broad privacy/infrastructure rows and PRI-001, PRI-002, NEG-003, EXR-024 carryovers retain their prior status. Independent audit, production secret setup and reviewed gate changes remain before production readiness. Details: `docs/reviews/phase-21-call-room.md`.
+- Successful live dynamic synthesis/cache reuse is still unverified. A tight-budget path and two Full-mode clarification attempts retained authored fallback text; no authorized `dynamic: true` line reached ElevenLabs. Dynamic speech is narrowly constrained to a verified confirmed-text quote plus an authored question. Missing static audio uses text; uncertain provider purchases require operator reconciliation. No arbitrary-text synthesis, full-duplex streaming, background STT, active-call cross-device resume or Boss Client continuity is claimed.
+- Nine Phase 21 targets remain IMPLEMENTED_UNVERIFIED. Broad privacy/infrastructure rows and PRI-001, PRI-002, NEG-003, EXR-024 carryovers retain their prior status. The final independent audit, production secret setup and reviewed gate changes remain before production readiness. Details: `docs/reviews/phase-21-call-room.md`.
 
 ## Current state
 

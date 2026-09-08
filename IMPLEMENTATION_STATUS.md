@@ -28,7 +28,7 @@ Phase 19 — AI Gateway: Worker-only Anthropic routing, canonical AI settings, c
 
 Phase 20 — Voice Assets: independently merged in main `3fa36fe05872bdaeaf5c49105a198b911aa9adce`. Its 40 authored assets, rotated preview ElevenLabs Worker secret and provider-free private playback are the Phase 21 base. Historical review evidence remains in `docs/reviews/phase-20-voice-assets.md`.
 
-Phase 21 — Call Room: implementation on `codex/phase-21-call-room` adds five content-driven SAY IT modes, native recording with local Blob recovery, private R2/metadata-only D1 storage, Google STT V2, confirmed-transcript branching and eight-dimension feedback through the existing exercise queue/engines. The local six-element room and advanced-aid exclusion are verified. Live acceptance is incomplete: preview lacks `GOOGLE_CLOUD_CREDENTIAL`; actual Google project/IAM and real microphone/STT/dynamic TTS proof remain outstanding. Preview and production calls stay off. The PR stays draft/open and unmerged. See `docs/reviews/phase-21-call-room.md` and `docs/operations/call-room.md`.
+Phase 21 — Call Room: implementation on `codex/phase-21-call-room` adds five content-driven SAY IT modes, native recording with local Blob recovery, private R2/metadata-only D1 storage, Google STT V2, confirmed-transcript branching and eight-dimension feedback through the existing exercise queue/engines. The local six-element room and advanced-aid exclusion are verified. Live acceptance is partial: the Google preview `secret_text` is installed, preview calls are enabled, and deployed Google recognition/private R2 recovery/deletion/AI grading pass supplementary prerecorded-audio diagnostics. Actual microphone/local checkpoint/full phone and keyboard calls, and successful authorized dynamic TTS/cache proof, remain outstanding. Production calls stay off. The PR stays draft/open and unmerged. See `docs/reviews/phase-21-call-room.md` and `docs/operations/call-room.md`.
 
 ## VERSIONS
 
@@ -289,7 +289,7 @@ Phase 21 local interface acceptance:
 
 ## IMPLEMENTED_UNVERIFIED
 
-- CALL-002, CALL-003, CALL-005, CALL-006, EXR-015, VOI-003, VOI-006, VOI-007, SEC-005 — Implemented and covered by controlled tests/probes. The missing preview Google Worker secret/project/IAM and deployed real microphone/provider checklist prevent live acceptance. No fixture is counted as live evidence.
+- CALL-002, CALL-003, CALL-005, CALL-006, EXR-015, VOI-003, VOI-006, VOI-007, SEC-005 — Implemented and covered by controlled tests/probes. The complete deployed real microphone/provider checklist remains open. Google recognition succeeds on explicitly labeled prerecorded fictional audio, while actual microphone acceptance and successful dynamic TTS/cache proof remain unverified. Controlled HTTP fixtures and prerecorded input are identified separately in the review.
 
 ## IN PROGRESS
 
@@ -346,7 +346,7 @@ None
 
 ## NEXT
 
-Complete the secure Google preview setup in `docs/operations/call-room.md`, then enable configured preview calls and execute the real provider checklist. Phase 21 remains under independent review; keep its PR open and do not merge. Production secrets/gates and acceptance remain prerequisites for production readiness. Phase 24 continuity remains future work.
+Complete the remaining real microphone and dynamic TTS acceptance on the already enabled preview using `docs/operations/call-room.md` and the independent audit handoff. Do not reinstall or expose the working Google credential. Phase 21 remains under independent review; keep its PR open and do not merge. Production secrets/gates and acceptance remain prerequisites for production readiness. Phase 24 continuity remains future work.
 
 ## PHASE CHECKLIST (§163)
 
@@ -371,7 +371,7 @@ Complete the secure Google preview setup in `docs/operations/call-room.md`, then
 - [x] Phase 18 — Negotiation: merged and production-green; NEG-003 language interpretation PARTIAL
 - [x] Phase 19 — AI Gateway: server routes, model routing, budget governor, structured grading, retry/failure behavior
 - [x] Phase 20 — Voice Asset System: reusable ElevenLabs assets, independently merged base
-- [ ] Phase 21 — Call Room: implementation under review; live Google/provider acceptance pending
+- [ ] Phase 21 — Call Room: preview enabled; actual microphone and dynamic TTS acceptance pending
 - [ ] Phase 22 — Fieldwork: real-GHL proof flow
 - [ ] Phase 23 — Portfolio: demonstration-project records
 - [ ] Phase 24 — Field Ready Content: placement through capstone

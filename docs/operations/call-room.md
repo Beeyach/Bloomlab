@@ -1,10 +1,10 @@
 # Call Room operations
 
-Verified against first-party API documentation on 2026-09-08. This is an implementation runbook, not evidence of a successful live STT request. See [the Phase 21 review](../reviews/phase-21-call-room.md) for the outstanding acceptance gate.
+Verified against first-party API documentation on 2026-09-08. Preview recognition now succeeds through the Worker using explicitly labeled prerecorded fictional audio. Real microphone acceptance remains outstanding; see [the Phase 21 review](../reviews/phase-21-call-room.md) for the evidence and its limits.
 
-## Enable preview after secure setup
+## Preview configuration and credential maintenance
 
-Preview currently has the rotated `ELEVENLABS_API_KEY`, `ANTHROPIC_API_KEY` and `SYNC_KEY_PEPPER` Worker secrets. `GOOGLE_CLOUD_CREDENTIAL` was absent from the name-only preview secret listing. No credential value was inspected or copied into evidence.
+The user installed `GOOGLE_CLOUD_CREDENTIAL`; the preview name/type listing confirms `secret_text`, alongside the existing rotated ElevenLabs, Anthropic and sync secrets. The credential was verified through successful deployed Google recognition, without inspecting its value. Preview `voice_calls` and `CALLS_ENABLED: "true"` are enabled, and Google is a required preview secret. Production remains off. The setup steps below are maintenance instructions for a future installation or rotation; the current preview credential does not need reinstalling.
 
 1. Choose a Google Cloud project with billing and Speech-to-Text V2 enabled. Grant the service account `roles/speech.client` on that project. Recognition requires `speech.recognizers.recognize`; administrator/editor roles are unnecessary. Check the actual project, API enablement and IAM in Google Cloud before claiming acceptance.
 2. Keep the service-account JSON outside the repository. Install it directly as a Worker secret; do not paste it into chat, commit it, place it in Wrangler `vars`, or expose it as a `VITE_*` variable:
@@ -24,13 +24,13 @@ Production remains gated in both the browser and Worker. Production readiness re
 
 `worker/src/call/google.ts` signs an RS256 service-account assertion with WebCrypto, exchanges it at Google's fixed OAuth token endpoint and keeps the token/pending exchange in isolate memory only. Tokens are refreshed before expiry. Neither token nor private key is written to D1, R2, browser storage, telemetry or logs.
 
-The V2 synchronous endpoint is `https://us-speech.googleapis.com/v2/projects/{project}/locations/us/recognizers/_:recognize`, using `chirp_3`, `en-US`, `autoDecodingConfig: {}` and inline base64 audio. `_` is Google's implicit recognizer. The provider boundary aborts after 45 seconds and bounds/parses responses, returning application error codes rather than upstream bodies. Google documents synchronous limits of 10 MB audio and one minute; Bloomlab allows at most 8 MiB and 55 seconds per turn. These settings are documentation-verified; the actual Google project and recognition permission remain unverified.
+The V2 synchronous endpoint is `https://us-speech.googleapis.com/v2/projects/{project}/locations/us/recognizers/_:recognize`, using `chirp_3`, `en-US`, `autoDecodingConfig: {}` and inline base64 audio. `_` is Google's implicit recognizer. The provider boundary aborts after 45 seconds and bounds/parses responses, returning application error codes rather than upstream bodies. Google documents synchronous limits of 10 MB audio and one minute; Bloomlab allows at most 8 MiB and 55 seconds per turn. These settings are documentation-verified and deployed recognition returned HTTP 200 for a 4.273-second WebM/Opus diagnostic. This establishes working recognition authorization for the configured project/API/model; it does not independently establish the exact IAM role or least-privilege configuration. No project identifier or credential value was inspected.
 
 First-party references: [V2 recognize](https://docs.cloud.google.com/speech-to-text/docs/reference/rest/v2/projects.locations.recognizers/recognize), [Chirp 3 supported locations/languages](https://docs.cloud.google.com/speech-to-text/docs/models/chirp-3), [decoding configuration](https://docs.cloud.google.com/speech-to-text/docs/reference/rest/v2/projects.locations.recognizers), [quotas and limits](https://docs.cloud.google.com/speech-to-text/docs/quotas), [Speech IAM](https://docs.cloud.google.com/speech-to-text/docs/iam), [service-account OAuth](https://developers.google.com/identity/protocols/oauth2/service-account).
 
 ## Recording, retention and recovery
 
-The browser requests microphone permission only after Record reply. MediaRecorder selects WebM/Opus first, MP4/AAC second, then Ogg/Opus when supported. It stops at 55 seconds or near the 8 MiB ceiling, validates the final Blob, releases all tracks and stores the Blob/checksum/format/identity in local-only Dexie `call_recordings` before uploading. MP4 and Ogg support is implemented and tested at the format/request boundary; physical Safari/iOS and live Google decoding have not been verified.
+The browser requests microphone permission only after Record reply. MediaRecorder selects WebM/Opus first, MP4/AAC second, then Ogg/Opus when supported. It stops at 55 seconds or near the 8 MiB ceiling, validates the final Blob, releases all tracks and stores the Blob/checksum/format/identity in local-only Dexie `call_recordings` before uploading. MP4 and Ogg support is implemented and tested at the format/request boundary; physical Safari/iOS remains unverified. Google decoded a browser-converted WebM/Opus diagnostic; no physical microphone or MP4/AAC acceptance is claimed.
 
 The browser addresses recordings by UUID. It cannot choose an object key. The Worker writes private `call/raw/v1/{recording_id}.audio` with server-owned learner/attempt/turn/format/checksum metadata before inserting a D1 metadata row. Authenticated playback/deletion checks ownership and live device revocation. The same ID and bytes are idempotent; changed bytes/format or scope conflict. R2-first partial writes can be indexed or deleted without overwriting their bytes. `0004` contains four metadata/text tables (`call_attempts`, `call_recordings`, `call_turns`, `call_voice_assets`), with no audio BLOB column; migrations `0001`–`0003` are unchanged.
 
@@ -63,3 +63,16 @@ Existing Phase 20 authored audio is preferred when exact text and character matc
 ## Repeatable checks
 
 Run under the pinned Node 22 major. `npm run review:call` uses native browser MediaRecorder/IndexedDB with a virtual microphone and explicit HTTP fixtures. It proves browser recovery and interaction, not remote Google/IAM/ElevenLabs/R2 acceptance. Existing `review:voice` checks real authenticated saved assets without purchasing audio. See the review for commands, artifacts and exact CI evidence.
+
+## Remaining human microphone acceptance
+
+Use a disposable linked learner in a private browser window on [preview](https://bloomlab-preview.cool-sunset-2169.workers.dev/sync). Keep its Sync Key in that browser. Open [the cold call](https://bloomlab-preview.cool-sunset-2169.workers.dev/exercise/EX-SAY_IT-northwind-cold-call), start, and use Record reply with the actual microphone. Stop before choosing Transcribe recording so the local saved checkpoint can be inspected without uploading. Use deliberately non-sensitive test speech.
+
+A complete authored path can use these four replies, reviewing/correcting and confirming each transcript:
+
+1. “Do you have a minute to ask about unanswered quotes?”
+2. “Who handles quote follow-up today?”
+3. “The gap is unanswered quotes, not replacing dispatch. Is that right?”
+4. “Could we arrange a short process review with Tina?”
+
+Complete one call with 390px touch controls and one using desktop keyboard controls. Capture metadata only: attempt/recording IDs, local Blob size/MIME/checksum before upload, original and corrected non-sensitive test text, request status/path, confirmed checkpoint and deletion/replay observations. Confirm no direct browser provider request. Retain one recording to exercise replay and explicit deletion, delete remaining disposable audio, then revoke the test devices. The complete acceptance checklist remains `docs/handoffs/phase-21-independent-audit-live-acceptance.md`; these steps do not replace its privacy, failure/retry, dynamic TTS or grading checks.
