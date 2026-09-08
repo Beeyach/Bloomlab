@@ -410,9 +410,18 @@ try {
     await page.evaluate('window.scrollTo(0,0)');
     await sleep(100);
     const measure = await page.evaluate(
-      '({width:innerWidth,scroll:document.documentElement.scrollWidth,room:!!document.querySelector("[data-testid=call-room]"),notes:!!document.querySelector("#call-notes")})',
+      `({width:innerWidth,scroll:document.documentElement.scrollWidth,
+        room:!!document.querySelector('[data-testid=call-room]'),notes:!!document.querySelector('#call-notes'),
+        inputFonts:[...document.querySelectorAll('[data-testid=call-room] textarea,[data-testid=call-room] select,[data-testid=call-room] input:not([type=checkbox])')].map(e=>({label:e.id||e.closest('label')?.textContent.trim().slice(0,40),pixels:parseFloat(getComputedStyle(e).fontSize)}))})`,
     );
     assert(measure.scroll <= measure.width + 1, `Horizontal overflow at ${width}`);
+    if (width < 768) {
+      assert(measure.inputFonts.length >= 3, 'Review must include notes, transcript and move');
+      assert(
+        measure.inputFonts.every((input) => input.pixels >= 16),
+        `Call inputs below 16px at ${width}: ${JSON.stringify(measure.inputFonts)}`,
+      );
+    }
     report.widths.push(measure);
     await screenshot(page, resolve(out, `call-${width}.png`), undefined, false);
   }
