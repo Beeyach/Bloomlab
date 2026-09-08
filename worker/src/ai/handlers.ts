@@ -10,6 +10,7 @@ import { cost, MODELS } from './catalog';
 import { maximumCost, route } from './governor';
 import { gradingFormat, validateGrading } from './output';
 import { AiError, anthropic, type Provider } from './provider';
+import { evaluationFailure, gradingFailure, type GradingFailure } from './diagnostics';
 
 const requestSchema = z.strictObject({
   attempt_id: z.string().min(1).max(160),
@@ -234,11 +235,27 @@ export async function evaluate(
       });
       const charged = cost(model, response.usage);
       actual += charged;
+      let result;
+      let invalid: GradingFailure | undefined;
+      try {
+        result = validateGrading(response.value, rubric);
+        if (confirmedCallText) validateLearnerQuotations(result, confirmedCallText);
+      } catch (error) {
+        invalid = gradingFailure(error);
+      }
+      const diagnostic = JSON.stringify({
+        contract: exercise.call ? 'call-speakers-v1' : 'rubric-v1',
+        phase: repair === 0 ? 'initial' : 'repair',
+        format: response.format ?? 'unknown',
+        validation: invalid ?? 'accepted',
+        submission_bytes: new TextEncoder().encode(input.submission).length,
+        reservation_id: usageId,
+      });
       // Commit usage and its reservation reduction in the same D1 transaction.
       await db.batch([
         db
           .prepare(
-            'INSERT INTO ai_usage(usage_id,learner_id,created_at,purpose,model,input_tokens,output_tokens,cached_input_tokens,cache_creation_input_tokens,cost_usd,exercise_id,run_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+            'INSERT INTO ai_usage(usage_id,learner_id,created_at,purpose,model,input_tokens,output_tokens,cached_input_tokens,cache_creation_input_tokens,cost_usd,exercise_id,run_id,diagnostic_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',
           )
           .bind(
             crypto.randomUUID(),
@@ -253,6 +270,7 @@ export async function evaluate(
             charged,
             exercise.id,
             runId,
+            diagnostic,
           ),
         db
           .prepare('UPDATE ai_usage SET reserved_usd=? WHERE usage_id=?')
@@ -260,11 +278,7 @@ export async function evaluate(
       ]);
       accounted = actual;
       accountedCalls++;
-      let result;
-      try {
-        result = validateGrading(response.value, rubric);
-        if (confirmedCallText) validateLearnerQuotations(result, confirmedCallText);
-      } catch {
+      if (invalid || !result) {
         if (repair === 0) continue;
         throw new AiError('evaluation_invalid', 502);
       }
@@ -307,8 +321,13 @@ export async function evaluate(
     await db.batch([
       db.prepare("UPDATE rubric_runs SET status='failed' WHERE run_id=?").bind(runId),
       db
-        .prepare('UPDATE ai_usage SET reserved_usd=?,status=? WHERE usage_id=?')
-        .bind(accountedCalls === 2 ? 0 : Math.max(0, bound - accounted), 'failed', usageId),
+        .prepare('UPDATE ai_usage SET reserved_usd=?,status=?,diagnostic_json=? WHERE usage_id=?')
+        .bind(
+          accountedCalls === 2 ? 0 : Math.max(0, bound - accounted),
+          'failed',
+          JSON.stringify({ failure: evaluationFailure(error), accounted_calls: accountedCalls }),
+          usageId,
+        ),
     ]);
     throw error;
   }

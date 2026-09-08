@@ -1,4 +1,5 @@
 import type { AiGrading } from '@bloomlab/shared';
+import { GradingValidationError } from '../ai/diagnostics';
 
 export const CALL_GRADING_INSTRUCTION = [
   'Call speaker contract: Only learner_confirmed text is evidence of what the learner said or did.',
@@ -28,7 +29,10 @@ export function validateLearnerQuotations(result: AiGrading, confirmed: readonly
     for (const match of text.matchAll(quoted)) {
       const quote = match.slice(1).find((part) => part !== undefined)!;
       if (!confirmed.some((learner) => learner.includes(quote)))
-        throw new Error('Feedback quotation is not confirmed learner evidence');
+        throw new GradingValidationError(
+          'learner_quotation_mismatch',
+          'Feedback quotation is not confirmed learner evidence',
+        );
     }
   }
 }

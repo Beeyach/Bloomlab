@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { Rubric } from '@bloomlab/content-schema';
+import { GradingValidationError } from './diagnostics';
 export const gradingSchema = z.strictObject({
   score: z.number().min(0).max(100),
   rubric_results: z
@@ -23,10 +24,11 @@ export function validateGrading(value: unknown, rubric: Rubric) {
     ids.length !== rubric.items.length ||
     rubric.items.some((i) => !ids.includes(i.id))
   )
-    throw new Error('Rubric item mismatch');
+    throw new GradingValidationError('rubric_items_mismatch', 'Rubric item mismatch');
   const critical = rubric.items.some(
     (i) => i.tier === 'critical' && !result.rubric_results.find((r) => r.id === i.id)!.passed,
   );
-  if (critical !== (result.critical_issue !== null)) throw new Error('Critical result mismatch');
+  if (critical !== (result.critical_issue !== null))
+    throw new GradingValidationError('critical_result_mismatch', 'Critical result mismatch');
   return result;
 }

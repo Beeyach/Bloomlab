@@ -625,6 +625,18 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
     expect(provider).toHaveBeenCalledTimes(2);
     expect(provider.mock.calls.map(([request]) => request.repair)).toEqual([false, true]);
     expect(provider.mock.calls[1]![0].stable).toContain('Citation validation reminder');
+    const diagnostics = await env.DB.prepare(
+      'SELECT diagnostic_json FROM ai_usage WHERE run_id=? AND input_tokens>0 ORDER BY rowid',
+    )
+      .bind(answer.run_id)
+      .all<{ diagnostic_json: string }>();
+    expect(diagnostics.results.map((row) => JSON.parse(row.diagnostic_json).validation)).toEqual([
+      'learner_quotation_mismatch',
+      'accepted',
+    ]);
+    expect(JSON.stringify(diagnostics.results)).not.toMatch(
+      /ServiceTitan|Learner-only|PRIVATE_RAW/,
+    );
     expect(result.rubric_results.map((r) => r.id)).toEqual([
       'questions',
       'listening',

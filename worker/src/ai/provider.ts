@@ -12,6 +12,7 @@ export interface ProviderRequest {
 export interface ProviderResponse {
   value: unknown;
   usage: Usage;
+  format?: 'json' | 'invalid_json' | 'missing_text' | 'max_tokens' | 'refusal' | 'other_stop';
 }
 export type Provider = (request: ProviderRequest) => Promise<ProviderResponse>;
 export class AiError extends Error {
@@ -79,13 +80,25 @@ export function anthropic(key: string, transport: typeof fetch = fetch): Provide
       };
       const usage = usageSchema.parse(body.usage);
       let value: unknown = null;
+      let format: ProviderResponse['format'] =
+        body.stop_reason === 'max_tokens'
+          ? 'max_tokens'
+          : body.stop_reason === 'refusal'
+            ? 'refusal'
+            : 'other_stop';
       try {
-        if (body.stop_reason === 'end_turn')
-          value = JSON.parse(body.content?.find((c) => c.type === 'text')?.text ?? 'null');
+        if (body.stop_reason === 'end_turn') {
+          const text = body.content?.find((c) => c.type === 'text')?.text;
+          format = text === undefined ? 'missing_text' : 'invalid_json';
+          if (text !== undefined) {
+            value = JSON.parse(text);
+            format = 'json';
+          }
+        }
       } catch {
         /* Invalid JSON is repaired by the gateway after accounting. */
       }
-      return { value, usage };
+      return { value, usage, format };
     } catch (error) {
       if (error instanceof AiError) throw error;
       throw new AiError(controller.signal.aborted ? 'provider_timeout' : 'provider_unavailable');

@@ -125,3 +125,35 @@ it.each([
     await result;
   },
 );
+
+it.each([
+  ['end_turn', '{}', 'json'],
+  ['end_turn', '{private invalid response', 'invalid_json'],
+  ['end_turn', undefined, 'missing_text'],
+  ['max_tokens', '{private truncated response', 'max_tokens'],
+  ['refusal', 'private refusal explanation', 'refusal'],
+  ['unexpected private stop detail', '{}', 'other_stop'],
+])(
+  'classifies %s responses without retaining provider text in diagnostics',
+  async (stop, text, format) => {
+    const provider = anthropic('test', async () =>
+      Response.json({
+        usage,
+        stop_reason: stop,
+        content: text === undefined ? [] : [{ type: 'text', text }],
+      }),
+    );
+    const result = await provider({
+      model: MODELS.strong,
+      kind: 'call_grading',
+      stable: 'roles',
+      submission: 'work',
+      schema: {},
+      repair: false,
+    });
+    expect(result.format).toBe(format);
+    expect(result.usage).toEqual(usage);
+    if (format !== 'json') expect(result.value).toBeNull();
+    expect(JSON.stringify(result)).not.toContain('private');
+  },
+);

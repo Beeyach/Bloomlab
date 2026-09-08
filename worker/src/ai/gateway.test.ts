@@ -115,6 +115,15 @@ describe('AI-006/009/011/012 gateway', () => {
     const bad = vi.fn<Provider>().mockResolvedValue({ value: null, usage });
     await expect(evaluate(input, session, env.DB, bad)).rejects.toThrow('evaluation_invalid');
     expect(bad).toHaveBeenCalledTimes(2);
+    const diagnostics = await env.DB.prepare(
+      'SELECT diagnostic_json FROM ai_usage WHERE learner_id=? AND input_tokens>0 ORDER BY rowid',
+    )
+      .bind(session.learnerId)
+      .all<{ diagnostic_json: string }>();
+    expect(diagnostics.results.map((row) => JSON.parse(row.diagnostic_json))).toEqual([
+      expect.objectContaining({ phase: 'initial', validation: 'schema_invalid' }),
+      expect.objectContaining({ phase: 'repair', validation: 'schema_invalid' }),
+    ]);
     await expect(
       evaluate(input, session, env.DB, async () => ({ value: valid(), usage })),
     ).resolves.toHaveProperty('result');
@@ -175,6 +184,14 @@ describe('AI-006/009/011/012 gateway', () => {
       }),
     ).rejects.toThrow();
     expect((await settings(env.DB, session.learnerId)).reserved_usd).toBeGreaterThan(0);
+    const row = await env.DB.prepare('SELECT diagnostic_json FROM ai_usage WHERE learner_id=?')
+      .bind(session.learnerId)
+      .first<{ diagnostic_json: string }>();
+    expect(JSON.parse(row!.diagnostic_json)).toEqual({
+      failure: 'evaluation_failed',
+      accounted_calls: 0,
+    });
+    expect(row!.diagnostic_json).not.toContain('network');
   });
 });
 describe('direct Anthropic boundary', () => {
