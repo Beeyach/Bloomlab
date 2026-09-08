@@ -158,3 +158,9 @@ export {
 } from './manifest.ts';
 
 export * from './negotiation.ts';
+export {
+  VoiceCharacterSchema,
+  VOICE_LINE_KINDS,
+  type VoiceCharacter,
+  type VoiceLine,
+} from './voiceCharacter.ts';

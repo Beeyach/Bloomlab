@@ -1,4 +1,6 @@
 import { handleAi } from './ai/handlers';
+import { handleVoice } from './voice/handlers';
+import { handleMedia } from './voice/playback';
 import contentVersion from 'virtual:bloomlab-content/version';
 
 import { APP_VERSION, parseRuntimeEnvironment } from '@bloomlab/shared';
@@ -16,11 +18,10 @@ import {
   revokeDevice,
 } from './sync/handlers';
 
-export interface Env {
-  ANTHROPIC_API_KEY?: string;
+export interface Env extends Omit<CloudflareBindings, 'BLOOMLAB_ENV'> {
   BLOOMLAB_ENV: string;
-  ASSETS: Fetcher;
-  DB: D1Database;
+  ANTHROPIC_API_KEY?: string;
+  ELEVENLABS_API_KEY?: string;
   /** Worker secret (never in config): the server-side pepper for sync-key hashing (SYNC-003). */
   SYNC_KEY_PEPPER?: string;
 }
@@ -70,6 +71,8 @@ async function handleSync(request: Request, env: Env, path: string): Promise<Res
 
 /** Only /api/* reaches this handler (see wrangler.jsonc `run_worker_first`). */
 async function handleApi(request: Request, url: URL, env: Env): Promise<Response> {
+  if (url.pathname.startsWith('/api/media/')) return handleMedia(request, env);
+  if (url.pathname.startsWith('/api/voice/')) return handleVoice(request, env);
   if (url.pathname.startsWith('/api/ai/')) return handleAi(request, env);
   if (url.pathname === '/api/health') {
     const body: HealthResponse = {
@@ -97,7 +100,7 @@ async function handleApi(request: Request, url: URL, env: Env): Promise<Response
 }
 
 export default {
-  async fetch(request, env): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname.startsWith('/api/')) return handleApi(request, url, env);
     return env.ASSETS.fetch(request);

@@ -2,17 +2,17 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-06 (end of Phase 17)
+Last updated: 2026-09-08 (Phase 20 review)
 
 ## Current state
 
 - The product has curriculum content compiled in (Phase 5), a working learning engine over it (Phase 6), the Command Center, Campaign and Skill Map (Phase 7), the Academy (Phase 8), the exercise runner (Phase 9), the simulator core (Phase 10), the CRM Lab (Phase 11), the Workflow Lab with Conversations and the Playground (Phase 12) and the Funnel Lab (Phase 13). Five exercise families are graded from real runs; Run the Lead and Edge Case still carry the gaps recorded under Phase 12. Evidence that no runnable family produces still enters through the diagnostic form on `/system`.
 - `/system` (diagnostics) and `/design` (gallery) exist only in local and preview environments; both are off in production by flag.
 - The semantic components are presentational: Phase 7 wires SkillCard, HoloTerritory, MasteryBadge and StatusPill to the learning engine; the simulator components are wired by their phases. Prop shapes may still change when those data models land; they share tokens, so the visual language will not.
-- Deployment is live: every push to `main` deploys the `bloomlab` Worker (https://bloomlab.cool-sunset-2169.workers.dev) and every pull request redeploys the single shared `bloomlab-preview` Worker (D-020). Both hosts are public `workers.dev` URLs serving the foundation app with no learner data. D1 databases and R2 buckets do not exist yet (Phase 4).
-- The dev machine runs Node 22.18 while `engines.node` is `>=22.22.0` (react-router 8's floor). Everything works locally with npm engine warnings; CI uses the latest 22.x.
+- Deployment is live: every push to `main` deploys the `bloomlab` Worker (https://bloomlab.cool-sunset-2169.workers.dev) and every pull request redeploys the single shared `bloomlab-preview` Worker (D-020). Both hosts serve public app shells; learner API data requires a session. Separate development/production D1 databases exist. Phase 20 adds private `bloomlab-media-dev` and `bloomlab-media-prod` R2 buckets, with public development URLs disabled.
+- Phase 20 verification uses Node 22.22.1. The repository pins the Node 22 major; `engines.node` requires >=22.22.0.
 - GHL feature names are verified only for the 41 registry records; the gallery samples in `/design` still use illustrative labels and are not wired to the registry (GHL-005 / GHL-010 apply from the screens onward).
-- The ~128k ElevenLabs credits have an expiry window; voice asset generation (VOI-005) is scheduled for Phase 20. Risk: credits expire before Phase 20. By design this is not a functional dependency.
+- The historical ~128k expiring-credit estimate is superseded by the live account and generation usage in the Phase 20 review. Saved R2 playback has no provider-credit dependency.
 - Prettier does not format Markdown (`*.md` is ignored) so the control documents keep their hand-laid tables.
 
 ## Phase 10 — simulator core
@@ -474,3 +474,15 @@ The prose-grading boundary below records Phase 16 at closure. Phase 19 now execu
 - A Worker termination while a rubric run is active currently requires operational reconciliation; ordinary caught provider failures support retry. Reservations are not automatically refunded on timeout.
 - Full permits optional work but adds no speculative coaching buttons. Settings are reached from Sync and devices; the rail and mobile navigation are unchanged.
 - Historical finalized rubric_pending attempts remain unchanged. New successful evaluations finalize once; old rubric IDs retained in content remain resolvable. Voice-only SAY IT still needs its later runtime.
+
+## Phase 20 — voice assets
+
+- The library covers the five current fictional clients and six reusable line kinds. Account-catalog metadata informed selection; browser decoding, waveform levels and clipping checks provide technical audio inspection. No human listening assessment, accent certification or subjective character-performance sign-off is claimed.
+- Speech rate, style and stability are transmitted as supported numeric settings. Language and allowed emotion range are authored direction for multilingual_v2, not guaranteed expressive controls. No unsupported language_code parameter is sent.
+- The new media table implements private authored voice assets and an ownership primitive. DATA-006 stays PARTIAL because its full matrix scope also names screenshots, portfolio/fieldwork media, recovery backups and attachments, whose upload/storage flows belong to later phases. No learner recording or general upload endpoint exists yet.
+- VOI-003, VOI-006, VOI-007, CALL-* and EXR-015 remain NOT_STARTED. The review surface preserves authored text on errors but does not claim the future transcription/retry contract. voice_calls remains off in production; /system/voice is a local/preview diagnostic route.
+- Private audio is fetched as an authenticated no-store blob and released when its player unmounts. It is not persisted for offline playback. A revoked device cannot fetch new bytes; already delivered bytes cannot be recalled.
+- Known provider rejections can be retried explicitly. Ambiguous or interrupted purchases remain claimed for manual reconciliation, so a lost response can require operator work before generation continues. Provider history recovery is documented but not automated. Promotion stops on unexpected existing bytes or conflicting metadata.
+- Exact files may be promoted to the production R2 bucket before merge, but the production D1 migration/index and Worker deployment remain the independent post-merge CI path. The deployment credential must allow R2 reads and D1 writes. Production playback verification is pending that deployment, and no production ElevenLabs secret is required.
+- SEC-001 remains PARTIAL across all phases. The required pre-merge rotation for the initial plain-text ElevenLabs variable is closed: on 2026-09-08 the user confirmed the old key was revoked/rotated and the replacement preview binding is a Worker secret. No secret value is committed or printed, and historical Worker version deletion is not claimed. Google credentials and future integrations remain outside this phase; production still needs no ElevenLabs key for saved playback.
+- Existing content coverage warnings and the existing ExerciseRunner hook dependency lint warning remain. Phase 20 introduces no lint errors and does not broaden those unrelated changes.

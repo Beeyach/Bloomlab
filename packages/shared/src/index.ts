@@ -1,4 +1,5 @@
 export { APP_VERSION } from './version';
+export type { VoiceAssetStatus } from './voice';
 export {
   RUNTIME_ENVIRONMENTS,
   parseRuntimeEnvironment,

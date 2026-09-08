@@ -1,0 +1,861 @@
+{
+  "verified_base": "f21fe161d1016fe7996e6ef29057573a439d0ca9",
+  "branch": "codex/phase-20-voice-assets",
+  "preview_worker_version": "3a91912e-506e-43bf-a316-c0ff651cc51e",
+  "content_version": "2026.09.17",
+  "content_hash": "e5b65b8efbe39f0f8197d4bb0b0584b91aa25547be7411994c79f44a3de4aa3e",
+  "generation_completed_at": "2026-09-08T00:03:30.853Z",
+  "generated_assets": 40,
+  "provider_attempts": 40,
+  "authored_text_characters": 3515,
+  "billed_units": 1934,
+  "account_usage_before": 4713,
+  "account_usage_after": 6647,
+  "bytes": 3155660,
+  "duplicate_reused_every_asset": true,
+  "playback_and_anonymous_every_asset": true,
+  "auditions_before_library": [
+    {
+      "character": "VC-blunt-tradesman",
+      "duration": 4.272471655328798,
+      "sampleRate": 44100,
+      "rms": 0.06712624205899953,
+      "peak": 0.5754332542419434,
+      "clippedFraction": 0,
+      "mediaPaths": [
+        "/api/media/voice/VA-830131db4721291660c88a03bcacaeb32667f1d0795b34222bfe07b37c01ba7e"
+      ],
+      "directProvider": false,
+      "unauthorized": 401,
+      "audioError": null
+    },
+    {
+      "character": "VC-measured-founder",
+      "duration": 4.4117913832199545,
+      "sampleRate": 44100,
+      "rms": 0.064195062976817,
+      "peak": 0.4721398651599884,
+      "clippedFraction": 0,
+      "mediaPaths": [
+        "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+      ],
+      "directProvider": false,
+      "unauthorized": 401,
+      "audioError": null
+    },
+    {
+      "character": "VC-storm-season-roofer",
+      "duration": 4.08671201814059,
+      "sampleRate": 44100,
+      "rms": 0.060175907791655964,
+      "peak": 0.6012741327285767,
+      "clippedFraction": 0,
+      "mediaPaths": [
+        "/api/media/voice/VA-0c38a93a39b36e09a1a1a4f97c557da08ece452ff30f07bc251ddf3e5111e043"
+      ],
+      "directProvider": false,
+      "unauthorized": 401,
+      "audioError": null
+    },
+    {
+      "character": "VC-studio-manager",
+      "duration": 5.526349206349207,
+      "sampleRate": 44100,
+      "rms": 0.0764949230728158,
+      "peak": 0.7601538300514221,
+      "clippedFraction": 0,
+      "mediaPaths": [
+        "/api/media/voice/VA-3bf2945c01098879e6909d153f1ffcb07473971887bee9deefa67c68d0cdd176"
+      ],
+      "directProvider": false,
+      "unauthorized": 401,
+      "audioError": null
+    },
+    {
+      "character": "VC-warm-owner",
+      "duration": 5.201269841269841,
+      "sampleRate": 44100,
+      "rms": 0.13167795884987676,
+      "peak": 0.8244251608848572,
+      "clippedFraction": 0,
+      "mediaPaths": [
+        "/api/media/voice/VA-66bcf9e3698aab7eaf143546f11fd5ee50380f01a9a80bc48947258633b5a8b2"
+      ],
+      "directProvider": false,
+      "unauthorized": 401,
+      "audioError": null
+    }
+  ],
+  "final_browser": {
+    "base": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+    "widths": [
+      {
+        "width": 1440,
+        "method": "keyboard",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 1024,
+        "method": "mouse",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 768,
+        "method": "mouse",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 390,
+        "method": "touch",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 320,
+        "method": "touch",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      }
+    ],
+    "auditions": [
+      {
+        "character": "VC-blunt-tradesman",
+        "line": "greeting-01",
+        "duration": 4.272471655328798,
+        "sampleRate": 44100,
+        "rms": 0.06712624205899953,
+        "peak": 0.5754332542419434,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-830131db4721291660c88a03bcacaeb32667f1d0795b34222bfe07b37c01ba7e"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-blunt-tradesman",
+        "line": "objection-01",
+        "duration": 3.111473922902494,
+        "sampleRate": 44100,
+        "rms": 0.06543612132182797,
+        "peak": 0.43475738167762756,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-ada33d03f43bdfa93a938c7ccbca954286a83b6720c527ae4b7e56476c062f1f"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-blunt-tradesman",
+        "line": "objection-02",
+        "duration": 3.900952380952381,
+        "sampleRate": 44100,
+        "rms": 0.060184595220886684,
+        "peak": 0.45609861612319946,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-5de3772fad5647b74cc09415f9c284aaa7fbfc35dfdadfe763b29ef963a7b967"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-blunt-tradesman",
+        "line": "interruption-01",
+        "duration": 4.31891156462585,
+        "sampleRate": 44100,
+        "rms": 0.06370603015614587,
+        "peak": 0.5317993760108948,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-e4be7c2ed34f71cd3fa7603d1459df1df5b606386163991880242f6469157f19"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-blunt-tradesman",
+        "line": "voicemail-01",
+        "duration": 7.058866213151927,
+        "sampleRate": 44100,
+        "rms": 0.0637736423757835,
+        "peak": 0.43332037329673767,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-2039d55451ee8363b920a9117fc18625170519097d051ef096460d1096c75866"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-blunt-tradesman",
+        "line": "recurring-01",
+        "duration": 3.3901133786848074,
+        "sampleRate": 44100,
+        "rms": 0.06104776821100617,
+        "peak": 0.5292118787765503,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-651aacabf1047023ac934e69d604f3ca2713a7da151a38153abf8b20c4e2f27d"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-blunt-tradesman",
+        "line": "scenario-01",
+        "duration": 6.455147392290249,
+        "sampleRate": 44100,
+        "rms": 0.060481182433449944,
+        "peak": 0.4869448244571686,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-d9d07bd8741675f86cb279f9e5db4654c0552ba5ffa08f59599bf42274a82262"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-blunt-tradesman",
+        "line": "scenario-02",
+        "duration": 6.594467120181406,
+        "sampleRate": 44100,
+        "rms": 0.062417468375452256,
+        "peak": 0.5216605067253113,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-c5a1c6312ff393fa6d3a64cd2945d54f3b8889a735b65e3a316003df9efa607e"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-measured-founder",
+        "line": "greeting-01",
+        "duration": 4.4117913832199545,
+        "sampleRate": 44100,
+        "rms": 0.064195062976817,
+        "peak": 0.4721398651599884,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-measured-founder",
+        "line": "objection-01",
+        "duration": 4.133151927437642,
+        "sampleRate": 44100,
+        "rms": 0.06940675926593717,
+        "peak": 0.5032560229301453,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-ac4edb5ab31ce6c714e6f78c8477bb9412e2c1dc627c87339c49d9aa8469a6e0"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-measured-founder",
+        "line": "objection-02",
+        "duration": 4.31891156462585,
+        "sampleRate": 44100,
+        "rms": 0.06410399320774364,
+        "peak": 0.583362877368927,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-971a8aefdcfbcb457c65d3ecaaa50c965d31c8fcc25b8b89f510463fbbcd090b"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-measured-founder",
+        "line": "interruption-01",
+        "duration": 4.365351473922902,
+        "sampleRate": 44100,
+        "rms": 0.05155819236606791,
+        "peak": 0.4525233209133148,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-56549744d5fd3cf0dceb5319d2ed1e10d73080068307d8937e6a0405c2c94138"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-measured-founder",
+        "line": "voicemail-01",
+        "duration": 6.408707482993197,
+        "sampleRate": 44100,
+        "rms": 0.06120205477460952,
+        "peak": 0.4512506425380707,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-5f404fddab9b9ff977e7f1202d9f642dbbb7052d49dfb02d20d7b43fe28d55e7"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-measured-founder",
+        "line": "recurring-01",
+        "duration": 2.8792743764172335,
+        "sampleRate": 44100,
+        "rms": 0.06381693024136813,
+        "peak": 0.43714264035224915,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-cb1f1b43dc1cee87e4a9ba801a75d25f89564ccf091582d94e45f219f3e8b0d3"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-measured-founder",
+        "line": "scenario-01",
+        "duration": 6.176507936507937,
+        "sampleRate": 44100,
+        "rms": 0.05796648540661437,
+        "peak": 0.5853193998336792,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-94d4d35d54a50baac0ca579780a53b43648e7bd02d90130d5688234954a035b6"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-measured-founder",
+        "line": "scenario-02",
+        "duration": 5.758548752834467,
+        "sampleRate": 44100,
+        "rms": 0.06440643118969476,
+        "peak": 0.46200689673423767,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-a22573ff0eb249d3367422ca15870247f05ae4c62c44d40cc9932ef5c2e5fb74"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-storm-season-roofer",
+        "line": "greeting-01",
+        "duration": 4.08671201814059,
+        "sampleRate": 44100,
+        "rms": 0.060175907791655964,
+        "peak": 0.6012741327285767,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-0c38a93a39b36e09a1a1a4f97c557da08ece452ff30f07bc251ddf3e5111e043"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-storm-season-roofer",
+        "line": "objection-01",
+        "duration": 3.297233560090703,
+        "sampleRate": 44100,
+        "rms": 0.04983564296544771,
+        "peak": 0.6465368866920471,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-24019614f18f34543b67f854e54ad30f738767fb3800281e99bb722c99f68489"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-storm-season-roofer",
+        "line": "objection-02",
+        "duration": 4.179591836734694,
+        "sampleRate": 44100,
+        "rms": 0.06235156140581409,
+        "peak": 0.5323270559310913,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-89a7043f2fecb25593542ddbeab94054cc7c319f809ae266b2f851df6b5d5048"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-storm-season-roofer",
+        "line": "interruption-01",
+        "duration": 3.7616326530612243,
+        "sampleRate": 44100,
+        "rms": 0.0643771464645464,
+        "peak": 0.6362282037734985,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-d456ed10a0fca2f07f29ac6b35189bbffd8551f76aa3ff7188931bf826d2f3fd"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-storm-season-roofer",
+        "line": "voicemail-01",
+        "duration": 5.851428571428571,
+        "sampleRate": 44100,
+        "rms": 0.06504334894144458,
+        "peak": 0.6355254054069519,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-37f1522bc5ac3ebfac91ae66e2ed3afa930fd20fb128a84e17540e86adc793ac"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-storm-season-roofer",
+        "line": "recurring-01",
+        "duration": 2.647074829931973,
+        "sampleRate": 44100,
+        "rms": 0.0677405470187364,
+        "peak": 0.5627580881118774,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-fb04b794434bfbd5dfa6a5db75812a14d8d0717ab9d17edd2cc61be589d0fad7"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-storm-season-roofer",
+        "line": "scenario-01",
+        "duration": 5.944308390022676,
+        "sampleRate": 44100,
+        "rms": 0.0561136499394024,
+        "peak": 0.7104116678237915,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-ace093fabe2e6754427e91142d654fee4141fe91dbbc12e77e21bc0f7795e150"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-storm-season-roofer",
+        "line": "scenario-02",
+        "duration": 6.548027210884354,
+        "sampleRate": 44100,
+        "rms": 0.060092648462114893,
+        "peak": 0.6043325662612915,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-397a0a60a8c62b015707b39eff0d60aa91374dc279fc0eb5047442f884c38fd2"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-studio-manager",
+        "line": "greeting-01",
+        "duration": 5.526349206349207,
+        "sampleRate": 44100,
+        "rms": 0.0764949230728158,
+        "peak": 0.7601538300514221,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-3bf2945c01098879e6909d153f1ffcb07473971887bee9deefa67c68d0cdd176"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-studio-manager",
+        "line": "objection-01",
+        "duration": 2.3219954648526078,
+        "sampleRate": 44100,
+        "rms": 0.06749655494592849,
+        "peak": 0.7480602264404297,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-b5452aba482c069522c4c2e0c7b9c3d8b410a1b4bcd100aad06b981fc40fa87b"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-studio-manager",
+        "line": "objection-02",
+        "duration": 5.108390022675737,
+        "sampleRate": 44100,
+        "rms": 0.06523399878489675,
+        "peak": 0.8335099816322327,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-4a4d7c54f24ac06d49a77717dccbfb1a7f3099a07649ff73cde164f295280d01"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-studio-manager",
+        "line": "interruption-01",
+        "duration": 5.38702947845805,
+        "sampleRate": 44100,
+        "rms": 0.06445828352238255,
+        "peak": 0.6750282049179077,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-5f2d2935303aeb500240b78fafc6137aba265b76d8ca0787a374223b8d30a23f"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-studio-manager",
+        "line": "voicemail-01",
+        "duration": 6.826666666666667,
+        "sampleRate": 44100,
+        "rms": 0.0705392700886974,
+        "peak": 0.5612108707427979,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-251190bde2689c2fe29cac1ae0feee65ed39aca7e169bf7e0a538745a56ae88c"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-studio-manager",
+        "line": "recurring-01",
+        "duration": 2.182675736961451,
+        "sampleRate": 44100,
+        "rms": 0.07466313626133238,
+        "peak": 0.627752959728241,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-e9017b533607741677c4e9e95d96eff154b70b1d7fb884ee759ca4fb34bd8804"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-studio-manager",
+        "line": "scenario-01",
+        "duration": 6.176507936507937,
+        "sampleRate": 44100,
+        "rms": 0.0707537669374429,
+        "peak": 0.6928400993347168,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-3bc379307644a219f6e8a744d363a1dd175dae0a99daa3e435c849fa60a382a0"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-studio-manager",
+        "line": "scenario-02",
+        "duration": 6.222947845804988,
+        "sampleRate": 44100,
+        "rms": 0.06618418535504836,
+        "peak": 0.7501477003097534,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-67089ec16db57f8306d47e168ad4aabd077255c286b56e6d32dfe773c917961b"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-warm-owner",
+        "line": "greeting-01",
+        "duration": 5.201269841269841,
+        "sampleRate": 44100,
+        "rms": 0.13167795884987676,
+        "peak": 0.8244251608848572,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-66bcf9e3698aab7eaf143546f11fd5ee50380f01a9a80bc48947258633b5a8b2"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-warm-owner",
+        "line": "objection-01",
+        "duration": 3.2043537414965986,
+        "sampleRate": 44100,
+        "rms": 0.14283249789333577,
+        "peak": 0.7837947010993958,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-f722eefbc4ef80328299cd1810b5447b332279bd1f433d8f1ab541cfba6b1cca"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-warm-owner",
+        "line": "objection-02",
+        "duration": 4.6439909297052155,
+        "sampleRate": 44100,
+        "rms": 0.14967854115533666,
+        "peak": 0.7787654995918274,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-efdff6a0f3d38f8fda777b116c98bb41c2071115cbbbe8024ca216808f4be75b"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-warm-owner",
+        "line": "interruption-01",
+        "duration": 5.944308390022676,
+        "sampleRate": 44100,
+        "rms": 0.13482418495654924,
+        "peak": 0.7957372665405273,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-8282be3aa928f21c6618bcd9219ada4d1640c6a73343be3f06a110fd437d0262"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-warm-owner",
+        "line": "voicemail-01",
+        "duration": 6.222947845804988,
+        "sampleRate": 44100,
+        "rms": 0.14253389281483428,
+        "peak": 0.8242112994194031,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-64d6d75d5a21c60b33128c3763da0cc48e1c84783abd9d495a1a97f8cd0b1175"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-warm-owner",
+        "line": "recurring-01",
+        "duration": 2.7399546485260773,
+        "sampleRate": 44100,
+        "rms": 0.1385534090013078,
+        "peak": 0.6048627495765686,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-20c1c62c4b6f20dbe49fce4ca9a50630d5d20c26b320d9f6257feaa5ecc25c83"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-warm-owner",
+        "line": "scenario-01",
+        "duration": 6.501587301587302,
+        "sampleRate": 44100,
+        "rms": 0.14382761874695263,
+        "peak": 0.8781313300132751,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-5071d360bf93da672bcc36f4c0018d801c71ddfaa39b8dad11f16210c4b7534c"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-warm-owner",
+        "line": "scenario-02",
+        "duration": 6.408707482993197,
+        "sampleRate": 44100,
+        "rms": 0.15081956809320113,
+        "peak": 0.7823687791824341,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-8005544246fe514fa2e70d39ddc2e61ad7770ba67f608341e9514dc48371a24f"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      }
+    ],
+    "infrastructure": "Live preview Worker, D1 and R2",
+    "revocation": true,
+    "textSurvives": true
+  },
+  "existing_sync_probe_passed": true,
+  "existing_rail_probe_passed": true,
+  "production_r2_promotion": {
+    "status": "passed",
+    "objects": 40,
+    "bytes": 3155660,
+    "verified_at": "2026-09-08T00:21:29.804819+00:00",
+    "sha256_and_length_match_every_object": true,
+    "temporary_audio_deleted": true,
+    "no_tts_used": true
+  },
+  "production_worker_deployed": false,
+  "account_usage_after_replay_and_promotion": 6647,
+  "additional_billed_units_after_generation": 0,
+  "final_preview_binding_type": "secret_text",
+  "security_closeout": {
+    "date": "2026-09-08",
+    "old_credential_revoked_or_rotated": true,
+    "rotation_evidence": "User confirmation in the independent audit closeout request",
+    "replacement_preview_binding": {
+      "worker_version": "1c88ea20-fc44-4307-a6da-93fea19576b6",
+      "binding_name": "ELEVENLABS_API_KEY",
+      "binding_type": "secret_text",
+      "verified_at": "2026-09-08T00:56:25.172257+00:00",
+      "verification": "Read-only active preview version binding metadata"
+    },
+    "secret_value_committed_or_printed": false,
+    "historical_worker_versions_deleted": "not claimed",
+    "audio_regenerated": false,
+    "production_elevenlabs_key_required": false,
+    "sec_001_status": "PARTIAL"
+  }
+}

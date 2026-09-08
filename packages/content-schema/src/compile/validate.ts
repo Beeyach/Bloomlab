@@ -11,6 +11,8 @@ import { CONTENT_TYPES, type ContentType, territoryOfSkillId } from '../ids.ts';
 import {
   CampaignSchema,
   ClientSchema,
+  VoiceCharacterSchema,
+  type VoiceCharacter,
   ExerciseSchema,
   GhlFeatureSchema,
   GlossarySchema,
@@ -54,6 +56,7 @@ export interface ParsedContent {
   exercises: Exercise[];
   scenarios: Scenario[];
   clients: Client[];
+  voice_characters: VoiceCharacter[];
   rubrics: Rubric[];
   projects: Project[];
   portfolio: Portfolio[];
@@ -69,6 +72,7 @@ const YAML_SCHEMAS: Record<Exclude<ContentType, 'learning-units'>, ZodType> = {
   exercises: ExerciseSchema,
   scenarios: ScenarioSchema,
   clients: ClientSchema,
+  'voice-characters': VoiceCharacterSchema,
   rubrics: RubricSchema,
   projects: ProjectSchema,
   portfolio: PortfolioSchema,
@@ -83,6 +87,7 @@ const KEY_OF_TYPE: Record<ContentType, keyof Omit<ParsedContent, 'paths'>> = {
   exercises: 'exercises',
   scenarios: 'scenarios',
   clients: 'clients',
+  'voice-characters': 'voice_characters',
   rubrics: 'rubrics',
   projects: 'projects',
   portfolio: 'portfolio',
@@ -128,6 +133,7 @@ function emptyParsed(): ParsedContent {
     exercises: [],
     scenarios: [],
     clients: [],
+    voice_characters: [],
     rubrics: [],
     projects: [],
     portfolio: [],
@@ -234,6 +240,7 @@ interface Lookup {
   exercises: Map<string, Exercise>;
   scenarios: Map<string, Scenario>;
   clients: Map<string, Client>;
+  voices: Map<string, VoiceCharacter>;
   rubrics: Map<string, Rubric>;
   projects: Map<string, Project>;
   portfolio: Map<string, Portfolio>;
@@ -250,6 +257,7 @@ function lookupOf(parsed: ParsedContent): Lookup {
     exercises: index(parsed.exercises),
     scenarios: index(parsed.scenarios),
     clients: index(parsed.clients),
+    voices: index(parsed.voice_characters),
     rubrics: index(parsed.rubrics),
     projects: index(parsed.projects),
     portfolio: index(parsed.portfolio),
@@ -785,6 +793,37 @@ export function crossValidate(parsed: ParsedContent, issues: IssueList): GraphRe
         }
       }
     }
+  }
+
+  // ---- persistent voice identity (VOI-004)
+  for (const client of parsed.clients) {
+    requireRef(
+      'MISSING_VOICE_CHARACTER',
+      look.voices,
+      client.voice.character,
+      client,
+      'voice.character',
+      'voice character',
+    );
+    const voice = look.voices.get(client.voice.character);
+    if (voice && voice.client !== client.id)
+      issues.error(
+        'VOICE_CLIENT_MISMATCH',
+        fileOf(client.id),
+        `${client.id} references ${voice.id}, which belongs to ${voice.client}`,
+        { id: client.id, path: 'voice.character' },
+      );
+  }
+  for (const voice of parsed.voice_characters) {
+    requireRef('MISSING_CLIENT', look.clients, voice.client, voice, 'client', 'client');
+    const client = look.clients.get(voice.client);
+    if (client && client.voice.character !== voice.id)
+      issues.error(
+        'VOICE_CLIENT_MISMATCH',
+        fileOf(voice.id),
+        `${voice.id} is not the voice referenced by ${client.id}`,
+        { id: voice.id, path: 'client' },
+      );
   }
 
   // ---- scenarios

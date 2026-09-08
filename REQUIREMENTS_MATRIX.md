@@ -378,8 +378,8 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DATA-003 | Installable PWA caching app shell, stable curriculum and stable assets via service worker; API responses not cached blindly; progress lives in IndexedDB. | P1 | 3 | PASSED | §87, TA§9 |
 | DATA-004 | Git = what Bloomlab teaches; D1 = what the learner has done. Static curriculum is not mirrored into D1. | P0 | 4 | PASSED | §92, TA§66 |
 | DATA-005 | D1 domains: Identity (learners, devices, sync_sessions); Learning (skill_progress, skill_evidence, campaign_progress, exercise_attempts, review_queue, fieldwork); Simulation (sim_projects, sim_snapshots, sim_events, client_progress); Portfolio (portfolio_projects, portfolio_assets); AI (ai_usage, ai_feedback, rubric_runs); System (content_versions, sync_operations, feature_flags). | P0 | 4 | PASSED | §93, TA§65 |
-| DATA-006 | R2 holds generated audio, voice assets, screenshots, portfolio media, fieldwork media, recovery backups, scenario attachments; D1 holds metadata; no huge binaries or giant JSON blobs in D1. | P1 | 20 | NOT_STARTED | §94, TA§15 |
-| DATA-007 | Private learner assets are never public; access through Worker authorisation, short-lived signed access, or controlled routes. | P0 | 20 | NOT_STARTED | §94, TA§16 |
+| DATA-006 | R2 holds generated audio, voice assets, screenshots, portfolio media, fieldwork media, recovery backups, scenario attachments; D1 holds metadata; no huge binaries or giant JSON blobs in D1. | P1 | 20 | PARTIAL | §94, TA§15 |
+| DATA-007 | Private learner assets are never public; access through Worker authorisation, short-lived signed access, or controlled routes. | P0 | 20 | PASSED | §94, TA§16 |
 | DATA-008 | Export Bloomlab Data: versioned backup containing progress, evidence, projects, notes, simulator saves, portfolio metadata. | P1 | 23 | NOT_STARTED | §150, TA§80 |
 | DATA-009 | Restore Backup validates version and schema, requires confirmation, never silently overwrites. | P2 | 26 | NOT_STARTED | §150, TA§81 |
 | DATA-010 | Separate development and production D1 (`bloomlab-dev`, `bloomlab-prod`); migrations never tested against production first. | P0 | 4 | PASSED | §104, TA§61 |
@@ -411,11 +411,11 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| VOI-001 | ElevenLabs provides recurring fictional client voices. | P1 | 20 | NOT_STARTED | §113, TA§43 |
-| VOI-002 | Pre-generated asset mode (preferred): greetings, objections, interruptions, voicemail, recurring lines, scripted scenario dialogue stored in R2. | P1 | 20 | NOT_STARTED | §114, TA§44 |
+| VOI-001 | ElevenLabs provides recurring fictional client voices. | P1 | 20 | PASSED | §113, TA§43 |
+| VOI-002 | Pre-generated asset mode (preferred): greetings, objections, interruptions, voicemail, recurring lines, scripted scenario dialogue stored in R2. | P1 | 20 | PASSED | §114, TA§44 |
 | VOI-003 | Dynamic TTS only where open-ended roleplay needs it (`scenario/Claude response → ElevenLabs → audio`); reusable generated lines cached. | P2 | 21 | NOT_STARTED | §115, TA§45 |
-| VOI-004 | Voice character registry: client, voice ID, speech rate, style, stability, allowed emotion range, language; recurring characters keep consistent voices. | P1 | 20 | NOT_STARTED | §116, TA§46 |
-| VOI-005 | While the ~128k expiring ElevenLabs credits remain, prioritise generating a reusable voice library; future functionality never depends on those credits. | P2 | 20 | NOT_STARTED | §113 |
+| VOI-004 | Voice character registry: client, voice ID, speech rate, style, stability, allowed emotion range, language; recurring characters keep consistent voices. | P1 | 20 | PASSED | §116, TA§46 |
+| VOI-005 | While the ~128k expiring ElevenLabs credits remain, prioritise generating a reusable voice library; future functionality never depends on those credits. | P2 | 20 | PASSED | §113 |
 | VOI-006 | Google Cloud Speech-to-Text V2, turn-based: record locally → upload via backend → transcribe → show transcript → evaluate → optionally delete raw audio. No live streaming in v1. | P1 | 21 | NOT_STARTED | §117, TA§47 |
 | VOI-007 | TTS failure shows transcript/text fallback; transcription failure preserves the recording and allows retry. | P0 | 21 | NOT_STARTED | §149, TA§79 |
 
@@ -454,7 +454,7 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| SEC-001 | Secrets (ANTHROPIC_API_KEY, ELEVENLABS_API_KEY, GOOGLE_CLOUD_CREDENTIAL, SYNC_KEY_PEPPER, future GHL credentials) live only in platform secret storage; never in the browser bundle, Vite client variables, commits, curriculum files, or D1. | P0 | all | NOT_STARTED | §105, §152, TA§62 |
+| SEC-001 | Secrets (ANTHROPIC_API_KEY, ELEVENLABS_API_KEY, GOOGLE_CLOUD_CREDENTIAL, SYNC_KEY_PEPPER, future GHL credentials) live only in platform secret storage; never in the browser bundle, Vite client variables, commits, curriculum files, or D1. | P0 | all | PARTIAL | §105, §152, TA§62 |
 | SEC-002 | Production data is never used casually for development. | P0 | all | NOT_STARTED | §152 |
 | SEC-003 | Learner screenshots and fieldwork media are never published. | P0 | all | NOT_STARTED | §152 |
 | SEC-004 | Raw sync secret is never stored server-side (see SYNC-003). | P0 | 4 | PASSED | §152 |

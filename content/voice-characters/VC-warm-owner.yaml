@@ -1,0 +1,51 @@
+# Real account catalog selection; provenance and audition evidence: docs/reviews/phase-20-voice-assets.md
+id: VC-warm-owner
+client: CL-glowhaus-medspa
+voice_id: EXAVITQu4vr4xnSDxMaL
+speech_rate: 1.05
+style: 0
+stability: 0.55
+allowed_emotion_range:
+  - warm
+  - skeptical
+  - hurried
+  - curious
+language: en
+lines:
+  - id: greeting-01
+    kind: greeting
+    text: Hi, Ary, it's Priya from Glowhaus. I've got a little time before my next client. Let's
+      talk.
+    emotion: warm
+  - id: objection-01
+    kind: objection
+    text: The last agency built something nobody here could change.
+    emotion: skeptical
+  - id: objection-02
+    kind: objection
+    text: Dana already has enough to do. Who is going to keep this working when I am in a treatment?
+    emotion: skeptical
+  - id: interruption-01
+    kind: interruption
+    text: Sorry, one second. Before we get into the software, can you tell me what changes for the
+      front desk?
+    emotion: hurried
+  - id: voicemail-01
+    kind: voicemail
+    text: Hi, you've reached Priya at Glowhaus. I'm with a client right now. Leave your name and
+      number and I'll call you back.
+    emotion: warm
+  - id: recurring-01
+    kind: recurring
+    text: I don't need fancy. I need the no-shows to stop.
+    emotion: warm
+  - id: scenario-01
+    kind: scenario
+    text: So what would that actually look like for Dana? A lead comes in while she is on the phone.
+      Then what?
+    emotion: curious
+  - id: scenario-02
+    kind: scenario
+    text: If someone cancels and books again, I need the old reminder to stop. I cannot have us
+      sending the wrong time.
+    emotion: skeptical

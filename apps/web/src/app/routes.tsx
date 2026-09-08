@@ -110,6 +110,12 @@ export const APP_ROUTES: readonly AppRoute[] = [
     Component: lazy(() => import('../screens/SimulatorHarness')),
   },
   {
+    id: 'voice-review',
+    path: '/system/voice',
+    flag: 'system_diagnostics',
+    Component: lazy(() => import('../voice/VoiceReview')),
+  },
+  {
     id: 'holo-diagnostic',
     path: '/system/holo',
     flag: 'system_diagnostics',

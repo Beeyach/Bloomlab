@@ -4,6 +4,17 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 20 · Voice Assets
+
+- Five first-class voice-character YAML records with verified ElevenLabs catalog IDs, the seven-field identity/settings contract and eight reusable lines per client. Bidirectional client references, line uniqueness, emotion bounds and generation inputs are validated; content advances to `2026.09.17` with a regenerated lock.
+- Authenticated preview/local generation for authored IDs only, centralized multilingual_v2 / mp3_44100_128 configuration, bounded/sanitized provider responses and atomic durable generation claims. Immutable R2 keys preserve purchased audio; failed metadata writes recover from R2 without another TTS call.
+- Private development/production R2 bindings and migration `0003_media_assets.sql` for metadata and generation jobs. Authenticated playback supports ranges and learner ownership with no provider import or runtime key dependency.
+- `/system/voice` diagnostics with stable client selection, transcript fallback and real saved-audio playback. Voice calls stay off; recording, transcription and the Call Room remain later phases.
+- Repeatable audition/generation/promotion commands, a reviewed metadata manifest and CI coverage/indexing gates. Exact bytes go to production R2 without a second purchase; production migration and Worker deployment remain post-merge.
+- Focused schema/security/Worker tests, browser secret scans and a real-infrastructure five-width voice probe; existing sync and navigation probes re-run. See the Phase 20 review for measured usage and complete evidence. Simulator, mastery and exercise-grader versions are unchanged.
+- Security closeout (2026-09-08): the user confirmed revocation/rotation of the old ElevenLabs key and a replacement preview Worker secret, completing the required pre-merge remediation. Documentation/evidence now records the completed rotation; SEC-001 remains PARTIAL, audio is not regenerated, and production needs no ElevenLabs key for saved playback.
+
+
 ### Documentation — Phase 18 closure
 
 - PR #20 merged at `154a00a73d659b92f0cc871f636462a9cb094f4b`. Main CI `34072172459` SUCCESS: 1,570 tests across 93 files, Checks SUCCESS, production D1 migration SUCCESS with none pending, production Wrangler deploy SUCCESS; preview correctly skipped on main. Historical Phase 18 review evidence remains unchanged. Phase 19 is current.

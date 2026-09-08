@@ -167,6 +167,7 @@ export async function validateSources(
   counts.exercises = parsed.exercises.length;
   counts.scenarios = parsed.scenarios.length;
   counts.clients = parsed.clients.length;
+  counts['voice-characters'] = parsed.voice_characters.length;
   counts.rubrics = parsed.rubrics.length;
   counts.projects = parsed.projects.length;
   counts.portfolio = parsed.portfolio.length;
@@ -184,6 +185,7 @@ export async function validateSources(
     exercises: parsed.exercises,
     scenarios: parsed.scenarios,
     clients: parsed.clients,
+    voice_characters: parsed.voice_characters,
     rubrics: parsed.rubrics,
     projects: parsed.projects,
     portfolio: parsed.portfolio,

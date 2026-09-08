@@ -9,6 +9,7 @@ function makeEnv(overrides: Partial<Env> = {}): Env {
     BLOOMLAB_ENV: 'local',
     ASSETS: { fetch: vi.fn(async () => new Response('asset')) } as unknown as Fetcher,
     DB: testEnv.DB,
+    MEDIA: testEnv.MEDIA,
     ...overrides,
   };
 }

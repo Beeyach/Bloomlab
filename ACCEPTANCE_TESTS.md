@@ -340,10 +340,14 @@ Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine a
 ## Phase 20 — Voice assets
 
 - **VOI-001** At least one persistent client has an ElevenLabs voice configured.
-- **VOI-002** Pre-generated lines for greetings, objections, interruptions, voicemail, recurring lines exist in R2 and play without a TTS call.
+- **VOI-002** Pre-generated lines for greetings, objections, interruptions, voicemail, recurring lines and scripted scenario dialogue exist in R2 and play without a TTS call.
 - **VOI-004** Registry entries carry all seven fields; a client's voice is stable across sessions.
 - **DATA-006** Audio and media are in R2; D1 holds only metadata rows.
 - **DATA-007** Fetching a learner asset without a valid session returns 401/403.
+
+- **VOI-005** Reusable audio is generated with current account credits and promoted as exact bytes; subsequent playback and production deployment require no TTS purchase.
+
+Phase 20 evidence (2026-09-07/08): `docs/reviews/phase-20-voice-assets.md`, `docs/operations/voice-assets.json` and the focused content/Worker tests. All five client references resolve to verified account-catalog voices. Every character has eight lines spanning the six kinds. Live preview generation, repeated generation, two media reads and anonymous 401 are verified per asset against D1 metadata and R2 checksums. Browser decoding uses the real Worker and bucket at 1440/1024/768/390/320; identity persists across reload and no playback request goes to ElevenLabs. Unit integration also plays through the real router with an absent key and failing global fetch, exercises private-owner 403, correct ranges and recoverable metadata failure. Production R2 bytes are checked before and after promotion; the production Worker and D1 rollout remain post-merge. DATA-006's Phase 20 audio acceptance is demonstrated, but its full matrix scope stays PARTIAL for later non-audio media flows. Existing sync/auth and navigation probes pass.
 
 ## Phase 21 — Call Room
 

@@ -1,0 +1,49 @@
+# Real account catalog selection; provenance and audition evidence: docs/reviews/phase-20-voice-assets.md
+id: VC-measured-founder
+client: CL-summit-coaching
+voice_id: cjVigY5qzO86Huf0OWal
+speech_rate: 0.95
+style: 0
+stability: 0.65
+allowed_emotion_range:
+  - calm
+  - skeptical
+  - firm
+  - curious
+language: en
+lines:
+  - id: greeting-01
+    kind: greeting
+    text: Hello, Ary. Marcus here. I have a few minutes to talk through the application funnel.
+    emotion: calm
+  - id: objection-01
+    kind: objection
+    text: Another person quoted nine hundred. What am I paying for beyond that?
+    emotion: skeptical
+  - id: objection-02
+    kind: objection
+    text: I do not want more calls if they are the wrong calls. How does your plan change that?
+    emotion: firm
+  - id: interruption-01
+    kind: interruption
+    text: Let me stop you there. What happens between the application and the booking?
+    emotion: firm
+  - id: voicemail-01
+    kind: voicemail
+    text: You have reached Marcus at Summit Leadership Coaching. Leave your name and the reason for
+      your call, and I will get back to you.
+    emotion: calm
+  - id: recurring-01
+    kind: recurring
+    text: I'd rather talk to five right people than twenty wrong ones.
+    emotion: calm
+  - id: scenario-01
+    kind: scenario
+    text: Walk me through what happens after someone applies. Who sees it, and what does the
+      applicant receive?
+    emotion: curious
+  - id: scenario-02
+    kind: scenario
+    text: If we start with the smaller option, tell me exactly what we would postpone and how we
+      would know when to add it.
+    emotion: skeptical

@@ -6,8 +6,8 @@
   "description": "Bloomlab web application (React + Vite, served by the Cloudflare Worker)",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "build:preview": "vite build --mode preview",
+    "build": "vite build && node ../../scripts/check-browser-secrets.mjs",
+    "build:preview": "vite build --mode preview && node ../../scripts/check-browser-secrets.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "deploy": "wrangler deploy"

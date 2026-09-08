@@ -68,6 +68,10 @@ export default function SystemDiagnostics() {
       <h2 className={styles.heading}>Harnesses</h2>
       <Surface as="ul" padding="sm" className={styles.list}>
         <li>
+          <Link to="/system/voice">Voice library</Link> — review saved client voices and authored
+          lines.
+        </li>
+        <li>
           <Link to="/system/simulator">Simulator</Link> — drive the engine: clock, queue, log,
           checkpoints, replay and reset.
         </li>

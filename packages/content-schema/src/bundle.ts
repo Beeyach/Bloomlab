@@ -11,6 +11,7 @@ import type {
   Rubric,
   Scenario,
   Skill,
+  VoiceCharacter,
 } from './schemas/index.ts';
 
 /**
@@ -34,6 +35,8 @@ export const ISSUE_CODES = [
   'TERRITORY_MISMATCH',
   'MISSING_GHL_FEATURE',
   'MISSING_CLIENT',
+  'MISSING_VOICE_CHARACTER',
+  'VOICE_CLIENT_MISMATCH',
   'MISSING_SCENARIO',
   'MISSING_WORKFLOW',
   'MISSING_CAMPAIGN',
@@ -187,6 +190,7 @@ export interface ContentBundle {
   exercises: Exercise[];
   scenarios: Scenario[];
   clients: Client[];
+  voice_characters: VoiceCharacter[];
   rubrics: Rubric[];
   projects: Project[];
   portfolio: Portfolio[];
