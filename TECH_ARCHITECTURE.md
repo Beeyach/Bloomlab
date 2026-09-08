@@ -237,3 +237,10 @@ Never: store everything in one giant React state object · put simulator logic i
 - Package manager and workspace tooling (D-007): Node 22.18 and npm 10.9.3 available; pnpm not installed. Decide in Phase 1.
 - Cloudflare account resources (Worker, D1 dev/prod, R2) and secrets must be created by the user before Phase 1's environment work and Phase 4's sync work can be verified.
 - Wrangler configuration for Workers + Static Assets + Vite is Phase 1 scope.
+
+
+## Phase 23 portfolio and export implementation
+
+`portfolio_projects` stores schema-v1 envelopes, template/project references, reflection and all ten artifact slots. `portfolio_assets` stores append-only references to completed `exercise_attempts`, never image bytes. Dexie v7 adds these tables; existing D1 domains need no new migration. The shared sync registry uses snapshot conflicts for projects and append semantics for contributions. The v7 cursor reset recovers previously skipped portfolio pull history. Private images retain Phase 22 owner-authorized endpoints.
+
+New finalized attempts capture only bounded grading structures; earlier attempts remain readable without that optional field. The archive resolves authored context and actual owned evidence rather than copying content into D1. The export schema, exact six-group table mapping and explicit exclusions are documented in `docs/reviews/phase-23-portfolio.md`; `apps/web/src/backup/export.ts` owns the validator and consistent local snapshot. Restore remains Phase 26.

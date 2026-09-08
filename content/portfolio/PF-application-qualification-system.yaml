@@ -23,3 +23,15 @@ artifacts:
   - kind: assistance_level
     required: true
     description: Independent, light, guided or heavy, per exercise.
+  - kind: funnel
+    required: false
+    description: Saved funnel structure, if a build has been supplied; a proposal alone is not a build.
+  - kind: workflows
+    required: false
+    description: Saved learner workflow structures, when supplied.
+  - kind: screenshots
+    required: false
+    description: Private screenshots referenced by completed fieldwork, when supplied.
+  - kind: real_ghl_evidence
+    required: false
+    description: Passing manual training-account evidence, if supplied separately from the simulation.

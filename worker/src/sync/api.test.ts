@@ -1,3 +1,4 @@
+import { PORTFOLIO_ARTIFACT_KINDS } from '@bloomlab/content-schema';
 import { env } from 'cloudflare:test';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -441,5 +442,84 @@ describe('idempotency and deletions', () => {
       b.session_token,
     );
     expect(stale.body.outcomes[0]).toMatchObject({ status: 'conflict' });
+  });
+});
+
+describe('PORT-001 private metadata sync', () => {
+  it('round-trips all ten categories through D1, scopes ownership, and refuses binary/public fields', async () => {
+    const id = `pp:${n1}`;
+    const record: SyncRecord = {
+      ...note(id, deviceA, '', '2026-09-02T10:01:00.000Z'),
+      schema_version: 1,
+      template_id: 'PF-consultation-booking-system',
+      project_id: 'project',
+      reflection: 'Saved reflection',
+      artifacts: Object.fromEntries(
+        PORTFOLIO_ARTIFACT_KINDS.map((kind) => [
+          kind,
+          {
+            source: ['brief', 'business_problem'].includes(kind) ? 'project' : 'contributions',
+            reference_id: ['brief', 'business_problem'].includes(kind) ? 'project' : id,
+          },
+        ]),
+      ),
+    };
+    delete record.body;
+    delete record.target_kind;
+    delete record.target_ref;
+    const push = (entity: string, value: unknown, seq = 1) =>
+      call<PushResponse>(
+        '/api/sync/push',
+        { operations: [{ seq, entity, base_revision: 0, record: value }] },
+        a.session_token,
+      );
+    expect((await push('portfolio_projects', record)).body.outcomes[0]?.status).toBe('applied');
+    const linked = (await call<PullResponse>('/api/sync/pull', { cursor: 0 }, b.session_token)).body
+      .changes;
+    expect(linked[0]?.record).toMatchObject({
+      id,
+      learner_id: a.learner_id,
+      reflection: 'Saved reflection',
+      artifacts: record.artifacts,
+    });
+    const stranger = (
+      await call<LinkResponse>('/api/sync/link', {
+        secret: generateSyncKey(),
+        device: { device_id: crypto.randomUUID(), label: 'Separate learner' },
+      })
+    ).body;
+    expect(
+      (await call<PullResponse>('/api/sync/pull', { cursor: 0 }, stranger.session_token)).body
+        .changes,
+    ).toEqual([]);
+    for (const extra of [
+      { image_bytes: [1, 2] },
+      { public_url: 'https://public.invalid' },
+      { session_token: 'secret' },
+      { client_outcomes: 'invented' },
+    ]) {
+      expect(
+        (await push('portfolio_projects', { ...record, ...extra })).body.outcomes[0]?.status,
+      ).toBe('rejected');
+    }
+    const asset = {
+      id: `pa:${n1}`,
+      learner_id: a.learner_id,
+      device_id: deviceA,
+      created_at: record.created_at,
+      updated_at: record.updated_at,
+      revision: 1,
+      deleted_at: null,
+      schema_version: 1,
+      portfolio_id: id,
+      attempt_id: n1,
+    };
+    expect((await push('portfolio_assets', asset)).body.outcomes[0]?.status).toBe('applied');
+    expect(
+      (await push('portfolio_assets', { ...asset, blob: 'binary' })).body.outcomes[0]?.status,
+    ).toBe('rejected');
+    const missing = structuredClone(record);
+    delete (missing.artifacts as Record<string, unknown>).brief;
+    expect((await push('portfolio_projects', missing)).body.outcomes[0]?.status).toBe('rejected');
   });
 });

@@ -10,6 +10,10 @@ import { dismissConflictPrompt, useDismissedConflict } from './conflictPrompt';
 
 /** A readable summary of a record: its text body when it has one, else its own fields. */
 function describe(record: SyncRecord): string {
+  if (record.schema_version === 1 && typeof record.reflection === 'string')
+    return record.deleted_at
+      ? 'Removed from Portfolio'
+      : record.reflection || 'No additional reflection saved.';
   if (typeof record.body === 'string') return record.body;
   return Object.entries(record)
     .filter(([key]) => !(ENVELOPE_FIELDS as readonly string[]).includes(key))

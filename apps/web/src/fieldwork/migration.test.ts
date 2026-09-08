@@ -1,13 +1,15 @@
 import Dexie from 'dexie';
 import { it, expect } from 'vitest';
-import { BloomlabDatabase } from '../data/db';
+import { BloomlabDatabase, DB_VERSION } from '../data/db';
 it('v6 adds evidence assets without rewriting v5 workspaces or call recordings', async () => {
   const name = `fieldwork-upgrade-${crypto.randomUUID()}`;
   const reference = new BloomlabDatabase(`${name}-schema`);
   await reference.open();
   const schema = Object.fromEntries(
     reference.tables
-      .filter((t) => t.name !== 'evidence_assets')
+      .filter(
+        (t) => !['evidence_assets', 'portfolio_projects', 'portfolio_assets'].includes(t.name),
+      )
       .map((t) => [
         t.name,
         [t.schema.primKey.src, ...t.schema.indexes.map((i) => i.src)].join(','),
@@ -28,7 +30,7 @@ it('v6 adds evidence assets without rewriting v5 workspaces or call recordings',
   old.close();
   const next = new BloomlabDatabase(name);
   await next.open();
-  expect(next.verno).toBe(6);
+  expect(next.verno).toBe(DB_VERSION);
   expect(await next.evidence_assets.count()).toBe(0);
   expect(await next.workspace.get('exercise.attempt.old')).toMatchObject({
     value: { text: 'Existing learner work' },

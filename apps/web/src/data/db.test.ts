@@ -14,6 +14,8 @@ describe('BloomlabDatabase', () => {
       'evidence_assets',
       'exercise_attempts',
       'notes',
+      'portfolio_assets',
+      'portfolio_projects',
       'review_queue',
       'sim_events',
       'sim_projects',

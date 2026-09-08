@@ -11,6 +11,7 @@ import {
   type RealGhlEvidence,
 } from '@bloomlab/mastery-engine';
 
+import type { PortfolioCapture } from '@bloomlab/content-schema';
 import type { GradeReport } from '@bloomlab/exercise-engine';
 
 import type { LearnerResponse } from '../../exercise/response';
@@ -57,6 +58,7 @@ export interface RecordEvidenceInput {
   /** When the learner actually began; defaults to the completion time for evidence with no runner. */
   started_at?: string;
   /** The deterministic grade, stored on the attempt row (D-069). */
+  portfolio_capture?: PortfolioCapture | null;
   grade?: GradeReport | null;
   /** What the learner wrote and decided, stored on the attempt row (Phase 16). */
   response?: LearnerResponse | null;
@@ -115,6 +117,7 @@ export async function recordEvidence(
             critical_failures: input.critical_failures ?? [],
             mode: input.mode ?? null,
             versions,
+            ...(input.portfolio_capture ? { portfolio_capture: input.portfolio_capture } : {}),
             grade: input.grade ?? null,
             response: input.response ?? null,
           },

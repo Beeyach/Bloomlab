@@ -1,3 +1,4 @@
+import { PortfolioProjectRecordSchema, PortfolioAssetRecordSchema } from '@bloomlab/content-schema';
 import {
   SYNC_ENTITY_KINDS,
   decideMerge,
@@ -163,6 +164,8 @@ async function pushOne(op: PushOperation, session: Session, db: D1Database): Pro
   let record: SyncRecord;
   try {
     record = validateRecord(op.record);
+    if (op.entity === 'portfolio_projects') record = PortfolioProjectRecordSchema.parse(record);
+    if (op.entity === 'portfolio_assets') record = PortfolioAssetRecordSchema.parse(record);
   } catch (error) {
     return { seq, status: 'rejected', reason: (error as Error).message };
   }

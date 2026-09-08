@@ -5,6 +5,7 @@
  * strings so they sort, diff and travel to D1 unchanged.
  */
 
+import type { PortfolioCapture } from '@bloomlab/content-schema';
 import type { GradeReport } from '@bloomlab/exercise-engine';
 
 import type { LearnerResponse } from '../exercise/response';
@@ -30,6 +31,8 @@ export type { SyncEntity, SyncEnvelope };
 /** Syncable entities that have a local table today. Grows phase by phase. */
 export const LOCAL_SYNC_ENTITIES = [
   'notes',
+  'portfolio_projects',
+  'portfolio_assets',
   'skill_evidence',
   'exercise_attempts',
   'skill_progress',
@@ -90,6 +93,8 @@ export interface ExerciseAttemptRecord extends SyncEnvelope {
   critical_failures: string[];
   mode: ExerciseMode | null;
   versions: EvidenceVersions;
+  /** Optional bounded structure preserved at submission; older attempts remain valid. */
+  portfolio_capture?: PortfolioCapture | null;
   /**
    * What the deterministic grader decided, kept with the attempt so a later rules change cannot
    * rewrite history and the result view survives a reload (D-069). Absent on attempts recorded

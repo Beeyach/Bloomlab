@@ -389,6 +389,8 @@ Implementation evidence: `docs/reviews/phase-22-fieldwork.md`; operational recov
 - **PORT-002** Every simulated item displays "Simulation Project" or "Demonstration Build"; no results/outcome claims field exists.
 - **DATA-008** Export produces a versioned file containing the six data groups.
 
+Phase 23 evidence: `apps/web/src/portfolio/portfolio.test.tsx` and `boundary.test.ts` directly check ten durable categories, honest missing data, source-derived skills/assistance/GHL, labels and no outcome fields, tombstones, migration, reopening and two-device reflection conflicts. `finalizeQueuedWrites.test.ts` checks immutable submission capture. `apps/web/src/backup/export.test.tsx` validates the versioned six-group local snapshot, exact table mapping, private media/credential exclusion and download error/retry. `worker/src/sync/api.test.ts` checks D1 metadata isolation and strict rejection. `review:portfolio` exercises the real routes and downloads at 1440/1024/768/390/320, with keyboard/touch, reduced motion, deleted/unavailable images and built-Preview offline reload. See `docs/reviews/phase-23-portfolio.md` and the draft PR for exact-head CI/Preview identity. This evidence does not promote Phase 22 human acceptance or PORT-003.
+
 ## Phase 24 — Field Ready content
 
 - **PRD-005** A full run from placement to capstone is completed by the learner and reviewed against the §4 reasoning list.
