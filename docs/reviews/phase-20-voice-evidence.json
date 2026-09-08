@@ -840,5 +840,22 @@
   "production_worker_deployed": false,
   "account_usage_after_replay_and_promotion": 6647,
   "additional_billed_units_after_generation": 0,
-  "final_preview_binding_type": "secret_text"
+  "final_preview_binding_type": "secret_text",
+  "security_closeout": {
+    "date": "2026-09-08",
+    "old_credential_revoked_or_rotated": true,
+    "rotation_evidence": "User confirmation in the independent audit closeout request",
+    "replacement_preview_binding": {
+      "worker_version": "1c88ea20-fc44-4307-a6da-93fea19576b6",
+      "binding_name": "ELEVENLABS_API_KEY",
+      "binding_type": "secret_text",
+      "verified_at": "2026-09-08T00:56:25.172257+00:00",
+      "verification": "Read-only active preview version binding metadata"
+    },
+    "secret_value_committed_or_printed": false,
+    "historical_worker_versions_deleted": "not claimed",
+    "audio_regenerated": false,
+    "production_elevenlabs_key_required": false,
+    "sec_001_status": "PARTIAL"
+  }
 }

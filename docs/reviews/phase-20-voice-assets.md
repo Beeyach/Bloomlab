@@ -18,7 +18,7 @@ The Phase 20 handoff was read completely. This change implements reusable author
 | VOI-005 | NOT_STARTED | PASSED | Purchased library with measured usage; exact bytes promoted without a second purchase. Future playback needs no ElevenLabs credits/key. |
 | DATA-006 | NOT_STARTED | PARTIAL | Phase 20 audio acceptance passes: bytes in R2, metadata only in D1, no generated audio in Git. The full matrix also names later screenshot, portfolio, fieldwork, backup and attachment flows; those are not implemented. |
 | DATA-007 | NOT_STARTED | PASSED | Private buckets, known asset IDs, authenticated Worker reads, invalid/revoked session 401 and other-owner 403. |
-| SEC-001 | NOT_STARTED | PARTIAL | Current preview Worker secret, browser source/build scans and provider-free playback imports. Full all-phase credential coverage and initial dashboard-version cleanup remain incomplete. |
+| SEC-001 | NOT_STARTED | PARTIAL | Current preview Worker secret, browser source/build scans and provider-free playback imports. Required credential rotation is complete; full all-phase credential coverage remains incomplete. |
 
 INF-001, INF-004 and INF-011 remain PARTIAL with updated evidence. INF-010 remains PASSED. VOI-003, VOI-006, VOI-007, CALL-* and EXR-015 stay NOT_STARTED. Roll-up: 313 requirements; 189 PASSED, 23 PARTIAL, 8 IN_PROGRESS, 2 DEFERRED, 91 NOT_STARTED. No implementation requirement is marked BLOCKED or FAILED at closeout.
 
@@ -84,6 +84,12 @@ Committed [machine-readable evidence](phase-20-voice-evidence.json) contains san
 
 Versions: content **2026.09.16 → 2026.09.17**, lock hash `e5b65b8efbe39f0f8197d4bb0b0584b91aa25547be7411994c79f44a3de4aa3e` (149 content sources). App **0.1.0**, schema **1**, simulator **2026.09.11-r2**, mastery **2026.09.03-r4** and exercise grader **2026.09.16** deliberately unchanged.
 
+## Independent audit security closeout — 2026-09-08
+
+The [independent audit handoff](../handoffs/phase-20-independent-audit-closeout.md) made rotation of the credential entered as a plain-text Worker variable a required pre-merge remediation. The user confirmed that the old ElevenLabs key was revoked/rotated and the replacement preview binding is a Worker secret. Read-only metadata for active preview version `1c88ea20-fc44-4307-a6da-93fea19576b6` independently confirmed the binding type as `secret_text` on 2026-09-08. This closes the rotation requirement. No secret value is committed or printed, and no deletion of historical Worker versions is claimed.
+
+No audio is regenerated for this closeout. The existing 40 immutable assets and their production R2 promotion remain valid; production still requires no ElevenLabs key for Phase 20 playback. SEC-001 stays PARTIAL across its broader all-phase scope, and all other requirement statuses and `voice_calls` remain unchanged. This closeout changes documentation/evidence only; PR #22 remains open for ChatGPT's final merge decision.
+
 ## Remaining limitations and handoff
 
 - Human listening/acting quality is unverified; numeric voice settings are supported, but authored emotion/language are not guaranteed expression controls.
@@ -91,5 +97,4 @@ Versions: content **2026.09.16 → 2026.09.17**, lock hash `e5b65b8efbe39f0f8197
 - Media requires an online authenticated fetch after reload; no offline audio cache is implemented. Revocation cannot recall bytes already delivered to a device.
 - Ambiguous purchases require manual reconciliation; provider-history recovery has no automated UI. Promotion/indexing deliberately refuse conflicting bytes or metadata.
 - Production Worker/D1 deployment and production playback verification await independent merge and CI. The deployment credential must permit R2 reads and D1 writes. No production ElevenLabs key is required.
-- Initial dashboard setup briefly created an undeployed plain-text variable. The active preview binding was converted to a Worker secret without exposing the value. Rotation is recommended to retire any credential value retained by that historical version; this is cleanup, not a blocker for saved playback or opening the PR.
 - Existing lint/content warnings remain as recorded above. No user action is required to finish the implementation PR; independent audit and merge remain with ChatGPT/the reviewer.

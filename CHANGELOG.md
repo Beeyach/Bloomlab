@@ -12,6 +12,7 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 - `/system/voice` diagnostics with stable client selection, transcript fallback and real saved-audio playback. Voice calls stay off; recording, transcription and the Call Room remain later phases.
 - Repeatable audition/generation/promotion commands, a reviewed metadata manifest and CI coverage/indexing gates. Exact bytes go to production R2 without a second purchase; production migration and Worker deployment remain post-merge.
 - Focused schema/security/Worker tests, browser secret scans and a real-infrastructure five-width voice probe; existing sync and navigation probes re-run. See the Phase 20 review for measured usage and complete evidence. Simulator, mastery and exercise-grader versions are unchanged.
+- Security closeout (2026-09-08): the user confirmed revocation/rotation of the old ElevenLabs key and a replacement preview Worker secret, completing the required pre-merge remediation. Documentation/evidence now records the completed rotation; SEC-001 remains PARTIAL, audio is not regenerated, and production needs no ElevenLabs key for saved playback.
 
 
 ### Documentation — Phase 18 closure
