@@ -259,7 +259,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 |---|---|---|---|---|---|
 | CALL-001 | Call Room is minimal, immersive, dark; shows client identity, company, objective, audio state, elapsed time, notes drawer. Not a Zoom clone. | P1 | 21 | PASSED | §79 |
 | CALL-002 | Turn-based v1 flow: client audio → learner response → record → transcribe → evaluate → update scenario → next response, with natural transitions. No full-duplex realtime telephony in v1. | P1 | 21 | IMPLEMENTED_UNVERIFIED | §117, §118, TA§48 |
-| CALL-003 | Call grading: questions, listening, diagnosis, clarity, jargon, pitch timing, objection handling, next step. Accent is not graded. | P1 | 21 | PASSED | §119 |
+| CALL-003 | Call grading: questions, listening, diagnosis, clarity, jargon, pitch timing, objection handling, next step. Accent is not graded. | P1 | 21 | PARTIAL | §119 |
 | CALL-004 | Early training may show discovery anchors; advanced calls remove aids. | P2 | 21 | PASSED | §79 |
 | CALL-005 | Mobile-first voice experience. | P1 | 21 | IMPLEMENTED_UNVERIFIED | §83 |
 | CALL-006 | Recording policy: transcript saved by default; raw audio temporary, optional to retain, user-deletable. | P1 | 21 | IMPLEMENTED_UNVERIFIED | TA§49 |

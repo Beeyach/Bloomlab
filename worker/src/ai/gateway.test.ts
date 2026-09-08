@@ -6,7 +6,7 @@ import { link } from '../sync/handlers';
 import { evaluate, handleAi, settings } from './handlers';
 import { cost, MODELS } from './catalog';
 import { maximumCost, route } from './governor';
-import { anthropic, type Provider } from './provider';
+import { AiError, anthropic, type Provider } from './provider';
 import { validateGrading } from './output';
 import { getAttempt, startCall } from '../call/store';
 import type { CallState } from '../call/engine';
@@ -193,6 +193,32 @@ describe('AI-006/009/011/012 gateway', () => {
     });
     expect(row!.diagnostic_json).not.toContain('network');
   });
+  it('keeps an unknown prior bill reserved after an explicit retry succeeds and replays', async () => {
+    const { session } = await learner();
+    const input = request();
+    await expect(
+      evaluate(input, session, env.DB, async () => {
+        throw new AiError('provider_timeout');
+      }),
+    ).rejects.toThrow('provider_timeout');
+    const reserved = (await settings(env.DB, session.learnerId)).reserved_usd;
+    expect(reserved).toBe(maximumCost(MODELS.cheap));
+    const provider = vi.fn<Provider>().mockResolvedValue({ value: valid(), usage });
+    const result = await evaluate(input, session, env.DB, provider);
+    expect(await evaluate(input, session, env.DB, provider)).toEqual(result);
+    expect(provider).toHaveBeenCalledTimes(1);
+    expect((await settings(env.DB, session.learnerId)).reserved_usd).toBe(reserved);
+    const old = await env.DB.prepare(
+      "SELECT reserved_usd,diagnostic_json FROM ai_usage WHERE learner_id=? AND status='failed'",
+    )
+      .bind(session.learnerId)
+      .first<{ reserved_usd: number; diagnostic_json: string }>();
+    expect(old?.reserved_usd).toBe(reserved);
+    expect(JSON.parse(old!.diagnostic_json)).toEqual({
+      failure: 'provider_timeout',
+      accounted_calls: 0,
+    });
+  });
 });
 describe('direct Anthropic boundary', () => {
   it.each([429, 500, 503])('sanitizes HTTP %s', async (status) => {
@@ -255,11 +281,11 @@ describe('AI-011 authored rubric audit', () => {
         usage,
         value: {
           ...valid(),
-          rubric_results: r.items.map((i) => ({
-            id: i.id,
-            passed: true,
-            reason: 'Authored item evidence',
-          })),
+          rubric_results: exercise.call
+            ? Object.fromEntries(
+                r.items.map((i) => [i.id, { passed: true, reason: 'Authored item evidence' }]),
+              )
+            : r.items.map((i) => ({ id: i.id, passed: true, reason: 'Authored item evidence' })),
         },
       }));
       expect(answer.rubric_id).toBe(exercise.grading.rubric);

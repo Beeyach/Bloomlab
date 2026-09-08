@@ -1,12 +1,14 @@
 import { providerSchema } from './jsonSchema';
 import { z } from 'zod';
 import { MODELS, type Model, type Usage } from './catalog';
+import type { GradingFailure } from './diagnostics';
 export interface ProviderRequest {
   model: Model;
   stable: string;
   submission: string;
   schema: Record<string, unknown>;
   repair: boolean;
+  repairIssue?: GradingFailure;
   kind?: 'call_grading';
 }
 export interface ProviderResponse {
@@ -29,6 +31,15 @@ const usageSchema = z.object({
   cache_creation_input_tokens: z.number().int().nonnegative().default(0),
   cache_read_input_tokens: z.number().int().nonnegative().default(0),
 });
+const repairInstructions: Record<GradingFailure, string> = {
+  schema_invalid: 'Match the supplied JSON schema and all field bounds exactly.',
+  rubric_items_mismatch:
+    'Return every named authored rubric dimension exactly once; do not substitute a summary or omit dimensions.',
+  critical_result_mismatch:
+    'critical_issue must be null if all critical-tier dimensions pass, and non-null if any critical-tier dimension fails. Required-tier failures alone do not change this rule.',
+  learner_quotation_mismatch:
+    'An evidence quotation was not exact learner-confirmed text. Rewrite rubric reasons, strengths and critical_issue as factual paraphrases with turn numbers and no quotations. Never credit client-only words or behavior to the learner. Keep suggestions in improvements or next_probe.',
+};
 /** Direct HTTP, replaceable in tests. Never returns or logs provider errors or request headers. */
 export function anthropic(key: string, transport: typeof fetch = fetch): Provider {
   return async (input) => {
@@ -63,7 +74,7 @@ export function anthropic(key: string, transport: typeof fetch = fetch): Provide
           messages: [
             {
               role: 'user',
-              content: `${input.repair ? 'Repair: the previous evaluation was invalid. Return every authored rubric item exactly once, with consistent critical_issue.\n' : ''}${instruction}\n${input.submission}`,
+              content: `${input.repair ? 'Repair: the previous evaluation was invalid. Return every authored rubric item exactly once, with consistent critical_issue.\n' + (input.repairIssue ? repairInstructions[input.repairIssue] + '\n' : '') : ''}${instruction}\n${input.submission}`,
             },
           ],
           output_config: { format: { type: 'json_schema', schema: providerSchema(input.schema) } },

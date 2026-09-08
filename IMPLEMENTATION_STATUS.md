@@ -28,7 +28,7 @@ Phase 19 — AI Gateway: Worker-only Anthropic routing, canonical AI settings, c
 
 Phase 20 — Voice Assets: independently merged in main `3fa36fe05872bdaeaf5c49105a198b911aa9adce`. Its 40 authored assets, rotated preview ElevenLabs Worker secret and provider-free private playback are the Phase 21 base. Historical review evidence remains in `docs/reviews/phase-20-voice-assets.md`.
 
-Phase 21 — Call Room: implementation on `codex/phase-21-call-room` adds five content-driven SAY IT modes, native recording with local Blob recovery, private R2/metadata-only D1 storage, Google STT V2, confirmed-transcript branching and eight-dimension feedback through the existing exercise queue/engines. The local six-element room and advanced-aid exclusion are verified. Live acceptance is partial: the Google preview `secret_text` is installed, preview calls are enabled, and deployed Google recognition/private R2 recovery/deletion/AI grading pass supplementary prerecorded-audio diagnostics. Actual microphone/local checkpoint/full phone and keyboard calls remain outstanding. Final remediation verifies one role-correct fresh eight-dimension grade ($0.018342, no residual reservation) and real authorized dynamic TTS/cache reuse (69 billed characters, one purchase). CALL-003 and VOI-003 are PASSED under the handoff minimum. The second proposal sample exhausted validation/repair, and an earlier timed-out disposable review purchase retains a $5.04096 reservation with unknown billing; both are documented in the final remediation review. Production calls stay off. The PR stays draft/open and unmerged. See `docs/reviews/phase-21-call-room.md` and `docs/operations/call-room.md`.
+Phase 21 — Call Room: five turn-based SAY IT modes and local-first private recording/transcription are implemented. The user observed working real microphone capture on iPhone Safari and a completed four-turn proposal on Mac Chrome, including local save, real Google transcripts, correction, persisted history and TTS text fallback. Final human feedback failed twice. The scoped investigation found a failed, recoverable rubric run with four accounted responses and no remaining reservation. A fictional proposal reproduced omitted rubric dimensions followed by an unsupported learner quotation in the repair. The fix constrains all eight provider dimensions and supplies a specific repair cause while preserving every validation and budget gate. CALL-003 is PARTIAL pending deployed remediation verification and feedback on the saved human attempt; the seven broader human acceptance rows remain IMPLEMENTED_UNVERIFIED. Mac Safari Private Blob persistence, repeated iPhone permission prompts, perceived slowness and scripted conversation remain limitations. Production calls stay off; PR #23 stays draft/open and unmerged. See `docs/reviews/phase-21-feedback-reliability.md` and `docs/operations/call-room.md`.
 
 ## VERSIONS
 
@@ -286,12 +286,11 @@ Phase 21 accepted interface/provider paths:
 
 - CALL-001 — One quiet dark Call Room has the six required elements, with five-width browser review and focused UI tests.
 - CALL-004 — Guided/practice anchors are secondary; independent/pressure anchors are absent from the DOM, checked in browser and UI tests.
-- CALL-003 — Fresh deployed Sonnet call feedback has all eight role-correct explanations, verified literal citations, no accent grading and authoritative deterministic gates. One clean call meets the handoff minimum; the second sample remains a documented validation failure.
 - VOI-003 — One real authorized dynamic ElevenLabs asset, 69 billed characters; identical retry reuses the private bytes and immutable receipt with zero second synthesis purchase.
 
 ## IMPLEMENTED_UNVERIFIED
 
-- CALL-002, CALL-005, CALL-006, EXR-015, VOI-006, VOI-007, SEC-005 — Real human microphone acceptance remains open: local save before upload, visible STT correction/confirmation, complete phone-touch/desktop-keyboard calls, recovery and real-recording cleanup/retention. The agent explicitly stops for the user under the final remediation handoff. Controlled fixtures and prerecorded provider diagnostics remain separately labeled.
+- CALL-002, CALL-005, CALL-006, EXR-015, VOI-006, VOI-007, SEC-005 — Human evidence now includes iPhone Safari capture and a completed Mac Chrome proposal with local save, Google transcripts, correction, saved history and TTS fallback. Full touch/keyboard, recovery, retained replay/deletion and privacy acceptance is not established by those observations; no blanket promotion. Controlled and prerecorded diagnostics remain separately labeled.
 
 ## IN PROGRESS
 
@@ -307,6 +306,8 @@ Phase 21 accepted interface/provider paths:
 - RSP-003 — Phase 11: every CRM edit, panel and action is present at 320 px, with the inspector as a sheet and the board as a switcher plus scroller. Earlier: cross-cutting: nothing removed on mobile so far. Phase 7: every Command Center section, every gate and every territory, capability and sheet action is present at 320 px. Phase 8: every section, embed, control and the finish action of a unit is present at 320 px. Phase 9: every part of an attempt — brief, options, prediction fields, response, hints, submit, result, retry — is present at 320 px.
 
 ## PARTIAL
+
+- CALL-003 — Human proposal feedback failed twice. The diagnosed provider-contract/repair changes pass focused regressions; deployed acceptance and feedback recovery on the existing human attempt remain pending. No fresh microphone call is required by the saved run identity. See `docs/reviews/phase-21-feedback-reliability.md`.
 
 - DATA-006 — Phase 20 audio bytes live in private R2; media_assets and voice_generation_jobs contain metadata only, with no BLOB/base64 audio. Generated binaries are excluded from Git. The full matrix additionally names screenshots, portfolio/fieldwork media, recovery backups and attachments; those later upload flows are not implemented.
 - SEC-001 — ElevenLabs is Worker-only, with source/import/build assertions and a secret binding in preview. The user confirmed on 2026-09-08 that the old key entered as a plain variable was revoked/rotated and the replacement preview binding is a Worker secret, closing the required rotation remediation. No secret value is committed or printed. No production key is needed for saved playback; all-phase Google/future credential coverage remains incomplete, so status stays PARTIAL.
@@ -382,4 +383,4 @@ Complete the mandatory human phone-touch and desktop-keyboard microphone accepta
 
 ## ROLL-UP
 
-313 requirements registered · 193 PASSED · 8 IN_PROGRESS · 23 PARTIAL · 7 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 80 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 192 PASSED · 8 IN_PROGRESS · 24 PARTIAL · 7 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 80 NOT_STARTED. Run the validator for the live count by status and priority.

@@ -89,6 +89,30 @@ it('preserves call speaker labels and lets a bounded grading response finish aft
   expect(body.max_tokens).toBe(2048);
 });
 
+it('gives the single repair its fixed validation cause without replaying rejected text', async () => {
+  const transport = vi.fn<typeof fetch>(async () =>
+    Response.json({ usage, stop_reason: 'end_turn', content: [{ type: 'text', text: '{}' }] }),
+  );
+  await anthropic(
+    'test',
+    transport,
+  )({
+    model: MODELS.strong,
+    kind: 'call_grading',
+    stable: 'speaker contract',
+    submission: '{"learner_confirmed":"Review the scope"}',
+    schema: {},
+    repair: true,
+    repairIssue: 'learner_quotation_mismatch',
+  });
+  const body = JSON.parse(transport.mock.calls[0]![1]!.body as string);
+  expect(body.messages[0].content).toContain(
+    'factual paraphrases with turn numbers and no quotations',
+  );
+  expect(body.messages[0].content).toContain('Never credit client-only words or behavior');
+  expect(body.max_tokens).toBe(2048);
+});
+
 it.each([
   ['call_grading', 90_000],
   [undefined, 30_000],

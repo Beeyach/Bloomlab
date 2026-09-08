@@ -16,4 +16,27 @@ The existing identity contract permits a failed run to be claimed again using th
 
 Migration `0005_grading_diagnostics.sql` adds optional content-free metadata to the existing AI usage ledger. Each response records the contract version, initial/repair phase, fixed provider-format and validation codes, request byte count and reservation ID in the same transaction as its usage. Unknown outcomes retain their conservative reservations. Error messages, Zod issues, rejected output, request headers and transcript text are excluded. Prompt, schema, grading requirements, deadline, output cap and one-repair limit are unchanged in this diagnostic checkpoint.
 
-Focused provider/gateway/call/citation tests: **91 passed**; Worker typecheck passed. A bounded fictional proposal reproduction on deployed Preview is pending. The feedback blocker is not yet resolved; no new acceptance promotion is claimed.
+Diagnostic checkpoint `5809eccf14eb71955e6b07cca4be522bee4df592` passed [CI 34204901474](https://github.com/Beeyach/Bloomlab/actions/runs/34204901474), including Checks and Preview deploy; Production was skipped. Focused provider/gateway/call/citation tests: **91 passed**; Worker typecheck passed.
+
+## Reproduced failure and correction
+
+One fresh fictional proposal (`1c53cd25-7282-4907-93e5-d6c9ff6a2e61`) completed through four real Google transcriptions and explicit fictional confirmations. The unchanged provider contract reproduced HTTP 502 `evaluation_invalid`:
+
+| Response | Format | Rejection | Output tokens | Cost |
+| --- | --- | --- | --- | --- |
+| Initial | Valid JSON | `rubric_items_mismatch` | 92 | $0.0096855 |
+| Single repair | Valid JSON | `learner_quotation_mismatch` | 1,069 | $0.019695 |
+
+Total **$0.0293805**, remaining reservation **$0**. The provider input was 1,824 bytes. Neither response hit the cap or deadline or was a refusal. The generic schema permitted an incomplete rubric array, consuming the only repair; that repair then failed the strict learner-citation check. No rejected prose was retained. All four temporary recordings were deleted and the disposable device revoked. This is an observed reproduction of the same proposal failure path; the exact subtype of each historical human response remains unavailable because those responses predated diagnostics.
+
+The corrected `call-speakers-v2` contract requires every authored dimension as a named property, prohibiting missing, duplicate or substituted dimensions at the provider schema boundary. The gateway converts the result to the unchanged public/saved array in authored order, then runs the full existing field, item, critical-consistency and learner-quotation validators. The prompt favors precise numbered-turn paraphrases, and the one repair receives its actual fixed validation cause. No quotation is stripped, silently accepted or treated as client evidence belonging to the learner. The output cap, deadlines, speaker reconstruction, deterministic gates, identity hash and budget reservations are unchanged. The schema contains authored rubric material only, never private learner text.
+
+Focused regressions: **97 passed**, including a completed proposal that fails twice, safely retries with the same run/hash, rejects concurrent retry, and replays accepted feedback without another provider/STT call. Another regression preserves unknown prior billing even after a subsequent retry succeeds. Tests also verify all eight required provider properties, public result order, missing/extra item refusal, critical mismatch, score bounds, citation rejection, format diagnostics, sanitization and bounded deadlines. Full Node 22 `npm run ci` passed: **1,782 tests / 108 files**, typechecking, lint, formatting, control-doc validation, content/voice checks and production build including the browser-secret scan. Deployed corrected-contract acceptance is pending.
+
+Source guidance: [Anthropic structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs) documents supported required object properties and local validation, and explains that refusals and token limits may still yield invalid output. Its schema retention guidance is why no private transcript is inserted into the schema. [Cloudflare D1 commands](https://developers.cloudflare.com/d1/wrangler-commands/) informed scoped metadata reads and additive Preview-first migration.
+
+## Saved human attempt and remaining acceptance
+
+The completed human proposal can retry on the new contract without changing its run/hash or re-recording. No authenticated human session is available in this Codespace, and no key/token is requested or inspected. After machine verification passes, the minimum human action is one **Retry call feedback** in the original normal Chrome window. This exercises the authenticated saved attempt and preserves its local transcript/history. It does not require a new call or four fresh microphone turns.
+
+CALL-003 returns from PASSED to PARTIAL while the actual human feedback blocker is unresolved. The seven broader human rows remain IMPLEMENTED_UNVERIFIED; CALL-001/CALL-004/VOI-003 retain their existing supported results. The old unrelated $5.04096 unknown-billing reservation remains untouched. PR #23 remains draft/open; production stays disabled.

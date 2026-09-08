@@ -1,13 +1,18 @@
 import { env } from 'cloudflare:test';
 import { describe, expect, it, vi } from 'vitest';
 import content from 'virtual:bloomlab-content';
-import { generateSyncKey, type CallSnapshot, type CallRecording } from '@bloomlab/shared';
+import {
+  generateSyncKey,
+  type CallSnapshot,
+  type CallRecording,
+  type AiGrading,
+} from '@bloomlab/shared';
 import { link } from '../sync/handlers';
 import { sha256 } from '../voice/identity';
 import { handleCall, type CallDependencies } from './handlers';
 import { CallError } from './errors';
 import type { Provider } from '../ai/provider';
-import { evaluate } from '../ai/handlers';
+import { evaluate, settings } from '../ai/handlers';
 import { getRecording } from './store';
 import { emptyNegotiationAction } from '@bloomlab/exercise-engine/negotiation/engine';
 import { generateVoice } from '../voice/generate';
@@ -19,6 +24,10 @@ const usage = {
   cache_read_input_tokens: 0,
   cache_creation_input_tokens: 0,
 };
+const callWire = (result: AiGrading) => ({
+  ...result,
+  rubric_results: Object.fromEntries(result.rubric_results.map(({ id, ...item }) => [id, item])),
+});
 async function setup(mode = 'cold_call', dependencies: CallDependencies = {}) {
   const deviceId = crypto.randomUUID();
   const learner = await link(
@@ -547,8 +556,8 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
       "Learner used the client's terminology, including 'ServiceTitan'.";
     const provider = vi
       .fn<Provider>()
-      .mockResolvedValueOnce({ value: invalid, usage })
-      .mockResolvedValueOnce({ value: result, usage });
+      .mockResolvedValueOnce({ value: callWire(invalid), usage })
+      .mockResolvedValueOnce({ value: callWire(result), usage });
     const input = {
       attempt_id: a.attemptId,
       exercise_id: a.exercise.id,
@@ -625,6 +634,7 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
     expect(provider).toHaveBeenCalledTimes(2);
     expect(provider.mock.calls.map(([request]) => request.repair)).toEqual([false, true]);
     expect(provider.mock.calls[1]![0].stable).toContain('Citation validation reminder');
+    expect(provider.mock.calls[1]![0].repairIssue).toBe('learner_quotation_mismatch');
     const diagnostics = await env.DB.prepare(
       'SELECT diagnostic_json FROM ai_usage WHERE run_id=? AND input_tokens>0 ORDER BY rowid',
     )
@@ -651,5 +661,110 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
       .bind(a.learner.learner_id)
       .all<{ purpose: string }>();
     expect(rows.results.every((r) => r.purpose === 'call_feedback')).toBe(true);
+  });
+
+  it('reuses a completed four-turn proposal after bounded failure, without recording again or duplicating a successful purchase', async () => {
+    const a = await setup('proposal');
+    const turns = [
+      [
+        'The proposal covers qualification routing, an applicant reply and a named owner. We will check each route using a sample application.',
+        'explain',
+      ],
+      [
+        'Let us compare the cheaper quote against the written scope before treating it as equivalent. Who owns routing checks, replies and handover?',
+        'scope',
+      ],
+      [
+        'A smaller first phase includes one qualification route and its applicant reply. Additional routes and follow-up sequences wait for a later agreement.',
+        'tradeoff',
+      ],
+      [
+        'Could we review the written scope, test each included route and confirm the named owner can take over before you sign off?',
+        'next_step',
+      ],
+    ];
+    for (const [turn, [transcript, move]] of turns.entries()) {
+      const id = await a.ready(turn);
+      expect(
+        (
+          await a.request(`attempts/${a.attemptId}/turn`, {
+            turn,
+            recording_id: id,
+            transcript,
+            move,
+          })
+        ).status,
+      ).toBe(200);
+      expect((await a.request(`recordings/${id}/ack`, {})).status).toBe(200);
+    }
+    const before = (await (await a.request(`attempts/${a.attemptId}`)).json()) as CallSnapshot;
+    expect(before.complete).toBe(true);
+    const rubric = content.rubrics.find((r) => r.id === a.exercise.grading.rubric)!;
+    const result: AiGrading = {
+      score: 90,
+      rubric_results: rubric.items.map(({ id }) => ({
+        id,
+        passed: true,
+        reason: 'The learner checks the written scope and ownership in turns 2 and 4.',
+      })),
+      critical_issue: null,
+      strengths: ['The learner checks scope before agreeing it.'],
+      improvements: ['Check how routing errors will be handled.'],
+      next_probe: 'Who handles an application without an owner?',
+      confidence: 0.9,
+    };
+    const bad = callWire(result);
+    bad.strengths = ['The learner promised "guaranteed growth".'];
+    const provider = vi.fn<Provider>().mockResolvedValue({ value: bad, usage, format: 'json' });
+    const session = { learnerId: a.learner.learner_id, deviceId: a.deviceId };
+    const input = {
+      attempt_id: a.attemptId,
+      exercise_id: a.exercise.id,
+      rubric_id: rubric.id,
+      submission: 'PRIVATE_BROWSER_TEXT',
+    };
+    await expect(evaluate(input, session, env.DB, provider)).rejects.toThrow('evaluation_invalid');
+    expect(provider).toHaveBeenCalledTimes(2);
+    expect((await settings(env.DB, session.learnerId)).reserved_usd).toBe(0);
+    const old = await env.DB.prepare(
+      'SELECT run_id,request_hash,status FROM rubric_runs WHERE attempt_id=?',
+    )
+      .bind(a.attemptId)
+      .first();
+    expect(old?.status).toBe('failed');
+
+    let finish!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      finish = resolve;
+    });
+    const fixed = vi.fn<Provider>(async () => {
+      await gate;
+      return { value: callWire(result), usage, format: 'json' };
+    });
+    const retry = evaluate(
+      { ...input, submission: 'DIFFERENT_BROWSER_TEXT' },
+      session,
+      env.DB,
+      fixed,
+    );
+    await vi.waitFor(() => expect(fixed).toHaveBeenCalledTimes(1));
+    await expect(evaluate(input, session, env.DB, fixed)).rejects.toThrow('evaluation_in_progress');
+    finish();
+    const answer = await retry;
+    expect(answer.run_id).toBe(old?.run_id);
+    expect(
+      await env.DB.prepare('SELECT request_hash FROM rubric_runs WHERE attempt_id=?')
+        .bind(a.attemptId)
+        .first(),
+    ).toEqual({ request_hash: old?.request_hash });
+    const spent = await settings(env.DB, session.learnerId);
+    expect(await evaluate(input, session, env.DB, fixed)).toEqual(answer);
+    expect(await settings(env.DB, session.learnerId)).toEqual(spent);
+    expect(fixed).toHaveBeenCalledTimes(1);
+    expect(await (await a.request(`attempts/${a.attemptId}`)).json()).toEqual(before);
+    expect(a.speech).toHaveBeenCalledTimes(4);
+    expect(JSON.stringify(fixed.mock.calls)).not.toMatch(
+      /PRIVATE_BROWSER_TEXT|DIFFERENT_BROWSER_TEXT|original_transcript/,
+    );
   });
 });

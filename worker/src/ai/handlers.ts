@@ -1,6 +1,11 @@
 import { getAttempt } from '../call/store';
 import type { CallState } from '../call/engine';
-import { CALL_GRADING_INSTRUCTION, validateLearnerQuotations } from '../call/grading';
+import {
+  CALL_GRADING_CONTRACT,
+  CALL_GRADING_INSTRUCTION,
+  callGradingContract,
+  validateLearnerQuotations,
+} from '../call/grading';
 import { classify } from './classify';
 import content from 'virtual:bloomlab-content';
 import { z } from 'zod';
@@ -223,6 +228,8 @@ export async function evaluate(
   let actual = 0;
   let accounted = 0;
   let accountedCalls = 0;
+  const callContract = exercise.call ? callGradingContract(rubric) : undefined;
+  let repairIssue: GradingFailure | undefined;
   try {
     for (let repair = 0; repair <= 1; repair++) {
       const response = await provider({
@@ -230,21 +237,24 @@ export async function evaluate(
         ...(exercise.call ? { kind: 'call_grading' as const } : {}),
         stable: `Bloomlab grades defensible reasoning, not confident prose. Judge only authored rubric items. Deterministic checks remain authoritative. Reward verified uncertainty.${exercise.call ? ' ' + CALL_GRADING_INSTRUCTION : ''}${exercise.call && repair ? ' Citation validation reminder: remove any client-only or nonverbatim quotation from rubric reasons, strengths and critical_issue. Verify every quoted span against learner_confirmed before returning.' : ''} Exact rubric: ${JSON.stringify(rubric)}\nExercise brief: ${JSON.stringify({ title: exercise.title, instructions: exercise.instructions })}`,
         submission: input.submission,
-        schema: gradingFormat,
+        schema: callContract?.format ?? gradingFormat,
         repair: repair === 1,
+        ...(repairIssue ? { repairIssue } : {}),
       });
       const charged = cost(model, response.usage);
       actual += charged;
       let result;
       let invalid: GradingFailure | undefined;
       try {
-        result = validateGrading(response.value, rubric);
+        result = callContract
+          ? callContract.parse(response.value)
+          : validateGrading(response.value, rubric);
         if (confirmedCallText) validateLearnerQuotations(result, confirmedCallText);
       } catch (error) {
         invalid = gradingFailure(error);
       }
       const diagnostic = JSON.stringify({
-        contract: exercise.call ? 'call-speakers-v1' : 'rubric-v1',
+        contract: exercise.call ? CALL_GRADING_CONTRACT : 'rubric-v1',
         phase: repair === 0 ? 'initial' : 'repair',
         format: response.format ?? 'unknown',
         validation: invalid ?? 'accepted',
@@ -279,6 +289,7 @@ export async function evaluate(
       accounted = actual;
       accountedCalls++;
       if (invalid || !result) {
+        repairIssue = invalid;
         if (repair === 0) continue;
         throw new AiError('evaluation_invalid', 502);
       }

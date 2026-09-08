@@ -4,6 +4,12 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Fixed — Phase 21 proposal feedback reliability
+
+- A repeatable proposal failure exhausted the generic rubric array and then citation validation during repair. The call-specific provider schema now requires all eight named dimensions, converts them to the unchanged saved/public array, and guides the single repair using a fixed validation cause. Speaker, critical/required, citation, timeout, token-cap and budget safeguards remain in place.
+- Content-free diagnostic metadata is recorded with each accounted response through additive migration `0005`. A saved four-turn proposal can retry the same failed run without recording again; concurrent retries are refused, successful feedback replays without spend, and unknown prior billing stays reserved.
+- Human evidence now includes iPhone Safari microphone capture and completed Mac Chrome proposal mechanics. Mac Safari Private Blob failure, repeated microphone permission prompts, slow interaction and scripted conversation remain limitations. CALL-003 returns to PARTIAL pending deployed feedback remediation and recovery; no unrelated acceptance promotion.
+
 ### Added — Phase 21 · Call Room (live acceptance pending)
 
 - One content-driven dark Call Room in the existing exercise runner: cold call, discovery, proposal presentation, negotiation and client explanation. Explicit recording/transcript/branch/audio/recovery phases, notes drawer, guided anchors and advanced aid exclusion.

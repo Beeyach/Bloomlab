@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { AiGrading } from '@bloomlab/shared';
-import { validateLearnerQuotations } from './grading';
+import content from 'virtual:bloomlab-content';
+import { callGradingContract, validateLearnerQuotations } from './grading';
 
 const grade = (reason: string): AiGrading => ({
   score: 82,
@@ -10,6 +11,61 @@ const grade = (reason: string): AiGrading => ({
   improvements: [],
   next_probe: 'Ask about ownership.',
   confidence: 0.9,
+});
+
+describe('CALL-003 proposal provider contract', () => {
+  const rubric = content.rubrics.find((r) => r.id === 'CALL_PERFORMANCE_RUBRIC_V1')!;
+  const contract = callGradingContract(rubric);
+  const wire = () => ({
+    ...grade(''),
+    rubric_results: Object.fromEntries(
+      [...rubric.items]
+        .reverse()
+        .map(({ id }) => [
+          id,
+          { passed: true, reason: 'Turn 4 checks written scope and acceptance.' },
+        ]),
+    ),
+  });
+  it('requires all eight named properties in the provider schema and restores authored public order', () => {
+    expect(contract.format).toMatchObject({
+      properties: {
+        rubric_results: {
+          type: 'object',
+          additionalProperties: false,
+          required: rubric.items.map((r) => r.id),
+        },
+      },
+    });
+    expect(contract.parse(wire()).rubric_results.map((r) => r.id)).toEqual(
+      rubric.items.map((r) => r.id),
+    );
+  });
+  it('rejects the live failure mechanism: missing or substituted dimensions cannot be accepted', () => {
+    const missing = wire();
+    delete missing.rubric_results.questions;
+    expect(() => contract.parse(missing)).toThrow();
+    const extra = wire();
+    extra.rubric_results.summary = { passed: true, reason: 'A summary cannot replace the rubric.' };
+    expect(() => contract.parse(extra)).toThrow();
+    expect(() => contract.parse(grade('One dimension only'))).toThrow();
+  });
+  it('keeps critical consistency, field bounds and exact learner quotations mandatory', () => {
+    expect(() => contract.parse({ ...wire(), critical_issue: 'Required failure alone' })).toThrow(
+      'Critical result mismatch',
+    );
+    const failed = wire();
+    failed.rubric_results.pitch_timing!.passed = false;
+    expect(() => contract.parse(failed)).toThrow('Critical result mismatch');
+    expect(() => contract.parse({ ...wire(), score: 101 })).toThrow();
+    const misattributed = wire();
+    misattributed.rubric_results.jargon!.reason = 'The learner offered "guaranteed growth".';
+    expect(() =>
+      validateLearnerQuotations(contract.parse(misattributed), [
+        'We should review the written scope.',
+      ]),
+    ).toThrow('not confirmed');
+  });
 });
 const learner = ["I've asked Tina to inspect one unanswered quote.", 'Who owns follow-up?'];
 describe('CALL-003 learner evidence citations', () => {
