@@ -309,5 +309,289 @@
       "build",
       "browser secrets/provider boundary scan"
     ]
+  },
+  "first_deployed_runtime": {
+    "head_sha": "3ce5de7998be940d972b572ea570b1f9f80942e2",
+    "ci_run": "https://github.com/Beeyach/Bloomlab/actions/runs/34224304465",
+    "ci": {
+      "checks": "success",
+      "preview": "success",
+      "production": "skipped",
+      "tests": 1810,
+      "files": 111
+    },
+    "worker_version": "2efe2497-4769-4f4e-a368-7f6f56f12fb3",
+    "call": {
+      "status": "passed",
+      "loaded_build": "3ce5de7998be940d972b572ea570b1f9f80942e2",
+      "worker_build": "3ce5de7998be940d972b572ea570b1f9f80942e2",
+      "widths": [
+        {
+          "width": 1440,
+          "scroll": 1440,
+          "room": true,
+          "notes": true,
+          "inputFonts": [
+            {
+              "label": "call-transcript",
+              "pixels": 16
+            },
+            {
+              "label": "My intended move (optional)Interpret my ",
+              "pixels": 16
+            },
+            {
+              "label": "call-notes",
+              "pixels": 16
+            }
+          ]
+        },
+        {
+          "width": 1024,
+          "scroll": 1024,
+          "room": true,
+          "notes": true,
+          "inputFonts": [
+            {
+              "label": "call-transcript",
+              "pixels": 16
+            },
+            {
+              "label": "My intended move (optional)Interpret my ",
+              "pixels": 16
+            },
+            {
+              "label": "call-notes",
+              "pixels": 16
+            }
+          ]
+        },
+        {
+          "width": 768,
+          "scroll": 768,
+          "room": true,
+          "notes": true,
+          "inputFonts": [
+            {
+              "label": "call-transcript",
+              "pixels": 16
+            },
+            {
+              "label": "My intended move (optional)Interpret my ",
+              "pixels": 16
+            },
+            {
+              "label": "call-notes",
+              "pixels": 16
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "scroll": 390,
+          "room": true,
+          "notes": true,
+          "inputFonts": [
+            {
+              "label": "call-transcript",
+              "pixels": 16
+            },
+            {
+              "label": "My intended move (optional)Interpret my ",
+              "pixels": 16
+            },
+            {
+              "label": "call-notes",
+              "pixels": 16
+            }
+          ]
+        },
+        {
+          "width": 320,
+          "scroll": 320,
+          "room": true,
+          "notes": true,
+          "inputFonts": [
+            {
+              "label": "call-transcript",
+              "pixels": 16
+            },
+            {
+              "label": "My intended move (optional)Interpret my ",
+              "pixels": 16
+            },
+            {
+              "label": "call-notes",
+              "pixels": 16
+            }
+          ]
+        }
+      ],
+      "fresh_restart": {
+        "new_attempt": true,
+        "old_not_resumed": true,
+        "retained_unsent_deleted": true,
+        "no_abandonment_evidence": true,
+        "turn": 4,
+        "node": "done",
+        "complete": true
+      }
+    },
+    "offline": {
+      "base": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+      "serviceWorker": {
+        "scope": "https://bloomlab-preview.cool-sunset-2169.workers.dev/",
+        "controlled": true,
+        "caches": [
+          ["workbox-precache-v2-https://bloomlab-preview.cool-sunset-2169.workers.dev/", 89]
+        ]
+      },
+      "manifest": {
+        "url": "https://bloomlab-preview.cool-sunset-2169.workers.dev/manifest.webmanifest",
+        "errors": [],
+        "parsed": true
+      },
+      "installability": [],
+      "storage": {
+        "persisted": false,
+        "databases": ["bloomlab@50"]
+      },
+      "loadedBuild": "3ce5de7998be940d972b572ea570b1f9f80942e2",
+      "offline": {
+        "workersEmulated": 1,
+        "navigatorOnLine": false,
+        "indicatorBeforeReload": "Offline \u00b7 saved on this device",
+        "heading": "Sync across devices",
+        "navigatorOnLineAfterReload": false,
+        "indicatorAfterReload": "Offline \u00b7 saved on this device",
+        "apiFetch": "failed: Failed to fetch",
+        "labelAfterSave": true,
+        "labelAfterOfflineReload": true,
+        "stored": [
+          {
+            "label": "Offline check 12:17:15",
+            "learner": "local:",
+            "persisted": false
+          }
+        ],
+        "localStorageKeys": []
+      },
+      "online": {
+        "indicator": "Saved on this device",
+        "apiFetch": "preview",
+        "build": "3ce5de7998be940d972b572ea570b1f9f80942e2"
+      },
+      "status": "passed"
+    },
+    "ai": {
+      "checks": "all passed",
+      "cases": 10,
+      "scope": "Controlled evaluation transport; no Anthropic purchase"
+    },
+    "voice": {
+      "widths": [1440, 1024, 768, 390, 320],
+      "auditions": 5,
+      "all_checks_passed": true,
+      "revocation": true,
+      "scope": "Actual authenticated saved R2 assets; no synthesis purchase"
+    },
+    "fresh_google_call": {
+      "scope": "Prerecorded fictional eSpeak audio; native browser MediaRecorder/local Blob checkpoint, real Preview Worker/D1/private R2/Google STT. No physical microphone acceptance.",
+      "head_sha": "3ce5de7998be940d972b572ea570b1f9f80942e2",
+      "turns": [
+        {
+          "turn": 1,
+          "node": "problem",
+          "interpretation": "rule",
+          "original_fictional_stt": "Do you have a minute to ask about an answered quote?",
+          "confirmed_fictional_text": "Do you have a minute to ask about an answered quote?",
+          "punctuation_case_only": false,
+          "recording_id": "72eaabf9-9762-4deb-84d0-ab366d90a7a7",
+          "bytes": 42533,
+          "checksum": "2057ce6c50b3abb833b9d83d7ab5fa1a8713bb6cfda034f9c624faf84f1d5e29"
+        },
+        {
+          "turn": 2,
+          "node": "process",
+          "interpretation": "rule",
+          "original_fictional_stt": "Who handles quote follow up today?",
+          "confirmed_fictional_text": "Who handles quote follow-up today?",
+          "punctuation_case_only": true,
+          "recording_id": "af58b02e-0feb-4e88-9889-16e0ba770676",
+          "bytes": 34264,
+          "checksum": "7a289b1c29fc6d9306ad32bad2927a4010f1037e6c7fbdab38d672134c0006d1"
+        },
+        {
+          "turn": 3,
+          "node": "agreed",
+          "interpretation": "rule",
+          "original_fictional_stt": "The gap is an answer to quotes not replacing dispatch. Is that right?",
+          "confirmed_fictional_text": "The gap is an answer to quotes not replacing dispatch. Is that right?",
+          "punctuation_case_only": false,
+          "recording_id": "89d1c99e-42ed-4d51-9d6e-167fea79a876",
+          "bytes": 64158,
+          "checksum": "b3528aabc50d7695036346d4593e7e7ca26413cbef3212e0f3f37c1e5d67cdec"
+        },
+        {
+          "turn": 4,
+          "node": "done",
+          "interpretation": "rule",
+          "original_fictional_stt": "Should we arrange a short process review with Tina?",
+          "confirmed_fictional_text": "Should we arrange a short process review with Tina?",
+          "punctuation_case_only": false,
+          "recording_id": "86d9013c-943c-4f3c-a6f9-dde222400a86",
+          "bytes": 39124,
+          "checksum": "1ab0af93c25ddaeebdf500a654e8feb83d75c77daa6db1a854e445a80cfc0e2c"
+        }
+      ],
+      "attempts": ["b85113d7-723e-44e0-9be1-dffa8b59ce59", "6e67dd4c-a662-4f95-86e3-ca9e3594b98d"],
+      "health": {
+        "ok": true,
+        "build_id": "3ce5de7998be940d972b572ea570b1f9f80942e2",
+        "environment": "preview",
+        "versions": {
+          "app": "0.1.0",
+          "content": "2026.09.18",
+          "simulator": "2026.09.11-r2"
+        }
+      },
+      "anonymous_config": 401,
+      "loaded_build": "3ce5de7998be940d972b572ea570b1f9f80942e2",
+      "restart_no_evidence": true,
+      "audio_deleted": [
+        {
+          "recording_id": "72eaabf9-9762-4deb-84d0-ab366d90a7a7",
+          "status": "deleted",
+          "deleted": true
+        },
+        {
+          "recording_id": "af58b02e-0feb-4e88-9889-16e0ba770676",
+          "status": "deleted",
+          "deleted": true
+        },
+        {
+          "recording_id": "89d1c99e-42ed-4d51-9d6e-167fea79a876",
+          "status": "deleted",
+          "deleted": true
+        },
+        {
+          "recording_id": "86d9013c-943c-4f3c-a6f9-dde222400a86",
+          "status": "deleted",
+          "deleted": true
+        }
+      ],
+      "ai_policy": {
+        "mode": "Off",
+        "monthly_limit_usd": 0,
+        "spent_usd": 0,
+        "reserved_usd": 0,
+        "categories": []
+      },
+      "status": "passed",
+      "cleanup": [],
+      "revoke": 200,
+      "revoked_config": 401
+    },
+    "scope": "First deployment of the final application code. A later commit corrects only the existing offline probe and records these receipts; final exact-head CI and build identity are in the PR description."
   }
 }

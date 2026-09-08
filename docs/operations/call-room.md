@@ -78,7 +78,7 @@ Existing Phase 20 authored audio is preferred when exact text and character matc
 
 ## Repeatable checks
 
-Run under the pinned Node 22 major. `npm run review:call` uses native browser MediaRecorder/IndexedDB with a virtual microphone and explicit HTTP fixtures. It proves browser recovery and interaction, not remote Google/IAM/ElevenLabs/R2 acceptance. Existing `review:voice` checks real authenticated saved assets without purchasing audio. See the review for commands, artifacts and exact CI evidence.
+Run under the pinned Node 22 major. `npm run review:call` uses native browser MediaRecorder/IndexedDB with a virtual microphone and explicit HTTP fixtures. It proves browser recovery and interaction, not remote Google/IAM/ElevenLabs/R2 acceptance. Existing `review:voice` checks real authenticated saved assets without purchasing audio. The offline probe now uses the device controls on `/sync`, asserts local writes survive offline reload and checks matching browser/Worker build IDs. See the review for commands, artifacts and exact CI evidence.
 
 Long actions show progress at the control used: Transcribing…, Evaluating… / Saving turn…, Getting feedback…, or the specific audio wait. Reduced motion retains a static busy indicator and text. A failed confirmed turn retries its saved text; failed feedback remains on the existing run. Guided/practice fallback replies may show a short cue from the current authored move, anchor or objective. That cue clears on progress and is absent in independent/pressure calls. The engine still owns interpretation and the turn limit; Northwind's four-turn intended path can take up to 12 turns when recovery is needed. See [the UX review](../reviews/phase-21-final-ux-polish.md).
 
