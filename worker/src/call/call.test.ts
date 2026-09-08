@@ -85,6 +85,39 @@ async function setup(mode = 'cold_call', dependencies: CallDependencies = {}) {
   return { request, upload, ready, learner, deviceId, exercise, attemptId, speech, deps };
 }
 describe('CALL-002/006 private recording and durable recovery', () => {
+  it('refuses new production calls even with preview-style vars and an injected provider', async () => {
+    const a = await setup();
+    const speech = vi.fn();
+    const production = {
+      ...env,
+      BLOOMLAB_ENV: 'production',
+      CALLS_ENABLED: 'true',
+      GOOGLE_CLOUD_CREDENTIAL: 'test-only placeholder',
+    };
+    const headers = {
+      authorization: `Bearer ${a.learner.session_token}`,
+      'content-type': 'application/json',
+    };
+    const config = await handleCall(
+      new Request('https://bloomlab.test/api/call/config', { headers }),
+      production,
+      { speech },
+    );
+    expect(await config.json()).toEqual({ enabled: false });
+    const start = await handleCall(
+      new Request('https://bloomlab.test/api/call/attempts', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ attempt_id: crypto.randomUUID(), exercise_id: a.exercise.id }),
+      }),
+      production,
+      { speech },
+    );
+    expect(start.status).toBe(503);
+    expect(await start.json()).toEqual({ error: 'calls_not_enabled' });
+    expect(speech).not.toHaveBeenCalled();
+  });
+
   it('deletes an interrupted R2-first upload even when no metadata row survived', async () => {
     const a = await setup();
     const id = crypto.randomUUID();

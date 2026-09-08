@@ -31,9 +31,11 @@
   "env": {
     "preview": {
       "name": "bloomlab-preview",
-      "vars": { "BLOOMLAB_ENV": "preview" },
+      "vars": { "BLOOMLAB_ENV": "preview", "CALLS_ENABLED": "true" },
       "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "bloomlab-media-dev" }],
-      "secrets": { "required": ["SYNC_KEY_PEPPER", "ANTHROPIC_API_KEY"] },
+      "secrets": {
+        "required": ["SYNC_KEY_PEPPER", "ANTHROPIC_API_KEY", "GOOGLE_CLOUD_CREDENTIAL"],
+      },
       "d1_databases": [
         {
           "binding": "DB",

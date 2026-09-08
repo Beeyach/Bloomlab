@@ -27,6 +27,11 @@ describe('feature flags', () => {
       expect(isFeatureEnabled(getFeatureFlags('production'), flag)).toBe(false);
     }
   });
+
+  it('enables call acceptance in preview while keeping production calls off', () => {
+    expect(getFeatureFlags('preview').voice_calls).toBe(true);
+    expect(getFeatureFlags('production').voice_calls).toBe(false);
+  });
 });
 
 describe('parseRuntimeEnvironment', () => {
