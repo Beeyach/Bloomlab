@@ -226,6 +226,7 @@ export async function evaluate(
     for (let repair = 0; repair <= 1; repair++) {
       const response = await provider({
         model,
+        ...(exercise.call ? { kind: 'call_grading' as const } : {}),
         stable: `Bloomlab grades defensible reasoning, not confident prose. Judge only authored rubric items. Deterministic checks remain authoritative. Reward verified uncertainty.${exercise.call ? ' ' + CALL_GRADING_INSTRUCTION : ''}${exercise.call && repair ? ' Citation validation reminder: remove any client-only or nonverbatim quotation from rubric reasons, strengths and critical_issue. Verify every quoted span against learner_confirmed before returning.' : ''} Exact rubric: ${JSON.stringify(rubric)}\nExercise brief: ${JSON.stringify({ title: exercise.title, instructions: exercise.instructions })}`,
         submission: input.submission,
         schema: gradingFormat,

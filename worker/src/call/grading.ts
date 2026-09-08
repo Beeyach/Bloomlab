@@ -4,6 +4,7 @@ export const CALL_GRADING_INSTRUCTION = [
   'Call speaker contract: Only learner_confirmed text is evidence of what the learner said or did.',
   'client_context and closing_client_context are context only and must never be credited to the learner.',
   'For every rubric explanation, evaluate the learner_confirmed behavior against the corresponding numbered turn and client_context.',
+  'Keep each rubric explanation to one or two concise sentences grounded in those turns.',
   'Attribute any quotation to its actual speaker; never treat a client-only question, diagnosis, commitment or next step as learner evidence.',
   'In rubric reasons, strengths and critical_issue, quotation marks may surround only exact, contiguous learner_confirmed text. Paraphrase client context and identify it as client context; do not quote client-only words in these fields.',
   'Before crediting a named system or term to the learner, verify that the learner actually used it. Client terminology alone is not evidence of learner terminology.',

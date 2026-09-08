@@ -562,6 +562,7 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
       /PRIVATE_RAW|original_transcript|Could I ask about your quote follow-up/,
     );
     const providerInput = provider.mock.calls[0]![0];
+    expect(providerInput.kind).toBe('call_grading');
     const clientOnly = snapshot.turns[0]!.client.text;
     const serialized = JSON.parse(providerInput.submission);
     expect(serialized).toEqual({
