@@ -26,10 +26,13 @@
   // Secret names may be declared as deployment requirements; values remain platform secrets and
   // never appear here (SEC-001). Local development reads worker/.dev.vars when configured.
   "vars": { "BLOOMLAB_ENV": "local" },
+  // Local emulation by default. Remote preview and production never share a media bucket.
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "bloomlab-media-dev" }],
   "env": {
     "preview": {
       "name": "bloomlab-preview",
       "vars": { "BLOOMLAB_ENV": "preview" },
+      "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "bloomlab-media-dev" }],
       "secrets": { "required": ["SYNC_KEY_PEPPER", "ANTHROPIC_API_KEY"] },
       "d1_databases": [
         {
@@ -43,6 +46,7 @@
     "production": {
       "name": "bloomlab",
       "vars": { "BLOOMLAB_ENV": "production" },
+      "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "bloomlab-media-prod" }],
       "secrets": { "required": ["SYNC_KEY_PEPPER", "ANTHROPIC_API_KEY"] },
       "d1_databases": [
         {

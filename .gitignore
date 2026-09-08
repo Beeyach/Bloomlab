@@ -43,3 +43,8 @@ worker-configuration.d.ts
 
 # Compiled content bundle and coverage reports (scripts/content.mjs)
 .content/
+
+# Generated audio lives in R2, never Git (DATA-006).
+*.mp3
+*.wav
+*.ogg
