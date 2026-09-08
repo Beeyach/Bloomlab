@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { content } from '../content/bundle';
 import { db } from '../data/db';
 import { NORMAL_RUN, loadAttempt, saveResponse, startAttempt } from './attempt';
+import { registerRuntime, EXERCISE_RUNTIMES } from './runtime';
 import { finalizeAttempt } from './finalize';
 
 const ID = 'EX-ARCHITECTURE_DECISION-treatment-interest';
@@ -14,6 +15,47 @@ beforeEach(async () => {
 });
 
 describe('submission waits for queued attempt writes', () => {
+  it('preserves the submitted runtime structure with the canonical attempt and outbox', async () => {
+    const architecture = {
+      workflows: [{ id: 'actual-workflow', name: 'Submitted workflow', trigger: null, nodes: [] }],
+    };
+    registerRuntime({
+      id: 'portfolio-capture-test',
+      provides: ['architecture'],
+      handles: (e) => e.id === ID,
+      context: async (_, state) => ({
+        state,
+        architecture,
+        events: [],
+        references: {},
+        provides: ['learner', 'architecture'],
+      }),
+    });
+    try {
+      const attempt = await startAttempt(exercise, NORMAL_RUN, {}, db);
+      await saveResponse(
+        ID,
+        NORMAL_RUN,
+        {
+          choice: 'contact_custom_field',
+          text: 'Use a contact custom field as a template merge field.',
+        },
+        db,
+      );
+      const finalized = await finalizeAttempt(exercise, attempt, db);
+      architecture.workflows[0]!.name = 'Changed after submission';
+      const saved = await db.exercise_attempts.get(finalized.attempt.id);
+      expect(saved?.portfolio_capture?.workflows[0]?.name).toBe('Submitted workflow');
+      const queued = await db.sync_queue.filter((r) => r.entity === 'exercise_attempts').toArray();
+      expect(JSON.stringify(queued)).toContain('Submitted workflow');
+      expect(finalized.report.outcome).toBe('passed');
+    } finally {
+      EXERCISE_RUNTIMES.splice(
+        EXERCISE_RUNTIMES.findIndex((r) => r.id === 'portfolio-capture-test'),
+        1,
+      );
+    }
+  });
   it('records the last edit even when Run it starts before that save resolves', async () => {
     const started = await startAttempt(exercise, NORMAL_RUN, {}, db);
 

@@ -8,6 +8,7 @@ import { transitionNegotiation, type NegotiationAction } from './negotiation/eng
 import { economicsFor } from './pricing';
 import { useLiveQuery } from 'dexie-react-hooks';
 
+import type { PortfolioCapture } from '@bloomlab/content-schema';
 import type { Exercise } from '@bloomlab/content-schema';
 import type { HintLevel } from '@bloomlab/mastery-engine';
 
@@ -45,7 +46,11 @@ export interface ActiveAttempt {
   started_at: string;
   hints_revealed: HintLevel[];
   response: LearnerResponse;
-  submitted?: { report: GradeReport; rubric_id: string };
+  submitted?: {
+    report: GradeReport;
+    rubric_id: string;
+    portfolio_capture?: PortfolioCapture | null;
+  };
 }
 
 export type RunMode = 'normal' | 'retrieval';

@@ -31,7 +31,7 @@ export const SYNC_ENTITY_KINDS = {
   sim_events: 'append',
   client_progress: 'simple',
   // Portfolio
-  portfolio_projects: 'simple',
+  portfolio_projects: 'snapshot',
   portfolio_assets: 'append',
 } as const satisfies Record<string, SyncKind>;
 

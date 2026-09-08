@@ -2,7 +2,15 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-08 (Phase 21 session freshness)
+Last updated: 2026-09-08 (Phase 23 portfolio)
+
+## Phase 23 — Portfolio
+
+- Two authored templates collect completed work. There is no twenty-project progression, public profile, sharing or outcome-claim model; PORT-003 remains Phase 24. Required artifacts can remain missing without certifying completion.
+- New graded builds preserve the submitted trigger/node and funnel step/block representation. Earlier attempts do not contain that capture and cannot recover historical architecture from the current simulator. Full workflow configurations and execution traces are not stored in portfolio metadata.
+- Screenshots remain Phase 22 private assets. Opening them requires a linked authorized device and connectivity. Local tombstones and failed reads are visible; remote deletion is checked on opening/rechecking, with no realtime recall of already delivered bytes. Historical manual GHL completion is not API verification or a current image-availability guarantee.
+- Export schema v1 covers the six documented groups from this device, including tombstones. It excludes unfinished workspace drafts, connection settings, provider caches and all raw media. Sync first for newer remote work. The sanitizer removes known credential fields/forms; ordinary learner prose is retained, so the downloaded file is private. Restore is not implemented.
+- Five-width Chromium review provides viewport, keyboard and touch emulation, not physical Safari acceptance. This stacked PR stops for independent audit. Phase 22's real-GHL acceptance and Phase 21's seven broader human rows are unchanged.
 
 ## Phase 22 — Fieldwork acceptance gate
 

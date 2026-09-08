@@ -83,6 +83,16 @@ export const APP_ROUTES: readonly AppRoute[] = [
     Component: lazy(() => import('../conversations/ConversationsLab')),
   },
   {
+    id: 'portfolio',
+    path: '/portfolio',
+    Component: lazy(() => import('../portfolio/PortfolioScreen')),
+  },
+  {
+    id: 'portfolio-item',
+    path: '/portfolio/:templateId',
+    Component: lazy(() => import('../portfolio/PortfolioScreen')),
+  },
+  {
     id: 'playground',
     path: '/playground',
     Component: lazy(() => import('../playground/Playground')),

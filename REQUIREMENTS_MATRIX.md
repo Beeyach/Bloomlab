@@ -277,8 +277,8 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| PORT-001 | Portfolio item stores brief, business problem, architecture, funnel, workflows, screenshots, learner reasoning, skills demonstrated, assistance level, real-GHL evidence where applicable. | P1 | 23 | NOT_STARTED | §35 |
-| PORT-002 | Fictional work labelled "Simulation Project" or "Demonstration Build". Client outcomes are never fabricated. | P0 | 23 | NOT_STARTED | §35 |
+| PORT-001 | Portfolio item stores brief, business problem, architecture, funnel, workflows, screenshots, learner reasoning, skills demonstrated, assistance level, real-GHL evidence where applicable. | P1 | 23 | PASSED | §35 |
+| PORT-002 | Fictional work labelled "Simulation Project" or "Demonstration Build". Client outcomes are never fabricated. | P0 | 23 | PASSED | §35 |
 | PORT-003 | Portfolio progression: Field Ready 1–5, Practitioner 6–10, Advanced 11–15, Specialist 16–20 as listed in §36. | P2 | 24 | NOT_STARTED | §36 |
 
 ## DES — Design
@@ -382,7 +382,7 @@ DATA-003 recovery follow-up: failed update/build checks expose a retry before a 
 | DATA-005 | D1 domains: Identity (learners, devices, sync_sessions); Learning (skill_progress, skill_evidence, campaign_progress, exercise_attempts, review_queue, fieldwork); Simulation (sim_projects, sim_snapshots, sim_events, client_progress); Portfolio (portfolio_projects, portfolio_assets); AI (ai_usage, ai_feedback, rubric_runs); System (content_versions, sync_operations, feature_flags). | P0 | 4 | PASSED | §93, TA§65 |
 | DATA-006 | R2 holds generated audio, voice assets, screenshots, portfolio media, fieldwork media, recovery backups, scenario attachments; D1 holds metadata; no huge binaries or giant JSON blobs in D1. | P1 | 20 | PARTIAL | §94, TA§15 |
 | DATA-007 | Private learner assets are never public; access through Worker authorisation, short-lived signed access, or controlled routes. | P0 | 20 | PASSED | §94, TA§16 |
-| DATA-008 | Export Bloomlab Data: versioned backup containing progress, evidence, projects, notes, simulator saves, portfolio metadata. | P1 | 23 | NOT_STARTED | §150, TA§80 |
+| DATA-008 | Export Bloomlab Data: versioned backup containing progress, evidence, projects, notes, simulator saves, portfolio metadata. | P1 | 23 | PASSED | §150, TA§80 |
 | DATA-009 | Restore Backup validates version and schema, requires confirmation, never silently overwrites. | P2 | 26 | NOT_STARTED | §150, TA§81 |
 | DATA-010 | Separate development and production D1 (`bloomlab-dev`, `bloomlab-prod`); migrations never tested against production first. | P0 | 4 | PASSED | §104, TA§61 |
 | DATA-011 | Content update safety: completed historical attempts are never mutated when GHL features or content change. | P0 | 5 | PASSED | TA§82 |

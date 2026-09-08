@@ -1,3 +1,4 @@
+import type { PortfolioProjectRecord, PortfolioAssetRecord } from '@bloomlab/content-schema';
 import type { LocalEvidenceAsset } from '../fieldwork/assets';
 import type { LocalCallRecording } from '../call/local';
 import Dexie, { type EntityTable, type Table } from 'dexie';
@@ -21,7 +22,7 @@ import type {
 } from './types';
 
 export const DB_NAME = 'bloomlab';
-export const DB_VERSION = 6;
+export const DB_VERSION = 7;
 
 /**
  * The IndexedDB database behind every local-first flow (DATA-002). Dexie is the whole data
@@ -31,6 +32,8 @@ export const DB_VERSION = 6;
  * (curriculum cache in Phase 5, simulator projects and events in Phase 10, and so on).
  */
 export class BloomlabDatabase extends Dexie {
+  declare portfolio_projects: EntityTable<PortfolioProjectRecord, 'id'>;
+  declare portfolio_assets: EntityTable<PortfolioAssetRecord, 'id'>;
   declare evidence_assets: EntityTable<LocalEvidenceAsset, 'asset_id'>;
   declare call_recordings: EntityTable<LocalCallRecording, 'recording_id'>;
   declare device: EntityTable<DeviceRecord, 'device_id'>;
@@ -87,6 +90,15 @@ export class BloomlabDatabase extends Dexie {
     });
     // v6 (Phase 22): private screenshots; never part of sync/outbox JSON.
     this.version(6).stores({ evidence_assets: '&asset_id, attempt_id' });
+    // v7: normalized portfolio metadata; replay history previously skipped by older clients.
+    this.version(7)
+      .stores({
+        portfolio_projects: '&id, template_id, updated_at',
+        portfolio_assets: '&id, portfolio_id, attempt_id, updated_at',
+      })
+      .upgrade(async (tx) => {
+        await tx.table('sync_state').toCollection().modify({ server_cursor: 0 });
+      });
   }
 }
 

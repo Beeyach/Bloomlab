@@ -1,3 +1,4 @@
+import { ExportData } from '../backup/ExportData';
 import { useLiveQuery } from 'dexie-react-hooks';
 import QRCode from 'qrcode';
 import { useEffect, useState, type FormEvent } from 'react';
@@ -410,6 +411,7 @@ export default function SyncScreen() {
       )}
       {device && !isLinked(device) && <NotLinked onLinked={() => rerender((n) => n + 1)} />}
       {device && isLinked(device) && <Linked device={device} />}
+      <ExportData />
       <DeviceIdentity />
     </Stack>
   );

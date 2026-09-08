@@ -1,3 +1,4 @@
+import { captureArchitecture } from '../portfolio/capture';
 import { verifyCompletion } from '../fieldwork/checkpoint';
 import { evidenceReferences } from '../fieldwork/proof';
 import { combineRubric, objectiveReport } from '@bloomlab/exercise-engine';
@@ -222,6 +223,8 @@ async function finalizeOneAttempt(
       : null;
   if (runtime && !context && !current.submitted)
     throw new RuntimeUnavailableError(exercise.id, runtime.id);
+  const portfolioCapture =
+    current.submitted?.portfolio_capture ?? captureArchitecture(context?.architecture);
   let report = objectiveReport(
     current.submitted?.report ?? gradeAttempt(exercise, current, context),
   );
@@ -230,7 +233,7 @@ async function finalizeOneAttempt(
     report = { ...report, rubric_pending: rubricId };
     const rubric = content.rubrics.find((r) => r.id === rubricId);
     if (!rubric) throw new Error('The exact submitted rubric is unavailable. Your work is saved.');
-    current.submitted = { report, rubric_id: rubricId };
+    current.submitted = { report, rubric_id: rubricId, portfolio_capture: portfolioCapture };
     await checkpointSubmission(exercise.id, attemptContext, current, database);
     const evaluation = await evaluateSubmission(
       {
@@ -289,6 +292,7 @@ async function finalizeOneAttempt(
               evidence: evidenceReferences(exercise, current.response.fieldwork!),
             }
           : null,
+      portfolio_capture: portfolioCapture,
       grade: report,
       // The work itself travels with the attempt: a sales thread and the writing in it are the
       // evidence, and the draft is cleared two lines below.

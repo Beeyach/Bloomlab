@@ -31,8 +31,8 @@ interface Area {
 }
 
 /**
- * The compact rail (spec §73, DES-009): the areas that exist today. Clients and Portfolio join
- * it with their phases — nothing inert stands in for them.
+ * The compact rail (spec §73, DES-009): the areas that exist today. Clients joins
+ * it with its phase — nothing inert stands in for them.
  *
  * Tablet and desktop: one labelled column of every area, drawn from `--bl-size-rail`. Phones: a
  * bottom bar of the first four areas, each with its name showing, plus a labelled **More** that
@@ -51,6 +51,7 @@ const AREAS: Area[] = [
   { to: '/conversations', label: 'Inbox', icon: IconChat },
   { to: '/reporting', label: 'Reporting', icon: IconReport },
   { to: '/incident', label: 'Incidents', icon: IconIncident },
+  { to: '/portfolio', label: 'Portfolio', icon: IconRecords },
   { to: '/playground', label: 'Playground', icon: IconSandbox },
 ];
 

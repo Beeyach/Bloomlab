@@ -32,3 +32,6 @@ artifacts:
   - kind: real_ghl_evidence
     required: true
     description: Snapshot loaded into a second sub-account.
+  - kind: funnel
+    required: false
+    description: Submitted funnel structure from the consultation assembly exercise, when supplied.

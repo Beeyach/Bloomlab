@@ -9,6 +9,13 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 23 portfolio and local data export
+
+- Real Portfolio shell/list/detail routes collect saved project work into ten normalized artifact references with authored Simulation Project/Demonstration Build labels and explicit missing evidence. Submitted build representations are preserved with new attempts; existing private Fieldwork screenshots retain owner checks and truthful deletion/unavailability states.
+- Dexie v7 and existing D1 metadata domains use the shared outbox/pull path, stable contribution IDs, tombstones and explicit reflection conflicts. Content `2026.09.20` completes ten categories in the two templates and links the existing consultation funnel exercise.
+- Export Bloomlab Data creates a validated versioned six-group local JSON download, excludes session/provider secrets and binary media, and exposes retry without changing saved records. No restore, public sharing, GHL API verification or broader progression was added.
+- Stacked draft against Phase 22 for independent audit, with focused/full tests and five-width browser review. Phase 22 human-acceptance statuses remain unchanged.
+
 ### Fixed — Phase 21 update-check recovery
 
 - Failed app-update checks now show a visible retry even before a newer build is known. Retry shows progress, prevents duplicate checks and clears the notice when the loaded build is current. Discovering a newer build still requires an explicit reload after call work is safe.
