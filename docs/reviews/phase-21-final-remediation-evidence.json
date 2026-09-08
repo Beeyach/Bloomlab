@@ -1,0 +1,1912 @@
+{
+  "date": "2026-09-08",
+  "handoff": "docs/handoffs/phase-21-final-acceptance-remediation.md",
+  "pr": 23,
+  "branch": "codex/phase-21-call-room",
+  "production": "disabled; no production deployment or merge",
+  "first_runtime": {
+    "head": "1154e4a47749b89f4abfc962a1b5c637f9eb64e8",
+    "ci": 34193906133,
+    "checks": "success",
+    "preview_deploy": "success",
+    "production_deploy": "skipped",
+    "tests": 1758,
+    "files": 107,
+    "worker_version": "2ea207fd-f5f2-4b41-9604-54e884407a68"
+  },
+  "scope": "Fresh authorized API calls with browser-reencoded fictional Phase 20 greeting and non-sensitive confirmed test text. Real Google/Anthropic/ElevenLabs responses. No human microphone or Call Room local confirmation queue acceptance.",
+  "source_audio": {
+    "mime": "audio/webm;codecs=opus",
+    "bytes": 68882,
+    "duration_ms": 4273,
+    "checksum": "373e568870b1e539f95a6d90b93e68289ec1f9f7126486ff6a4bee622744c7a4"
+  },
+  "dynamic_synthesis": {
+    "before": [],
+    "first": {
+      "status": 200,
+      "body": {
+        "url": "/api/call/voice/CV-0452196de51bc80f05dd048a3066b60d28e5eb4035e8cc1a3db874376c7b0e19",
+        "source": "dynamic",
+        "cached": false
+      }
+    },
+    "asset_id": "CV-0452196de51bc80f05dd048a3066b60d28e5eb4035e8cc1a3db874376c7b0e19",
+    "after_first": {
+      "asset_id": "CV-0452196de51bc80f05dd048a3066b60d28e5eb4035e8cc1a3db874376c7b0e19",
+      "attempt_id": "0ad9fa3c-1381-414b-bf00-6060f8a94dc3",
+      "object_key": "call/voice/v1/15343076-be8a-4d06-87b4-b5bac3a4c8aa/0ad9fa3c-1381-414b-bf00-6060f8a94dc3/CV-0452196de51bc80f05dd048a3066b60d28e5eb4035e8cc1a3db874376c7b0e19.mp3",
+      "status": "ready",
+      "byte_length": 112475,
+      "checksum": "c4d8be400c64efb6930acb42b164e27acbf3d4e97079fc53447f83b42a01b0f6",
+      "provider_attempts": 1,
+      "provider_request_id": "KMNzZcaPGGzqi5mfKmeX",
+      "billed_characters": 69,
+      "receipt_status": "complete"
+    },
+    "r2_exists": true,
+    "second": {
+      "status": 200,
+      "body": {
+        "url": "/api/call/voice/CV-0452196de51bc80f05dd048a3066b60d28e5eb4035e8cc1a3db874376c7b0e19",
+        "source": "dynamic",
+        "cached": true
+      }
+    },
+    "after_second": {
+      "asset_id": "CV-0452196de51bc80f05dd048a3066b60d28e5eb4035e8cc1a3db874376c7b0e19",
+      "attempt_id": "0ad9fa3c-1381-414b-bf00-6060f8a94dc3",
+      "object_key": "call/voice/v1/15343076-be8a-4d06-87b4-b5bac3a4c8aa/0ad9fa3c-1381-414b-bf00-6060f8a94dc3/CV-0452196de51bc80f05dd048a3066b60d28e5eb4035e8cc1a3db874376c7b0e19.mp3",
+      "status": "ready",
+      "byte_length": 112475,
+      "checksum": "c4d8be400c64efb6930acb42b164e27acbf3d4e97079fc53447f83b42a01b0f6",
+      "provider_attempts": 1,
+      "provider_request_id": "KMNzZcaPGGzqi5mfKmeX",
+      "billed_characters": 69,
+      "receipt_status": "complete"
+    },
+    "second_purchase_delta": 0,
+    "second_billed_characters_delta": 0,
+    "playback": {
+      "status": 200,
+      "byte_length": 112475,
+      "checksum": "c4d8be400c64efb6930acb42b164e27acbf3d4e97079fc53447f83b42a01b0f6",
+      "seconds": 6.965986394557823,
+      "error": null
+    },
+    "authorization": {
+      "anonymous": 401,
+      "other_learner": 403,
+      "other_learner_generation": 403,
+      "arbitrary_text": 400,
+      "revoked": 401
+    },
+    "playback_after_delete": 404
+  },
+  "first_grading_samples": [
+    {
+      "attempt_id": "0ad9fa3c-1381-414b-bf00-6060f8a94dc3",
+      "exercise_id": "EX-SAY_IT-northwind-cold-call",
+      "turns": [
+        {
+          "turn": 1,
+          "client_context": "Gary here, Northwind Heating and Air. I've got a tech on a roof, make it quick.",
+          "learner_confirmed": "I am unsure where the follow-up responsibility sits.",
+          "original_differs": true,
+          "interpretation": "fallback",
+          "response": {
+            "node": "clarify",
+            "text": "You mentioned “I am unsure where the follow-up responsibility sits.”. What would that change in the process we are discussing?",
+            "dynamic": true
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 2,
+          "client_context": "You mentioned “I am unsure where the follow-up responsibility sits.”. What would that change in the process we are discussing?",
+          "learner_confirmed": "Who handles quote follow-up today, and what happens when someone does not answer?",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "process",
+            "text": "Tina emails the replacement quote. We do not have a follow-up process for a quote the customer leaves unanswered. ServiceTitan handles scheduling and invoicing.",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 3,
+          "client_context": "Tina emails the replacement quote. We do not have a follow-up process for a quote the customer leaves unanswered. ServiceTitan handles scheduling and invoicing.",
+          "learner_confirmed": "Tina sends the quote after the visit, and unanswered quotes then receive no follow-up. Is that the gap?",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "agreed",
+            "text": "Yes. It is the unanswered quotes, not replacing dispatch. What would you want to look at with Tina?",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 4,
+          "client_context": "Yes. It is the unanswered quotes, not replacing dispatch. What would you want to look at with Tina?",
+          "learner_confirmed": "Could we schedule a short process review with Tina and inspect one unanswered quote before proposing changes?",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "done",
+            "text": "Send me a short agenda for a call with Tina about one unanswered quote. We will check the process together before deciding on a build.",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        }
+      ],
+      "projection": {
+        "complete": true,
+        "turns": 4,
+        "talk_ratio_learner": 0.3522012578616352,
+        "pitched_before_diagnosis": false,
+        "diagnosis_agreed": true,
+        "next_step_agreed": true,
+        "economically_sound": true,
+        "structurally_sound": true
+      },
+      "result": {
+        "run_id": "ad2dd093-89e7-4c58-a112-dd13458bd06b",
+        "rubric_id": "CALL_PERFORMANCE_RUBRIC_V1",
+        "rubric_version": 1,
+        "result": {
+          "score": 82,
+          "rubric_results": [
+            {
+              "id": "questions",
+              "passed": true,
+              "reason": "Learner asked relevant questions at appropriate points: 'Who handles quote follow-up today, and what happens when someone does not answer?' (turn 2) and 'Could we schedule a short process review with Tina and inspect one unanswered quote before proposing changes?' (turn 4). Questions were sequenced to understand the current process before proposing solutions."
+            },
+            {
+              "id": "listening",
+              "passed": true,
+              "reason": "Learner reflected back what Gary said: 'Tina sends the quote after the visit, and unanswered quotes then receive no follow-up. Is that the gap?' This demonstrates active listening and verification of understanding. Learner also responded to Gary's clarification that the issue is unanswered quotes, not dispatch replacement."
+            },
+            {
+              "id": "diagnosis",
+              "passed": true,
+              "reason": "Learner separated symptoms from causes. Gary confirmed the gap: unanswered quotes lack follow-up. Learner verified agreement on the problem ('Is that the gap?') and Gary confirmed. Diagnosis was agreed before proposing next steps."
+            },
+            {
+              "id": "clarity",
+              "passed": true,
+              "reason": "Learner used concrete language: 'Tina sends the quote,' 'unanswered quotes,' 'process review.' No technical jargon was introduced unnecessarily. The reasoning was transparent: understand current process, inspect one case, then decide on changes."
+            },
+            {
+              "id": "jargon",
+              "passed": true,
+              "reason": "Language was appropriate for a business owner. Learner used Gary's own terminology ('Tina,' 'quote,' 'ServiceTitan') and avoided unnecessary technical terms. One mention of 'ServiceTitan' was in context of Gary's existing system, not imposed jargon."
+            },
+            {
+              "id": "pitch_timing",
+              "passed": true,
+              "reason": "Learner waited for diagnosis agreement before proposing action. The problem was identified and confirmed by turn 3. Only then did learner propose a specific next step (process review with Tina) in turn 4. No solutions were pitched prematurely."
+            },
+            {
+              "id": "objection_handling",
+              "passed": true,
+              "reason": "No objections were raised by the client. Gary moved from identifying the gap to asking what the learner wanted to do with Tina, indicating receptiveness. Learner did not need to handle objections."
+            },
+            {
+              "id": "next_step",
+              "passed": true,
+              "reason": "Learner agreed a specific next action: 'schedule a short process review with Tina and inspect one unanswered quote before proposing changes.' Gary confirmed this approach in closing context, requesting a short agenda for the call with Tina. Action, owner (Tina), and verification point (inspect one case) are clear."
+            }
+          ],
+          "critical_issue": null,
+          "strengths": [
+            "Learner diagnosed the real problem (unanswered quotes, not dispatch) before proposing solutions, respecting the agreed diagnosis.",
+            "Questions were targeted and sequenced logically to understand the current process.",
+            "Active listening demonstrated through reflection: 'Tina sends the quote after the visit, and unanswered quotes then receive no follow-up. Is that the gap?'",
+            "Learner proposed a reasonable, low-risk next step that inspects the process before suggesting changes, aligning with the exercise instruction to not promise results before checking.",
+            "Specific, actionable next step with clear owner (Tina) and verification point (inspect one unanswered quote).",
+            "Appropriate for the context: brief conversation given Gary's time constraint and urgency (tech on roof)."
+          ],
+          "improvements": [
+            "Learner could have used the closing context more proactively by offering an agenda draft structure during the call, rather than leaving it entirely to Gary to request.",
+            "Turn 1 opening ('I am unsure where the follow-up responsibility sits') was vague; a more direct framing of the call objective upfront might have set context faster.",
+            "No explicit confirmation from learner that ServiceTitan will remain in place as instructed, though this was implied by not proposing to replace it."
+          ],
+          "next_probe": "When you meet with Tina, how will you decide which unanswered quote to inspect, and what specific information will you gather to understand whether the gap is a process step missing or a priority conflict?",
+          "confidence": 0.87
+        }
+      },
+      "cost_usd": 0.007083,
+      "reserved_usd": 0,
+      "usage": [
+        {
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cache_creation_input_tokens": 0,
+          "cost_usd": 0,
+          "reserved_usd": 0,
+          "status": "complete",
+          "purpose": "call_feedback"
+        },
+        {
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 2313,
+          "output_tokens": 954,
+          "cached_input_tokens": 0,
+          "cache_creation_input_tokens": 0,
+          "cost_usd": 0.007083,
+          "reserved_usd": 0,
+          "status": "complete",
+          "purpose": "call_feedback"
+        }
+      ],
+      "identical_retry_reused": true,
+      "manual_attribution_review": "FAILED: jargon credits ServiceTitan to the learner; it appears only in client context. Other seven explanations reviewed; the run is not accepted."
+    },
+    {
+      "attempt_id": "69b91c1a-d23d-4e1a-b5da-6a2e1466b0ae",
+      "exercise_id": "EX-SAY_IT-summit-proposal",
+      "turns": [
+        {
+          "turn": 1,
+          "client_context": "Walk me through what happens after someone applies. Who sees it, and what does the applicant receive?",
+          "learner_confirmed": "The proposal covers qualification routing, an applicant reply, a named owner and follow-up. We will check each route against the agreed criteria with a sample application.",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "objection",
+            "text": "Another person quoted nine hundred. What am I paying for beyond that?",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 2,
+          "client_context": "Another person quoted nine hundred. What am I paying for beyond that?",
+          "learner_confirmed": "Let us compare what the nine-hundred quote includes before assuming it is equivalent. Our written scope must identify who owns routing checks, applicant replies and handover. I cannot promise the same result from an unknown scope.",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "smaller",
+            "text": "If we start with the smaller option, tell me exactly what we would postpone and how we would know when to add it.",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 3,
+          "client_context": "If we start with the smaller option, tell me exactly what we would postpone and how we would know when to add it.",
+          "learner_confirmed": "For a smaller first phase, I propose one agreed qualification route and its applicant reply. We would postpone additional routes and follow-up sequences. We should add those only after reviewing the first route and agreeing the need in writing.",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "decision",
+            "text": "I need the written scope to match what you have just said. How will we check the application routing and handover before I sign off?",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 4,
+          "client_context": "I need the written scope to match what you have just said. How will we check the application routing and handover before I sign off?",
+          "learner_confirmed": "Could we review the written scope together, test a sample application through each included route, check the applicant reply and confirm the named owner can take over before you sign off?",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "done",
+            "text": "Send the scope comparison and acceptance checks. We will review those together before agreeing a project.",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        }
+      ],
+      "projection": {
+        "complete": true,
+        "turns": 4,
+        "talk_ratio_learner": 0.5866666666666667,
+        "pitched_before_diagnosis": false,
+        "diagnosis_agreed": true,
+        "next_step_agreed": true,
+        "economically_sound": true,
+        "structurally_sound": true
+      },
+      "result": {
+        "run_id": "d76b6432-4599-45e7-a979-9d1fc516cf15",
+        "rubric_id": "CALL_PERFORMANCE_RUBRIC_V1",
+        "rubric_version": 1,
+        "result": {
+          "score": 88,
+          "rubric_results": [
+            {
+              "id": "questions",
+              "passed": true,
+              "reason": "Learner asks clarifying questions at appropriate moments: in turn 2, requests comparison of the competing quote's scope before assuming equivalence; in turn 4, proposes a structured review process (sample application test, handover confirmation) before sign-off. Questions respect the client's stated need and check assumptions about scope equivalence."
+            },
+            {
+              "id": "listening",
+              "passed": true,
+              "reason": "Learner responds directly to client statements. Turn 2 addresses the cost objection by naming what must be compared (routing ownership, replies, handover) rather than dismissing it. Turn 3 answers the specific request for clarity on postponement and decision criteria. Turn 4 reflects the client's need for written scope alignment and proposes a verification method."
+            },
+            {
+              "id": "diagnosis",
+              "passed": true,
+              "reason": "The deterministic flag confirms diagnosis_agreed=true. Learner separates the symptom (cheaper competitor quote) from the underlying cause (unknown scope equivalence) and proposes written scope comparison as the verification step. The diagnosis—that ownership, routing clarity, and reply process must be documented and tested—is implicit and client-confirmed by acceptance of the review process."
+            },
+            {
+              "id": "clarity",
+              "passed": true,
+              "reason": "Learner explains the reasoning in concrete terms: names the three components (qualification routing, applicant replies, ownership/follow-up); specifies the smaller option as 'one agreed qualification route and its applicant reply'; proposes testable verification (sample application, named owner handover confirmation). No invented promises—explicitly states 'I cannot promise the same result from an unknown scope.'"
+            },
+            {
+              "id": "jargon",
+              "passed": true,
+              "reason": "Language is accessible. Terms like 'qualification route,' 'applicant reply,' and 'handover' are used but grounded in concrete action (test a sample application, confirm ownership). No unexplained technical jargon; reasoning is transparent to the client context."
+            },
+            {
+              "id": "pitch_timing",
+              "passed": true,
+              "reason": "Deterministic flag pitched_before_diagnosis=false confirms learner did not pitch before diagnosis. Proposal of the smaller option (turn 3) comes after client question, and the larger proposal remains conditional on written scope review and testing (turn 4). Solution timing respects the agreed diagnosis."
+            },
+            {
+              "id": "objection_handling",
+              "passed": true,
+              "reason": "Turn 2 handles the nine-hundred quote objection by clarifying what is unknown (competitor's scope) and what must be verified (ownership, routing, replies). Learner does not undermine the competitor or invent concessions; instead proposes a comparison framework. Turn 3 answers the 'what do we postpone' objection with specificity and a decision criterion."
+            },
+            {
+              "id": "next_step",
+              "passed": true,
+              "reason": "Deterministic flag next_step_agreed=true. Turn 4 proposes a specific sequence: review written scope together, test sample application through each route, confirm applicant reply and named owner handover, then sign-off. Client accepts this framework (closing_client_context confirms 'review together before agreeing'). Owner (learner and client jointly), action (scope review and sample test), and verification (confirmed handover readiness) are all named."
+            }
+          ],
+          "critical_issue": null,
+          "strengths": [
+            "Explicitly names and refuses to invent promises ('I cannot promise the same result from an unknown scope'), demonstrating intellectual honesty on a cost objection.",
+            "Proposes a testable verification method (sample application, confirmed handover) rather than reassurance, grounding the next step in evidence.",
+            "Responds to each client question with specificity: turn 2 names three elements to compare, turn 3 breaks down the smaller option and decision trigger, turn 4 proposes a step-by-step review sequence.",
+            "Maintains the three-part scope throughout (routing, replies, ownership/follow-up) and uses it as the framework for comparison and verification."
+          ],
+          "improvements": [
+            "Turn 1 could have explicitly confirmed that the client's question about routing and applicant receipt is the core scope being proposed, rather than stating the proposal elements without direct cross-reference to the client's concern.",
+            "Turn 2 could have offered a timeline for the scope comparison, setting a concrete expectation for when the nine-hundred quote analysis would be available.",
+            "Turn 4 could have clarified who will prepare the written scope comparison or the order in which steps will occur (e.g., 'I will send the scope comparison first, then we will schedule the sample test')."
+          ],
+          "next_probe": "If the client returns with the nine-hundred quote details, how will you structure the side-by-side comparison to ensure the client can see exactly where ownership and follow-up differ, and where the two proposals converge?",
+          "confidence": 0.87
+        }
+      },
+      "cost_usd": 0.007642,
+      "reserved_usd": 0,
+      "usage": [
+        {
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cache_creation_input_tokens": 0,
+          "cost_usd": 0,
+          "reserved_usd": 0,
+          "status": "complete",
+          "purpose": "call_feedback"
+        },
+        {
+          "model": "claude-haiku-4-5-20251001",
+          "input_tokens": 2357,
+          "output_tokens": 1057,
+          "cached_input_tokens": 0,
+          "cache_creation_input_tokens": 0,
+          "cost_usd": 0.007642,
+          "reserved_usd": 0,
+          "status": "complete",
+          "purpose": "call_feedback"
+        }
+      ],
+      "identical_retry_reused": true,
+      "manual_attribution_review": "All eight explanations distinguish learner behavior and client context. This sample alone does not erase the cold-call attribution defect."
+    }
+  ],
+  "first_batch_ai_cost_usd": 0.014725,
+  "first_batch_reserved_usd": 0,
+  "recordings": [
+    {
+      "recording_id": "45fa3e4d-caa6-4174-82f3-97a22e58a600",
+      "attempt_id": "0ad9fa3c-1381-414b-bf00-6060f8a94dc3",
+      "exercise_id": "EX-SAY_IT-northwind-cold-call",
+      "turn": 0,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "373e568870b1e539f95a6d90b93e68289ec1f9f7126486ff6a4bee622744c7a4",
+      "created_at": "2026-09-08T06:22:46.476Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:23:17.811Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "73fbc655-ab07-49ad-9ab7-08221320d925",
+      "attempt_id": "0ad9fa3c-1381-414b-bf00-6060f8a94dc3",
+      "exercise_id": "EX-SAY_IT-northwind-cold-call",
+      "turn": 1,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "373e568870b1e539f95a6d90b93e68289ec1f9f7126486ff6a4bee622744c7a4",
+      "created_at": "2026-09-08T06:23:21.578Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:23:28.293Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "b91fefa3-fdc0-43e9-a0cd-d8b6d63b92b0",
+      "attempt_id": "0ad9fa3c-1381-414b-bf00-6060f8a94dc3",
+      "exercise_id": "EX-SAY_IT-northwind-cold-call",
+      "turn": 2,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "373e568870b1e539f95a6d90b93e68289ec1f9f7126486ff6a4bee622744c7a4",
+      "created_at": "2026-09-08T06:23:31.790Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:23:39.355Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "7b4ff5b5-3615-47c9-ab82-3681edea6ff6",
+      "attempt_id": "0ad9fa3c-1381-414b-bf00-6060f8a94dc3",
+      "exercise_id": "EX-SAY_IT-northwind-cold-call",
+      "turn": 3,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "373e568870b1e539f95a6d90b93e68289ec1f9f7126486ff6a4bee622744c7a4",
+      "created_at": "2026-09-08T06:23:42.963Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:23:49.450Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "2aa29444-ec1d-4c43-97b8-057a357addef",
+      "attempt_id": "69b91c1a-d23d-4e1a-b5da-6a2e1466b0ae",
+      "exercise_id": "EX-SAY_IT-summit-proposal",
+      "turn": 0,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "373e568870b1e539f95a6d90b93e68289ec1f9f7126486ff6a4bee622744c7a4",
+      "created_at": "2026-09-08T06:24:25.556Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:24:32.156Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "9c326ca1-6849-41f3-920d-812705e1018c",
+      "attempt_id": "69b91c1a-d23d-4e1a-b5da-6a2e1466b0ae",
+      "exercise_id": "EX-SAY_IT-summit-proposal",
+      "turn": 1,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "373e568870b1e539f95a6d90b93e68289ec1f9f7126486ff6a4bee622744c7a4",
+      "created_at": "2026-09-08T06:24:35.848Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:24:43.214Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "883a7cde-48dc-403b-9cc5-3637fef36711",
+      "attempt_id": "69b91c1a-d23d-4e1a-b5da-6a2e1466b0ae",
+      "exercise_id": "EX-SAY_IT-summit-proposal",
+      "turn": 2,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "373e568870b1e539f95a6d90b93e68289ec1f9f7126486ff6a4bee622744c7a4",
+      "created_at": "2026-09-08T06:24:46.958Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:24:53.525Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "8632d388-5703-4e36-ae3e-c8e7c0194636",
+      "attempt_id": "69b91c1a-d23d-4e1a-b5da-6a2e1466b0ae",
+      "exercise_id": "EX-SAY_IT-summit-proposal",
+      "turn": 3,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "373e568870b1e539f95a6d90b93e68289ec1f9f7126486ff6a4bee622744c7a4",
+      "created_at": "2026-09-08T06:24:57.171Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:25:03.500Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    }
+  ],
+  "cleanup": [
+    {
+      "device_id": "a7acc678-2236-4c51-8187-ee672c6405c3",
+      "status": 200
+    },
+    {
+      "recording_id": "45fa3e4d-caa6-4174-82f3-97a22e58a600",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "73fbc655-ab07-49ad-9ab7-08221320d925",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "b91fefa3-fdc0-43e9-a0cd-d8b6d63b92b0",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "7b4ff5b5-3615-47c9-ab82-3681edea6ff6",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "2aa29444-ec1d-4c43-97b8-057a357addef",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "9c326ca1-6849-41f3-920d-812705e1018c",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "883a7cde-48dc-403b-9cc5-3637fef36711",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "8632d388-5703-4e36-ae3e-c8e7c0194636",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "dynamic_asset_id": "CV-0452196de51bc80f05dd048a3066b60d28e5eb4035e8cc1a3db874376c7b0e19",
+      "r2_exists": false,
+      "receipt_and_purchase_claim_preserved": true
+    },
+    {
+      "device_id": "aa334d76-f05f-4992-a420-bc038cc2b84a",
+      "status": 200,
+      "after": 401
+    }
+  ],
+  "browser_resource_origins": ["https://bloomlab-preview.cool-sunset-2169.workers.dev"],
+  "human_acceptance": {
+    "mobile_touch_microphone": "PENDING — explicit stop for user required",
+    "desktop_keyboard_microphone": "PENDING — explicit stop for user required",
+    "physical_safari_ios": "UNVERIFIED"
+  },
+  "citation_remediation": {
+    "head": "44d346b3e7ce93b9ae6e0e36022dee990ae31f17",
+    "ci": 34195038400,
+    "live_review": "One accepted cold-call sample after the subsequent provider-envelope/deadline correction; tight-budget and proposal validation failures retained separately.",
+    "checks": "success",
+    "preview_deploy": "success",
+    "production_deploy": "skipped",
+    "tests": 1767,
+    "files": 108,
+    "worker_version": "e0ab2cbb-7aa8-49cd-98c5-5efac604c4cd"
+  },
+  "tight_budget_validation_failure": {
+    "runtime_head": "44d346b3e7ce93b9ae6e0e36022dee990ae31f17",
+    "monthly_limit_usd": 1,
+    "attempt_id": "d166bc60-8852-4059-870e-cb4f25491ed2",
+    "grade_response": {
+      "status": 502,
+      "body": {
+        "error": "evaluation_invalid"
+      }
+    },
+    "usage": [
+      {
+        "purpose": "call_feedback",
+        "model": "claude-haiku-4-5-20251001",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0,
+        "reserved_usd": 0,
+        "status": "failed"
+      },
+      {
+        "purpose": "call_feedback",
+        "model": "claude-haiku-4-5-20251001",
+        "input_tokens": 2420,
+        "output_tokens": 1082,
+        "cost_usd": 0.00783,
+        "reserved_usd": 0,
+        "status": "complete"
+      },
+      {
+        "purpose": "call_feedback",
+        "model": "claude-haiku-4-5-20251001",
+        "input_tokens": 2486,
+        "output_tokens": 825,
+        "cost_usd": 0.006611,
+        "reserved_usd": 0,
+        "status": "complete"
+      }
+    ],
+    "cost_usd": 0.014440999999999999,
+    "reserved_usd": 0,
+    "cleanup": [
+      {
+        "recording_id": "ab81558b-fe48-41ea-8ab2-9f9ff9636940",
+        "delete_status": 200,
+        "r2_exists": false
+      },
+      {
+        "recording_id": "58f4758e-f4fc-4bb0-9461-ef9a3bdeb287",
+        "delete_status": 200,
+        "r2_exists": false
+      },
+      {
+        "recording_id": "98b5c410-aeb8-4b18-9431-782801e9ebed",
+        "delete_status": 200,
+        "r2_exists": false
+      },
+      {
+        "recording_id": "fd8e9e4c-225d-4c92-b983-a0006ba2df14",
+        "delete_status": 200,
+        "r2_exists": false
+      },
+      {
+        "device_id": "d8a8a535-a2a5-40aa-855d-4bf9c219c28e",
+        "status": 200,
+        "after": 401
+      }
+    ],
+    "recordings": [
+      {
+        "recording_id": "ab81558b-fe48-41ea-8ab2-9f9ff9636940",
+        "attempt_id": "d166bc60-8852-4059-870e-cb4f25491ed2",
+        "exercise_id": "EX-SAY_IT-northwind-cold-call",
+        "turn": 0,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "4967a37e8e460f21024545c31a2f7b5ba5f61c3ca2b032601a3af40ca57280a8",
+        "created_at": "2026-09-08T06:38:18.500Z",
+        "status": "uploaded",
+        "original_transcript": null,
+        "confirmed_transcript": null,
+        "retain": false,
+        "deleted_at": null,
+        "recognition": {
+          "status": 200,
+          "location": "us",
+          "model": "chirp_3",
+          "language": "en-US",
+          "original_is_fictional_greeting": true
+        },
+        "cleanup": {
+          "ack_status": 200,
+          "status": "deleted",
+          "deleted_at": "2026-09-08T06:38:25.816Z",
+          "confirmed_preserved": true,
+          "r2_exists": false
+        }
+      },
+      {
+        "recording_id": "58f4758e-f4fc-4bb0-9461-ef9a3bdeb287",
+        "attempt_id": "d166bc60-8852-4059-870e-cb4f25491ed2",
+        "exercise_id": "EX-SAY_IT-northwind-cold-call",
+        "turn": 1,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "4967a37e8e460f21024545c31a2f7b5ba5f61c3ca2b032601a3af40ca57280a8",
+        "created_at": "2026-09-08T06:38:30.036Z",
+        "status": "uploaded",
+        "original_transcript": null,
+        "confirmed_transcript": null,
+        "retain": false,
+        "deleted_at": null,
+        "recognition": {
+          "status": 200,
+          "location": "us",
+          "model": "chirp_3",
+          "language": "en-US",
+          "original_is_fictional_greeting": true
+        },
+        "cleanup": {
+          "ack_status": 200,
+          "status": "deleted",
+          "deleted_at": "2026-09-08T06:38:36.961Z",
+          "confirmed_preserved": true,
+          "r2_exists": false
+        }
+      },
+      {
+        "recording_id": "98b5c410-aeb8-4b18-9431-782801e9ebed",
+        "attempt_id": "d166bc60-8852-4059-870e-cb4f25491ed2",
+        "exercise_id": "EX-SAY_IT-northwind-cold-call",
+        "turn": 2,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "4967a37e8e460f21024545c31a2f7b5ba5f61c3ca2b032601a3af40ca57280a8",
+        "created_at": "2026-09-08T06:38:41.062Z",
+        "status": "uploaded",
+        "original_transcript": null,
+        "confirmed_transcript": null,
+        "retain": false,
+        "deleted_at": null,
+        "recognition": {
+          "status": 200,
+          "location": "us",
+          "model": "chirp_3",
+          "language": "en-US",
+          "original_is_fictional_greeting": true
+        },
+        "cleanup": {
+          "ack_status": 200,
+          "status": "deleted",
+          "deleted_at": "2026-09-08T06:38:47.934Z",
+          "confirmed_preserved": true,
+          "r2_exists": false
+        }
+      },
+      {
+        "recording_id": "fd8e9e4c-225d-4c92-b983-a0006ba2df14",
+        "attempt_id": "d166bc60-8852-4059-870e-cb4f25491ed2",
+        "exercise_id": "EX-SAY_IT-northwind-cold-call",
+        "turn": 3,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "4967a37e8e460f21024545c31a2f7b5ba5f61c3ca2b032601a3af40ca57280a8",
+        "created_at": "2026-09-08T06:38:51.624Z",
+        "status": "uploaded",
+        "original_transcript": null,
+        "confirmed_transcript": null,
+        "retain": false,
+        "deleted_at": null,
+        "recognition": {
+          "status": 200,
+          "location": "us",
+          "model": "chirp_3",
+          "language": "en-US",
+          "original_is_fictional_greeting": true
+        },
+        "cleanup": {
+          "ack_status": 200,
+          "status": "deleted",
+          "deleted_at": "2026-09-08T06:38:58.557Z",
+          "confirmed_preserved": true,
+          "r2_exists": false
+        }
+      }
+    ],
+    "interpretation": "Two budget-downgraded Haiku responses exhausted the existing validation/repair allowance. No successful feedback result saved. Invalid upstream output is not logged, so no unobserved exact quotation is asserted. The normal-budget configured strong rubric route is checked separately."
+  },
+  "normal_budget_timeout": {
+    "runtime_head": "44d346b3e7ce93b9ae6e0e36022dee990ae31f17",
+    "monthly_limit_usd": 10,
+    "attempt_id": "0867e8d1-dcf3-4437-b52b-f54132f5bcec",
+    "grade_response": {
+      "status": 503,
+      "body": {
+        "error": "provider_timeout"
+      }
+    },
+    "usage": [
+      {
+        "purpose": "call_feedback",
+        "model": "claude-sonnet-5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0,
+        "reserved_usd": 5.04096,
+        "status": "failed"
+      }
+    ],
+    "cleanup": [
+      {
+        "recording_id": "8e17bc56-c41f-463b-b1c7-42c0d4f9b7b9",
+        "delete_status": 200,
+        "r2_exists": false
+      },
+      {
+        "recording_id": "bc036bd8-0e8f-464e-ae2b-d9eadb5fae9f",
+        "delete_status": 200,
+        "r2_exists": false
+      },
+      {
+        "recording_id": "391cffe9-ebfd-400f-bb20-97194e2418c0",
+        "delete_status": 200,
+        "r2_exists": false
+      },
+      {
+        "recording_id": "f2459d61-2fef-487d-a862-e7fd193b9854",
+        "delete_status": 200,
+        "r2_exists": false
+      },
+      {
+        "device_id": "cfd47f2c-c01e-4506-ac27-315a7f554985",
+        "status": 200,
+        "after": 401
+      }
+    ],
+    "recordings": [
+      {
+        "recording_id": "8e17bc56-c41f-463b-b1c7-42c0d4f9b7b9",
+        "attempt_id": "0867e8d1-dcf3-4437-b52b-f54132f5bcec",
+        "exercise_id": "EX-SAY_IT-northwind-cold-call",
+        "turn": 0,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "477b197dcee4aad1bbb9f7bc7c74d72aa27658e8ea5bc958015b9ba53e2071c0",
+        "created_at": "2026-09-08T06:41:44.696Z",
+        "status": "uploaded",
+        "original_transcript": null,
+        "confirmed_transcript": null,
+        "retain": false,
+        "deleted_at": null,
+        "recognition": {
+          "status": 200,
+          "location": "us",
+          "model": "chirp_3",
+          "language": "en-US",
+          "original_is_fictional_greeting": true
+        },
+        "cleanup": {
+          "ack_status": 200,
+          "status": "deleted",
+          "deleted_at": "2026-09-08T06:41:52.350Z",
+          "confirmed_preserved": true,
+          "r2_exists": false
+        }
+      },
+      {
+        "recording_id": "bc036bd8-0e8f-464e-ae2b-d9eadb5fae9f",
+        "attempt_id": "0867e8d1-dcf3-4437-b52b-f54132f5bcec",
+        "exercise_id": "EX-SAY_IT-northwind-cold-call",
+        "turn": 1,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "477b197dcee4aad1bbb9f7bc7c74d72aa27658e8ea5bc958015b9ba53e2071c0",
+        "created_at": "2026-09-08T06:41:56.069Z",
+        "status": "uploaded",
+        "original_transcript": null,
+        "confirmed_transcript": null,
+        "retain": false,
+        "deleted_at": null,
+        "recognition": {
+          "status": 200,
+          "location": "us",
+          "model": "chirp_3",
+          "language": "en-US",
+          "original_is_fictional_greeting": true
+        },
+        "cleanup": {
+          "ack_status": 200,
+          "status": "deleted",
+          "deleted_at": "2026-09-08T06:42:02.546Z",
+          "confirmed_preserved": true,
+          "r2_exists": false
+        }
+      },
+      {
+        "recording_id": "391cffe9-ebfd-400f-bb20-97194e2418c0",
+        "attempt_id": "0867e8d1-dcf3-4437-b52b-f54132f5bcec",
+        "exercise_id": "EX-SAY_IT-northwind-cold-call",
+        "turn": 2,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "477b197dcee4aad1bbb9f7bc7c74d72aa27658e8ea5bc958015b9ba53e2071c0",
+        "created_at": "2026-09-08T06:42:06.195Z",
+        "status": "uploaded",
+        "original_transcript": null,
+        "confirmed_transcript": null,
+        "retain": false,
+        "deleted_at": null,
+        "recognition": {
+          "status": 200,
+          "location": "us",
+          "model": "chirp_3",
+          "language": "en-US",
+          "original_is_fictional_greeting": true
+        },
+        "cleanup": {
+          "ack_status": 200,
+          "status": "deleted",
+          "deleted_at": "2026-09-08T06:42:12.640Z",
+          "confirmed_preserved": true,
+          "r2_exists": false
+        }
+      },
+      {
+        "recording_id": "f2459d61-2fef-487d-a862-e7fd193b9854",
+        "attempt_id": "0867e8d1-dcf3-4437-b52b-f54132f5bcec",
+        "exercise_id": "EX-SAY_IT-northwind-cold-call",
+        "turn": 3,
+        "mime_type": "audio/webm;codecs=opus",
+        "byte_length": 68882,
+        "duration_ms": 4273,
+        "checksum": "477b197dcee4aad1bbb9f7bc7c74d72aa27658e8ea5bc958015b9ba53e2071c0",
+        "created_at": "2026-09-08T06:42:16.186Z",
+        "status": "uploaded",
+        "original_transcript": null,
+        "confirmed_transcript": null,
+        "retain": false,
+        "deleted_at": null,
+        "recognition": {
+          "status": 200,
+          "location": "us",
+          "model": "chirp_3",
+          "language": "en-US",
+          "original_is_fictional_greeting": true
+        },
+        "cleanup": {
+          "ack_status": 200,
+          "status": "deleted",
+          "deleted_at": "2026-09-08T06:42:22.610Z",
+          "confirmed_preserved": true,
+          "r2_exists": false
+        }
+      }
+    ],
+    "interpretation": "The configured strong model hit the 30-second deadline. No feedback was saved. Provider billing is unknown; preserve its conservative reservation, never report it as zero actual cost or release it without reconciliation."
+  },
+  "accepted_grading_runtime": {
+    "head": "5ad85acdb149d2990edfa8705e330583a0233bd4",
+    "ci": 34196331756,
+    "checks": "success",
+    "preview_deploy": "success",
+    "production_deploy": "skipped",
+    "tests": 1770,
+    "files": 108,
+    "worker_version": "26afa02e-278c-4160-b22d-493688fa474e"
+  },
+  "final_grading_samples": [
+    {
+      "attempt_id": "aafff962-0afa-4bb8-b0c5-17f60f7d714c",
+      "exercise_id": "EX-SAY_IT-northwind-cold-call",
+      "turns": [
+        {
+          "turn": 1,
+          "client_context": "Gary here, Northwind Heating and Air. I've got a tech on a roof, make it quick.",
+          "learner_confirmed": "I am unsure where the follow-up responsibility sits.",
+          "original_differs": true,
+          "interpretation": "fallback",
+          "response": {
+            "node": "clarify",
+            "text": "You mentioned “I am unsure where the follow-up responsibility sits.”. What would that change in the process we are discussing?",
+            "dynamic": true
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 2,
+          "client_context": "You mentioned “I am unsure where the follow-up responsibility sits.”. What would that change in the process we are discussing?",
+          "learner_confirmed": "Who handles quote follow-up today, and what happens when someone does not answer?",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "process",
+            "text": "Tina emails the replacement quote. We do not have a follow-up process for a quote the customer leaves unanswered. ServiceTitan handles scheduling and invoicing.",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 3,
+          "client_context": "Tina emails the replacement quote. We do not have a follow-up process for a quote the customer leaves unanswered. ServiceTitan handles scheduling and invoicing.",
+          "learner_confirmed": "Tina sends the quote after the visit, and unanswered quotes then receive no follow-up. Is that the gap?",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "agreed",
+            "text": "Yes. It is the unanswered quotes, not replacing dispatch. What would you want to look at with Tina?",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 4,
+          "client_context": "Yes. It is the unanswered quotes, not replacing dispatch. What would you want to look at with Tina?",
+          "learner_confirmed": "Could we schedule a short process review with Tina and inspect one unanswered quote before proposing changes?",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "done",
+            "text": "Send me a short agenda for a call with Tina about one unanswered quote. We will check the process together before deciding on a build.",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        }
+      ],
+      "projection": {
+        "complete": true,
+        "turns": 4,
+        "talk_ratio_learner": 0.3522012578616352,
+        "pitched_before_diagnosis": false,
+        "diagnosis_agreed": true,
+        "next_step_agreed": true,
+        "economically_sound": true,
+        "structurally_sound": true
+      },
+      "grading": {
+        "status": 200,
+        "body": {
+          "run_id": "32319f5d-b428-4125-9c8e-05f6240be243",
+          "rubric_id": "CALL_PERFORMANCE_RUBRIC_V1",
+          "rubric_version": 1,
+          "result": {
+            "score": 78,
+            "rubric_results": [
+              {
+                "id": "questions",
+                "passed": true,
+                "reason": "Learner asked relevant, sequenced questions ('Who handles quote follow-up today, and what happens when someone does not answer?') before proposing anything, and checked the gap before suggesting a next step."
+              },
+              {
+                "id": "listening",
+                "passed": true,
+                "reason": "Learner built directly on client's prior statements, reflecting Tina's role and the unanswered-quote gap rather than introducing unrelated topics."
+              },
+              {
+                "id": "diagnosis",
+                "passed": true,
+                "reason": "Learner explicitly separated the symptom from cause by asking 'Is that the gap?' and confirmed agreement before moving to next steps."
+              },
+              {
+                "id": "clarity",
+                "passed": true,
+                "reason": "Learner's language was concrete and sequential ('schedule a short process review with Tina and inspect one unanswered quote before proposing changes') without inventing promises."
+              },
+              {
+                "id": "jargon",
+                "passed": true,
+                "reason": "Learner used plain language throughout ('follow-up responsibility', 'unanswered quotes') with no unexplained technical terms."
+              },
+              {
+                "id": "pitch_timing",
+                "passed": true,
+                "reason": "Learner did not propose any solution before the diagnosis was confirmed in turn 3-4; the proposal in turn 4 was posed as a question, not a pitch, and respected the agreed diagnosis."
+              },
+              {
+                "id": "objection_handling",
+                "passed": true,
+                "reason": "No explicit objection was raised by the client in this transcript, so this item is satisfied by the absence of any defensive or unsupported claims from the learner."
+              },
+              {
+                "id": "next_step",
+                "passed": true,
+                "reason": "Learner proposed a specific next step ('schedule a short process review with Tina and inspect one unanswered quote'), which the client (context only) affirmed with a concrete agenda request."
+              }
+            ],
+            "critical_issue": null,
+            "strengths": [
+              "Learner used a clean discovery question in turn 2 ('Who handles quote follow-up today, and what happens when someone does not answer?') that opened the diagnosis without assuming a cause.",
+              "Learner reflected the gap back to the client for confirmation in turn 3 ('Is that the gap?') before suggesting next steps, respecting diagnosis-before-pitch sequencing.",
+              "Learner's proposed next step in turn 4 was scoped narrowly to the confirmed issue (one unanswered quote, process review with Tina) rather than overreaching into a full system change."
+            ],
+            "improvements": [
+              "Consider naming ServiceTitan explicitly when confirming it stays in place, since the brief asks to keep it unchanged and the learner never referenced it directly.",
+              "When proposing the process review, could add a brief rationale for why reviewing one quote first de-risks any later decision, tightening the clarity dimension further."
+            ],
+            "next_probe": "Ask Gary what would make him comfortable inviting Tina into that review call — a fixed day/time, or does he want to loop in someone else first?",
+            "confidence": 0.8
+          }
+        }
+      },
+      "usage": [
+        {
+          "attempt_id": "aafff962-0afa-4bb8-b0c5-17f60f7d714c",
+          "run_id": "32319f5d-b428-4125-9c8e-05f6240be243",
+          "rubric_status": "complete",
+          "model": "claude-sonnet-5",
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cache_creation_input_tokens": 0,
+          "cost_usd": 0,
+          "reserved_usd": 0,
+          "status": "complete",
+          "purpose": "call_feedback"
+        },
+        {
+          "attempt_id": "aafff962-0afa-4bb8-b0c5-17f60f7d714c",
+          "run_id": "32319f5d-b428-4125-9c8e-05f6240be243",
+          "rubric_status": "complete",
+          "model": "claude-sonnet-5",
+          "input_tokens": 566,
+          "output_tokens": 971,
+          "cached_input_tokens": 0,
+          "cache_creation_input_tokens": 3000,
+          "cost_usd": 0.018342,
+          "reserved_usd": 0,
+          "status": "complete",
+          "purpose": "call_feedback"
+        }
+      ],
+      "cost_usd": 0.018342,
+      "reserved_usd": 0,
+      "manual_attribution_review": {
+        "questions": "Correct: the turn-2 ownership question is exact learner evidence, sequenced before the next step.",
+        "listening": "Correct: learner reflects Tina and the unanswered-quote gap from the preceding client context.",
+        "diagnosis": "Correct: learner asks Is that the gap before the client confirms and the learner proposes a review.",
+        "clarity": "Correct: quoted process review/one-quote inspection is literal learner text and makes no build promise.",
+        "jargon": "Correct: follow-up responsibility and unanswered quotes are learner wording; no ServiceTitan credit.",
+        "pitch_timing": "Correct: no solution before diagnosis agreement; the final review request follows confirmation.",
+        "objection_handling": "Correct for this sample: no explicit objection and no defensive or unsupported learner claims.",
+        "next_step": "Correct: learner proposes the review; client agenda request is explicitly identified as context only."
+      },
+      "identical_retry_reused": true
+    },
+    {
+      "attempt_id": "7e49ddb6-218f-4e1c-b3e1-e0f2dcea9a65",
+      "exercise_id": "EX-SAY_IT-summit-proposal",
+      "turns": [
+        {
+          "turn": 1,
+          "client_context": "Walk me through what happens after someone applies. Who sees it, and what does the applicant receive?",
+          "learner_confirmed": "The proposal covers qualification routing, an applicant reply, a named owner and follow-up. We will check each route against the agreed criteria with a sample application.",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "objection",
+            "text": "Another person quoted nine hundred. What am I paying for beyond that?",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 2,
+          "client_context": "Another person quoted nine hundred. What am I paying for beyond that?",
+          "learner_confirmed": "Let us compare what the nine-hundred quote includes before assuming it is equivalent. Our written scope must identify who owns routing checks, applicant replies and handover. I cannot promise the same result from an unknown scope.",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "smaller",
+            "text": "If we start with the smaller option, tell me exactly what we would postpone and how we would know when to add it.",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 3,
+          "client_context": "If we start with the smaller option, tell me exactly what we would postpone and how we would know when to add it.",
+          "learner_confirmed": "For a smaller first phase, I propose one agreed qualification route and its applicant reply. We would postpone additional routes and follow-up sequences. We should add those only after reviewing the first route and agreeing the need in writing.",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "decision",
+            "text": "I need the written scope to match what you have just said. How will we check the application routing and handover before I sign off?",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        },
+        {
+          "turn": 4,
+          "client_context": "I need the written scope to match what you have just said. How will we check the application routing and handover before I sign off?",
+          "learner_confirmed": "Could we review the written scope together, test a sample application through each included route, check the applicant reply and confirm the named owner can take over before you sign off?",
+          "original_differs": true,
+          "interpretation": "explicit",
+          "response": {
+            "node": "done",
+            "text": "Send the scope comparison and acceptance checks. We will review those together before agreeing a project.",
+            "dynamic": false
+          },
+          "repeat_equal": true
+        }
+      ],
+      "projection": {
+        "complete": true,
+        "turns": 4,
+        "talk_ratio_learner": 0.5866666666666667,
+        "pitched_before_diagnosis": false,
+        "diagnosis_agreed": true,
+        "next_step_agreed": true,
+        "economically_sound": true,
+        "structurally_sound": true
+      },
+      "grading": {
+        "status": 502,
+        "body": {
+          "error": "evaluation_invalid"
+        }
+      },
+      "usage": [
+        {
+          "attempt_id": "7e49ddb6-218f-4e1c-b3e1-e0f2dcea9a65",
+          "run_id": "002fef64-40d5-4108-9e7f-c7bbf7d358e0",
+          "rubric_status": "failed",
+          "model": "claude-sonnet-5",
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cached_input_tokens": 0,
+          "cache_creation_input_tokens": 0,
+          "cost_usd": 0,
+          "reserved_usd": 0,
+          "status": "failed",
+          "purpose": "call_feedback"
+        },
+        {
+          "attempt_id": "7e49ddb6-218f-4e1c-b3e1-e0f2dcea9a65",
+          "run_id": "002fef64-40d5-4108-9e7f-c7bbf7d358e0",
+          "rubric_status": "failed",
+          "model": "claude-sonnet-5",
+          "input_tokens": 629,
+          "output_tokens": 92,
+          "cached_input_tokens": 0,
+          "cache_creation_input_tokens": 3003,
+          "cost_usd": 0.0096855,
+          "reserved_usd": 0,
+          "status": "complete",
+          "purpose": "call_feedback"
+        },
+        {
+          "attempt_id": "7e49ddb6-218f-4e1c-b3e1-e0f2dcea9a65",
+          "run_id": "002fef64-40d5-4108-9e7f-c7bbf7d358e0",
+          "rubric_status": "failed",
+          "model": "claude-sonnet-5",
+          "input_tokens": 670,
+          "output_tokens": 94,
+          "cached_input_tokens": 0,
+          "cache_creation_input_tokens": 3066,
+          "cost_usd": 0.009945,
+          "reserved_usd": 0,
+          "status": "complete",
+          "purpose": "call_feedback"
+        }
+      ],
+      "cost_usd": 0.0196305,
+      "reserved_usd": 0,
+      "manual_attribution_review": "Not accepted: HTTP 502 evaluation_invalid after two provider responses; no successful saved rubric result. The rejected upstream payload is not logged, so its exact invalid field is unknown.",
+      "identical_retry_reused": false
+    }
+  ],
+  "final_recordings": [
+    {
+      "recording_id": "e1140286-91d4-40e2-bda0-fbb8c6a6d4c9",
+      "attempt_id": "aafff962-0afa-4bb8-b0c5-17f60f7d714c",
+      "exercise_id": "EX-SAY_IT-northwind-cold-call",
+      "turn": 0,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "42660304b1937069bc12838e69220deda9889c5fed392d133d8d47c0dffb8bee",
+      "created_at": "2026-09-08T06:55:36.591Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:55:42.496Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "76e814d6-2796-43d3-8392-de4885595616",
+      "attempt_id": "aafff962-0afa-4bb8-b0c5-17f60f7d714c",
+      "exercise_id": "EX-SAY_IT-northwind-cold-call",
+      "turn": 1,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "42660304b1937069bc12838e69220deda9889c5fed392d133d8d47c0dffb8bee",
+      "created_at": "2026-09-08T06:55:46.416Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:55:52.909Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "5c194152-c511-4743-b3a1-b075f9d509c9",
+      "attempt_id": "aafff962-0afa-4bb8-b0c5-17f60f7d714c",
+      "exercise_id": "EX-SAY_IT-northwind-cold-call",
+      "turn": 2,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "42660304b1937069bc12838e69220deda9889c5fed392d133d8d47c0dffb8bee",
+      "created_at": "2026-09-08T06:55:56.405Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:56:02.928Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "3ea9711e-8c2c-4b0f-b318-64242126fd37",
+      "attempt_id": "aafff962-0afa-4bb8-b0c5-17f60f7d714c",
+      "exercise_id": "EX-SAY_IT-northwind-cold-call",
+      "turn": 3,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "42660304b1937069bc12838e69220deda9889c5fed392d133d8d47c0dffb8bee",
+      "created_at": "2026-09-08T06:56:06.318Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:56:12.772Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "e5da741d-b9cc-4c94-8f16-e0b2ef40f8ad",
+      "attempt_id": "7e49ddb6-218f-4e1c-b3e1-e0f2dcea9a65",
+      "exercise_id": "EX-SAY_IT-summit-proposal",
+      "turn": 0,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "42660304b1937069bc12838e69220deda9889c5fed392d133d8d47c0dffb8bee",
+      "created_at": "2026-09-08T06:56:36.019Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:56:42.797Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "a539656b-7144-4eca-81e4-85975e7cc321",
+      "attempt_id": "7e49ddb6-218f-4e1c-b3e1-e0f2dcea9a65",
+      "exercise_id": "EX-SAY_IT-summit-proposal",
+      "turn": 1,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "42660304b1937069bc12838e69220deda9889c5fed392d133d8d47c0dffb8bee",
+      "created_at": "2026-09-08T06:56:46.461Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:56:52.888Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "edef1476-565e-48b4-9f55-c6b1c831c4dd",
+      "attempt_id": "7e49ddb6-218f-4e1c-b3e1-e0f2dcea9a65",
+      "exercise_id": "EX-SAY_IT-summit-proposal",
+      "turn": 2,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "42660304b1937069bc12838e69220deda9889c5fed392d133d8d47c0dffb8bee",
+      "created_at": "2026-09-08T06:56:56.526Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:57:04.383Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    },
+    {
+      "recording_id": "20e15eec-5237-4b5b-9dee-5fb61e572624",
+      "attempt_id": "7e49ddb6-218f-4e1c-b3e1-e0f2dcea9a65",
+      "exercise_id": "EX-SAY_IT-summit-proposal",
+      "turn": 3,
+      "mime_type": "audio/webm;codecs=opus",
+      "byte_length": 68882,
+      "duration_ms": 4273,
+      "checksum": "42660304b1937069bc12838e69220deda9889c5fed392d133d8d47c0dffb8bee",
+      "created_at": "2026-09-08T06:57:07.981Z",
+      "status": "uploaded",
+      "original_transcript": null,
+      "confirmed_transcript": null,
+      "retain": false,
+      "deleted_at": null,
+      "recognition": {
+        "status": 200,
+        "location": "us",
+        "model": "chirp_3",
+        "language": "en-US",
+        "original_is_fictional_greeting": true
+      },
+      "cleanup": {
+        "ack_status": 200,
+        "status": "deleted",
+        "deleted_at": "2026-09-08T06:57:14.512Z",
+        "confirmed_preserved": true,
+        "r2_exists": false
+      }
+    }
+  ],
+  "final_cleanup": [
+    {
+      "recording_id": "e1140286-91d4-40e2-bda0-fbb8c6a6d4c9",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "76e814d6-2796-43d3-8392-de4885595616",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "5c194152-c511-4743-b3a1-b075f9d509c9",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "3ea9711e-8c2c-4b0f-b318-64242126fd37",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "e5da741d-b9cc-4c94-8f16-e0b2ef40f8ad",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "a539656b-7144-4eca-81e4-85975e7cc321",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "edef1476-565e-48b4-9f55-c6b1c831c4dd",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "recording_id": "20e15eec-5237-4b5b-9dee-5fb61e572624",
+      "delete_status": 200,
+      "r2_exists": false
+    },
+    {
+      "device_id": "d499435b-46e8-4291-aed3-cc10ddf65378",
+      "status": 200,
+      "after": 401
+    }
+  ],
+  "final_source_audio": {
+    "mime": "audio/webm;codecs=opus",
+    "bytes": 68882,
+    "duration_ms": 4273,
+    "checksum": "42660304b1937069bc12838e69220deda9889c5fed392d133d8d47c0dffb8bee"
+  },
+  "cost_totals": {
+    "accepted_cold_call_usd": 0.018342,
+    "accepted_cold_call_reserved_usd": 0,
+    "known_anthropic_cost_all_remediation_probes_usd": 0.0671385,
+    "unconfirmed_timeout_reserved_usd": 5.04096,
+    "unconfirmed_timeout_actual_cost": "unknown; not included as zero or inferred from its reservation",
+    "elevenlabs_billed_characters": 69,
+    "elevenlabs_provider_attempts": 1,
+    "elevenlabs_second_purchase_delta": 0,
+    "google_successful_prerecorded_recognitions_this_remediation": 24
+  },
+  "requirement_changes": {
+    "IMPLEMENTED_UNVERIFIED_to_PASSED": ["CALL-003", "VOI-003"],
+    "still_IMPLEMENTED_UNVERIFIED": [
+      "CALL-002",
+      "CALL-005",
+      "CALL-006",
+      "EXR-015",
+      "VOI-006",
+      "VOI-007",
+      "SEC-005"
+    ],
+    "already_PASSED_unchanged": ["CALL-001", "CALL-004"],
+    "counts": {
+      "total": 313,
+      "PASSED": 193,
+      "IN_PROGRESS": 8,
+      "PARTIAL": 23,
+      "IMPLEMENTED_UNVERIFIED": 7,
+      "DEFERRED": 2,
+      "NOT_STARTED": 80
+    }
+  },
+  "deployed_ui": {
+    "checked_at": "2026-09-08T07:01:39.668Z",
+    "head_sha": "5ad85acdb149d2990edfa8705e330583a0233bd4",
+    "base": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+    "widths": [
+      {
+        "width": 1440,
+        "scroll": 1440,
+        "font": 16,
+        "buttons": true,
+        "six_elements": true
+      },
+      {
+        "width": 1024,
+        "scroll": 1024,
+        "font": 16,
+        "buttons": true,
+        "six_elements": true
+      },
+      {
+        "width": 768,
+        "scroll": 768,
+        "font": 16,
+        "buttons": true,
+        "six_elements": true
+      },
+      {
+        "width": 390,
+        "scroll": 390,
+        "font": 16,
+        "buttons": true,
+        "six_elements": true
+      },
+      {
+        "width": 320,
+        "scroll": 320,
+        "font": 16,
+        "buttons": true,
+        "six_elements": true
+      }
+    ],
+    "advanced": [
+      {
+        "id": "EX-SAY_IT-summit-proposal",
+        "width": 1440,
+        "scroll": 1440,
+        "anchors": 0
+      },
+      {
+        "id": "EX-SAY_IT-summit-proposal",
+        "width": 1024,
+        "scroll": 1024,
+        "anchors": 0
+      },
+      {
+        "id": "EX-SAY_IT-summit-proposal",
+        "width": 768,
+        "scroll": 768,
+        "anchors": 0
+      },
+      {
+        "id": "EX-SAY_IT-summit-proposal",
+        "width": 390,
+        "scroll": 390,
+        "anchors": 0
+      },
+      {
+        "id": "EX-SAY_IT-summit-proposal",
+        "width": 320,
+        "scroll": 320,
+        "anchors": 0
+      },
+      {
+        "id": "EX-SAY_IT-glowhaus-client-explanation",
+        "width": 1440,
+        "scroll": 1440,
+        "anchors": 0
+      },
+      {
+        "id": "EX-SAY_IT-glowhaus-client-explanation",
+        "width": 1024,
+        "scroll": 1024,
+        "anchors": 0
+      },
+      {
+        "id": "EX-SAY_IT-glowhaus-client-explanation",
+        "width": 768,
+        "scroll": 768,
+        "anchors": 0
+      },
+      {
+        "id": "EX-SAY_IT-glowhaus-client-explanation",
+        "width": 390,
+        "scroll": 390,
+        "anchors": 0
+      },
+      {
+        "id": "EX-SAY_IT-glowhaus-client-explanation",
+        "width": 320,
+        "scroll": 320,
+        "anchors": 0
+      }
+    ],
+    "scope": "Actual deployed UI, emulated viewports, native microphone unavailable; no complete real microphone call.",
+    "config": {
+      "status": 200,
+      "enabled": true
+    },
+    "microphone_before_record": 0,
+    "text_fallback": {
+      "phase": "text_fallback",
+      "text": "Gary Lindqvist · Turn 1Gary here, Northwind Heating and Air. I've got a tech on a roof, make it quick."
+    },
+    "fallback_continues": true,
+    "keyboard_focus": {
+      "label": "Record reply",
+      "visible": true
+    },
+    "audio_inputs": 0,
+    "microphone_after_record": 1,
+    "microphone_phase": "recoverable_error",
+    "microphone_result": "Native permission request initiated after Record; no human response or microphone recording in this unattended Codespace browser.",
+    "requests": [
+      {
+        "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+        "path": "/api/call/attempts",
+        "method": "POST",
+        "status": 200
+      },
+      {
+        "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+        "path": "/api/call/attempts/6f67bc3a-e7bc-4e25-8e89-925f22081cf2/recordings",
+        "method": "GET"
+      },
+      {
+        "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+        "path": "/api/call/attempts/6f67bc3a-e7bc-4e25-8e89-925f22081cf2/recordings",
+        "method": "GET"
+      },
+      {
+        "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+        "path": "/api/call/attempts/6f67bc3a-e7bc-4e25-8e89-925f22081cf2/audio",
+        "method": "POST",
+        "fault": "browser transport failure before request"
+      },
+      {
+        "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+        "path": "/api/call/attempts/6f67bc3a-e7bc-4e25-8e89-925f22081cf2/recordings",
+        "method": "GET"
+      },
+      {
+        "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+        "path": "/api/call/attempts/6f67bc3a-e7bc-4e25-8e89-925f22081cf2/recordings",
+        "method": "GET"
+      },
+      {
+        "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+        "path": "/api/call/attempts/6f67bc3a-e7bc-4e25-8e89-925f22081cf2/recordings",
+        "method": "GET"
+      },
+      {
+        "origin": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+        "path": "/api/call/attempts/6f67bc3a-e7bc-4e25-8e89-925f22081cf2/recordings",
+        "method": "GET"
+      }
+    ],
+    "status": "passed_for_stated_scope",
+    "revocation": {
+      "device_id": "97dcde67-205b-45a5-a513-bed568f98c58",
+      "status": 200,
+      "after": 401
+    }
+  },
+  "initial_ui_probe_race": {
+    "status": "incomplete probe; not a runtime failure",
+    "reason": "Focus was attempted before the asynchronous save finished rendering Replay client. The corrected probe waits for that enabled control.",
+    "revocation": {
+      "device_id": "f2556c6d-f6d8-4f84-996d-ad758086ff7d",
+      "status": 200,
+      "after": 401
+    }
+  },
+  "visually_inspected_widths": [390, 1440]
+}

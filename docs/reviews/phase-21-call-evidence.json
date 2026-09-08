@@ -352,7 +352,7 @@
       "both edited offline",
       "reconnect: conflict shown on B, nothing discarded",
       "resolved: both devices agree",
-      "deletion propagated A \u2192 B (tombstone kept)",
+      "deletion propagated A → B (tombstone kept)",
       "B revoked from A"
     ],
     "review_devices": 2,
@@ -1019,7 +1019,7 @@
       "microphone_before_record": 0,
       "text_fallback": {
         "phase": "text_fallback",
-        "text": "Gary Lindqvist \u00b7 Turn 1Gary here, Northwind Heating and Air. I've got a tech on a roof, make it quick."
+        "text": "Gary Lindqvist · Turn 1Gary here, Northwind Heating and Air. I've got a tech on a roof, make it quick."
       },
       "fallback_continues": true,
       "keyboard_focus": {
@@ -1194,5 +1194,14 @@
     "production_calls_enabled": false,
     "production_deployment_run": false,
     "pr_state": "draft/open/unmerged"
+  },
+  "final_acceptance_remediation": {
+    "report": "docs/reviews/phase-21-final-remediation.md",
+    "evidence": "docs/reviews/phase-21-final-remediation-evidence.json",
+    "runtime_head": "5ad85acdb149d2990edfa8705e330583a0233bd4",
+    "ci": 34196331756,
+    "passed": ["CALL-003", "VOI-003"],
+    "human_microphone": "pending explicit user step",
+    "production": "disabled; PR draft/open and unmerged"
   }
 }

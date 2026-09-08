@@ -2,7 +2,7 @@
 
 Date: 2026-09-08. PR: [#23](https://github.com/Beeyach/Bloomlab/pull/23), draft/open, do not merge. Branch: `codex/phase-21-call-room`, based on independently merged main `3fa36fe05872bdaeaf5c49105a198b911aa9adce`. The branch began at handoff commit `f675f620c7dcdacbdc66015ce45298fcafe6a55a`.
 
-**Preview acceptance is partial; PR #23 remains draft/open and unmerged.** The independent code audit covered `bd51ea70d72aededcd6f6aaf2394ade79e4337a0`; the only subsequent branch delta before execution was the new audit handoff. The user installed the Google preview secret, its `secret_text` type is verified, and preview calls are now enabled. Deployed Google recognition succeeds on a clearly labeled prerecorded fictional-audio diagnostic. Actual microphone calls at 390px and desktop, successful authorized dynamic ElevenLabs synthesis/cache proof, and reliable speaker attribution in feedback remain outstanding. Production stays disabled. [Operations and remaining human checks](../operations/call-room.md).
+**Preview acceptance is partial; PR #23 remains draft/open and unmerged.** The independent code audit covered `bd51ea70d72aededcd6f6aaf2394ade79e4337a0`; the only subsequent branch delta before execution was the new audit handoff. The user installed the Google preview secret, its `secret_text` type is verified, and preview calls are now enabled. Deployed Google recognition succeeds on a clearly labeled prerecorded fictional-audio diagnostic. Final remediation accepts one fresh role-correct eight-dimension grade and real authorized dynamic ElevenLabs synthesis/cache reuse. Actual microphone calls at 390px and desktop remain mandatory. The second proposal grading sample failed validation; an earlier timed-out review purchase has unknown billing and a retained reservation. See [the final remediation report](phase-21-final-remediation.md) for current evidence and the explicit pause for the user. Production stays disabled. [Operations and remaining human checks](../operations/call-room.md).
 
 ## Implementation
 
@@ -28,7 +28,7 @@ Migration `0004_call_room.sql` adds four metadata/text tables; applied migration
 
 Google STT uses Worker-only service-account RS256 OAuth, in-memory token reuse, V2 synchronous `us/chirp_3/en-US` with implicit recognizer `_` and auto-detected inline audio. The actual project is read only inside the Worker from the installed secret. Recognition authorization now succeeds in the supplementary live diagnostic; credential contents and exact IAM role configuration were not inspected. First-party model, IAM, decoding and quota documentation was checked on 2026-09-08; the runbook links it. Raw audio is never sent to Anthropic or ElevenLabs. Browser builds are scanned for provider endpoints/credential material.
 
-Explicit moves/authored rules precede optional cheap classification; >=0.8 confidence is required. Authored fallback survives AI Off/budget/failure. Optional Full-mode strong tailoring only chooses a verifiable quote plus an authored question; all consequences stay in the existing engines. Durable attempt/turn/hash claims and per-stage usage IDs prevent duplicate purchases and advancement. Final feedback uses the server-confirmed call under `CALL_PERFORMANCE_RUBRIC_V1`, category `call_feedback`, with exact dimensions questions/listening/diagnosis/clarity/jargon/pitch_timing/objection_handling/next_step. Accent, pronunciation and STT correction are not grading dimensions; deterministic critical/required gates cannot be overridden by a favorable model judgment.
+Explicit moves/authored rules precede optional cheap classification; >=0.8 confidence is required. Authored fallback survives AI Off/budget/failure. A pure deterministic helper chooses a safe literal quote plus the authored question; all consequences stay in the existing engines. Durable attempt/turn/hash claims and per-stage usage IDs prevent duplicate purchases and advancement. Final feedback uses the server-confirmed call under `CALL_PERFORMANCE_RUBRIC_V1`, category `call_feedback`, with exact dimensions questions/listening/diagnosis/clarity/jargon/pitch_timing/objection_handling/next_step. Accent, pronunciation and STT correction are not grading dimensions; deterministic critical/required gates cannot be overridden by a favorable model judgment.
 
 Exact available Phase 20 authored audio is preferred. Dynamic TTS accepts only saved authorized call text, with private owner/attempt/voice-settings identity and durable generation claims. Cached synthesis is reused; uncertain failures show client text. Static missing lines also show text. The unchanged 40 authored assets keep their existing provider-free playback and manifest.
 
@@ -36,10 +36,11 @@ Exact available Phase 20 authored audio is preferred. Dynamic TTS accepts only s
 
 | Status | Requirements | Evidence/boundary |
 | --- | --- | --- |
-| PASSED | CALL-001, CALL-004 | Five-width local browser/UI review; six elements and advanced anchors absent from DOM. |
-| IMPLEMENTED_UNVERIFIED | CALL-002, CALL-003, CALL-005, CALL-006, EXR-015, VOI-003, VOI-006, VOI-007, SEC-005 | Implementation and controlled tests/probes exist; the complete real-microphone/live-service checklist in the independent audit handoff is outstanding. Supplementary live results below do not close that gate. |
+| PASSED | CALL-001, CALL-004 | Five-width browser/UI review; six elements and advanced anchors absent from DOM. |
+| PASSED | CALL-003, VOI-003 | One fresh role-correct eight-dimension grade meets the handoff minimum; real dynamic synthesis and identical-request cache reuse verified. See the final remediation report for scope and negative cases. |
+| IMPLEMENTED_UNVERIFIED | CALL-002, CALL-005, CALL-006, EXR-015, VOI-006, VOI-007, SEC-005 | Mandatory human microphone/local-checkpoint/visible-review and complete phone-touch/desktop-keyboard acceptance remains open. |
 
-No broad responsive/privacy/infrastructure row is promoted. DATA-007 stays PASSED with additional recording scope tests. PRI-001, PRI-002, NEG-003 and EXR-024 carryovers stay PARTIAL. Roll-up: 313 total, 191 PASSED, 8 IN_PROGRESS, 23 PARTIAL, 9 IMPLEMENTED_UNVERIFIED, 2 DEFERRED, 80 NOT_STARTED.
+No broad responsive/privacy/infrastructure row is promoted. DATA-007 stays PASSED with additional recording scope tests. PRI-001, PRI-002, NEG-003 and EXR-024 carryovers stay PARTIAL. Current roll-up: 313 total, 193 PASSED, 8 IN_PROGRESS, 23 PARTIAL, 7 IMPLEMENTED_UNVERIFIED, 2 DEFERRED, 80 NOT_STARTED. Historical audit tables below retain the statuses at their recorded heads.
 
 ## Verification evidence
 
@@ -68,8 +69,8 @@ Focused tests cover native recording capability/limits/track cleanup, Blob-befor
 ## Outstanding acceptance
 
 - Real microphone capture through the actual Call Room, including local-before-upload evidence and complete 390px touch/desktop keyboard calls. This Codespace exposes zero microphone inputs; no human participation result was received. Google binding installation and recognition authorization are now verified through live behavior.
-- Finish the independent audit handoff on the enabled preview, including an actual authorized `dynamic: true` response followed by successful private ElevenLabs playback and cache reuse. One deliberately tight-budget call and two Full-mode clarification attempts kept authored fallback text; none produced an authorized dynamic line. No arbitrary-text synthesis or forced server state was used to manufacture a pass.
-- Live grading quality remains unaccepted: one rubric explanation credited an authored client question to the learner. The server used correctly labeled confirmed call text, but the returned explanation misattributed its speaker. This requires a bounded feedback-quality correction and renewed acceptance.
+- Finish the human microphone steps in the final remediation handoff on enabled Preview. Dynamic synthesis/cache reuse is now accepted: 69 billed characters, one purchase, zero repeat purchase.
+- The minimum fresh grading sample now passes all eight speaker-attribution checks after explicit roles, citation validation and the call-specific provider correction. A second proposal sample was rejected after repair; semantic reliability beyond the accepted sample remains a limitation, and the human calls provide further acceptance evidence.
 - Physical mobile/Safari MediaRecorder formats, storage behavior and assistive technology are unverified. The automated virtual microphone and emulated viewport are not physical hardware evidence.
 - Abandoned raw recordings have no timed deletion job; learner resume/manual deletion handles them. Unknown purchased dynamic synthesis requires operator reconciliation; it is never silently purchased twice. Calls have no full-duplex streaming, background STT or cross-device active-call resume.
 - A final independent audit of the new head, production Google/current ElevenLabs secret setup where required, and reviewed production gate change remain before production readiness. No merge or production deployment is authorized by this implementation report.
@@ -90,7 +91,7 @@ Machine-readable, non-secret results are in [phase-21-call-evidence.json](phase-
 
 The publication closeout changes documentation/evidence only after the implementation head above. Its exact-head Checks and preview rollout are available in [PR #23 checks](https://github.com/Beeyach/Bloomlab/pull/23/checks) and the final implementation report. Keeping that distinction avoids attributing earlier deployed observations to a later documentation commit. PR #23 remains draft/open; no merge is performed.
 
-## Independent audit handoff execution — partial preview acceptance
+## Historical independent audit handoff execution — partial preview acceptance
 
 The user confirmed Google secret installation before enabling preview. The focused gate commit is `0a53c9b1c47df7f79d46707297ab273b52be575c`. [CI 34189056984](https://github.com/Beeyach/Bloomlab/actions/runs/34189056984) passed Checks and Preview deploy, with Production deploy SKIPPED and no pending development migration. Provider diagnostics ran only after that exact head deployed as Worker version `d3e2888f-e7a1-413b-95fb-cc292f115b58`.
 

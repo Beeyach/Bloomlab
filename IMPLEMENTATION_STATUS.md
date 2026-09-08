@@ -28,7 +28,7 @@ Phase 19 — AI Gateway: Worker-only Anthropic routing, canonical AI settings, c
 
 Phase 20 — Voice Assets: independently merged in main `3fa36fe05872bdaeaf5c49105a198b911aa9adce`. Its 40 authored assets, rotated preview ElevenLabs Worker secret and provider-free private playback are the Phase 21 base. Historical review evidence remains in `docs/reviews/phase-20-voice-assets.md`.
 
-Phase 21 — Call Room: implementation on `codex/phase-21-call-room` adds five content-driven SAY IT modes, native recording with local Blob recovery, private R2/metadata-only D1 storage, Google STT V2, confirmed-transcript branching and eight-dimension feedback through the existing exercise queue/engines. The local six-element room and advanced-aid exclusion are verified. Live acceptance is partial: the Google preview `secret_text` is installed, preview calls are enabled, and deployed Google recognition/private R2 recovery/deletion/AI grading pass supplementary prerecorded-audio diagnostics. Actual microphone/local checkpoint/full phone and keyboard calls and renewed live feedback attribution acceptance remain outstanding. The remediation adds explicit speaker fields/instructions, deterministic literal quote selection and private synthesis receipts. Live dynamic TTS/cache reuse succeeds (69 billed characters, one purchase). A follow-up citation guard addresses a further live client-only terminology attribution before renewed grading. Production calls stay off. The PR stays draft/open and unmerged. See `docs/reviews/phase-21-call-room.md` and `docs/operations/call-room.md`.
+Phase 21 — Call Room: implementation on `codex/phase-21-call-room` adds five content-driven SAY IT modes, native recording with local Blob recovery, private R2/metadata-only D1 storage, Google STT V2, confirmed-transcript branching and eight-dimension feedback through the existing exercise queue/engines. The local six-element room and advanced-aid exclusion are verified. Live acceptance is partial: the Google preview `secret_text` is installed, preview calls are enabled, and deployed Google recognition/private R2 recovery/deletion/AI grading pass supplementary prerecorded-audio diagnostics. Actual microphone/local checkpoint/full phone and keyboard calls remain outstanding. Final remediation verifies one role-correct fresh eight-dimension grade ($0.018342, no residual reservation) and real authorized dynamic TTS/cache reuse (69 billed characters, one purchase). CALL-003 and VOI-003 are PASSED under the handoff minimum. The second proposal sample exhausted validation/repair, and an earlier timed-out disposable review purchase retains a $5.04096 reservation with unknown billing; both are documented in the final remediation review. Production calls stay off. The PR stays draft/open and unmerged. See `docs/reviews/phase-21-call-room.md` and `docs/operations/call-room.md`.
 
 ## VERSIONS
 
@@ -282,14 +282,16 @@ Phase 20 live voice assets:
 - VOI-005 — The reusable library is purchased once with provider-reported usage retained. Exact-byte promotion and provider-free production playback remove any dependency on future ElevenLabs credits.
 - DATA-007 — Both R2 buckets remain private with r2.dev disabled. Valid sessions receive saved audio; unauthenticated/revoked sessions receive 401 and another learner's private scope receives 403. Only known metadata asset IDs are addressable.
 
-Phase 21 local interface acceptance:
+Phase 21 accepted interface/provider paths:
 
 - CALL-001 — One quiet dark Call Room has the six required elements, with five-width browser review and focused UI tests.
 - CALL-004 — Guided/practice anchors are secondary; independent/pressure anchors are absent from the DOM, checked in browser and UI tests.
+- CALL-003 — Fresh deployed Sonnet call feedback has all eight role-correct explanations, verified literal citations, no accent grading and authoritative deterministic gates. One clean call meets the handoff minimum; the second sample remains a documented validation failure.
+- VOI-003 — One real authorized dynamic ElevenLabs asset, 69 billed characters; identical retry reuses the private bytes and immutable receipt with zero second synthesis purchase.
 
 ## IMPLEMENTED_UNVERIFIED
 
-- CALL-002, CALL-003, CALL-005, CALL-006, EXR-015, VOI-003, VOI-006, VOI-007, SEC-005 — Implemented and covered by controlled tests/probes. The complete deployed real microphone/provider checklist remains open. Google recognition succeeds on explicitly labeled prerecorded fictional audio, while actual microphone acceptance and successful dynamic TTS/cache proof remain unverified. Controlled HTTP fixtures and prerecorded input are identified separately in the review.
+- CALL-002, CALL-005, CALL-006, EXR-015, VOI-006, VOI-007, SEC-005 — Real human microphone acceptance remains open: local save before upload, visible STT correction/confirmation, complete phone-touch/desktop-keyboard calls, recovery and real-recording cleanup/retention. The agent explicitly stops for the user under the final remediation handoff. Controlled fixtures and prerecorded provider diagnostics remain separately labeled.
 
 ## IN PROGRESS
 
@@ -346,7 +348,7 @@ None
 
 ## NEXT
 
-Complete the remaining real microphone and dynamic TTS acceptance on the already enabled preview using `docs/operations/call-room.md` and the independent audit handoff. Do not reinstall or expose the working Google credential. Phase 21 remains under independent review; keep its PR open and do not merge. Production secrets/gates and acceptance remain prerequisites for production readiness. Phase 24 continuity remains future work.
+Complete the mandatory human phone-touch and desktop-keyboard microphone acceptance on the deployed preview using `docs/operations/call-room.md` and `docs/handoffs/phase-21-final-acceptance-remediation.md`. Dynamic TTS and the minimum fresh grading sample are accepted; see `docs/reviews/phase-21-final-remediation.md` for validation failures and billing uncertainty. Do not reinstall or expose the working Google credential. Phase 21 remains under independent review; keep its PR open and do not merge. Production secrets/gates and acceptance remain prerequisites for production readiness. Phase 24 continuity remains future work.
 
 ## PHASE CHECKLIST (§163)
 
@@ -371,7 +373,7 @@ Complete the remaining real microphone and dynamic TTS acceptance on the already
 - [x] Phase 18 — Negotiation: merged and production-green; NEG-003 language interpretation PARTIAL
 - [x] Phase 19 — AI Gateway: server routes, model routing, budget governor, structured grading, retry/failure behavior
 - [x] Phase 20 — Voice Asset System: reusable ElevenLabs assets, independently merged base
-- [ ] Phase 21 — Call Room: preview enabled; actual microphone and dynamic TTS acceptance pending
+- [ ] Phase 21 — Call Room: dynamic TTS and one fresh grade accepted; human microphone acceptance pending
 - [ ] Phase 22 — Fieldwork: real-GHL proof flow
 - [ ] Phase 23 — Portfolio: demonstration-project records
 - [ ] Phase 24 — Field Ready Content: placement through capstone
@@ -380,4 +382,4 @@ Complete the remaining real microphone and dynamic TTS acceptance on the already
 
 ## ROLL-UP
 
-313 requirements registered · 191 PASSED · 8 IN_PROGRESS · 23 PARTIAL · 9 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 80 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 193 PASSED · 8 IN_PROGRESS · 23 PARTIAL · 7 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 80 NOT_STARTED. Run the validator for the live count by status and priority.

@@ -259,7 +259,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 |---|---|---|---|---|---|
 | CALL-001 | Call Room is minimal, immersive, dark; shows client identity, company, objective, audio state, elapsed time, notes drawer. Not a Zoom clone. | P1 | 21 | PASSED | §79 |
 | CALL-002 | Turn-based v1 flow: client audio → learner response → record → transcribe → evaluate → update scenario → next response, with natural transitions. No full-duplex realtime telephony in v1. | P1 | 21 | IMPLEMENTED_UNVERIFIED | §117, §118, TA§48 |
-| CALL-003 | Call grading: questions, listening, diagnosis, clarity, jargon, pitch timing, objection handling, next step. Accent is not graded. | P1 | 21 | IMPLEMENTED_UNVERIFIED | §119 |
+| CALL-003 | Call grading: questions, listening, diagnosis, clarity, jargon, pitch timing, objection handling, next step. Accent is not graded. | P1 | 21 | PASSED | §119 |
 | CALL-004 | Early training may show discovery anchors; advanced calls remove aids. | P2 | 21 | PASSED | §79 |
 | CALL-005 | Mobile-first voice experience. | P1 | 21 | IMPLEMENTED_UNVERIFIED | §83 |
 | CALL-006 | Recording policy: transcript saved by default; raw audio temporary, optional to retain, user-deletable. | P1 | 21 | IMPLEMENTED_UNVERIFIED | TA§49 |
@@ -413,7 +413,7 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 |---|---|---|---|---|---|
 | VOI-001 | ElevenLabs provides recurring fictional client voices. | P1 | 20 | PASSED | §113, TA§43 |
 | VOI-002 | Pre-generated asset mode (preferred): greetings, objections, interruptions, voicemail, recurring lines, scripted scenario dialogue stored in R2. | P1 | 20 | PASSED | §114, TA§44 |
-| VOI-003 | Dynamic TTS only where open-ended roleplay needs it (`scenario/Claude response → ElevenLabs → audio`); reusable generated lines cached. | P2 | 21 | IMPLEMENTED_UNVERIFIED | §115, TA§45 |
+| VOI-003 | Dynamic TTS only where open-ended roleplay needs it (`scenario/Claude response → ElevenLabs → audio`); reusable generated lines cached. | P2 | 21 | PASSED | §115, TA§45 |
 | VOI-004 | Voice character registry: client, voice ID, speech rate, style, stability, allowed emotion range, language; recurring characters keep consistent voices. | P1 | 20 | PASSED | §116, TA§46 |
 | VOI-005 | While the ~128k expiring ElevenLabs credits remain, prioritise generating a reusable voice library; future functionality never depends on those credits. | P2 | 20 | PASSED | §113 |
 | VOI-006 | Google Cloud Speech-to-Text V2, turn-based: record locally → upload via backend → transcribe → show transcript → evaluate → optionally delete raw audio. No live streaming in v1. | P1 | 21 | IMPLEMENTED_UNVERIFIED | §117, TA§47 |
