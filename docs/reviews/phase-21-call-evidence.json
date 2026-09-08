@@ -895,7 +895,14 @@
       ],
       "total_spent_usd": 0.009143,
       "residual_reservations_usd": 0,
-      "deterministic_override": "Exact-head regression suite; no separate live favorable-model critical-failure case claimed."
+      "deterministic_override": "Exact-head regression suite; no separate live favorable-model critical-failure case claimed.",
+      "feedback_quality_issue": {
+        "kind": "speaker_misattribution",
+        "rubric_item": "questions",
+        "reason": "Learner asked clarifying questions at appropriate points: 'Which part of following up a replacement quote do you want to understand?' prompted Gary to explain the process, and 'Is that the gap?' confirmed understanding before proposing next steps.",
+        "client_line_misattributed_to_learner": "Which part of following up a replacement quote do you want to understand?",
+        "decision": "HTTP 200/score 82 proves provider completion only; feedback quality is not accepted."
+      }
     },
     "egress": {
       "observed_browser_origins": ["https://bloomlab-preview.cool-sunset-2169.workers.dev"],
@@ -1181,7 +1188,8 @@
       "Full actual microphone/STT call with 390px touch",
       "Full actual microphone/STT call with desktop keyboard",
       "Successful authorized dynamic ElevenLabs synthesis and repeated private cache reuse",
-      "Physical Safari/iOS and assistive technology"
+      "Physical Safari/iOS and assistive technology",
+      "Live feedback quality: one rubric explanation credited a client question to the learner"
     ],
     "production_calls_enabled": false,
     "production_deployment_run": false,
