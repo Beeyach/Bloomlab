@@ -1,6 +1,6 @@
 # Call Room operations
 
-Verified against first-party API documentation on 2026-09-08. Preview recognition now succeeds through the Worker using explicitly labeled prerecorded fictional audio. Human acceptance is partial: iPhone Safari capture and a full Mac Chrome proposal are observed; final proposal feedback failed twice. See [the feedback reliability review](../reviews/phase-21-feedback-reliability.md) for the current evidence and saved-attempt recovery.
+Verified against first-party API documentation on 2026-09-08. Preview recognition now succeeds through the Worker using explicitly labeled prerecorded fictional audio. Human acceptance is partial: iPhone Safari capture and a full Mac Chrome proposal are observed; final proposal feedback failed twice and has now recovered on the same saved attempt without re-recording. See [the feedback reliability review](../reviews/phase-21-feedback-reliability.md) for the current evidence and saved-attempt recovery.
 
 ## Preview configuration and credential maintenance
 
@@ -68,7 +68,7 @@ Run under the pinned Node 22 major. `npm run review:call` uses native browser Me
 
 ## Remaining human microphone acceptance
 
-**Current follow-up:** the completed Mac Chrome proposal remains saved under attempt `107cd1ba-c63f-4cdb-8274-b4a02637e202`. After the fixed Preview passes machine verification, use the original normal Chrome window and **Retry call feedback** once on that saved attempt. The failed rubric identity can be reclaimed; a successful result then replays without buying again. Do not repeat the four microphone turns for this feedback check. The agent does not need the learner's Sync Key, token or raw audio. The checklist below records the broader remaining acceptance scope.
+**Completed follow-up:** the original Mac Chrome proposal, attempt `107cd1ba-c63f-4cdb-8274-b4a02637e202`, recovered feedback after the fixed Preview passed fresh machine verification. The user confirmed the results; scoped metadata confirms the original rubric run completed on its first corrected response with eight dimensions and no remaining reservation. All four original/confirmed transcripts remain present. **No local audio · Server audio deleted** is expected after confirmation with retention off; feedback uses saved confirmed text. No new microphone call or transcription was needed. Successful feedback now replays without repurchase. The agent did not inspect the learner's key, token, raw audio, transcript or feedback prose. The checklist below concerns broader remaining acceptance, not repetition of the resolved proposal failure.
 
 The final remediation handoff requires an explicit pause here for a real person. Codespaces has no microphone; prerecorded or virtual audio cannot close these requirements. Follow [the final acceptance handoff](../handoffs/phase-21-final-acceptance-remediation.md) and use deliberately non-sensitive fictional practice speech.
 
@@ -77,7 +77,7 @@ The final remediation handoff requires an explicit pause here for a real person.
 3. Choose **Transcribe recording**, expand **Original transcription**, make a harmless visible correction in **Transcript to confirm**, then **Confirm transcript and continue**. Repeat with the real microphone through the entire call. Use **Continue with client text** when client audio is unavailable.
 4. Leave retention off for normal turns. For one turn, enable **Keep recordings after transcript confirmation**, replay it, then use **Delete audio** and verify replay is unavailable. Turn retention off again. After completion/reload, verify **Server audio deleted** for unretained turns while **Call transcript** and corrections still exist. Check that text and controls fit the phone without page-level sideways scrolling or input zoom.
 5. Select **Get call feedback** (AI Limited must be enabled). Review all eight explanations for claims about what you actually said; report any client sentence credited to you.
-6. Reuse the completed [Summit proposal call](https://bloomlab-preview.cool-sunset-2169.workers.dev/exercise/EX-SAY_IT-summit-proposal) in its original Mac Chrome window for the feedback retry described above. Report keyboard/focus and correction observations from the completed call; a new four-turn recording is not requested.
+6. The saved [Summit proposal call](https://bloomlab-preview.cool-sunset-2169.workers.dev/exercise/EX-SAY_IT-summit-proposal) has recovered feedback. Report any remaining keyboard/focus and correction observations from that completed call; no further retry or new four-turn recording is requested for the resolved blocker.
 7. Report phone/desktop browser and OS, approximate call completion times, exercise and pass/fail observations. Do not send keys, session tokens or raw recordings. Unlink disposable devices through Sync after the checks. The follow-up audit will inspect only scoped, sanitized recording/attempt metadata, cleanup, grading/cost and revocation evidence. Physical Safari/iOS is covered only if that is the actual phone used.
 
 The Northwind four-turn path can use these replies, reviewing and correcting each transcript:
@@ -87,4 +87,4 @@ The Northwind four-turn path can use these replies, reviewing and correcting eac
 - “The gap is unanswered quotes, not replacing dispatch. Is that right?”
 - “Could we arrange a short process review with Tina?”
 
-For the desktop proposal, speak to the application's ownership/routing and applicant reply, compare responsibilities against the cheaper quote, explain what a smaller first phase postpones, then agree a written scope and acceptance review. The existing authored nodes guide that conversation; there is no need to invent prices or commitments.
+The completed desktop proposal already covered the authored ownership/routing, competing-quote, smaller-phase and scope-review sequence. Preserve that evidence; do not request repetition merely because its unretained audio was deleted.

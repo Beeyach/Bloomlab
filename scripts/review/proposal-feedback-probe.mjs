@@ -18,6 +18,7 @@ const report = {
   scope:
     'Fictional prerecorded proposal through real Preview Google and Anthropic. No human microphone evidence.',
   turns: [],
+  transcriptions: [],
   cleanup: [],
 };
 const save = () =>
@@ -25,6 +26,11 @@ const save = () =>
     out + '/' + (process.env.REVIEW_LABEL || 'proposal') + '.json',
     JSON.stringify(report, null, 2) + '\n',
   );
+const stage = (name) => {
+  report.stage = name;
+  save();
+  console.log(JSON.stringify({ stage: name }));
+};
 const query = (sql) =>
   JSON.parse(
     execFileSync(
@@ -37,6 +43,7 @@ const review = await device('Proposal feedback reliability reviewer');
 let linked = false;
 const recordings = [];
 try {
+  stage('link_disposable_device');
   linked = (await createKeyAndLink(review)).linked;
   assert(linked);
   await review.page.evaluate(`window.probe = {
@@ -54,6 +61,7 @@ try {
     ).status,
     200,
   );
+  stage('start_proposal');
   const start = await review.page.evaluate(
     "probe.api('/api/call/attempts',{attempt_id:crypto.randomUUID(),exercise_id:'EX-SAY_IT-summit-proposal'})",
   );
@@ -62,6 +70,7 @@ try {
   assert.match(attempt, /^[a-f0-9-]{36}$/);
   report.attempt_id = attempt;
   await review.page.evaluate(`probe.attempt=${JSON.stringify(attempt)}`);
+  stage('prepare_authored_audio');
   report.source = await review.page.evaluate(`(async()=>{
     const line=await probe.api('/api/call/attempts/'+probe.attempt+'/audio',{turn:0});
     if(line.status!==200||line.body.source!=='authored')throw new Error('Authored source unavailable');
@@ -91,14 +100,38 @@ try {
     ],
   ];
   for (const [turn, [transcript, move]] of turns.entries()) {
+    stage(`upload_turn_${turn + 1}`);
     const upload = await review.page.evaluate(
       `(async()=>{const id=crypto.randomUUID(),d=await probe.device();const r=await fetch('/api/call/recordings/'+id+'?attempt_id='+probe.attempt+'&turn=${turn}&duration_ms='+probe.duration+'&retain=false',{method:'PUT',headers:{authorization:'Bearer '+d.session_token,'content-type':probe.blob.type,'x-audio-checksum':probe.checksum},body:probe.blob});return {status:r.status,body:await r.json()};})()`,
     );
     assert.equal(upload.status, 200);
     const id = upload.body.recording_id;
     recordings.push(id);
+    stage(`transcribe_turn_${turn + 1}`);
     const stt = await review.page.evaluate(`probe.api('/api/call/recordings/${id}/transcribe',{})`);
+    const speechFailures = new Set([
+      'speech_timeout',
+      'speech_rate_limited',
+      'speech_unavailable',
+      'speech_invalid_response',
+      'speech_empty',
+      'speech_auth_unavailable',
+      'speech_credential_invalid',
+      'speech_not_configured',
+    ]);
+    report.transcriptions.push({
+      turn: turn + 1,
+      status: stt.status,
+      outcome:
+        stt.status === 200
+          ? 'accepted'
+          : speechFailures.has(stt.body.error)
+            ? stt.body.error
+            : 'other_failure',
+    });
+    save();
     assert.equal(stt.status, 200);
+    stage(`confirm_turn_${turn + 1}`);
     const input = { turn, recording_id: id, transcript, move };
     const next = await review.page.evaluate(
       `probe.api('/api/call/attempts/'+probe.attempt+'/turn',${JSON.stringify(input)})`,
@@ -133,10 +166,12 @@ try {
     rubric_id: 'CALL_PERFORMANCE_RUBRIC_V1',
     submission: 'Browser text must not be graded',
   };
+  stage('evaluate_feedback');
   report.grading = await review.page.evaluate(
     `probe.api('/api/ai/evaluate',${JSON.stringify(input)})`,
   );
   if (report.grading.status === 200) {
+    stage('replay_feedback');
     assert.equal(report.grading.body.result.rubric_results.length, 8);
     const before = await review.page.evaluate("probe.api('/api/ai/settings')");
     const replay = await review.page.evaluate(

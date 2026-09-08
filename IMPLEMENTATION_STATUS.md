@@ -28,7 +28,7 @@ Phase 19 — AI Gateway: Worker-only Anthropic routing, canonical AI settings, c
 
 Phase 20 — Voice Assets: independently merged in main `3fa36fe05872bdaeaf5c49105a198b911aa9adce`. Its 40 authored assets, rotated preview ElevenLabs Worker secret and provider-free private playback are the Phase 21 base. Historical review evidence remains in `docs/reviews/phase-20-voice-assets.md`.
 
-Phase 21 — Call Room: five turn-based SAY IT modes and local-first private recording/transcription are implemented. The user observed working real microphone capture on iPhone Safari and a completed four-turn proposal on Mac Chrome, including local save, real Google transcripts, correction, persisted history and TTS text fallback. Final human feedback failed twice. The scoped investigation found a failed, recoverable rubric run with four accounted responses and no remaining reservation. A fictional proposal reproduced omitted rubric dimensions followed by an unsupported learner quotation in the repair. The fix constrains all eight provider dimensions and supplies a specific repair cause while preserving every validation and budget gate. CALL-003 is PARTIAL pending deployed remediation verification and feedback on the saved human attempt; the seven broader human acceptance rows remain IMPLEMENTED_UNVERIFIED. Mac Safari Private Blob persistence, repeated iPhone permission prompts, perceived slowness and scripted conversation remain limitations. Production calls stay off; PR #23 stays draft/open and unmerged. See `docs/reviews/phase-21-feedback-reliability.md` and `docs/operations/call-room.md`.
+Phase 21 — Call Room: five turn-based SAY IT modes and local-first private recording/transcription are implemented. The user observed working iPhone Safari capture and a completed Mac Chrome proposal with local save, Google transcripts, correction, history and TTS text fallback. Final feedback failed twice; a scoped fictional reproduction found omitted rubric dimensions, then an unsupported learner quotation in the single repair. The corrected contract requires all eight dimensions and guides the one repair while preserving every validation and budget gate. Fresh Preview proposal grading passed with reviewed attribution and zero-cost replay. The user then recovered feedback on the original four-turn human attempt, with first-response acceptance ($0.0154112), no remaining reservation and no re-recording. CALL-003 returns to PASSED; the seven broader human rows remain IMPLEMENTED_UNVERIFIED. Mac Safari Private Blob persistence, repeated iPhone permission prompts, perceived slowness and scripted conversation remain limitations. Production calls stay off; PR #23 stays draft/open and unmerged. See `docs/reviews/phase-21-feedback-reliability.md` and `docs/operations/call-room.md`.
 
 ## VERSIONS
 
@@ -285,6 +285,7 @@ Phase 20 live voice assets:
 Phase 21 accepted interface/provider paths:
 
 - CALL-001 — One quiet dark Call Room has the six required elements, with five-width browser review and focused UI tests.
+- CALL-003 — Corrected Preview proposal grading accepted all eight dimensions with manual fictional-speaker attribution review, first-response acceptance and zero-cost replay. The user confirmed feedback on the original saved human proposal; scoped metadata verifies the same completed run, four unchanged turns, first-response acceptance and no residual reservation. No re-recording or transcription purchase was needed. Strict citation/grading validation, one repair and conservative unknown billing remain enforced; 97 focused regressions and 1,782 total tests pass. See `docs/reviews/phase-21-feedback-reliability.md`.
 - CALL-004 — Guided/practice anchors are secondary; independent/pressure anchors are absent from the DOM, checked in browser and UI tests.
 - VOI-003 — One real authorized dynamic ElevenLabs asset, 69 billed characters; identical retry reuses the private bytes and immutable receipt with zero second synthesis purchase.
 
@@ -306,8 +307,6 @@ Phase 21 accepted interface/provider paths:
 - RSP-003 — Phase 11: every CRM edit, panel and action is present at 320 px, with the inspector as a sheet and the board as a switcher plus scroller. Earlier: cross-cutting: nothing removed on mobile so far. Phase 7: every Command Center section, every gate and every territory, capability and sheet action is present at 320 px. Phase 8: every section, embed, control and the finish action of a unit is present at 320 px. Phase 9: every part of an attempt — brief, options, prediction fields, response, hints, submit, result, retry — is present at 320 px.
 
 ## PARTIAL
-
-- CALL-003 — Human proposal feedback failed twice. The diagnosed provider-contract/repair changes pass focused regressions; deployed acceptance and feedback recovery on the existing human attempt remain pending. No fresh microphone call is required by the saved run identity. See `docs/reviews/phase-21-feedback-reliability.md`.
 
 - DATA-006 — Phase 20 audio bytes live in private R2; media_assets and voice_generation_jobs contain metadata only, with no BLOB/base64 audio. Generated binaries are excluded from Git. The full matrix additionally names screenshots, portfolio/fieldwork media, recovery backups and attachments; those later upload flows are not implemented.
 - SEC-001 — ElevenLabs is Worker-only, with source/import/build assertions and a secret binding in preview. The user confirmed on 2026-09-08 that the old key entered as a plain variable was revoked/rotated and the replacement preview binding is a Worker secret, closing the required rotation remediation. No secret value is committed or printed. No production key is needed for saved playback; all-phase Google/future credential coverage remains incomplete, so status stays PARTIAL.
@@ -349,7 +348,7 @@ None
 
 ## NEXT
 
-Complete the mandatory human phone-touch and desktop-keyboard microphone acceptance on the deployed preview using `docs/operations/call-room.md` and `docs/handoffs/phase-21-final-acceptance-remediation.md`. Dynamic TTS and the minimum fresh grading sample are accepted; see `docs/reviews/phase-21-final-remediation.md` for validation failures and billing uncertainty. Do not reinstall or expose the working Google credential. Phase 21 remains under independent review; keep its PR open and do not merge. Production secrets/gates and acceptance remain prerequisites for production readiness. Phase 24 continuity remains future work.
+The proposal feedback blocker is remediated and the saved human call recovered without re-recording. Continue independent review and only the outstanding human phone-touch, desktop-keyboard, retention/recovery and privacy checks using `docs/operations/call-room.md` and `docs/reviews/phase-21-feedback-reliability.md`. Do not ask for another four-turn proposal to reproduce the resolved feedback failure. Do not reinstall or expose the working Google credential. Keep PR #23 draft/open and unmerged. Production secrets/gates and independent acceptance remain prerequisites for production readiness; Phase 24 continuity remains future work.
 
 ## PHASE CHECKLIST (§163)
 
@@ -374,7 +373,7 @@ Complete the mandatory human phone-touch and desktop-keyboard microphone accepta
 - [x] Phase 18 — Negotiation: merged and production-green; NEG-003 language interpretation PARTIAL
 - [x] Phase 19 — AI Gateway: server routes, model routing, budget governor, structured grading, retry/failure behavior
 - [x] Phase 20 — Voice Asset System: reusable ElevenLabs assets, independently merged base
-- [ ] Phase 21 — Call Room: dynamic TTS and one fresh grade accepted; human microphone acceptance pending
+- [ ] Phase 21 — Call Room: dynamic TTS, corrected proposal grading and saved human feedback recovery accepted; broader human acceptance pending
 - [ ] Phase 22 — Fieldwork: real-GHL proof flow
 - [ ] Phase 23 — Portfolio: demonstration-project records
 - [ ] Phase 24 — Field Ready Content: placement through capstone
@@ -383,4 +382,4 @@ Complete the mandatory human phone-touch and desktop-keyboard microphone accepta
 
 ## ROLL-UP
 
-313 requirements registered · 192 PASSED · 8 IN_PROGRESS · 24 PARTIAL · 7 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 80 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 193 PASSED · 8 IN_PROGRESS · 23 PARTIAL · 7 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 80 NOT_STARTED. Run the validator for the live count by status and priority.
