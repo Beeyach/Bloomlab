@@ -1,0 +1,13 @@
+# Phase 21 — visible update-check recovery
+
+Continuation from `caa4cd59ff0411d9f63b94c7919f94e68d0d7875` on draft/open PR #23. The prior restart/session-freshness implementation, exact-head CI and Preview verification were complete. The branch was clean, deployed health matched the branch and no newer PR review comments were present.
+
+Review found that `UpdateNotice` returned nothing unless an update was already known. A failed health or registration update check set `checkError`, but its status and retry remained hidden. Two new UI regressions reproduced this before the fix.
+
+Failed checks now show **Could not check for updates** with a **Check for updates** action. Retry shows **Checking…**, retains keyboard focus and suppresses duplicate clicks. A current-build response clears the notice without reloading. Checks remain available during held call work; finding a newer build exposes the existing blocked reload action, which still requires a safe checkpoint and an explicit click. No controller, conversation, recording, provider, budget or persistence behavior changes.
+
+The new `scripts/review/update-check-probe.mjs` passed against the built app with a fresh Chromium browser, a real service worker and controlled health failures. All five widths (1440/1024/768/390/320) passed overflow, 44 px target and visual review, with polite live status and reduced motion. Failed touch retry, delayed keyboard retry, duplicate suppression and recovery passed without reloading. Both UI regressions and the seven existing update-controller tests passed; the new-build case keeps reload blocked through held call work. The existing six real A/B service-worker scenarios passed, preserving recording, pending local save, transcript review, pending turn and feedback checkpoints. See [sanitized evidence](phase-21-update-check-evidence.json).
+
+Set `BASE`, `EXPECTED_BUILD`, `CHROME` and `REVIEW_OUT` when running the update-check probe against Preview. It needs no learner credentials, microphone or paid provider calls. PR #23 records the final source head, pinned Node 22 CI result, deployed browser/Worker identity and Preview verification. Test commands use the normal local environment; `CLOUDFLARE_ENV=production` applies only to the production build, since applying it to Worker tests disables the Preview call and voice routes their fixtures exercise.
+
+DATA-003 remains PASSED. The seven broader human acceptance rows remain IMPLEMENTED_UNVERIFIED. Physical Safari update behavior, first adoption by historical bundles and the existing human findings retain their evidence boundaries. PR #23 stays draft/open and unmerged; production calls remain disabled. No new physical-device test is requested.

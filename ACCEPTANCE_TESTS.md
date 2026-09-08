@@ -74,6 +74,7 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **DATA-001** Network throttled to offline: creating a note, moving a workflow node and completing a deterministic exercise succeed instantly and persist across reload.
 - **DATA-002** Dexie database contains the working data; `localStorage` holds at most device preferences; no custom ORM layer exists.
 - **DATA-003** Install prompt appears; after install and going offline the app shell, cached curriculum and stable assets load; API responses are not served from cache.
+- **DATA-003 update recovery** A failed update check before any newer build is known shows a polite status and Check for updates action. Repeated failure leaves retry available; retry shows progress and prevents duplicates. A successful same-build check dismisses the notice without reloading. Discovering a newer build during call work defers reload until the existing safe checkpoint and an explicit click.
 
 ## Phase 4 — D1 and sync
 

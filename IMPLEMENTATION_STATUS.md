@@ -32,6 +32,8 @@ Phase 21 — Call Room: five turn-based SAY IT modes and local-first private rec
 
 Phase 21 session freshness: unfinished calls now offer a confirmed clean restart that deletes raw audio through authenticated paths, preserves remaining recovery state on cleanup failure, and atomically creates a new attempt ID without evidence. PWA updates announce a waiting/new controller or Worker build mismatch, defer reload through unsafe call work and require an explicit safe reload. Browser and Worker report the immutable CI head. Existing loading UI and four-turn Northwind routing are verified on controlled fresh attempts without engine changes. iPhone offline retry passed; retained deletion disabled replay but audible retained replay is still unverified. The resumed turn-7/stale-bundle session does not establish a routing defect or verify the prior UX. See `docs/reviews/phase-21-session-freshness.md`; no requirement promotion or new physical-device test request.
 
+Phase 21 update-check recovery: a failed update/build check is visible even when no update has yet been detected, with a safe retry and loading state. A successful current-build check dismisses the notice; a newer build keeps the existing explicit reload and call checkpoint guards. See `docs/reviews/phase-21-update-check-recovery.md`. DATA-003 and the seven broader human acceptance statuses retain their existing status.
+
 ## VERSIONS
 
 - app: 0.1.0

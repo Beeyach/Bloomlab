@@ -371,6 +371,8 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 ## DATA — Data and Persistence
 
+DATA-003 recovery follow-up: failed update/build checks expose a retry before a newer build is known; checking never authorizes a reload. See `docs/reviews/phase-21-update-check-recovery.md`. Status remains PASSED; physical Safari acceptance remains separately unverified.
+
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
 | DATA-001 | Local-first flow `UI → local state → IndexedDB → sync queue → server`; normal interaction never waits on the server. | P0 | 3 | PARTIAL | §86 |

@@ -1,0 +1,145 @@
+{
+  "scope": "Local built application checks for visible update failure/retry and existing reload safety. Fresh Chromium profiles, controlled HTTP, virtual microphone only in lifecycle scenarios. No human acceptance promotion or paid provider calls. Final deployed identity and CI are recorded on PR #23.",
+  "starting_head": "caa4cd59ff0411d9f63b94c7919f94e68d0d7875",
+  "update_check": {
+    "base": "http://127.0.0.1:4179",
+    "scope": "Native Chromium, real service worker, controlled health failures.",
+    "widths": [
+      {
+        "viewport": 1440,
+        "overflow": false,
+        "width": 174.765625,
+        "height": 44,
+        "disabled": false
+      },
+      {
+        "viewport": 1024,
+        "overflow": false,
+        "width": 174.765625,
+        "height": 44,
+        "disabled": false
+      },
+      {
+        "viewport": 768,
+        "overflow": false,
+        "width": 174.765625,
+        "height": 44,
+        "disabled": false
+      },
+      {
+        "viewport": 390,
+        "overflow": false,
+        "width": 174.765625,
+        "height": 44,
+        "disabled": false
+      },
+      {
+        "viewport": 320,
+        "overflow": false,
+        "width": 174.765625,
+        "height": 44,
+        "disabled": false
+      }
+    ],
+    "failed_touch_retry": "passed",
+    "browser_build": "local-pwa-b",
+    "worker_build": "local-pwa-b",
+    "keyboard_retry": "passed",
+    "reloaded": false,
+    "status": "passed",
+    "finished_at": "2026-09-08T13:15:58.572Z"
+  },
+  "pwa_lifecycle": {
+    "scope": "Real A/B PWA lifecycle and native virtual-microphone capture; controlled HTTP providers.",
+    "scenarios": [
+      {
+        "kind": "idle",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 1,
+          "audio": [],
+          "completed": 0
+        },
+        "result": "passed"
+      },
+      {
+        "kind": "recording",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 1,
+          "audio": [
+            {
+              "bytes": 14387
+            }
+          ],
+          "completed": 0
+        },
+        "result": "passed"
+      },
+      {
+        "kind": "local-save",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 1,
+          "audio": [
+            {
+              "bytes": 1506
+            }
+          ],
+          "completed": 0
+        },
+        "result": "passed"
+      },
+      {
+        "kind": "review",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 1,
+          "audio": [],
+          "completed": 0
+        },
+        "result": "passed"
+      },
+      {
+        "kind": "pending-turn",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 1,
+          "audio": [],
+          "completed": 0
+        },
+        "result": "passed"
+      },
+      {
+        "kind": "feedback",
+        "before": "local-pwa-a",
+        "after": "local-pwa-b",
+        "retained_until_safe": true,
+        "explicit_reload": true,
+        "persisted": {
+          "active": 0,
+          "audio": [],
+          "completed": 1
+        },
+        "result": "passed"
+      }
+    ],
+    "widths": [1440, 1024, 768, 390, 320],
+    "status": "passed"
+  }
+}

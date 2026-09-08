@@ -4,6 +4,11 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Fixed — Phase 21 update-check recovery
+
+- Failed app-update checks now show a visible retry even before a newer build is known. Retry shows progress, prevents duplicate checks and clears the notice when the loaded build is current. Discovering a newer build still requires an explicit reload after call work is safe.
+- Added UI regressions and a five-width browser probe for failed checks, touch retry, keyboard recovery and no unintended reload. See `docs/reviews/phase-21-update-check-recovery.md`.
+
 ### Fixed — Phase 21 clean restart and PWA freshness
 
 - Start fresh call now confirms deletion of all raw recordings, including retained audio, cleans up through authenticated routes and atomically replaces an unfinished attempt. Cleanup errors preserve the old attempt and remaining audio for retry. No abandonment grade or mastery evidence is written; private server transcript/turn metadata and generated client audio remain documented.
