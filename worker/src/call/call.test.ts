@@ -360,7 +360,7 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
     });
   });
   it.each(['Off', 'budget', 'failure', 'low-confidence'])(
-    'uses authored fallback for %s',
+    'keeps authored fallback consequences and selects a literal quote without strong AI for %s',
     async (reason) => {
       const ai = vi
         .fn<Provider>()
@@ -384,19 +384,22 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
       expect(response.status).toBe(200);
       const state = (await response.json()) as CallSnapshot;
       expect(state.current.node).toBe('clarify');
-      expect(state.current.dynamic).toBe(false);
+      expect(state.current.dynamic).toBe(true);
+      expect(state.current.text).toBe(
+        `You mentioned “Let us consider this carefully.”. ${a.exercise.call!.open_response!.question}`,
+      );
       expect(state.turns[0]!.interpretation).toBe('fallback');
       if (['Off', 'budget'].includes(reason)) expect(ai).not.toHaveBeenCalled();
+      else expect(ai).toHaveBeenCalledTimes(1);
+      if (reason === 'Off')
+        expect((await a.request(`attempts/${a.attemptId}/audio`, { turn: 1 })).status).toBe(503);
     },
   );
   it('tailors only an authorized question with a verified quote; private TTS is cached and cannot accept arbitrary text', async () => {
-    const ai = vi
-      .fn<Provider>()
-      .mockResolvedValueOnce({ value: { move: '', confidence: 0.1 }, usage })
-      .mockResolvedValueOnce({ value: { quote: 'a careful sequence', confidence: 0.95 }, usage });
+    const ai = vi.fn<Provider>().mockResolvedValue({ value: { move: '', confidence: 0.1 }, usage });
     const voice = vi.fn().mockResolvedValue({
       bytes: new Uint8Array([0x49, 0x44, 0x33, 1, 2, 3]).buffer,
-      requestId: null,
+      requestId: 'test-provider-receipt',
       billedCharacters: 50,
     });
     const a = await setup('cold_call', { ai, voice });
@@ -412,10 +415,10 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
       })
     ).json()) as CallSnapshot;
     expect(state.current.text).toBe(
-      `You mentioned “a careful sequence”. ${a.exercise.call!.open_response!.question}`,
+      `You mentioned “I have a careful sequence in mind.”. ${a.exercise.call!.open_response!.question}`,
     );
     expect(state.current.dynamic).toBe(true);
-    expect(ai).toHaveBeenCalledTimes(2);
+    expect(ai).toHaveBeenCalledTimes(1);
     expect(
       (
         await a.request(`attempts/${a.attemptId}/audio`, {
@@ -434,6 +437,44 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
       cached: true,
     });
     expect(voice).toHaveBeenCalledTimes(1);
+    const assetId = first.url.split('/').at(-1)!;
+    const receipt = await env.DB.prepare('SELECT * FROM voice_generation_jobs WHERE asset_id=?')
+      .bind(assetId)
+      .first();
+    expect(receipt).toMatchObject({
+      status: 'complete',
+      provider_attempts: 1,
+      provider_request_id: 'test-provider-receipt',
+      billed_characters: 50,
+    });
+    // Simulate an interrupted D1 completion after successful R2 storage. Its receipt and
+    // original bytes recover without spending again, just like normal identical retries.
+    await env.DB.prepare("UPDATE call_voice_assets SET status='uncertain' WHERE asset_id=?")
+      .bind(assetId)
+      .run();
+    await env.DB.prepare(
+      "UPDATE voice_generation_jobs SET status='active',provider_request_id=NULL,billed_characters=NULL WHERE asset_id=?",
+    )
+      .bind(assetId)
+      .run();
+    expect(await (await a.request(`attempts/${a.attemptId}/audio`, { turn: 1 })).json()).toEqual({
+      ...first,
+      source: 'dynamic',
+      cached: true,
+    });
+    expect(
+      await env.DB.prepare(
+        'SELECT provider_attempts,provider_request_id,billed_characters,status FROM voice_generation_jobs WHERE asset_id=?',
+      )
+        .bind(assetId)
+        .first(),
+    ).toEqual({
+      provider_attempts: 1,
+      provider_request_id: 'test-provider-receipt',
+      billed_characters: 50,
+      status: 'complete',
+    });
+    expect(voice).toHaveBeenCalledTimes(1);
     expect(voice.mock.calls[0]![1]).toMatchObject({ text: state.current.text });
     const b = await setup();
     expect((await a.request(first.url.replace('/api/call/', ''))).status).toBe(200);
@@ -441,8 +482,37 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
     expect(JSON.stringify(ai.mock.calls)).not.toContain('GkXf'); // no raw WebM or base64 payload
     expect(JSON.stringify(voice.mock.calls)).not.toContain('original_transcript');
   });
-  it('completes a real authored call and grades only confirmed text under all eight call dimensions', async () => {
+  it('keeps a failed dynamic purchase claimed and the authorized text usable', async () => {
+    const ai = vi.fn<Provider>().mockResolvedValue({ value: { move: '', confidence: 0 }, usage });
+    const voice = vi.fn().mockRejectedValue(new Error('Private upstream failure'));
+    const a = await setup('cold_call', { ai, voice });
+    const id = await a.ready();
+    const state = (await (
+      await a.request(`attempts/${a.attemptId}/turn`, {
+        turn: 0,
+        recording_id: id,
+        transcript: 'A careful sequence needs clarification.',
+      })
+    ).json()) as CallSnapshot;
+    for (let retry = 0; retry < 2; retry++) {
+      const result = await a.request(`attempts/${a.attemptId}/audio`, { turn: 1 });
+      expect(result.status).toBe(503);
+      expect(await result.json()).toEqual({ error: 'audio_unavailable' });
+    }
+    expect(voice).toHaveBeenCalledTimes(1);
+    expect(await (await a.request(`attempts/${a.attemptId}`)).json()).toEqual(state);
+    expect(
+      await env.DB.prepare(
+        'SELECT j.provider_attempts,j.status,j.billed_characters FROM voice_generation_jobs j JOIN call_voice_assets a ON a.asset_id=j.asset_id WHERE a.attempt_id=?',
+      )
+        .bind(a.attemptId)
+        .first(),
+    ).toEqual({ provider_attempts: 1, status: 'uncertain', billed_characters: null });
+  });
+
+  it('completes an authored call and grades separately labeled client context and confirmed learner evidence', async () => {
     const a = await setup();
+    const learnerOnly = 'Learner-only evidence: I will ask Tina to trace the blue envelope.';
     for (const [turn, move] of ['permission', 'process', 'reflect', 'next_step'].entries()) {
       const id = await a.ready(turn);
       expect(
@@ -450,7 +520,7 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
           await a.request(`attempts/${a.attemptId}/turn`, {
             turn,
             recording_id: id,
-            transcript: `Confirmed reasoning for ${move}.`,
+            transcript: turn === 0 ? learnerOnly : `Confirmed reasoning for ${move}.`,
             move,
           })
         ).status,
@@ -473,21 +543,79 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
       confidence: 0.9,
     };
     const provider = vi.fn<Provider>().mockResolvedValue({ value: result, usage });
-    await evaluate(
-      {
-        attempt_id: a.attemptId,
-        exercise_id: a.exercise.id,
-        rubric_id: rubric.id,
-        submission: 'PRIVATE_RAW_AUDIO_AND_NOTES_MUST_NOT_LEAVE',
-      },
-      { learnerId: a.learner.learner_id, deviceId: a.deviceId },
-      env.DB,
-      provider,
-    );
+    const input = {
+      attempt_id: a.attemptId,
+      exercise_id: a.exercise.id,
+      rubric_id: rubric.id,
+      submission: 'PRIVATE_RAW_AUDIO_AND_NOTES_MUST_NOT_LEAVE',
+    };
+    const session = { learnerId: a.learner.learner_id, deviceId: a.deviceId };
+    const answer = await evaluate(input, session, env.DB, provider);
     expect(provider.mock.calls[0]![0].submission).toContain('Confirmed reasoning');
     expect(provider.mock.calls[0]![0].submission).not.toMatch(
       /PRIVATE_RAW|original_transcript|Could I ask about your quote follow-up/,
     );
+    const providerInput = provider.mock.calls[0]![0];
+    const clientOnly = snapshot.turns[0]!.client.text;
+    const serialized = JSON.parse(providerInput.submission);
+    expect(serialized).toEqual({
+      turns: snapshot.turns.map((t) => ({
+        turn: t.turn + 1,
+        client_context: t.client.text,
+        learner_confirmed: t.confirmed_transcript,
+      })),
+      closing_client_context: snapshot.current.text,
+      deterministic: snapshot.projection,
+    });
+    expect(serialized.turns[0]).toEqual({
+      turn: 1,
+      client_context: clientOnly,
+      learner_confirmed: learnerOnly,
+    });
+    expect(clientOnly).not.toContain(learnerOnly);
+    expect(learnerOnly).not.toContain(clientOnly);
+    expect(providerInput.stable).toContain(
+      'Only learner_confirmed text is evidence of what the learner said or did.',
+    );
+    expect(providerInput.stable).toContain(
+      'client_context and closing_client_context are context only and must never be credited to the learner.',
+    );
+    expect(providerInput.stable).toContain(
+      'For every rubric explanation, evaluate the learner_confirmed behavior against the corresponding numbered turn and client_context.',
+    );
+    expect(providerInput.stable).toContain(
+      'Accent, pronunciation and transcript corrections are not graded.',
+    );
+    expect(providerInput.stable).toContain(
+      'Deterministic critical and required failures remain authoritative',
+    );
+    const legacyHash = await sha256(
+      JSON.stringify({
+        ...input,
+        submission: JSON.stringify({
+          transcript: snapshot.turns.map((t) => ({
+            client: t.client.text,
+            learner: t.confirmed_transcript,
+          })),
+          closing: snapshot.current.text,
+          deterministic: snapshot.projection,
+        }),
+      }),
+    );
+    expect(
+      await env.DB.prepare('SELECT request_hash FROM rubric_runs WHERE attempt_id=?')
+        .bind(a.attemptId)
+        .first(),
+    ).toEqual({ request_hash: legacyHash });
+    expect(
+      await evaluate(
+        { ...input, submission: 'Different arbitrary browser text' },
+        session,
+        env.DB,
+        provider,
+      ),
+    ).toEqual(answer);
+    expect(provider).toHaveBeenCalledTimes(1);
     expect(result.rubric_results.map((r) => r.id)).toEqual([
       'questions',
       'listening',

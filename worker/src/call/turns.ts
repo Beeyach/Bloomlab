@@ -6,7 +6,8 @@ import type { Provider } from '../ai/provider';
 import { sha256 } from '../voice/identity';
 import { CallError } from './errors';
 import { advanceCall } from './engine';
-import { chooseTurn, tailorResponse } from './intelligence';
+import { chooseTurn } from './intelligence';
+import { tailorResponse } from './response';
 import { callContent, currentState, getAttempt, getRecording } from './store';
 
 const id = z.string().uuid();
@@ -118,7 +119,7 @@ export async function evaluateTurn(
     input.transcript,
     choice,
   );
-  await tailorResponse(db, session.learnerId, run, exercise, next, input.transcript, ai);
+  tailorResponse(exercise, next, input.transcript);
   // Conditional batch: an expired worker can neither advance state nor overwrite a newer lease.
   await db.batch([
     db

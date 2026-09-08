@@ -13,6 +13,13 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 - Content/grader `2026.09.18`; app, simulator and mastery unchanged. Controlled browser/provider tests and a dedicated five-width touch/keyboard probe; secure setup/recovery runbook and review evidence. Preview now has the Google `secret_text`, preview-only call gates and a required-secret deployment check. Supplementary live prerecorded-audio diagnostics verify recognition, private storage/recovery and grading; real microphone/full phone and keyboard calls and dynamic TTS/cache success remain outstanding. Production stays off; Phase 21 is not marked complete.
 - Preview acceptance found inherited 14px call inputs. Notes, transcript and move controls now use 16px, with a browser regression at 390/320. Production refusal is also pinned by a regression even when preview-style settings and a test provider are supplied.
 
+### Fixed — Phase 21 acceptance remediation
+
+- Call feedback now receives numbered client context and confirmed learner evidence, with explicit attribution rules for every rubric explanation. Existing saved rubric runs retain their identity and are not repurchased.
+- Authorized open-response text selects a bounded literal quote deterministically; strong-model extraction is removed. Dynamic ElevenLabs usage receipts persist in the existing generation ledger and private R2 recovery metadata, including cache and uncertain-purchase regression coverage.
+- The full-suite run exposed an existing AI-settings test race: the default Limited selection was mistaken for a completed server refresh. The regression now waits for loaded account usage before checking persisted mode.
+- Fresh deployed provider acceptance and the mandatory real phone/desktop microphone calls remain pending at this implementation commit. Production stays disabled.
+
 ### Added — Phase 20 · Voice Assets
 
 - Five first-class voice-character YAML records with verified ElevenLabs catalog IDs, the seven-field identity/settings contract and eight reusable lines per client. Bidirectional client references, line uniqueness, emotion bounds and generation inputs are validated; content advances to `2026.09.17` with a regenerated lock.

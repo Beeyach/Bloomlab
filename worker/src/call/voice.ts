@@ -2,7 +2,7 @@ import content from 'virtual:bloomlab-content';
 import type { VoiceLine } from '@bloomlab/content-schema';
 import type { Session } from '../sync/auth';
 import { voiceIdentity, sha256 } from '../voice/identity';
-import { elevenLabs, type VoiceProvider } from '../voice/provider';
+import { elevenLabs, type GeneratedAudio, type VoiceProvider } from '../voice/provider';
 import { VOICE_GENERATION } from '../voice/config';
 import { getAsset } from '../voice/storage';
 import { callContent, currentState, getAttempt, type CallStorage } from './store';
@@ -67,11 +67,21 @@ export async function clientAudio(
     stored.size >= 4 &&
     stored.size <= VOICE_GENERATION.maxBytes
   ) {
-    await env.DB.prepare(
-      "UPDATE call_voice_assets SET status='ready',byte_length=?,checksum=? WHERE asset_id=?",
-    )
-      .bind(stored.size, stored.customMetadata.checksum, assetId)
-      .run();
+    await env.DB.batch([
+      env.DB.prepare(
+        "UPDATE call_voice_assets SET status='ready',byte_length=?,checksum=? WHERE asset_id=?",
+      ).bind(stored.size, stored.customMetadata.checksum, assetId),
+      env.DB.prepare(
+        "UPDATE voice_generation_jobs SET status='complete',provider_request_id=?,billed_characters=?,updated_at=? WHERE asset_id=?",
+      ).bind(
+        stored.customMetadata.provider_request_id || null,
+        /^\d+$/.test(stored.customMetadata.billed_characters ?? '')
+          ? Number(stored.customMetadata.billed_characters)
+          : null,
+        new Date().toISOString(),
+        assetId,
+      ),
+    ]);
     return { url: `/api/call/voice/${assetId}`, source: 'dynamic', cached: true };
   }
   if (row) throw new CallError('audio_unavailable');
@@ -86,27 +96,53 @@ export async function clientAudio(
     .bind(assetId, session.learnerId, attemptId, key, new Date().toISOString())
     .run();
   if (!claim.meta.changes) throw new CallError('audio_in_progress', 409);
+  let received: GeneratedAudio | undefined;
   try {
+    // Reuse the existing provider receipt ledger, scoped by the private CV asset identity.
+    // The call_voice_assets claim still owns authorization and prevents a second purchase.
+    await env.DB.prepare(
+      "INSERT INTO voice_generation_jobs (asset_id,status,provider_attempts,updated_at) VALUES (?,'active',1,?)",
+    )
+      .bind(assetId, new Date().toISOString())
+      .run();
     const generated = await (injected ?? elevenLabs(env.ELEVENLABS_API_KEY!))(voice, fictional);
+    received = generated;
     if (generated.bytes.byteLength < 4 || generated.bytes.byteLength > VOICE_GENERATION.maxBytes)
       throw new CallError('audio_unavailable');
     const checksum = await sha256(generated.bytes);
     await env.MEDIA.put(key, generated.bytes, {
       httpMetadata: { contentType: 'audio/mpeg' },
-      customMetadata: { checksum, source_hash: identity.source_hash },
+      customMetadata: {
+        checksum,
+        source_hash: identity.source_hash,
+        provider_request_id: generated.requestId ?? '',
+        billed_characters:
+          generated.billedCharacters === null ? '' : String(generated.billedCharacters),
+      },
     });
-    await env.DB.prepare(
-      "UPDATE call_voice_assets SET status='ready',byte_length=?,checksum=? WHERE asset_id=?",
-    )
-      .bind(generated.bytes.byteLength, checksum, assetId)
-      .run();
+    await env.DB.batch([
+      env.DB.prepare(
+        "UPDATE call_voice_assets SET status='ready',byte_length=?,checksum=? WHERE asset_id=?",
+      ).bind(generated.bytes.byteLength, checksum, assetId),
+      env.DB.prepare(
+        "UPDATE voice_generation_jobs SET status='complete',provider_request_id=?,billed_characters=?,updated_at=? WHERE asset_id=?",
+      ).bind(generated.requestId, generated.billedCharacters, new Date().toISOString(), assetId),
+    ]);
     return { url: `/api/call/voice/${assetId}`, source: 'dynamic', cached: false };
   } catch {
-    await env.DB.prepare(
-      "UPDATE call_voice_assets SET status='uncertain' WHERE asset_id=? AND status!='ready'",
-    )
-      .bind(assetId)
-      .run();
+    await env.DB.batch([
+      env.DB.prepare(
+        "UPDATE call_voice_assets SET status='uncertain' WHERE asset_id=? AND status!='ready'",
+      ).bind(assetId),
+      env.DB.prepare(
+        "UPDATE voice_generation_jobs SET status='uncertain',provider_request_id=COALESCE(?,provider_request_id),billed_characters=COALESCE(?,billed_characters),updated_at=? WHERE asset_id=? AND status!='complete'",
+      ).bind(
+        received?.requestId ?? null,
+        received?.billedCharacters ?? null,
+        new Date().toISOString(),
+        assetId,
+      ),
+    ]);
     throw new CallError('audio_unavailable');
   }
 }

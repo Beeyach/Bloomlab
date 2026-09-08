@@ -93,6 +93,7 @@ export async function evaluate(
   if (rubric.id.replace(/_V[0-9]+$/, '') !== exercise.grading.rubric?.replace(/_V[0-9]+$/, ''))
     throw new AiError('invalid_rubric', 400);
   if (exercise.grading.mode === 'deterministic') throw new AiError('deterministic_only', 400);
+  let requestIdentity = input;
   if (exercise.call) {
     let call;
     try {
@@ -103,13 +104,27 @@ export async function evaluate(
     const saved = (JSON.parse(call.state_json) as CallState).snapshot;
     if (call.exercise_id !== exercise.id || !saved.complete)
       throw new AiError('call_not_complete', 409);
-    // Server-confirmed transcript only: raw audio, original STT, notes and client-supplied payloads never reach Anthropic.
+    // Keep the established hash for saved rubric runs: a prompt repair must not repurchase
+    // feedback for an already graded, immutable call. Neither representation uses browser text.
+    requestIdentity = {
+      ...input,
+      submission: JSON.stringify({
+        transcript: saved.turns.map((t) => ({
+          client: t.client.text,
+          learner: t.confirmed_transcript,
+        })),
+        closing: saved.current.text,
+        deterministic: saved.projection,
+      }),
+    };
+    // Original STT, raw audio and notes are excluded. Client words remain context only.
     input.submission = JSON.stringify({
-      transcript: saved.turns.map((t) => ({
-        client: t.client.text,
-        learner: t.confirmed_transcript,
+      turns: saved.turns.map((t) => ({
+        turn: t.turn + 1,
+        client_context: t.client.text,
+        learner_confirmed: t.confirmed_transcript,
       })),
-      closing: saved.current.text,
+      closing_client_context: saved.current.text,
       deterministic: saved.projection,
     });
   }
@@ -117,7 +132,10 @@ export async function evaluate(
   if (policy.mode === 'Off') throw new AiError('ai_off', 403);
   const hash = Array.from(
     new Uint8Array(
-      await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(input))),
+      await crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode(JSON.stringify(requestIdentity)),
+      ),
     ),
   )
     .map((b) => b.toString(16).padStart(2, '0'))
@@ -205,7 +223,7 @@ export async function evaluate(
     for (let repair = 0; repair <= 1; repair++) {
       const response = await provider({
         model,
-        stable: `Bloomlab grades defensible reasoning, not confident prose. Judge only authored rubric items. Deterministic checks remain authoritative. Reward verified uncertainty. Exact rubric: ${JSON.stringify(rubric)}\nExercise brief: ${JSON.stringify({ title: exercise.title, instructions: exercise.instructions })}`,
+        stable: `Bloomlab grades defensible reasoning, not confident prose. Judge only authored rubric items. Deterministic checks remain authoritative. Reward verified uncertainty.${exercise.call ? ' Call speaker contract: Only learner_confirmed text is evidence of what the learner said or did. client_context and closing_client_context are context only and must never be credited to the learner. For every rubric explanation, evaluate the learner_confirmed behavior against the corresponding numbered turn and client_context. Attribute any quotation to its actual speaker; never treat a client-only question, diagnosis, commitment or next step as learner evidence. If learner evidence is absent, say so instead of inferring it from the client. Accent, pronunciation and transcript corrections are not graded. Deterministic critical and required failures remain authoritative regardless of the rubric score.' : ''} Exact rubric: ${JSON.stringify(rubric)}\nExercise brief: ${JSON.stringify({ title: exercise.title, instructions: exercise.instructions })}`,
         submission: input.submission,
         schema: gradingFormat,
         repair: repair === 1,

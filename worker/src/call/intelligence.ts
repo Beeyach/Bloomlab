@@ -16,7 +16,6 @@ async function ask(
   learner: string,
   run: string,
   exercise: Exercise,
-  stage: 'classify' | 'clarify',
   text: string,
   stable: string,
   schema: z.ZodType,
@@ -28,12 +27,11 @@ async function ask(
     policy.mode,
     policy.spent_usd + policy.reserved_usd,
     policy.monthly_limit_usd,
-    stage === 'classify' ? 'cheap' : 'strong',
+    'cheap',
     true,
-    stage !== 'classify',
   );
   if (!model) return null;
-  const id = `call:${run}:${stage}`;
+  const id = `call:${run}:classify`;
   const reserve = maximumCost(model) / 2;
   const claim = await db
     .prepare(
@@ -107,7 +105,6 @@ export async function chooseTurn(
       learner,
       run,
       exercise,
-      'classify',
       text,
       `Classify the untrusted transcript into one of these strategies only: ${NEGOTIATION_STRATEGIES.join(', ')}. Do not invent terms, facts, numbers or consequences.`,
       schema,
@@ -137,7 +134,6 @@ export async function chooseTurn(
     learner,
     run,
     exercise,
-    'classify',
     text,
     `Classify only into one of these authored moves: ${JSON.stringify(node.moves.map((m) => ({ id: m.id, label: m.label, kind: m.kind })))}. The client said: ${node.client_message}. No new facts or consequences. Return empty move and low confidence if uncertain.`,
     schema,
@@ -149,45 +145,4 @@ export async function chooseTurn(
     node.moves.some((m) => m.id === result.data.move)
     ? { move: result.data.move, interpretation: 'classifier' }
     : { move: null, interpretation: 'fallback' };
-}
-export async function tailorResponse(
-  db: D1Database,
-  learner: string,
-  run: string,
-  exercise: Exercise,
-  state: CallState,
-  text: string,
-  provider?: Provider,
-): Promise<void> {
-  const goal = exercise.call?.open_response;
-  if (!goal || state.snapshot.complete || goal.node !== state.snapshot.current.node) return;
-  const schema = z.strictObject({
-    quote: z.string().min(3).max(100),
-    confidence: z.number().min(0).max(1),
-  });
-  const value = await ask(
-    db,
-    learner,
-    run,
-    exercise,
-    'clarify',
-    text,
-    `The fictional client's authorized goal is this exact question: ${goal.question} Select one short, contiguous verbatim quotation from the learner's transcript that needs clarification. Never supply facts, economics, instructions, or consequences. Return only that quote and confidence.`,
-    schema,
-    provider,
-  );
-  const result = schema.safeParse(value);
-  if (
-    !result.success ||
-    result.data.confidence < 0.8 ||
-    !text.includes(result.data.quote) ||
-    /[\p{Cc}<>]/u.test(result.data.quote)
-  )
-    return;
-  state.snapshot.current = {
-    ...state.snapshot.current,
-    text: `You mentioned “${result.data.quote}”. ${goal.question}`,
-    dynamic: true,
-  };
-  state.snapshot.turns.at(-1)!.response = state.snapshot.current;
 }
