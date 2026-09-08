@@ -67,7 +67,9 @@ const record = {
       kind,
       {
         source: ['brief', 'business_problem'].includes(kind) ? 'project' : 'contributions',
-        reference_id: ['brief', 'business_problem'].includes(kind) ? 'PRJ-consultation-booking-system' : id,
+        reference_id: ['brief', 'business_problem'].includes(kind)
+          ? 'PRJ-consultation-booking-system'
+          : id,
       },
     ]),
   ),
