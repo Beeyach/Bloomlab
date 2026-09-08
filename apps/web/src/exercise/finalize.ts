@@ -1,3 +1,5 @@
+import { verifyCompletion } from '../fieldwork/checkpoint';
+import { evidenceReferences } from '../fieldwork/proof';
 import { combineRubric, objectiveReport } from '@bloomlab/exercise-engine';
 import { evaluateSubmission } from '../ai/client';
 import { content } from '../content/bundle';
@@ -62,6 +64,7 @@ export const EVIDENCE_KIND_BY_TYPE: Partial<Record<Exercise['type'], EvidenceKin
 
 export function evidenceKindFor(exercise: Exercise, run: ActiveAttempt['run']): EvidenceKind {
   if (run === 'retrieval') return 'retrieval';
+  if (exercise.type === 'FIELDWORK') return 'fieldwork';
   if (exercise.mode === 'guided') return EVIDENCE_KIND_BY_MODE.guided;
   return EVIDENCE_KIND_BY_TYPE[exercise.type] ?? EVIDENCE_KIND_BY_MODE[exercise.mode];
 }
@@ -174,7 +177,7 @@ export class RuntimeUnavailableError extends Error {
  * or a reload mid-save all address the same row and produce one attempt with one evidence row
  * per taught skill. A genuinely new attempt has a new id and stays a separate fact (D-068).
  */
-export async function finalizeAttempt(
+async function finalizeOneAttempt(
   exercise: Exercise,
   attempt: ActiveAttempt,
   database: BloomlabDatabase = db,
@@ -204,6 +207,8 @@ export async function finalizeAttempt(
     throw new Error('Finish the negotiation conversation before submitting.');
   if (exercise.call && !current.response.call?.snapshot?.complete)
     throw new Error('Finish the call before requesting feedback.');
+  if (exercise.type === 'FIELDWORK')
+    await verifyCompletion(exercise, current.response.fieldwork, current.attempt_id, database);
   if (!canGradeNow(exercise)) throw new NotGradableError(exercise.id);
   // Refused before anything is written, so a malformed retrieval can never reach the record.
   const skillIds = skillsForAttempt(exercise, current);
@@ -242,6 +247,10 @@ export async function finalizeAttempt(
       throw new Error('Evaluation rubric mismatch');
     report = { ...combineRubric(report, rubric, evaluation.result), rubric_evaluation: evaluation };
   }
+  if (exercise.type === 'FIELDWORK') {
+    // Refuse edits racing validation. A failed local record write remains editable/retryable.
+    await checkpointSubmission(exercise.id, attemptContext, current, database);
+  }
   const completedAt = (options.now ?? new Date()).toISOString();
   const { attempt: row } = await recordEvidence(
     {
@@ -249,7 +258,12 @@ export async function finalizeAttempt(
       kind: evidenceKindFor(exercise, current.run),
       result: RESULT_BY_OUTCOME[report.outcome],
       source: {
-        type: current.run === 'retrieval' ? 'retrieval' : 'exercise',
+        type:
+          current.run === 'retrieval'
+            ? 'retrieval'
+            : exercise.type === 'FIELDWORK'
+              ? 'fieldwork'
+              : 'exercise',
         id: exercise.id,
       },
       exercise_id: exercise.id,
@@ -267,6 +281,14 @@ export async function finalizeAttempt(
       evidence_ids: Object.fromEntries(
         skillIds.map((skillId) => [skillId, `ea:${current.attempt_id}:${skillId}`]),
       ),
+      real_ghl:
+        exercise.type === 'FIELDWORK'
+          ? {
+              required: true,
+              provided: report.outcome === 'passed',
+              evidence: evidenceReferences(exercise, current.response.fieldwork!),
+            }
+          : null,
       grade: report,
       // The work itself travels with the attempt: a sales thread and the writing in it are the
       // evidence, and the draft is cleared two lines below.
@@ -277,6 +299,24 @@ export async function finalizeAttempt(
   await discardAttempt(exercise.id, attemptContext, database);
   if (!row) throw new Error('An exercise attempt must produce an attempt row');
   return { attempt: row, report, recorded: true };
+}
+
+// A concurrent double-submit joins the same finalization; the persisted IDs cover reload/retry.
+const finalizations = new Map<string, Promise<FinalizedAttempt>>();
+export function finalizeAttempt(
+  exercise: Exercise,
+  attempt: ActiveAttempt,
+  database: BloomlabDatabase = db,
+  options: { now?: Date } = {},
+): Promise<FinalizedAttempt> {
+  const key = `${database.name}:${attempt.attempt_id}`;
+  const pending = finalizations.get(key);
+  if (pending) return pending;
+  const work = finalizeOneAttempt(exercise, attempt, database, options).finally(() =>
+    finalizations.delete(key),
+  );
+  finalizations.set(key, work);
+  return work;
 }
 
 /** Every finalized attempt at this exercise, newest first — the complete history, unfiltered. */

@@ -1,5 +1,7 @@
 # Phase 21 final remediation — human acceptance pending
 
+> Historical record. Phase 21 PR #23 was merged on 2026-09-08 as `59ec678910cb51559d84af3c4200590f9c7e29ec`. Main CI `34267608095` Checks and Production deploy succeeded; production migrations `0004`/`0005`, 40 voice metadata rows and Worker `291517ab-8f2b-44d3-96aa-6dd7a615cc6c` were verified. Draft/unmerged instructions below describe the earlier review stage. All acceptance limitations and seven unverified rows are preserved.
+
 PR [#23](https://github.com/Beeyach/Bloomlab/pull/23) remains draft/open and unmerged. Execution follows the complete [final remediation handoff](../handoffs/phase-21-final-acceptance-remediation.md), starting from handoff head `28e52583b76d8ddf4058aaa923ffe8fba16feb65`. Production calls remain disabled. Google/ElevenLabs credentials were used only inside the deployed Worker; no values were inspected.
 
 ## Changes and validation

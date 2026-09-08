@@ -166,3 +166,5 @@ export {
 } from './voiceCharacter.ts';
 
 export * from './call.ts';
+
+export * from './fieldwork.ts';

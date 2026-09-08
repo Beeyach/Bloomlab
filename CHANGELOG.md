@@ -1,5 +1,10 @@
 # Changelog
 
+Phase 22 — Fieldwork (2026-09-08): enriched the existing fieldwork schema compatibly and made the authored Snapshot portability task usable through the exercise runner. Added durable keyed proof, private PNG/JPEG/WebP screenshot recovery/deletion, a proof checkpoint before reasoning, explicit manual GHL confirmation and idempotent fieldwork mastery evidence. Added Dexie v6 and D1 migration 0006 without changing older schemas, direct FLD-004 regression, private asset security tests, sync/persistence/UI tests and a five-width browser probe. FLD-001/EXR-020 remain human-unverified; GHL API verification stays deferred and the PR remains draft for independent audit.
+
+
+Phase 21 closure (2026-09-08): PR #23 merged as `59ec678910cb51559d84af3c4200590f9c7e29ec`. Main CI `34267608095` Checks and Production deploy succeeded; Preview skipped. Production migrations `0004`/`0005` succeeded; 40 voice metadata rows verified; Worker `291517ab-8f2b-44d3-96aa-6dd7a615cc6c`. All previously documented limitations and seven unverified rows remain.
+
 All notable changes to Bloomlab. Format follows Keep a Changelog; versions follow `app_version` (spec §101).
 
 ## [Unreleased]

@@ -1,0 +1,127 @@
+.work {
+  max-width: 58rem;
+  min-width: 0;
+  display: grid;
+  gap: var(--bl-space-4);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.work h2 {
+  font-family: var(--bl-font-display);
+  font-size: 1.6rem;
+}
+.work h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0;
+}
+.steps {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--bl-color-border);
+  padding-bottom: 1rem;
+}
+.steps [aria-current] {
+  font-weight: 700;
+  border-bottom: 3px solid var(--bl-color-lavender);
+}
+.note {
+  background: var(--bl-color-mist);
+  padding: 1rem;
+  border-radius: var(--bl-radius-md);
+}
+.tasks {
+  padding-left: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+.field {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.field textarea,
+.field input,
+.field select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.75rem;
+  border: 1px solid var(--bl-color-ink-soft);
+  border-radius: var(--bl-radius-sm);
+  font: inherit;
+  font-size: 1rem;
+  color: var(--bl-color-ink);
+  background: var(--bl-color-snow);
+  min-height: 44px;
+}
+.field textarea {
+  resize: vertical;
+}
+.field :focus-visible,
+.confirm input:focus-visible,
+.remaining summary:focus-visible {
+  outline: 3px solid var(--bl-color-focus);
+  outline-offset: 3px;
+}
+.test {
+  border: 0;
+  border-top: 1px solid var(--bl-color-border);
+  padding: 1rem 0;
+  min-width: 0;
+  display: grid;
+  gap: 1rem;
+}
+.test legend {
+  font-weight: 600;
+  padding-right: 0.5rem;
+}
+.screenshot {
+  border-bottom: 1px solid var(--bl-color-border);
+  padding-bottom: 1rem;
+}
+.asset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+.asset img {
+  width: 100%;
+  max-height: 20rem;
+  object-fit: contain;
+  background: var(--bl-color-mist);
+}
+.asset p {
+  width: 100%;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.confirm {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  min-height: 44px;
+}
+.confirm input {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.remaining summary {
+  min-height: 44px;
+  cursor: pointer;
+}
+@media (max-width: 480px) {
+  .actions > * {
+    width: 100%;
+  }
+  .steps {
+    gap: 0.5rem 1rem;
+  }
+}

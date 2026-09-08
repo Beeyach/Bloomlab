@@ -1,5 +1,7 @@
 # Phase 21 — final UX polish
 
+> Historical record. Phase 21 PR #23 was merged on 2026-09-08 as `59ec678910cb51559d84af3c4200590f9c7e29ec`. Main CI `34267608095` Checks and Production deploy succeeded; production migrations `0004`/`0005`, 40 voice metadata rows and Worker `291517ab-8f2b-44d3-96aa-6dd7a615cc6c` were verified. Draft/unmerged instructions below describe the earlier review stage. All acceptance limitations and seven unverified rows are preserved.
+
 Execution of the complete [UX handoff](../handoffs/phase-21-final-ux-polish.md) on draft/open [PR #23](https://github.com/Beeyach/Bloomlab/pull/23). Audited runtime baseline: `62f9ebbf5255e62f8c876537909a58037f785fc9`; starting handoff commit: `2bfcd47010b480252cb8afcefca94bcdebeda606`. This pass changes presentation, guards against stale restoration in the UI, and updates tests/probe. It does not change content, scenario engines, shared phase contracts, grading/provider code, microphone lifecycle, IndexedDB architecture or production gates.
 
 ## Human findings and resulting behavior

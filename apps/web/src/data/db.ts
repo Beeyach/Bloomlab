@@ -1,3 +1,4 @@
+import type { LocalEvidenceAsset } from '../fieldwork/assets';
 import type { LocalCallRecording } from '../call/local';
 import Dexie, { type EntityTable, type Table } from 'dexie';
 
@@ -20,7 +21,7 @@ import type {
 } from './types';
 
 export const DB_NAME = 'bloomlab';
-export const DB_VERSION = 5;
+export const DB_VERSION = 6;
 
 /**
  * The IndexedDB database behind every local-first flow (DATA-002). Dexie is the whole data
@@ -30,6 +31,7 @@ export const DB_VERSION = 5;
  * (curriculum cache in Phase 5, simulator projects and events in Phase 10, and so on).
  */
 export class BloomlabDatabase extends Dexie {
+  declare evidence_assets: EntityTable<LocalEvidenceAsset, 'asset_id'>;
   declare call_recordings: EntityTable<LocalCallRecording, 'recording_id'>;
   declare device: EntityTable<DeviceRecord, 'device_id'>;
   declare notes: EntityTable<NoteRecord, 'id'>;
@@ -80,9 +82,11 @@ export class BloomlabDatabase extends Dexie {
       sim_snapshots: '&id, run_id, log_length, updated_at',
     });
     // v5 (Phase 21): recoverable local audio, never a sync entity.
-    this.version(DB_VERSION).stores({
+    this.version(5).stores({
       call_recordings: '&recording_id, attempt_id, [attempt_id+turn]',
     });
+    // v6 (Phase 22): private screenshots; never part of sync/outbox JSON.
+    this.version(6).stores({ evidence_assets: '&asset_id, attempt_id' });
   }
 }
 

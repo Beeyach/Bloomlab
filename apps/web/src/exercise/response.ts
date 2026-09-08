@@ -1,3 +1,5 @@
+import { completionMissing } from '../fieldwork/proof';
+import type { FieldworkResponse } from '@bloomlab/shared';
 import type { CallResponse } from '@bloomlab/shared';
 import { negotiationOf } from './negotiation/context';
 import { negotiationProjection, type NegotiationState } from './negotiation/engine';
@@ -24,6 +26,7 @@ import { emptySalesResponse, salesState, type JargonTerm, type SalesResponse } f
  */
 
 export interface LearnerResponse {
+  fieldwork?: FieldworkResponse;
   call?: CallResponse;
   /** Free written work: the reasoning, the diagnosis, the prediction in prose. */
   text: string;
@@ -106,6 +109,10 @@ export function learnerState(
     .join('\n');
   const found = markersIn(everything, exercise.response_markers);
   const answer: Record<string, unknown> = { text: response.text };
+  if (exercise.type === 'FIELDWORK')
+    answer.fieldwork_complete = Boolean(
+      response.fieldwork && completionMissing(exercise, response.fieldwork).length === 0,
+    );
   for (const key of Object.keys(exercise.response_markers)) answer[key] = found.includes(key);
   // Each named answer is graded on its own: which markers appear *in it*, and whether it was
   // answered at all. That is what lets a check say the hypothesis names the booking step without

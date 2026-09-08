@@ -55,3 +55,5 @@ export type {
 } from './ai';
 
 export * from './call';
+
+export * from './fieldwork.ts';

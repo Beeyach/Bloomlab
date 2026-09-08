@@ -4,6 +4,15 @@ Honest record of approximations, gaps and mismatches (spec §140). Updated at th
 
 Last updated: 2026-09-08 (Phase 21 session freshness)
 
+## Phase 22 — Fieldwork acceptance gate
+
+- FLD-001 / EXR-020 are IMPLEMENTED_UNVERIFIED until Ary performs the real GHL training-subaccount task. Browser proof is controlled test data; automatic checks establish completeness/liveness, not configuration correctness or reasoning quality. Independent audit is also pending.
+- The existing Snapshot portability exercise requires agency Snapshot permission and two dedicated training subaccounts. It is the existing REAL_GHL pairing; seven other fieldwork-required skills still need their own authored tasks in later curriculum work. This is not Field Ready or Portfolio completion.
+- Screenshot upload/checkpoint requires a linked Bloomlab device and network connectivity; no GHL connection or credentials are collected. Offline drafts and image Blobs remain local. Local-only drafts are not cross-device synchronized; finalized responses and proof references are.
+- Image validation checks encoded signatures/dimensions, not visual meaning. No OCR, screenshot-to-AI, or GHL API verification exists. FLD-003 stays DEFERRED.
+- Remote deletion does not erase cached local Blobs from another previously linked browser. Historical fieldwork passes record proof present at submission and are not retroactively revoked when the learner deletes a screenshot; current asset views report tombstones. No generic media manager or public sharing was added.
+- Browser storage eviction/private-browsing restrictions still apply; a local save failure prevents checkpoint/finalization and is surfaced without intentionally discarding the draft. Controlled Chromium evidence does not establish Safari/iOS physical file-picker acceptance.
+
 ## Phase 21 — Call Room acceptance gate
 
 - The user observed real microphone capture working on iPhone 14 Pro Max Safari. Mac Chrome normal browsing completed four proposal turns with local save, real Google transcription, visible correction, saved history and a later TTS text fallback. These observations cover part of human acceptance, not every recovery, retention, touch, keyboard or privacy check. Preview is enabled; production calls remain disabled.

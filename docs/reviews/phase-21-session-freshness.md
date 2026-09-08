@@ -1,5 +1,7 @@
 # Phase 21 — clean restart and deployed-session freshness
 
+> Historical record. Phase 21 PR #23 was merged on 2026-09-08 as `59ec678910cb51559d84af3c4200590f9c7e29ec`. Main CI `34267608095` Checks and Production deploy succeeded; production migrations `0004`/`0005`, 40 voice metadata rows and Worker `291517ab-8f2b-44d3-96aa-6dd7a615cc6c` were verified. Draft/unmerged instructions below describe the earlier review stage. All acceptance limitations and seven unverified rows are preserved.
+
 Execution of the complete [session-freshness handoff](../handoffs/phase-21-real-device-session-freshness.md) on draft/open [PR #23](https://github.com/Beeyach/Bloomlab/pull/23). Starting commit: `155aaf5` (handoff atop `219e2efc326b93b48f7930398c8e45f98d2e73d5`). No scenario content, engine, interpretation, max-turn, grading, speaker-attribution, provider, privacy or budget contract is relaxed. No old migration is edited. Preview only; production remains gated and its deployment must be skipped.
 
 ## Findings and changes

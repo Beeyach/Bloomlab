@@ -1,5 +1,7 @@
 # Phase 21 — visible update-check recovery
 
+> Historical record. Phase 21 PR #23 was merged on 2026-09-08 as `59ec678910cb51559d84af3c4200590f9c7e29ec`. Main CI `34267608095` Checks and Production deploy succeeded; production migrations `0004`/`0005`, 40 voice metadata rows and Worker `291517ab-8f2b-44d3-96aa-6dd7a615cc6c` were verified. Draft/unmerged instructions below describe the earlier review stage. All acceptance limitations and seven unverified rows are preserved.
+
 Continuation from `caa4cd59ff0411d9f63b94c7919f94e68d0d7875` on draft/open PR #23. The prior restart/session-freshness implementation, exact-head CI and Preview verification were complete. The branch was clean, deployed health matched the branch and no newer PR review comments were present.
 
 Review found that `UpdateNotice` returned nothing unless an update was already known. A failed health or registration update check set `checkError`, but its status and retry remained hidden. Two new UI regressions reproduced this before the fix.

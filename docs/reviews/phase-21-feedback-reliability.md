@@ -1,5 +1,7 @@
 # Phase 21 — proposal feedback reliability
 
+> Historical record. Phase 21 PR #23 was merged on 2026-09-08 as `59ec678910cb51559d84af3c4200590f9c7e29ec`. Main CI `34267608095` Checks and Production deploy succeeded; production migrations `0004`/`0005`, 40 voice metadata rows and Worker `291517ab-8f2b-44d3-96aa-6dd7a615cc6c` were verified. Draft/unmerged instructions below describe the earlier review stage. All acceptance limitations and seven unverified rows are preserved.
+
 Execution of the complete [human acceptance follow-up](../handoffs/phase-21-human-acceptance-feedback-reliability.md) on draft/open [PR #23](https://github.com/Beeyach/Bloomlab/pull/23). Starting head: `085cad9d8bc6f69c21fddf19946da022aa27f884`. Production calls stay disabled; no merge or production deployment is authorized.
 
 ## Human evidence and initial diagnosis

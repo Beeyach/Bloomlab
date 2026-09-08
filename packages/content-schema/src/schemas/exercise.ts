@@ -1,3 +1,4 @@
+import { FieldworkSchema } from './fieldwork.ts';
 import { CallConfigSchema, CALL_METRICS } from './call.ts';
 import { NegotiationConfigSchema, NEGOTIATION_METRICS } from './negotiation.ts';
 import { z } from 'zod';
@@ -13,7 +14,6 @@ import {
   rubricRef,
   scenarioRef,
   skillRef,
-  stringList,
   title,
 } from './common.ts';
 import { FUNNEL_BLOCK_ROLES, FUNNEL_STEP_PURPOSES } from './funnel.ts';
@@ -242,15 +242,6 @@ const responseMarkers = z.record(
   z.array(z.string().trim().min(2)).min(1),
 );
 
-const fieldwork = z.strictObject({
-  required: z.boolean(),
-  tasks: stringList.min(1),
-  evidence: z
-    .array(z.enum(['screenshot', 'configuration_answers', 'explanation', 'test_results']))
-    .min(1),
-  reasoning_questions: stringList.default([]),
-});
-
 /** Seed state for the simulator beyond the scenario's account state. */
 const startingState = z.strictObject({
   workflows: z.array(WorkflowDefinitionSchema).default([]),
@@ -435,7 +426,7 @@ export const ExerciseSchema = z
     pricing: PricingConfigSchema.nullable().default(null),
     negotiation: NegotiationConfigSchema.nullable().default(null),
     call: CallConfigSchema.optional(),
-    fieldwork: fieldwork.nullable().default(null),
+    fieldwork: FieldworkSchema.nullable().default(null),
     portfolio: portfolioRef.nullable().default(null),
     /** WRITE IT / SAY IT / EXPLAIN IT: what kind of piece, in the spec's own words. */
     format: z.string().optional(),
@@ -484,6 +475,26 @@ export const ExerciseSchema = z
     }
     if (exercise.type === 'FIELDWORK' && !exercise.fieldwork?.required) {
       issue(['fieldwork'], 'FIELDWORK exercises require real GHL fieldwork');
+    }
+    if (exercise.type === 'FIELDWORK' && exercise.fieldwork?.proof) {
+      if (exercise.grading.mode !== 'deterministic')
+        issue(['grading'], 'Fieldwork must be AI-Off compatible deterministic proof checking');
+      if ('fieldwork_complete' in exercise.response_markers)
+        issue(['response_markers'], 'fieldwork_complete is reserved for durable proof validation');
+      if (
+        !exercise.expected_outcomes.some(
+          (a) =>
+            a.type === 'state' &&
+            a.path === 'answer.fieldwork_complete' &&
+            a.operator === 'equals' &&
+            a.value === true &&
+            (!a.tier || a.tier === 'required'),
+        )
+      )
+        issue(
+          ['expected_outcomes'],
+          'Structured fieldwork requires the fieldwork_complete proof check',
+        );
     }
     if (exercise.type === 'PROSPECT_IT' && exercise.prospects.length < 3) {
       issue(['prospects'], 'PROSPECT IT needs at least three businesses');
@@ -597,7 +608,14 @@ export const ExerciseSchema = z
         // deterministic could ever decide it.
         if (root === 'answer') {
           const key = rest.join('.');
-          if (!markerKeys.has(key)) {
+          if (
+            !markerKeys.has(key) &&
+            !(
+              exercise.type === 'FIELDWORK' &&
+              exercise.fieldwork?.proof &&
+              key === 'fieldwork_complete'
+            )
+          ) {
             issue(at('path'), `answer.${key} needs a response_markers entry named ${key}`);
           }
         }

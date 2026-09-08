@@ -1,5 +1,7 @@
 # Phase 21 — final UX polish before closeout
 
+> Historical record. Phase 21 PR #23 was merged on 2026-09-08 as `59ec678910cb51559d84af3c4200590f9c7e29ec`. Main CI `34267608095` Checks and Production deploy succeeded; production migrations `0004`/`0005`, 40 voice metadata rows and Worker `291517ab-8f2b-44d3-96aa-6dd7a615cc6c` were verified. Draft/unmerged instructions below describe the earlier review stage. All acceptance limitations and seven unverified rows are preserved.
+
 PR #23 remains draft/open and unmerged. Do not merge your own PR.
 
 Current independently audited runtime baseline before this UX pass: `62f9ebbf5255e62f8c876537909a58037f785fc9`.
