@@ -542,7 +542,13 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
       next_probe: 'Try the independent proposal call.',
       confidence: 0.9,
     };
-    const provider = vi.fn<Provider>().mockResolvedValue({ value: result, usage });
+    const invalid = structuredClone(result);
+    invalid.rubric_results.find((item) => item.id === 'jargon')!.reason =
+      "Learner used the client's terminology, including 'ServiceTitan'.";
+    const provider = vi
+      .fn<Provider>()
+      .mockResolvedValueOnce({ value: invalid, usage })
+      .mockResolvedValueOnce({ value: result, usage });
     const input = {
       attempt_id: a.attemptId,
       exercise_id: a.exercise.id,
@@ -615,7 +621,9 @@ describe('CALL-002 intelligence and VOI-003 constrained response audio', () => {
         provider,
       ),
     ).toEqual(answer);
-    expect(provider).toHaveBeenCalledTimes(1);
+    expect(provider).toHaveBeenCalledTimes(2);
+    expect(provider.mock.calls.map(([request]) => request.repair)).toEqual([false, true]);
+    expect(provider.mock.calls[1]![0].stable).toContain('Citation validation reminder');
     expect(result.rubric_results.map((r) => r.id)).toEqual([
       'questions',
       'listening',

@@ -1,5 +1,6 @@
 import { getAttempt } from '../call/store';
 import type { CallState } from '../call/engine';
+import { CALL_GRADING_INSTRUCTION, validateLearnerQuotations } from '../call/grading';
 import { classify } from './classify';
 import content from 'virtual:bloomlab-content';
 import { z } from 'zod';
@@ -94,6 +95,7 @@ export async function evaluate(
     throw new AiError('invalid_rubric', 400);
   if (exercise.grading.mode === 'deterministic') throw new AiError('deterministic_only', 400);
   let requestIdentity = input;
+  let confirmedCallText: string[] | undefined;
   if (exercise.call) {
     let call;
     try {
@@ -104,6 +106,7 @@ export async function evaluate(
     const saved = (JSON.parse(call.state_json) as CallState).snapshot;
     if (call.exercise_id !== exercise.id || !saved.complete)
       throw new AiError('call_not_complete', 409);
+    confirmedCallText = saved.turns.map((turn) => turn.confirmed_transcript);
     // Keep the established hash for saved rubric runs: a prompt repair must not repurchase
     // feedback for an already graded, immutable call. Neither representation uses browser text.
     requestIdentity = {
@@ -223,7 +226,7 @@ export async function evaluate(
     for (let repair = 0; repair <= 1; repair++) {
       const response = await provider({
         model,
-        stable: `Bloomlab grades defensible reasoning, not confident prose. Judge only authored rubric items. Deterministic checks remain authoritative. Reward verified uncertainty.${exercise.call ? ' Call speaker contract: Only learner_confirmed text is evidence of what the learner said or did. client_context and closing_client_context are context only and must never be credited to the learner. For every rubric explanation, evaluate the learner_confirmed behavior against the corresponding numbered turn and client_context. Attribute any quotation to its actual speaker; never treat a client-only question, diagnosis, commitment or next step as learner evidence. If learner evidence is absent, say so instead of inferring it from the client. Accent, pronunciation and transcript corrections are not graded. Deterministic critical and required failures remain authoritative regardless of the rubric score.' : ''} Exact rubric: ${JSON.stringify(rubric)}\nExercise brief: ${JSON.stringify({ title: exercise.title, instructions: exercise.instructions })}`,
+        stable: `Bloomlab grades defensible reasoning, not confident prose. Judge only authored rubric items. Deterministic checks remain authoritative. Reward verified uncertainty.${exercise.call ? ' ' + CALL_GRADING_INSTRUCTION : ''}${exercise.call && repair ? ' Citation validation reminder: remove any client-only or nonverbatim quotation from rubric reasons, strengths and critical_issue. Verify every quoted span against learner_confirmed before returning.' : ''} Exact rubric: ${JSON.stringify(rubric)}\nExercise brief: ${JSON.stringify({ title: exercise.title, instructions: exercise.instructions })}`,
         submission: input.submission,
         schema: gradingFormat,
         repair: repair === 1,
@@ -259,6 +262,7 @@ export async function evaluate(
       let result;
       try {
         result = validateGrading(response.value, rubric);
+        if (confirmedCallText) validateLearnerQuotations(result, confirmedCallText);
       } catch {
         if (repair === 0) continue;
         throw new AiError('evaluation_invalid', 502);

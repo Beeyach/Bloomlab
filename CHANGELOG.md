@@ -18,7 +18,7 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 - Call feedback now receives numbered client context and confirmed learner evidence, with explicit attribution rules for every rubric explanation. Existing saved rubric runs retain their identity and are not repurchased.
 - Authorized open-response text selects a bounded literal quote deterministically; strong-model extraction is removed. Dynamic ElevenLabs usage receipts persist in the existing generation ledger and private R2 recovery metadata, including cache and uncertain-purchase regression coverage.
 - The full-suite run exposed an existing AI-settings test race: the default Limited selection was mistaken for a completed server refresh. The regression now waits for loaded account usage before checking persisted mode.
-- Fresh deployed provider acceptance and the mandatory real phone/desktop microphone calls remain pending at this implementation commit. Production stays disabled.
+- First deployed remediation acceptance proved dynamic ElevenLabs synthesis (69 billed characters) and cache reuse, but exposed a further client-only ServiceTitan citation in grading. Call feedback now verifies quoted evidence against confirmed learner text before accepting it, using the existing single repair path. Renewed grading and mandatory real phone/desktop microphone calls remain pending. Production stays disabled.
 
 ### Added — Phase 20 · Voice Assets
 
