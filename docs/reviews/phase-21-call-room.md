@@ -1,6 +1,6 @@
 # Phase 21 — Call Room review
 
-Date: 2026-09-08. Branch: `codex/phase-21-call-room`, based on independently merged main `3fa36fe05872bdaeaf5c49105a198b911aa9adce`. The branch began at handoff commit `f675f620c7dcdacbdc66015ce45298fcafe6a55a`.
+Date: 2026-09-08. PR: [#23](https://github.com/Beeyach/Bloomlab/pull/23), draft/open, do not merge. Branch: `codex/phase-21-call-room`, based on independently merged main `3fa36fe05872bdaeaf5c49105a198b911aa9adce`. The branch began at handoff commit `f675f620c7dcdacbdc66015ce45298fcafe6a55a`.
 
 **Implementation is under review; live provider acceptance is incomplete.** Preview's name-only secret listing lacked `GOOGLE_CLOUD_CREDENTIAL`. The user has been given the exact secure installation action from handoff §25. No fixture result is presented as live Google, IAM, dynamic ElevenLabs or physical microphone evidence. Preview/production calls stay off and the PR stays draft/open, unmerged. [Secure setup and recovery runbook](../operations/call-room.md).
 
@@ -43,11 +43,11 @@ No broad responsive/privacy/infrastructure row is promoted. DATA-007 stays PASSE
 
 ## Verification evidence
 
-Local verification uses Node 22.22.1, Wrangler 4.128.0 and the existing locked dependencies. Typecheck, lint (one pre-existing ExerciseRunner hook warning), format, docs validation, content lock/check, voice check, production build and preview build pass. Content: 154 files, 35 exercises, eight rubrics, 31 unchanged authoring warnings. The full suite passed **1,740 tests in 106 files**; the subsequent upload-failure/oversize boundary additions passed their focused **24-test** run. Exact-head GitHub Actions will verify the final combined count. No live call provider request has been made during implementation.
+Local verification uses Node 22.22.1, Wrangler 4.128.0 and the existing locked dependencies. Typecheck, lint (one pre-existing ExerciseRunner hook warning), format, docs validation, content lock/check, voice check, production build and preview build pass. Content: 154 files, 35 exercises, eight rubrics, 31 unchanged authoring warnings. The full suite passed **1,740 tests in 106 files**; the subsequent upload-failure/oversize boundary additions passed their focused **24-test** run. GitHub Actions on implementation head `9ee8b3c6f971d783969719f6cdcdaf3f618afa10` passed the final combined **1,741 tests in 106 files**. No live call provider request has been made during implementation.
 
 The dedicated call probe passes at **1440/1024/768/390/320**, with no page overflow, full four-turn feedback at 390 using touch controls/text input, a second full desktop keyboard call, visible focus, denial recovery, reduced motion, original/corrected transcript, real local Blob-before-upload, STT failure/retry without a second upload, retained-audio reload/replay/deletion and default cleanup. Browser decoding of the virtual recording measured **0.84 seconds, one channel, 44,100 Hz**. Captures at 1440/390/320 were visually inspected. Probe typing waits for the transcript field to become editable so it verifies actual corrections.
 
-Existing **exercise, negotiation, rail/navigation and AI** probes pass against the built preview bundle/local Worker. Exercise covers offline submission/history/outbox/reload; negotiation covers all five widths, touch/keyboard and reduced motion; AI covers failed submission/reload and explicit fixture success at five widths. Auth/sync and real Phase 20 voice playback will also be checked on the deployed PR preview. Their results and exact-head CI are recorded in the publication evidence below. Earlier diagnostic failures are not counted as passes.
+Existing **exercise, negotiation, rail/navigation and AI** probes pass against the built preview bundle/local Worker. Exercise covers offline submission/history/outbox/reload; negotiation covers all five widths, touch/keyboard and reduced motion; AI covers failed submission/reload and explicit fixture success at five widths. Auth/sync and real Phase 20 voice playback also pass on the deployed PR preview, as recorded below. Earlier diagnostic failures are not counted as passes.
 
 Focused tests cover native recording capability/limits/track cleanup, Blob-before-upload and retry/checkpoint ordering, notes/reload/history, raw sync exclusion, authenticated D1/R2 operations, collision/ownership/revocation, real deletion and R2-first recovery, Google JWT signature/token caching/expiry/timeout/sanitization, all five authored modes, durable classifier claims/budget/fallback, constrained dynamic TTS/caching, server-confirmed final feedback and grading gates.
 
@@ -72,3 +72,19 @@ Focused tests cover native recording capability/limits/track cleanup, Blob-befor
 - Physical mobile/Safari MediaRecorder formats, storage behavior and assistive technology are unverified. The automated virtual microphone and emulated viewport are not physical hardware evidence.
 - Abandoned raw recordings have no timed deletion job; learner resume/manual deletion handles them. Unknown purchased dynamic synthesis requires operator reconciliation; it is never silently purchased twice. Calls have no full-duplex streaming, background STT or cross-device active-call resume.
 - Independent PR audit, production Google/current ElevenLabs secret setup where required, and reviewed production gate change remain before production readiness. No merge or production deployment is authorized by this implementation report.
+
+
+## Publication and deployed preview evidence
+
+Implementation head: **`9ee8b3c6f971d783969719f6cdcdaf3f618afa10`**. [CI run 34184504981](https://github.com/Beeyach/Bloomlab/actions/runs/34184504981) SUCCESS: Checks SUCCESS, 1,741 tests / 106 files, Preview deploy SUCCESS, production correctly SKIPPED. CI applied `0004_call_room.sql` to development D1 before deploying `bloomlab-preview`; the emitted Worker version was **`6043553d-a23d-4c56-9e54-de7a5ae8cee3`**. No production Worker deployment ran.
+
+Live checks ran on [preview](https://bloomlab-preview.cool-sunset-2169.workers.dev) starting 2026-09-08 03:51 UTC:
+
+- Health returned HTTP 200, environment preview, app 0.1.0, content 2026.09.18, simulator 2026.09.11-r2. An authenticated call configuration read returned `enabled: false`; anonymous call configuration returned 401; the direct SAY IT route showed its disabled state. This verifies the intended gate, not live call acceptance.
+- The two-device sync probe passed local-before-sync, remote receipt, offline edits, conflict preservation/convergence, deletion propagation and device revocation. A subsequent metadata-only D1 query confirmed both disposable sync devices were revoked (2/2). The cleanup now also revokes the coordinator.
+- Real Phase 20 voice playback passed at all five widths, with actual browser decoding, stable character identity, private unauthenticated 401 and no direct ElevenLabs request. All five greetings decoded (4.09–5.53 seconds); cached playback made zero purchases. Revocation was enforced and authored text survived. This is saved-asset evidence, not dynamic Phase 21 TTS evidence.
+- The gate-review and voice-review devices were revoked too. No session tokens, Sync Keys, provider credentials or learner microphone bytes are included in committed evidence.
+
+Machine-readable, non-secret results are in [phase-21-call-evidence.json](phase-21-call-evidence.json). Browser captures remain local/ignored under `.review/phase-21-call/`, `.review/phase-21-regression/`, `.review/phase-21-live-sync/` and `.review/phase-21-live-voice/`.
+
+The publication closeout changes documentation/evidence only after the implementation head above. Its exact-head Checks and preview rollout are available in [PR #23 checks](https://github.com/Beeyach/Bloomlab/pull/23/checks) and the final implementation report. Keeping that distinction avoids attributing earlier deployed observations to a later documentation commit. PR #23 remains draft/open; no merge is performed.

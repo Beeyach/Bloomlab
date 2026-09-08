@@ -90,5 +90,271 @@
     "negotiation": "passed",
     "rail": "passed",
     "ai": "passed; successful AI responses are explicit fixtures"
+  },
+  "implementation_ci": {
+    "head_sha": "9ee8b3c6f971d783969719f6cdcdaf3f618afa10",
+    "run_id": 34184504981,
+    "url": "https://github.com/Beeyach/Bloomlab/actions/runs/34184504981",
+    "checks": "success",
+    "tests": 1741,
+    "files": 106,
+    "preview_deploy": "success",
+    "production_deploy": "skipped",
+    "applied_development_migration": "0004_call_room.sql",
+    "preview_version_id": "6043553d-a23d-4c56-9e54-de7a5ae8cee3"
+  },
+  "live_preview_gate": {
+    "checked_at": "2026-09-08T03:51:01.908Z",
+    "base": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+    "api": {
+      "health": {
+        "ok": true,
+        "environment": "preview",
+        "versions": {
+          "app": "0.1.0",
+          "content": "2026.09.18",
+          "simulator": "2026.09.11-r2"
+        }
+      },
+      "config": {
+        "status": 200,
+        "enabled": false
+      },
+      "anonymous": 401
+    },
+    "browser_call_room_disabled": true,
+    "device_revoked": true
+  },
+  "live_saved_voice": {
+    "infrastructure": "Live preview Worker, D1 and R2",
+    "widths": [
+      {
+        "width": 1440,
+        "method": "keyboard",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 1024,
+        "method": "mouse",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 768,
+        "method": "mouse",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 390,
+        "method": "touch",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      },
+      {
+        "width": 320,
+        "method": "touch",
+        "checks": {
+          "overflow": true,
+          "targets": true,
+          "inputText": true,
+          "sameIdentity": true,
+          "decoded": true,
+          "private": true,
+          "providerFree": true
+        },
+        "playback": {
+          "duration": 4.4117913832199545,
+          "sampleRate": 44100,
+          "rms": 0.064195062976817,
+          "peak": 0.4721398651599884,
+          "clippedFraction": 0,
+          "mediaPaths": [
+            "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+          ],
+          "directProvider": false,
+          "unauthorized": 401,
+          "audioError": null
+        }
+      }
+    ],
+    "auditions": [
+      {
+        "character": "VC-blunt-tradesman",
+        "line": "greeting-01",
+        "duration": 4.272471655328798,
+        "sampleRate": 44100,
+        "rms": 0.06712624205899953,
+        "peak": 0.5754332542419434,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-830131db4721291660c88a03bcacaeb32667f1d0795b34222bfe07b37c01ba7e"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-measured-founder",
+        "line": "greeting-01",
+        "duration": 4.4117913832199545,
+        "sampleRate": 44100,
+        "rms": 0.064195062976817,
+        "peak": 0.4721398651599884,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-776304b20ee4bb11e26e8408235126a25854f793962ec52a00883918b6af8505"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-storm-season-roofer",
+        "line": "greeting-01",
+        "duration": 4.08671201814059,
+        "sampleRate": 44100,
+        "rms": 0.060175907791655964,
+        "peak": 0.6012741327285767,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-0c38a93a39b36e09a1a1a4f97c557da08ece452ff30f07bc251ddf3e5111e043"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-studio-manager",
+        "line": "greeting-01",
+        "duration": 5.526349206349207,
+        "sampleRate": 44100,
+        "rms": 0.0764949230728158,
+        "peak": 0.7601538300514221,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-3bf2945c01098879e6909d153f1ffcb07473971887bee9deefa67c68d0cdd176"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      },
+      {
+        "character": "VC-warm-owner",
+        "line": "greeting-01",
+        "duration": 5.201269841269841,
+        "sampleRate": 44100,
+        "rms": 0.13167795884987676,
+        "peak": 0.8244251608848572,
+        "clippedFraction": 0,
+        "mediaPaths": [
+          "/api/media/voice/VA-66bcf9e3698aab7eaf143546f11fd5ee50380f01a9a80bc48947258633b5a8b2"
+        ],
+        "directProvider": false,
+        "unauthorized": 401,
+        "audioError": null
+      }
+    ],
+    "revocation": true,
+    "text_survives_revocation": true,
+    "purchases": 0,
+    "scope": "Existing Phase 20 saved assets only; no live call/dynamic synthesis claim."
+  },
+  "live_sync": {
+    "status": "passed",
+    "steps": [
+      "A created a key and linked",
+      "A wrote a note: local write first, then the queue drained",
+      "B linked with the key",
+      "B received the synced state",
+      "both edited offline",
+      "reconnect: conflict shown on B, nothing discarded",
+      "resolved: both devices agree",
+      "deletion propagated A \u2192 B (tombstone kept)",
+      "B revoked from A"
+    ],
+    "review_devices": 2,
+    "revoked_devices": 2
   }
 }
