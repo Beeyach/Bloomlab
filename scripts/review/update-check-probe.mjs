@@ -25,7 +25,7 @@ try {
   });
   await openPage(page, base);
   assert(await waitFor(page, "!!document.querySelector('[data-build-id]')"));
-  assert(await waitFor(page, '!!navigator.serviceWorker.controller'));
+  assert(await waitFor(page, '!!navigator.serviceWorker.controller', 300));
   const build = await page.evaluate("document.querySelector('[data-build-id]').dataset.buildId");
   const health = await page.evaluate("fetch('/api/health',{cache:'no-store'}).then(r=>r.json())");
   assert.equal(health.build_id, build);

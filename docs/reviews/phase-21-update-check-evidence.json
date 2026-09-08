@@ -141,5 +141,75 @@
     ],
     "widths": [1440, 1024, 768, 390, 320],
     "status": "passed"
+  },
+  "deployed_application": {
+    "source_head": "f8bb0d3522ee6bf7fc4f28b68b37559eb7f091dc",
+    "ci_run": "https://github.com/Beeyach/Bloomlab/actions/runs/34232072912",
+    "checks": "success",
+    "preview_deploy": "success",
+    "production_deploy": "skipped",
+    "tests_passed": 1812,
+    "test_files_passed": 112,
+    "worker_version": "6f6bf52b-c767-475e-8ff5-62049eb88389",
+    "update_check": {
+      "base": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+      "scope": "Native Chromium, real service worker, controlled health failures.",
+      "widths": [
+        {
+          "viewport": 1440,
+          "overflow": false,
+          "width": 174.765625,
+          "height": 44,
+          "disabled": false
+        },
+        {
+          "viewport": 1024,
+          "overflow": false,
+          "width": 174.765625,
+          "height": 44,
+          "disabled": false
+        },
+        {
+          "viewport": 768,
+          "overflow": false,
+          "width": 174.765625,
+          "height": 44,
+          "disabled": false
+        },
+        {
+          "viewport": 390,
+          "overflow": false,
+          "width": 174.765625,
+          "height": 44,
+          "disabled": false
+        },
+        {
+          "viewport": 320,
+          "overflow": false,
+          "width": 174.765625,
+          "height": 44,
+          "disabled": false
+        }
+      ],
+      "failed_touch_retry": "passed",
+      "browser_build": "f8bb0d3522ee6bf7fc4f28b68b37559eb7f091dc",
+      "worker_build": "f8bb0d3522ee6bf7fc4f28b68b37559eb7f091dc",
+      "keyboard_retry": "passed",
+      "reloaded": false,
+      "status": "passed",
+      "finished_at": "2026-09-08T13:37:56.148Z"
+    },
+    "call": {
+      "status": "passed",
+      "head_sha": "f8bb0d3522ee6bf7fc4f28b68b37559eb7f091dc",
+      "loaded_build": "f8bb0d3522ee6bf7fc4f28b68b37559eb7f091dc",
+      "worker_build": "f8bb0d3522ee6bf7fc4f28b68b37559eb7f091dc"
+    },
+    "call_checks": 55,
+    "offline": {
+      "status": "passed",
+      "build": "f8bb0d3522ee6bf7fc4f28b68b37559eb7f091dc"
+    },
+    "scope": "The follow-up commit changes only the probe startup wait and review evidence. Final source-head CI and deployed identity remain recorded on PR #23."
   }
 }
