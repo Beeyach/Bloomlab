@@ -1,0 +1,94 @@
+{
+  "recorded_at": "2026-09-08T03:41:42.607753+00:00",
+  "base_sha": "3fa36fe05872bdaeaf5c49105a198b911aa9adce",
+  "branch": "codex/phase-21-call-room",
+  "content_version": "2026.09.18",
+  "infrastructure": "Local browser, real IndexedDB and MediaRecorder; virtual microphone and controlled HTTP fixtures. No live provider acceptance.",
+  "call_probe": {
+    "status": "passed",
+    "widths": [
+      {
+        "width": 1440,
+        "scroll": 1440,
+        "room": true,
+        "notes": true
+      },
+      {
+        "width": 1024,
+        "scroll": 1024,
+        "room": true,
+        "notes": true
+      },
+      {
+        "width": 768,
+        "scroll": 768,
+        "room": true,
+        "notes": true
+      },
+      {
+        "width": 390,
+        "scroll": 390,
+        "room": true,
+        "notes": true
+      },
+      {
+        "width": 320,
+        "scroll": 320,
+        "room": true,
+        "notes": true
+      }
+    ],
+    "checks": [
+      "Native MediaRecorder Blob saved before upload",
+      "STT failure preserves audio; retry sends no second upload",
+      "Reload preserves notes, confirmed transcript and retained Blob; explicit delete removes audio",
+      "Full four-turn call through feedback at 390px using touch",
+      "Full desktop keyboard call through feedback, visible focus and microphone denial recovery",
+      "Independent/pressure anchors absent from DOM; reduced-motion rendering"
+    ],
+    "recording": {
+      "seconds": 0.84,
+      "channels": 1,
+      "sampleRate": 44100
+    },
+    "evidence": {
+      "attempts": 1,
+      "dimensions": [
+        "questions",
+        "listening",
+        "diagnosis",
+        "clarity",
+        "jargon",
+        "pitch_timing",
+        "objection_handling",
+        "next_step"
+      ],
+      "queued": 4,
+      "rawInQueue": false,
+      "audio": 0
+    },
+    "browser_fetch_origins": ["http://127.0.0.1:5174"]
+  },
+  "local_full_suite": {
+    "tests": 1740,
+    "files": 106,
+    "status": "passed"
+  },
+  "subsequent_boundary_suite": {
+    "tests": 24,
+    "files": 2,
+    "status": "passed"
+  },
+  "live_call_acceptance": {
+    "status": "not_verified",
+    "gate": "Preview GOOGLE_CLOUD_CREDENTIAL and actual Google project/API/IAM setup absent or unverified; no real microphone/Google/dynamic TTS acceptance claimed.",
+    "preview_voice_calls": false,
+    "production_voice_calls": false
+  },
+  "existing_built_preview_probes": {
+    "exercise": "passed",
+    "negotiation": "passed",
+    "rail": "passed",
+    "ai": "passed; successful AI responses are explicit fixtures"
+  }
+}

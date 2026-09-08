@@ -353,13 +353,17 @@ Phase 20 evidence (2026-09-07/08): `docs/reviews/phase-20-voice-assets.md`, `doc
 
 - **CALL-001** Call Room shows the six elements on a dark surface; no participant grid.
 - **CALL-002** Turn-based loop works end to end; no realtime streaming dependency.
-- **CALL-003** Call rubric has the eight dimensions and no accent criterion.
+- **CALL-003** Call rubric has the eight dimensions and no accent/pronunciation criterion; only learner-confirmed text is evaluated, corrections carry no penalty, and deterministic critical/required gates remain authoritative.
+- **CALL-004** Guided/practice anchors may appear; independent/pressure aids are absent from the DOM.
 - **CALL-005** Full call completes on a 390 px device with touch only.
 - **CALL-006** Transcript saved; raw audio deletable; retention optional.
 - **EXR-015** All five SAY IT modes exist.
-- **VOI-006** Recording uploads through the Worker to Google STT V2; transcript displayed before evaluation.
+- **VOI-003** Authorized open-ended client text may synthesize through ElevenLabs; available authored audio is preferred, and repeating the same private response/settings reuses cached bytes. No arbitrary caller-text synthesis.
+- **VOI-006** A real browser recording is saved locally before upload through the authenticated Worker/private R2 to real Google STT V2; original/corrected transcript is displayed and confirmed before evaluation.
 - **VOI-007** TTS failure shows text; STT failure keeps the recording and offers retry.
-- **SEC-005** Audio is sent only to Google STT (and ElevenLabs for generation); no other endpoint receives it.
+- **SEC-005** Raw learner audio goes only to Bloomlab/private R2 and Google STT. Anthropic receives confirmed text; ElevenLabs receives authorized client-response text, never learner audio. The browser makes no direct provider request. Anonymous/revoked sessions and other learners cannot fetch/delete recordings.
+
+Phase 21 evidence (2026-09-08): `docs/reviews/phase-21-call-room.md`, `docs/operations/call-room.md`, focused browser/Worker tests and `scripts/review/call-probe.mjs`. CALL-001/CALL-004 local interface acceptance passes. Other Phase 21 targets are IMPLEMENTED_UNVERIFIED: native browser/IndexedDB tests and explicit provider fixtures do not substitute for the live preview microphone/Google/IAM/dynamic TTS checklist. Preview lacks `GOOGLE_CLOUD_CREDENTIAL`; preview/production calls remain gated. No claim of complete Phase 21 acceptance is made.
 
 ## Phase 22 — Fieldwork
 

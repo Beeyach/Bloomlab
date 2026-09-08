@@ -3,15 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Data-driven exercise runner and deterministic grading (spec §27, TA§31–§34)",
+  "description": "Data-driven exercise runner and deterministic grading (spec \u00a727, TA\u00a731\u2013\u00a734)",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./sales/*": "./src/sales/*.ts",
+    "./negotiation/*": "./src/negotiation/*.ts",
+    "./pricing/*": "./src/pricing/*.ts"
   },
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@bloomlab/mastery-engine": "*"
+    "@bloomlab/mastery-engine": "*",
+    "@bloomlab/content-schema": "*"
   }
 }

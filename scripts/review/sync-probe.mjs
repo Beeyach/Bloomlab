@@ -207,6 +207,21 @@ try {
   report.error = String(error?.stack ?? error);
   console.error(report.error);
 } finally {
+  // Both browser profiles are disposable review devices, including the surviving coordinator.
+  for (const reviewDevice of [B, A]) {
+    await reviewDevice.page
+      .evaluate(
+        `(async()=>{
+      const d=await new Promise((resolve,reject)=>{
+        const request=indexedDB.open('bloomlab');
+        request.onerror=()=>reject(request.error);
+        request.onsuccess=()=>{const db=request.result,read=db.transaction('device').objectStore('device').getAll();read.onsuccess=()=>{db.close();resolve(read.result[0]);};read.onerror=()=>reject(read.error);};
+      });
+      if(d?.session_token)await fetch('/api/sync/devices/revoke',{method:'POST',headers:{authorization:'Bearer '+d.session_token,'content-type':'application/json'},body:JSON.stringify({device_id:d.device_id})});
+    })()`,
+      )
+      .catch(() => undefined);
+  }
   writeFileSync(`${OUT}/sync-probe.json`, JSON.stringify(report, null, 2));
   console.log('ok:', report.ok === true);
   await A.close();

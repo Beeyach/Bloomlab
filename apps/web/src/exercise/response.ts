@@ -1,3 +1,4 @@
+import type { CallResponse } from '@bloomlab/shared';
 import { negotiationOf } from './negotiation/context';
 import { negotiationProjection, type NegotiationState } from './negotiation/engine';
 import type { Exercise } from '@bloomlab/content-schema';
@@ -23,6 +24,7 @@ import { emptySalesResponse, salesState, type JargonTerm, type SalesResponse } f
  */
 
 export interface LearnerResponse {
+  call?: CallResponse;
   /** Free written work: the reasoning, the diagnosis, the prediction in prose. */
   text: string;
   /** The structured architecture choice, when the exercise offers one. */
@@ -132,8 +134,9 @@ export function learnerState(
     options.economics === undefined ? economicsFor(exercise) : options.economics,
     pricingOf(response),
   );
-  const negotiation = negotiationOf(exercise, response.negotiation);
+  const negotiation = exercise.call ? null : negotiationOf(exercise, response.negotiation);
   return {
+    call: response.call?.snapshot?.projection ?? {},
     negotiation:
       negotiation && exercise.negotiation
         ? negotiationProjection(

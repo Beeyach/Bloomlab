@@ -1,0 +1,168 @@
+id: EX-SAY_IT-northwind-cold-call
+type: SAY_IT
+title: Earn a next conversation with Gary
+mode: guided
+difficulty: 2
+estimated_minutes: 15
+skills:
+  - SK-SELL-discovery-call
+client: CL-northwind-hvac
+scenario: SC-northwind-audit
+format: cold_call
+instructions: Earn permission for a short conversation with Gary. Find out who handles unaccepted
+  replacement quotes, reflect the problem, and agree a specific next conversation. Keep ServiceTitan
+  in place; do not promise results before checking the process.
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: call.complete
+    operator: equals
+    value: true
+    description: The call reaches a decision or its authored turn limit.
+  - id: a2
+    type: state
+    path: call.next_step_agreed
+    operator: equals
+    value: true
+    description: An explicit next step or professional exit is agreed.
+critical_failures:
+  - id: c1
+    type: state
+    path: call.pitched_before_diagnosis
+    operator: equals
+    value: false
+    description: The learner waits for an agreed diagnosis before pitching.
+grading:
+  mode: mixed
+  rubric: CALL_PERFORMANCE_RUBRIC_V1
+  pass_threshold: 70
+hints: []
+conversation:
+  client: CL-northwind-hvac
+  subject: Earn a next conversation with Gary
+  channel: chat
+  opening: opening
+  composer_help: Speak your reply, review the transcript, then confirm your intended move.
+  nodes:
+    - id: opening
+      client_message: Gary here, Northwind Heating and Air. I've got a tech on a roof, make it quick.
+      moves:
+        - id: permission
+          label: Ask permission and a relevant question
+          kind: ask
+          next: problem
+        - id: pitch
+          label: Pitch a system immediately
+          kind: pitch
+          next: objection
+      fallback: clarify
+      covers:
+        - opening
+        - agenda
+    - id: problem
+      client_message:
+        A replacement quote goes out and the customer goes quiet. Show me how you would
+        follow up without pestering them.
+      moves:
+        - id: process
+          label: Ask about the current follow-up
+          kind: ask
+          next: process
+        - id: pitch
+          label: Offer the build now
+          kind: pitch
+          next: objection
+      fallback: clarify
+      covers:
+        - pain
+        - desired_result
+    - id: process
+      client_message:
+        Tina emails the replacement quote. We do not have a follow-up process for a quote
+        the customer leaves unanswered. ServiceTitan handles scheduling and invoicing.
+      moves:
+        - id: reflect
+          label: Reflect the gap and check your understanding
+          kind: reflect
+          next: agreed
+      fallback: clarify
+      covers:
+        - current_process
+        - staff
+        - tools
+    - id: agreed
+      client_message:
+        Yes. It is the unanswered quotes, not replacing dispatch. What would you want to
+        look at with Tina?
+      moves:
+        - id: next_step
+          label: Request a short process review with Tina
+          kind: next_step
+          next: done
+      fallback: clarify
+      diagnosis_agreed: true
+    - id: objection
+      client_message: We already pay for software. Why would I want another one?
+      moves:
+        - id: clarify
+          label: Clarify the existing system and gap
+          kind: clarify
+          next: process
+      fallback: clarify
+    - id: clarify
+      client_message: Which part of following up a replacement quote do you want to understand?
+      moves:
+        - id: process
+          label: Ask about the current follow-up
+          kind: ask
+          next: process
+        - id: permission
+          label: Return to a short, relevant question
+          kind: ask
+          next: problem
+      fallback: clarify
+    - id: done
+      client_message:
+        Send me a short agenda for a call with Tina about one unanswered quote. We will
+        check the process together before deciding on a build.
+      moves: []
+      end: true
+      covers:
+        - next_step
+      diagnosis_agreed: true
+call:
+  mode: cold_call
+  objective: Earn permission to review one unanswered replacement quote with Gary and Tina. Reflect
+    the follow-up gap and agree a specific next conversation.
+  anchors:
+    - Permission and relevance
+    - Current process and owner
+    - Reflect the gap
+    - A specific next conversation
+  max_turns: 12
+  voice_lines:
+    opening: greeting-01
+    problem: scenario-01
+    objection: objection-01
+  rules:
+    - node: opening
+      move: permission
+      phrases:
+        - have a minute
+        - ask about unanswered quotes
+    - node: problem
+      move: process
+      phrases:
+        - who handles quote follow-up
+    - node: process
+      move: reflect
+      phrases:
+        - the gap is unanswered quotes
+    - node: agreed
+      move: next_step
+      phrases:
+        - process review with tina
+  open_response:
+    node: clarify
+    question: What would that change in the process we are discussing?

@@ -26,15 +26,17 @@ Phase 18 — Negotiation: the authored engine, standalone deal, ten-objection co
 
 Phase 19 — AI Gateway: Worker-only Anthropic routing, canonical AI settings, conservative atomic budget reservations, structured validation with one repair, exact rubric persistence and recoverable submitted attempts are implemented. Independent audit fixes: the provider test creates fresh response bodies; canonical AI settings refresh reconciles the existing local cache, with immediate Off and in-flight response guards (D-176). Full Node 22 local verification: 1,642 tests across 97 files. Browser review evidence is recorded in the Phase 19 report. AI-009 is PASSED after real deployed-preview Anthropic verification, exact rubric/version validation, D1 persistence, usage accounting and device revocation. NEG-003 remains PARTIAL: one real hold classification at 0.95 is verified, but broad language quality is not established. Phase 19 is closed and production-green at the Phase 20 handoff baseline `f21fe161d1016fe7996e6ef29057573a439d0ca9` (PR #21). See `docs/reviews/phase-19-ai-gateway.md`.
 
-Phase 20 — Voice Assets: five compiled voice characters resolve every current client reference. Preview-only authored generation, immutable private R2 audio, metadata-only D1 indexing, provider-free authenticated playback and a five-width diagnostics review are implemented. The reviewed manifest promotes the exact purchased bytes to production R2; production migration/index/deploy remain the independent post-merge path. See `docs/reviews/phase-20-voice-assets.md` for live evidence, usage, requirement boundaries and limitations. The implementation PR remains open for independent audit.
+Phase 20 — Voice Assets: independently merged in main `3fa36fe05872bdaeaf5c49105a198b911aa9adce`. Its 40 authored assets, rotated preview ElevenLabs Worker secret and provider-free private playback are the Phase 21 base. Historical review evidence remains in `docs/reviews/phase-20-voice-assets.md`.
+
+Phase 21 — Call Room: implementation on `codex/phase-21-call-room` adds five content-driven SAY IT modes, native recording with local Blob recovery, private R2/metadata-only D1 storage, Google STT V2, confirmed-transcript branching and eight-dimension feedback through the existing exercise queue/engines. The local six-element room and advanced-aid exclusion are verified. Live acceptance is incomplete: preview lacks `GOOGLE_CLOUD_CREDENTIAL`; actual Google project/IAM and real microphone/STT/dynamic TTS proof remain outstanding. Preview and production calls stay off. The PR stays draft/open and unmerged. See `docs/reviews/phase-21-call-room.md` and `docs/operations/call-room.md`.
 
 ## VERSIONS
 
 - app: 0.1.0
-- content: 2026.09.17 (`content/content.yaml`, locked by `content/content.lock.yaml`)
+- content: 2026.09.18 (`content/content.yaml`, locked by `content/content.lock.yaml`)
 - simulator: 2026.09.11-r2 (`SIMULATOR_VERSION`, carried on every run and saved run and stamped on evidence)
 - mastery rules: 2026.09.03-r4 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
-- exercise grader: 2026.09.16 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
+- exercise grader: 2026.09.18 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
 
 ## PASSED
 
@@ -280,6 +282,15 @@ Phase 20 live voice assets:
 - VOI-005 — The reusable library is purchased once with provider-reported usage retained. Exact-byte promotion and provider-free production playback remove any dependency on future ElevenLabs credits.
 - DATA-007 — Both R2 buckets remain private with r2.dev disabled. Valid sessions receive saved audio; unauthenticated/revoked sessions receive 401 and another learner's private scope receives 403. Only known metadata asset IDs are addressable.
 
+Phase 21 local interface acceptance:
+
+- CALL-001 — One quiet dark Call Room has the six required elements, with five-width browser review and focused UI tests.
+- CALL-004 — Guided/practice anchors are secondary; independent/pressure anchors are absent from the DOM, checked in browser and UI tests.
+
+## IMPLEMENTED_UNVERIFIED
+
+- CALL-002, CALL-003, CALL-005, CALL-006, EXR-015, VOI-003, VOI-006, VOI-007, SEC-005 — Implemented and covered by controlled tests/probes. The missing preview Google Worker secret/project/IAM and deployed real microphone/provider checklist prevent live acceptance. No fixture is counted as live evidence.
+
 ## IN PROGRESS
 
 
@@ -335,7 +346,7 @@ None
 
 ## NEXT
 
-Phase 20 implementation awaits independent exact-head audit and merge. Production media indexing/deployment/verification follow merge; Phase 21 Call Room and Phase 24 continuity remain future work.
+Complete the secure Google preview setup in `docs/operations/call-room.md`, then enable configured preview calls and execute the real provider checklist. Phase 21 remains under independent review; keep its PR open and do not merge. Production secrets/gates and acceptance remain prerequisites for production readiness. Phase 24 continuity remains future work.
 
 ## PHASE CHECKLIST (§163)
 
@@ -359,8 +370,8 @@ Phase 20 implementation awaits independent exact-head audit and merge. Productio
 - [x] Phase 17 — Pricing Arena: pricing logic and scenarios (the pricing rubric is executed in Phase 19; PRI-001's price-on-removal half and PRI-002's reasoning half stay PARTIAL)
 - [x] Phase 18 — Negotiation: merged and production-green; NEG-003 language interpretation PARTIAL
 - [x] Phase 19 — AI Gateway: server routes, model routing, budget governor, structured grading, retry/failure behavior
-- [x] Phase 20 — Voice Asset System: reusable ElevenLabs assets (implementation reviewed on preview; independent merge and production verification pending)
-- [ ] Phase 21 — Call Room: turn-based voice simulations
+- [x] Phase 20 — Voice Asset System: reusable ElevenLabs assets, independently merged base
+- [ ] Phase 21 — Call Room: implementation under review; live Google/provider acceptance pending
 - [ ] Phase 22 — Fieldwork: real-GHL proof flow
 - [ ] Phase 23 — Portfolio: demonstration-project records
 - [ ] Phase 24 — Field Ready Content: placement through capstone
@@ -369,4 +380,4 @@ Phase 20 implementation awaits independent exact-head audit and merge. Productio
 
 ## ROLL-UP
 
-313 requirements registered · 189 PASSED · 8 IN_PROGRESS · 23 PARTIAL · 0 BLOCKED · 2 DEFERRED · 91 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 191 PASSED · 8 IN_PROGRESS · 23 PARTIAL · 9 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 80 NOT_STARTED. Run the validator for the live count by status and priority.

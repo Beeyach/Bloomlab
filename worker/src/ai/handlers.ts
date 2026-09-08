@@ -1,3 +1,5 @@
+import { getAttempt } from '../call/store';
+import type { CallState } from '../call/engine';
 import { classify } from './classify';
 import content from 'virtual:bloomlab-content';
 import { z } from 'zod';
@@ -91,6 +93,26 @@ export async function evaluate(
   if (rubric.id.replace(/_V[0-9]+$/, '') !== exercise.grading.rubric?.replace(/_V[0-9]+$/, ''))
     throw new AiError('invalid_rubric', 400);
   if (exercise.grading.mode === 'deterministic') throw new AiError('deterministic_only', 400);
+  if (exercise.call) {
+    let call;
+    try {
+      call = await getAttempt(db, session, input.attempt_id);
+    } catch {
+      throw new AiError('call_attempt_unavailable', 403);
+    }
+    const saved = (JSON.parse(call.state_json) as CallState).snapshot;
+    if (call.exercise_id !== exercise.id || !saved.complete)
+      throw new AiError('call_not_complete', 409);
+    // Server-confirmed transcript only: raw audio, original STT, notes and client-supplied payloads never reach Anthropic.
+    input.submission = JSON.stringify({
+      transcript: saved.turns.map((t) => ({
+        client: t.client.text,
+        learner: t.confirmed_transcript,
+      })),
+      closing: saved.current.text,
+      deterministic: saved.projection,
+    });
+  }
   const policy = await settings(db, session.learnerId);
   if (policy.mode === 'Off') throw new AiError('ai_off', 403);
   const hash = Array.from(
@@ -147,7 +169,9 @@ export async function evaluate(
       ? 'negotiation'
       : exercise.type === 'AUDIT_IT'
         ? 'diagnosis'
-        : 'written_coaching';
+        : exercise.type === 'SAY_IT'
+          ? 'call_feedback'
+          : 'written_coaching';
   // INSERT SELECT is one SQLite statement: concurrent isolates cannot oversubscribe the balance.
   const reservation = await db
     .prepare(

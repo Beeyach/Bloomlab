@@ -16,7 +16,7 @@ export function route(
 }
 /** Full model context input ceiling is deliberately reserved, including schema overhead.
  * This avoids treating an approximate tokenizer as a monetary hard bound. Two calls cover repair.
- * Requests themselves are bounded to 32KB; output is capped at 2048 tokens, thinking disabled.
+ * Public requests are bounded to 32KB; confirmed call transcripts are bounded to 80,000 characters; output is capped at 2048 tokens, thinking disabled.
  */
 export function maximumCost(model: Model): number {
   const context = model === MODELS.strong ? 1_000_000 : 200_000;

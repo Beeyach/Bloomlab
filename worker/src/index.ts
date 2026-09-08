@@ -1,3 +1,4 @@
+import { handleCall } from './call/handlers';
 import { handleAi } from './ai/handlers';
 import { handleVoice } from './voice/handlers';
 import { handleMedia } from './voice/playback';
@@ -22,6 +23,8 @@ export interface Env extends Omit<CloudflareBindings, 'BLOOMLAB_ENV'> {
   BLOOMLAB_ENV: string;
   ANTHROPIC_API_KEY?: string;
   ELEVENLABS_API_KEY?: string;
+  GOOGLE_CLOUD_CREDENTIAL?: string;
+  CALLS_ENABLED?: string;
   /** Worker secret (never in config): the server-side pepper for sync-key hashing (SYNC-003). */
   SYNC_KEY_PEPPER?: string;
 }
@@ -71,6 +74,7 @@ async function handleSync(request: Request, env: Env, path: string): Promise<Res
 
 /** Only /api/* reaches this handler (see wrangler.jsonc `run_worker_first`). */
 async function handleApi(request: Request, url: URL, env: Env): Promise<Response> {
+  if (url.pathname.startsWith('/api/call/')) return handleCall(request, env);
   if (url.pathname.startsWith('/api/media/')) return handleMedia(request, env);
   if (url.pathname.startsWith('/api/voice/')) return handleVoice(request, env);
   if (url.pathname.startsWith('/api/ai/')) return handleAi(request, env);

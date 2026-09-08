@@ -150,7 +150,7 @@ export function ResultView({
     ) ?? null;
 
   const negotiated = content.exercises.find(
-    (candidate) => candidate.id === attempt.exercise_id && candidate.negotiation,
+    (candidate) => candidate.id === attempt.exercise_id && candidate.negotiation && !candidate.call,
   );
   return (
     <section

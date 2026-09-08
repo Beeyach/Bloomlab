@@ -1,3 +1,4 @@
+import { CallConfigSchema, CALL_METRICS } from './call.ts';
 import { NegotiationConfigSchema, NEGOTIATION_METRICS } from './negotiation.ts';
 import { z } from 'zod';
 
@@ -283,6 +284,7 @@ interface SalesPathSubject {
   conversation: { nodes: { covers: string[]; situation?: string }[] } | null;
   pricing: { scope: { id: string }[] } | null;
   negotiation: unknown | null;
+  call?: { mode: string };
 }
 
 const listing = (values: readonly string[]): string => values.join(', ');
@@ -339,6 +341,13 @@ function salesPathIssues(exercise: SalesPathSubject, root: string, rest: string[
       } else known(EXPLANATION_METRICS);
       break;
     }
+    case 'call':
+      needs(
+        exercise.type === 'SAY_IT' && Boolean(exercise.call),
+        'call.* needs SAY IT call content',
+      );
+      known(CALL_METRICS);
+      break;
     case 'negotiation':
       needs(
         exercise.type === 'NEGOTIATE_IT' && exercise.negotiation !== null,
@@ -425,6 +434,7 @@ export const ExerciseSchema = z
     /** The deal this exercise prices: its scope, its cost basis and its policies (Phase 17). */
     pricing: PricingConfigSchema.nullable().default(null),
     negotiation: NegotiationConfigSchema.nullable().default(null),
+    call: CallConfigSchema.optional(),
     fieldwork: fieldwork.nullable().default(null),
     portfolio: portfolioRef.nullable().default(null),
     /** WRITE IT / SAY IT / EXPLAIN IT: what kind of piece, in the spec's own words. */
@@ -618,6 +628,7 @@ export const ExerciseSchema = z
           ...SALES_STATE_ROOTS,
           ...PRICING_STATE_ROOTS,
           'negotiation',
+          'call',
         ] as readonly string[];
         if (projected.includes(root ?? '')) {
           for (const message of salesPathIssues(exercise, root ?? '', rest)) {
@@ -725,9 +736,45 @@ export const ExerciseSchema = z
         );
       }
     }
+    if (exercise.type === 'SAY_IT' && !exercise.call)
+      issue(['call'], 'SAY IT requires a runnable call configuration');
+    if (exercise.call) {
+      if (exercise.type !== 'SAY_IT') issue(['call'], 'Only SAY IT carries call content');
+      if (!exercise.scenario) issue(['scenario'], 'A call needs a scenario');
+      if (
+        exercise.call.mode === 'negotiation'
+          ? !exercise.negotiation || Boolean(exercise.conversation)
+          : !exercise.conversation || Boolean(exercise.negotiation)
+      )
+        issue(['call'], 'A call uses exactly its existing conversation or negotiation graph');
+      if (['independent', 'pressure'].includes(exercise.mode) && exercise.call.anchors.length)
+        issue(['call', 'anchors'], 'Independent and pressure calls contain no anchors');
+      const nodes = exercise.conversation?.nodes ?? exercise.negotiation?.nodes ?? [];
+      for (const node of Object.keys(exercise.call.voice_lines))
+        if (!nodes.some((n) => n.id === node))
+          issue(['call', 'voice_lines'], `Unknown node ${node}`);
+      if (
+        exercise.call.open_response &&
+        !exercise.conversation?.nodes.some(
+          (n) => n.id === exercise.call?.open_response?.node && !n.end,
+        )
+      )
+        issue(['call', 'open_response'], 'An open response needs a continuing conversation node');
+      for (const rule of exercise.call.rules)
+        if (
+          !exercise.conversation?.nodes.some(
+            (n) => n.id === rule.node && n.moves.some((m) => m.id === rule.move),
+          )
+        )
+          issue(['call', 'rules'], 'A call rule must select an authored move at its node');
+    }
     if (exercise.type === 'NEGOTIATE_IT' && (!exercise.negotiation || !exercise.scenario))
       issue(['negotiation'], 'NEGOTIATE IT requires negotiation content and a scenario');
-    if (exercise.type !== 'NEGOTIATE_IT' && exercise.negotiation)
+    if (
+      exercise.type !== 'NEGOTIATE_IT' &&
+      exercise.call?.mode !== 'negotiation' &&
+      exercise.negotiation
+    )
       issue(['negotiation'], 'Only NEGOTIATE IT carries negotiation content');
     // ---- pricing and the proposal (Phase 17).
     if (exercise.type === 'PRICE_IT' && !exercise.pricing) {

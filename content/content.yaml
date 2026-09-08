@@ -1,8 +1,4 @@
-# Release stamp of the curriculum (spec §101, CNT-007). Bump content_version whenever any file
-# under content/ changes, then run `npm run content:lock`. Git = what Bloomlab teaches.
-content_version: '2026.09.17'
+content_version: 2026.09.18
 schema_version: 1
-notes: >-
-  Phase 20 — Voice assets. Five persistent voice characters with verified ElevenLabs catalog
-  IDs and eight reusable authored lines each. Generation and private storage are independent
-  of the simulator, mastery and exercise-grading contracts.
+notes: Phase 21 — Five authored SAY IT call modes and the eight-dimension call-performance rubric.
+  Voice assets and existing simulation/mastery rules retain their identities.

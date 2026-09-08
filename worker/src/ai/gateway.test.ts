@@ -8,6 +8,8 @@ import { cost, MODELS } from './catalog';
 import { maximumCost, route } from './governor';
 import { anthropic, type Provider } from './provider';
 import { validateGrading } from './output';
+import { getAttempt, startCall } from '../call/store';
+import type { CallState } from '../call/engine';
 const rubric = content.rubrics.find((r) => r.id === 'WRITTEN_COMMUNICATION_RUBRIC_V2')!;
 const valid = () => ({
   score: 100,
@@ -221,22 +223,28 @@ describe('AI-011 authored rubric audit', () => {
     async (exercise) => {
       const r = content.rubrics.find((r) => r.id === exercise.grading.rubric)!;
       const { session } = await learner();
-      const answer = await evaluate(
-        { ...request(), exercise_id: exercise.id, rubric_id: r.id },
-        session,
-        env.DB,
-        async () => ({
-          usage,
-          value: {
-            ...valid(),
-            rubric_results: r.items.map((i) => ({
-              id: i.id,
-              passed: true,
-              reason: 'Authored item evidence',
-            })),
-          },
-        }),
-      );
+      const input = { ...request(), exercise_id: exercise.id, rubric_id: r.id };
+      if (exercise.call) {
+        // This audit checks rubric identity. The call integration suite exercises real transitions.
+        await startCall(env.DB, session, input.attempt_id, exercise.id);
+        const row = await getAttempt(env.DB, session, input.attempt_id);
+        const state = JSON.parse(row.state_json) as CallState;
+        state.snapshot.complete = true;
+        await env.DB.prepare('UPDATE call_attempts SET state_json=? WHERE attempt_id=?')
+          .bind(JSON.stringify(state), input.attempt_id)
+          .run();
+      }
+      const answer = await evaluate(input, session, env.DB, async () => ({
+        usage,
+        value: {
+          ...valid(),
+          rubric_results: r.items.map((i) => ({
+            id: i.id,
+            passed: true,
+            reason: 'Authored item evidence',
+          })),
+        },
+      }));
       expect(answer.rubric_id).toBe(exercise.grading.rubric);
       expect(answer.rubric_version).toBe(r.version);
     },

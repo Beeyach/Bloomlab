@@ -2,7 +2,15 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-08 (Phase 20 review)
+Last updated: 2026-09-08 (Phase 21 implementation review)
+
+## Phase 21 — Call Room acceptance gate
+
+- Implementation is under review with preview/production calls disabled. Preview lacks the `GOOGLE_CLOUD_CREDENTIAL` Worker secret; Google project/API/IAM and a real microphone → private R2 → Google STT → confirmed turn remain unverified. The exact secure action is in `docs/operations/call-room.md`. Existing rotated ElevenLabs preview binding is a Worker secret.
+- Local browser coverage uses a virtual microphone and explicit HTTP fixtures. It establishes interaction, Blob persistence/recovery and five-width layout, not live Google/dynamic ElevenLabs/private remote recording acceptance. Physical mobile/Safari recording and assistive technology are unverified.
+- There is no timed deletion sweep: unsuccessful/abandoned raw recordings remain private until resume or manual deletion. Default cleanup follows a durable confirmed branch; retained audio requires explicit deletion. Browser eviction can remove a local copy, and a reload before MediaRecorder finishes cannot recover unfinished bytes.
+- Dynamic speech is narrowly constrained to a verified confirmed-text quote plus an authored question. Missing static audio uses text; uncertain provider purchases require operator reconciliation. No arbitrary-text synthesis, full-duplex streaming, background STT, active-call cross-device resume or Boss Client continuity is claimed.
+- Nine Phase 21 targets remain IMPLEMENTED_UNVERIFIED. Broad privacy/infrastructure rows and PRI-001, PRI-002, NEG-003, EXR-024 carryovers retain their prior status. Independent audit, production secret setup and reviewed gate changes remain before production readiness. Details: `docs/reviews/phase-21-call-room.md`.
 
 ## Current state
 
@@ -383,8 +391,8 @@ The prose-grading boundary below records Phase 16 at closure. Phase 19 now execu
   consequences, and it is not natural-language understanding: two different questions inside the
   same move reach the same reply.
 - **Discovery is written, not spoken.** SAL-004 and SAL-005 are trained and measured over a written
-  thread. Voice discovery, the Call Room and `EX-SAY_IT-summit-discovery` (which still asserts on
-  `call.*` and is still un-runnable) wait for Phases 20 and 21. Nothing in Phase 16 judges accent,
+  thread. At Phase 16, spoken discovery and `EX-SAY_IT-summit-discovery` still needed a runtime.
+  Phase 21 now supplies the call implementation; its live acceptance gate is recorded above. Nothing in Phase 16 judges accent,
   pace or delivery, and it should not be read as having done so.
 - **Jargon counting is one signal, not a measure of clarity.** `explanation.owner_jargon_count`
   counts distinct glossary terms that are not marked `owner_safe`, whole-word with an optional
@@ -473,14 +481,14 @@ The prose-grading boundary below records Phase 16 at closure. Phase 19 now execu
 - The governor reserves the full model input-context ceiling at cache-write pricing plus bounded output, for two calls. This deliberately conservative maximum includes unobservable structured-output overhead and can refuse small requests while a visible balance remains. It downgrades to Haiku before refusal. Unknown provider outcomes retain reservations for the UTC month rather than silently risking double spending.
 - A Worker termination while a rubric run is active currently requires operational reconciliation; ordinary caught provider failures support retry. Reservations are not automatically refunded on timeout.
 - Full permits optional work but adds no speculative coaching buttons. Settings are reached from Sync and devices; the rail and mobile navigation are unchanged.
-- Historical finalized rubric_pending attempts remain unchanged. New successful evaluations finalize once; old rubric IDs retained in content remain resolvable. Voice-only SAY IT still needs its later runtime.
+- Historical finalized rubric_pending attempts remain unchanged. New successful evaluations finalize once; old rubric IDs retained in content remain resolvable. At Phase 19, voice-only SAY IT still needed its later runtime; Phase 21 now implements it with live acceptance pending above.
 
 ## Phase 20 — voice assets
 
 - The library covers the five current fictional clients and six reusable line kinds. Account-catalog metadata informed selection; browser decoding, waveform levels and clipping checks provide technical audio inspection. No human listening assessment, accent certification or subjective character-performance sign-off is claimed.
 - Speech rate, style and stability are transmitted as supported numeric settings. Language and allowed emotion range are authored direction for multilingual_v2, not guaranteed expressive controls. No unsupported language_code parameter is sent.
 - The new media table implements private authored voice assets and an ownership primitive. DATA-006 stays PARTIAL because its full matrix scope also names screenshots, portfolio/fieldwork media, recovery backups and attachments, whose upload/storage flows belong to later phases. No learner recording or general upload endpoint exists yet.
-- VOI-003, VOI-006, VOI-007, CALL-* and EXR-015 remain NOT_STARTED. The review surface preserves authored text on errors but does not claim the future transcription/retry contract. voice_calls remains off in production; /system/voice is a local/preview diagnostic route.
+- Historical Phase 20 boundary: VOI-003, VOI-006, VOI-007, CALL-* and EXR-015 were NOT_STARTED. Phase 21 supersedes those statuses as recorded above. The review surface preserves authored text on errors but does not claim the future transcription/retry contract. voice_calls remains off in production; /system/voice is a local/preview diagnostic route.
 - Private audio is fetched as an authenticated no-store blob and released when its player unmounts. It is not persisted for offline playback. A revoked device cannot fetch new bytes; already delivered bytes cannot be recalled.
 - Known provider rejections can be retried explicitly. Ambiguous or interrupted purchases remain claimed for manual reconciliation, so a lost response can require operator work before generation continues. Provider history recovery is documented but not automated. Promotion stops on unexpected existing bytes or conflicting metadata.
 - Exact files may be promoted to the production R2 bucket before merge, but the production D1 migration/index and Worker deployment remain the independent post-merge CI path. The deployment credential must allow R2 reads and D1 writes. Production playback verification is pending that deployment, and no production ElevenLabs secret is required.

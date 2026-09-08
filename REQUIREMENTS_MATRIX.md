@@ -113,7 +113,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-012 | PROSPECT IT: multiple fake businesses; learner decides Contact / Maybe / Skip with required reasoning. | P1 | 16 | PASSED | §27 |
 | EXR-013 | AUDIT IT: findings forced into Verified / Likely / Unknown. | P1 | 16 | PASSED | §27 |
 | EXR-014 | WRITE IT: cold email, follow-up, interested reply, discovery recap, proposal explanation, client update, scope response, payment reminder, upsell, breakup email; AI rubric where needed. | P1 | 16 | PASSED | §27 |
-| EXR-015 | SAY IT: voice practice modes cold call, discovery, proposal presentation, negotiation, client explanation. | P1 | 21 | NOT_STARTED | §27 |
+| EXR-015 | SAY IT: voice practice modes cold call, discovery, proposal presentation, negotiation, client explanation. | P1 | 21 | IMPLEMENTED_UNVERIFIED | §27 |
 | EXR-016 | PRICE IT: learner sets project price, deposit, recurring, rush fee, timeline, revisions, inclusions, exclusions; hidden economics and risk revealed after submission. | P1 | 17 | PASSED | §27 |
 | EXR-017 | NEGOTIATE IT: client pushes back; learner may clarify, hold price, reduce scope, phase, concede, or walk away; winning is not the only success. | P1 | 18 | PASSED | §27 |
 | EXR-018 | EXPLAIN IT: technical explanation for different audiences (business owner, another GHL builder). | P1 | 16 | PASSED | §27 |
@@ -257,12 +257,12 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| CALL-001 | Call Room is minimal, immersive, dark; shows client identity, company, objective, audio state, elapsed time, notes drawer. Not a Zoom clone. | P1 | 21 | NOT_STARTED | §79 |
-| CALL-002 | Turn-based v1 flow: client audio → learner response → record → transcribe → evaluate → update scenario → next response, with natural transitions. No full-duplex realtime telephony in v1. | P1 | 21 | NOT_STARTED | §117, §118, TA§48 |
-| CALL-003 | Call grading: questions, listening, diagnosis, clarity, jargon, pitch timing, objection handling, next step. Accent is not graded. | P1 | 21 | NOT_STARTED | §119 |
-| CALL-004 | Early training may show discovery anchors; advanced calls remove aids. | P2 | 21 | NOT_STARTED | §79 |
-| CALL-005 | Mobile-first voice experience. | P1 | 21 | NOT_STARTED | §83 |
-| CALL-006 | Recording policy: transcript saved by default; raw audio temporary, optional to retain, user-deletable. | P1 | 21 | NOT_STARTED | TA§49 |
+| CALL-001 | Call Room is minimal, immersive, dark; shows client identity, company, objective, audio state, elapsed time, notes drawer. Not a Zoom clone. | P1 | 21 | PASSED | §79 |
+| CALL-002 | Turn-based v1 flow: client audio → learner response → record → transcribe → evaluate → update scenario → next response, with natural transitions. No full-duplex realtime telephony in v1. | P1 | 21 | IMPLEMENTED_UNVERIFIED | §117, §118, TA§48 |
+| CALL-003 | Call grading: questions, listening, diagnosis, clarity, jargon, pitch timing, objection handling, next step. Accent is not graded. | P1 | 21 | IMPLEMENTED_UNVERIFIED | §119 |
+| CALL-004 | Early training may show discovery anchors; advanced calls remove aids. | P2 | 21 | PASSED | §79 |
+| CALL-005 | Mobile-first voice experience. | P1 | 21 | IMPLEMENTED_UNVERIFIED | §83 |
+| CALL-006 | Recording policy: transcript saved by default; raw audio temporary, optional to retain, user-deletable. | P1 | 21 | IMPLEMENTED_UNVERIFIED | TA§49 |
 
 ## FLD — Fieldwork
 
@@ -413,11 +413,11 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 |---|---|---|---|---|---|
 | VOI-001 | ElevenLabs provides recurring fictional client voices. | P1 | 20 | PASSED | §113, TA§43 |
 | VOI-002 | Pre-generated asset mode (preferred): greetings, objections, interruptions, voicemail, recurring lines, scripted scenario dialogue stored in R2. | P1 | 20 | PASSED | §114, TA§44 |
-| VOI-003 | Dynamic TTS only where open-ended roleplay needs it (`scenario/Claude response → ElevenLabs → audio`); reusable generated lines cached. | P2 | 21 | NOT_STARTED | §115, TA§45 |
+| VOI-003 | Dynamic TTS only where open-ended roleplay needs it (`scenario/Claude response → ElevenLabs → audio`); reusable generated lines cached. | P2 | 21 | IMPLEMENTED_UNVERIFIED | §115, TA§45 |
 | VOI-004 | Voice character registry: client, voice ID, speech rate, style, stability, allowed emotion range, language; recurring characters keep consistent voices. | P1 | 20 | PASSED | §116, TA§46 |
 | VOI-005 | While the ~128k expiring ElevenLabs credits remain, prioritise generating a reusable voice library; future functionality never depends on those credits. | P2 | 20 | PASSED | §113 |
-| VOI-006 | Google Cloud Speech-to-Text V2, turn-based: record locally → upload via backend → transcribe → show transcript → evaluate → optionally delete raw audio. No live streaming in v1. | P1 | 21 | NOT_STARTED | §117, TA§47 |
-| VOI-007 | TTS failure shows transcript/text fallback; transcription failure preserves the recording and allows retry. | P0 | 21 | NOT_STARTED | §149, TA§79 |
+| VOI-006 | Google Cloud Speech-to-Text V2, turn-based: record locally → upload via backend → transcribe → show transcript → evaluate → optionally delete raw audio. No live streaming in v1. | P1 | 21 | IMPLEMENTED_UNVERIFIED | §117, TA§47 |
+| VOI-007 | TTS failure shows transcript/text fallback; transcription failure preserves the recording and allows retry. | P0 | 21 | IMPLEMENTED_UNVERIFIED | §149, TA§79 |
 
 ## INF — Infrastructure and Process
 
@@ -458,7 +458,7 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 | SEC-002 | Production data is never used casually for development. | P0 | all | NOT_STARTED | §152 |
 | SEC-003 | Learner screenshots and fieldwork media are never published. | P0 | all | NOT_STARTED | §152 |
 | SEC-004 | Raw sync secret is never stored server-side (see SYNC-003). | P0 | 4 | PASSED | §152 |
-| SEC-005 | Private recordings are never silently sent to unrelated services. | P0 | 21 | NOT_STARTED | §152 |
+| SEC-005 | Private recordings are never silently sent to unrelated services. | P0 | 21 | IMPLEMENTED_UNVERIFIED | §152 |
 | SEC-006 | Recording consent/privacy product-legal pass before any commercial launch. | P3 | — | DEFERRED | TA§49 |
 
 ## CNT — Content Architecture

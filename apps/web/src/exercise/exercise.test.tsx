@@ -318,6 +318,18 @@ describe('hints and assistance (EXR-022, MAS-007)', () => {
     expect(evidence[0]?.hints_used).toEqual(['nudge']);
   });
 
+  it('preserves the guided floor in the finalized attempt and evidence without hints', async () => {
+    const started = await answerDecision();
+    const { attempt: row, report } = await finalizeAttempt(
+      { ...decision, mode: 'guided' },
+      started,
+      db,
+    );
+    expect(report.assistance).toBe('guided');
+    expect(row.assistance).toBe('guided');
+    expect((await db.skill_evidence.toArray())[0]?.assistance).toBe('guided');
+  });
+
   it('a guided exercise is guided practice whatever the hint log says', async () => {
     const guided = byId(RUN_THE_LEAD);
     expect(guided.mode).toBe('guided');

@@ -4,6 +4,14 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 21 · Call Room (live acceptance pending)
+
+- One content-driven dark Call Room in the existing exercise runner: cold call, discovery, proposal presentation, negotiation and client explanation. Explicit recording/transcript/branch/audio/recovery phases, notes drawer, guided anchors and advanced aid exclusion.
+- Native bounded MediaRecorder capture into a separate local-only Dexie v5 Blob table before authenticated upload. Private R2 recording CRUD, R2-first recovery, metadata-only additive migration `0004`, retained-audio replay/deletion and transcript-first default cleanup.
+- Worker-only Google STT V2 with RS256 service-account OAuth and in-memory token reuse; original/corrected transcript review and explicit confirmation. Existing conversation/negotiation/pricing engines are shared with the Worker, with durable turn claims, authored fallback, bounded classification and private cached authorized TTS.
+- Exact eight-dimension call rubric and `call_feedback` accounting. Server-confirmed text feeds feedback; objective critical/required gates stay authoritative. Guided assistance labels and fresh-attempt history are preserved correctly.
+- Content/grader `2026.09.18`; app, simulator and mastery unchanged. Controlled browser/provider tests and a dedicated five-width touch/keyboard probe; secure setup/recovery runbook and review evidence. Live Google project/IAM/microphone/STT/dynamic TTS proof is outstanding because preview lacks `GOOGLE_CLOUD_CREDENTIAL`. Preview/production calls stay off; Phase 21 is not marked complete.
+
 ### Added — Phase 20 · Voice Assets
 
 - Five first-class voice-character YAML records with verified ElevenLabs catalog IDs, the seven-field identity/settings contract and eight reusable lines per client. Bidirectional client references, line uniqueness, emotion bounds and generation inputs are validated; content advances to `2026.09.17` with a regenerated lock.

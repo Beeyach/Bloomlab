@@ -3,7 +3,8 @@ import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('../apps/web/dist/client', import.meta.url)));
-const forbidden = /ELEVENLABS_API_KEY|xi-api-key|api\.elevenlabs\.io|@elevenlabs\//i;
+const forbidden =
+  /GOOGLE_CLOUD_CREDENTIAL|ANTHROPIC_API_KEY|ELEVENLABS_API_KEY|xi-api-key|api\.elevenlabs\.io|api\.anthropic\.com|speech\.googleapis\.com|oauth2\.googleapis\.com|BEGIN PRIVATE KEY|@elevenlabs\//i;
 function check(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
@@ -16,4 +17,6 @@ function check(dir) {
   }
 }
 check(root);
-console.log('SEC-001: browser output contains no ElevenLabs provider code or key literal.');
+console.log(
+  'SEC-001: browser output contains no Google, Anthropic or ElevenLabs provider code or key literal.',
+);

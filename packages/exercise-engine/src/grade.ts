@@ -140,7 +140,8 @@ function gradeOne(input: GradeInput): GradeReport {
   const requiredIsGate =
     exercise.type === 'FUNNEL_ASSEMBLY' ||
     exercise.type === 'PRICE_IT' ||
-    exercise.type === 'NEGOTIATE_IT';
+    exercise.type === 'NEGOTIATE_IT' ||
+    exercise.type === 'SAY_IT';
   const failedRequired = requiredIsGate
     ? tiers.required.filter((result) => !result.passed && !result.unevaluated)
     : [];
@@ -151,8 +152,7 @@ function gradeOne(input: GradeInput): GradeReport {
     // A dangerous failure ends it, whatever the number says (MAS-004).
     if (failedCritical.length > 0) return { outcome: 'failed', reason: 'critical_failure' };
     if (unevaluated.length > 0) return { outcome: 'partial', reason: 'unevaluated_assertions' };
-    // FUNNEL ASSEMBLY and PRICE IT name structural / deal constraints as required. Missing one
-    // cannot be averaged away by quality points from the rest of the work (EXR-011, EXR-016).
+    // Structural, deal and call constraints marked required cannot be averaged away by quality.
     if (failedRequired.length > 0) return { outcome: 'failed', reason: 'required_failure' };
     // A rubric this phase cannot evaluate is never quietly treated as passed (AI-006).
     if (rubricPending) return { outcome: 'partial', reason: 'rubric_pending' };

@@ -1,3 +1,5 @@
+import { content } from '../content/bundle';
+import type { CallResponse } from '@bloomlab/shared';
 import type { GradeReport } from '@bloomlab/exercise-engine';
 import { classifyLanguage } from '../ai/client';
 import { negotiationOf } from './negotiation/context';
@@ -127,7 +129,7 @@ export const loadAttempt = (
  */
 export async function startAttempt(
   exercise: Pick<Exercise, 'id' | 'skills'> &
-    Partial<Pick<Exercise, 'negotiation' | 'scenario' | 'grading'>>,
+    Partial<Pick<Exercise, 'negotiation' | 'scenario' | 'grading' | 'call'>>,
   context: AttemptContext = NORMAL_RUN,
   options: { now?: Date } = {},
   database: BloomlabDatabase = db,
@@ -149,7 +151,7 @@ export async function startAttempt(
     hints_revealed: [],
     response: emptyResponse(),
   };
-  if (exercise.negotiation && exercise.scenario) {
+  if (exercise.negotiation && exercise.scenario && !exercise.call) {
     const initial = negotiationOf({
       negotiation: exercise.negotiation,
       scenario: exercise.scenario,
@@ -346,4 +348,50 @@ export async function checkpointSubmission(
     },
     false,
   );
+}
+
+export const emptyCallResponse = (): CallResponse => ({
+  version: 1,
+  phase: 'ready',
+  notes: '',
+  retain_audio: false,
+  elapsed_ms: 0,
+  recording_id: null,
+  transcript_draft: '',
+  snapshot: null,
+});
+/** Call edits use the same queue as notes, hints and final submission. */
+export async function saveCall(
+  exerciseId: string,
+  context: AttemptContext,
+  attemptId: string,
+  patch: Partial<CallResponse>,
+  database: BloomlabDatabase = db,
+): Promise<CallResponse> {
+  const saved = await update(
+    exerciseId,
+    context,
+    (current) => {
+      if (current.attempt_id !== attemptId)
+        throw new Error('This call is no longer the active attempt.');
+      return {
+        ...current,
+        ...(!current.response.call
+          ? {
+              rubric_id:
+                content.exercises.find((e) => e.id === exerciseId)?.grading.rubric ??
+                current.rubric_id,
+            }
+          : {}),
+        response: {
+          ...current.response,
+          call: { ...emptyCallResponse(), ...current.response.call, ...patch },
+        },
+      };
+    },
+    database,
+  );
+  if (!saved?.response.call)
+    throw new Error('This call could not be checkpointed. Keep this page open and retry.');
+  return saved.response.call;
 }
