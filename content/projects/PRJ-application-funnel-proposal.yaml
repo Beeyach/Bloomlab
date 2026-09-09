@@ -1,18 +1,24 @@
-# Starter project (spec §154): the selling half of an Application Funnel — discovery, pricing,
-# negotiation — for a persistent client.
 id: PRJ-application-funnel-proposal
-title: Application Funnel Proposal
+title: Application Funnel
 tier: field_ready
-brief: |
+brief: >-
   Marcus at Summit wants fewer unqualified calls and faster replies to applications, and he has
+
   a cheaper quote in hand. Run discovery, price the application funnel, and handle the
+
   push-back — ending with a proposal he can accept or a clean walk-away.
+
+
+  Then build and test the application and qualification path in the Funnel Lab. The saved sales work
+  does not stand in for an implemented customer path.
 client: CL-summit-coaching
 skills:
   - SK-SELL-discovery-call
   - SK-SELL-project-pricing
   - SK-SELL-negotiation-basics
   - SK-DELIVER-proposal-writing
+  - SK-BUILD-lead-capture-form
+  - SK-BUILD-conversion-copy
 stages:
   - id: s1
     name: Discovery
@@ -33,8 +39,13 @@ stages:
     name: Proposal
     exercises:
       - EX-WRITE_IT-summit-proposal
-    deliverable: >-
-      A proposal with all eight sections, in Marcus's language, that he can accept in one reply.
+    deliverable: A proposal with all eight sections, in Marcus's language, that he can accept in one reply.
+  - id: s5
+    name: Build and test the application
+    exercises:
+      - EX-FUNNEL_ASSEMBLY-summit-application
+    deliverable: A connected capture, qualification, booking and confirmation path with recorded
+      new/repeat submissions.
 fieldwork_required: false
 portfolio: PF-application-qualification-system
 capstone: false

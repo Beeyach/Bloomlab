@@ -42,7 +42,7 @@ const columns = [
   'generation_version',
 ];
 const expected = [];
-for (const voice of content.voice_characters)
+for (const voice of content.voice_characters.filter((voice) => voice.asset_delivery !== 'text'))
   for (const line of voice.lines)
     expected.push({ voice, line, ...(await voiceIdentity(voice, line)) });
 const sqlValue = (value) =>

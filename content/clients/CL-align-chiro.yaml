@@ -1,0 +1,62 @@
+id: CL-align-chiro
+business_name: Align Chiropractic
+industry: chiropractor
+locations:
+  - name: Align Chiropractic main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: June Ellis
+    role: Practice owner
+    notes: Cancellation and reschedule must withdraw stale communication before scheduling replacements.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Initial assessment
+    price: 95
+    billing: one_time
+    notes: Cancellation and reschedule must withdraw stale communication before scheduling replacements.
+lead_sources:
+  - Community partnerships
+current_systems:
+  - Practice booking system
+  - manual reminders
+metrics:
+  monthly_leads: 150
+problems:
+  - Rescheduled appointments leave old reminders in a separate messaging list.
+  - Cancellation and reschedule must withdraw stale communication before scheduling replacements.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes: Cancellation and reschedule must withdraw stale communication before scheduling replacements.
+hidden_facts:
+  stale_reminders: true
+voice:
+  character: VC-align-chiro
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - The wrong reminder is worse than no reminder. Patients turn up at the old time.
+history:
+  - date: 2026-09-09
+    event: 'Training brief received: Rescheduled appointments leave old reminders in a separate
+      messaging list.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 2600
+  stated_budget: 1820
+  decision_authority: sole

@@ -1,0 +1,47 @@
+id: EX-WRITE_IT-glowhaus-reporting-review
+type: WRITE_IT
+title: Explain the trial without inventing results
+skills:
+  - SK-DELIVER-client-explanation
+instructions: The training trial recorded 100 enquiries, 50 bookings, 30 attended consultations and
+  9 purchases. Spend was 1200 and recorded purchase value was 3690. The prior comparison period was
+  shorter and staff availability changed. Calculate booking, show and close rates; explain what is
+  observed, what cannot be attributed to the system, and what experiment or verification should come
+  next. These are authored training figures, not a real client result.
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.observed_answered
+    operator: equals
+    value: true
+    description: Answer the observed results brief.
+  - id: a2
+    type: state
+    path: written.next_answered
+    operator: equals
+    value: true
+    description: Answer the a defensible next action brief.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: DELIVERY_COMMUNICATION_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: observed
+    label: Observed results
+    help: Report the rates, period and denominator; separate them from causal claims.
+    rows: 4
+  - key: next
+    label: A defensible next action
+    help: Name the missing comparison evidence, the test and the owner.
+    rows: 4
+topics:
+  - diagnosis.analytics
+  - diagnosis.experimentation
+  - selling.client_language
+time_category: retrieval

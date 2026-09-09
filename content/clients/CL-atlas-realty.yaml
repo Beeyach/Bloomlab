@@ -1,0 +1,65 @@
+id: CL-atlas-realty
+business_name: Atlas Neighbourhood Realty
+industry: realtor
+locations:
+  - name: Atlas Neighbourhood Realty main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Mina Brooks
+    role: Broker
+    notes: Existing brokerage ownership rules must survive any new routing; the broker can approve a
+      pilot only.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Buyer consultation
+    price: 0
+    billing: one_time
+    notes: Existing brokerage ownership rules must survive any new routing; the broker can approve a
+      pilot only.
+lead_sources:
+  - Property portals
+current_systems:
+  - Brokerage CRM
+  - agents personal calendars
+metrics:
+  monthly_leads: 210
+problems:
+  - Portal enquiries are assigned twice when two agents respond at once.
+  - Existing brokerage ownership rules must survive any new routing; the broker can approve a pilot
+    only.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes: Existing brokerage ownership rules must survive any new routing; the broker can approve a
+      pilot only.
+hidden_facts:
+  assignment_overlap: true
+voice:
+  character: VC-atlas-realty
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - One enquiry should have one accountable agent, even when everybody sees it.
+history:
+  - date: 2026-09-09
+    event: 'Training brief received: Portal enquiries are assigned twice when two agents respond at once.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 4200
+  stated_budget: 2940
+  decision_authority: sole

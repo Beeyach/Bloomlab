@@ -1,0 +1,163 @@
+id: PRJ-field-ready-capstone
+title: Full Capstone — Glowhaus
+tier: field_ready
+client: CL-glowhaus-medspa
+skills:
+  - SK-STRATEGIZE-bottleneck-diagnosis
+  - SK-BUILD-lead-capture-form
+  - SK-AUTOMATE-workflow-foundations
+  - SK-ARCHITECT-pipeline-design
+  - SK-DIAGNOSE-workflow-troubleshooting
+  - SK-SELL-project-pricing
+  - SK-SELL-negotiation-basics
+  - SK-DELIVER-proposal-writing
+  - SK-DELIVER-client-explanation
+  - SK-JUDGMENT-automation-appropriateness
+stages:
+  - id: audit
+    name: Audit
+    exercises:
+      - EX-AUDIT_IT-glowhaus-boss
+    deliverable: An evidence-labelled diagnosis.
+    engagement_stage: audit
+    actions:
+      - diagnose
+  - id: discovery
+    name: Discovery
+    exercises:
+      - EX-WRITE_IT-glowhaus-boss-discovery
+    deliverable: An agreed problem and explicit unknowns.
+    engagement_stage: discovery
+  - id: architecture
+    name: Architecture
+    exercises:
+      - EX-ARCHITECTURE_DECISION-boss-scope
+    deliverable: A release boundary, data model and routing ownership.
+    engagement_stage: architecture
+    actions:
+      - architect
+  - id: pricing
+    name: Pricing
+    exercises:
+      - EX-PRICE_IT-glowhaus-two-locations
+    deliverable: A defensible quote with scope, deposits, support and exclusions.
+    engagement_stage: pricing
+    actions:
+      - price
+  - id: negotiation
+    name: Negotiation
+    exercises:
+      - EX-NEGOTIATE_IT-glowhaus-boss
+    deliverable: A sound agreement or professional exit with explicit conditions.
+    engagement_stage: negotiation
+    actions:
+      - negotiate
+  - id: proposal
+    name: Proposal
+    exercises:
+      - EX-WRITE_IT-glowhaus-boss-proposal
+    deliverable: A proposal tied to the selected boundary and prior commercial reasoning.
+    engagement_stage: proposal
+    actions:
+      - propose
+  - id: implementation
+    name: Implementation
+    exercises:
+      - EX-BUILD_IT-consultation-capacity
+      - EX-REBUILD_BLIND-appointment-reminders
+      - EX-FIELDWORK-field-ready-core
+    deliverable: Independent build work and manual real-GHL proof.
+    engagement_stage: implementation
+    actions:
+      - build
+  - id: qa
+    name: Quality assurance
+    exercises:
+      - EX-WHAT_WOULD_YOU_BUILD-qa-release
+      - EX-FIX_IT-double-reminder
+    deliverable: A nineteen-area QA record and a corrected duplicate sender.
+    engagement_stage: qa
+    actions:
+      - test
+      - troubleshoot
+    conditional_exercises:
+      - from_stage: architecture
+        from_exercise: EX-ARCHITECTURE_DECISION-boss-scope
+        choice: two_locations
+        exercises:
+          - EX-WHAT_WOULD_YOU_BUILD-second-location-qa
+        consequence:
+          Your two-location boundary adds four routing and communication tests. This QA stage
+          cannot complete without that additional result.
+  - id: launch
+    name: Launch and handoff
+    exercises:
+      - EX-WRITE_IT-glowhaus-handoff
+    deliverable: An acceptance request and accountable transfer; no invented approval.
+    engagement_stage: launch
+  - id: reporting
+    name: Reporting
+    exercises:
+      - EX-WRITE_IT-glowhaus-reporting-review
+    deliverable: A restrained explanation of observed training metrics.
+    engagement_stage: reporting
+    actions:
+      - explain
+  - id: change_request
+    name: Change request
+    exercises:
+      - EX-WRITE_IT-glowhaus-scope-change
+    deliverable: A bounded commercial response to added work.
+    engagement_stage: change_request
+brief: Take Glowhaus from an outside-in audit to a maintainable consultation release. Work
+  independently through the eleven-stage engagement. Saved results and their evidence determine
+  progress. Earlier architecture decisions change later QA obligations. A simulated agreement is not
+  real client acceptance.
+fieldwork_required: true
+portfolio: null
+capstone: true
+boss_client: true
+reasoning_questions:
+  - Why use a custom field rather than a tag or account value for this fact?
+  - Why does the pipeline represent these decisions and owners?
+  - What happens when someone books late?
+  - What changes when a second location is included?
+  - What happens when the phone number is missing?
+  - What happens when someone reschedules?
+  - Why is this price defensible for the scope and risk?
+  - What would you remove for a lower budget while preserving safe delivery?
+inputs:
+  - category: business
+    brief: Glowhaus is an Austin med spa. Priya owns the business; the first operating site is South
+      Congress and a second site is under consideration.
+  - category: offers
+    brief:
+      Free consultation leading to treatment plans; Signature Facial is 185 and membership is 149
+      monthly. The consultation funnel must not charge for a free call.
+  - category: staff
+    brief:
+      Priya treats clients; Dana handles intake but is away Mondays; Theo approves availability.
+      Separate second-location staffing is unresolved.
+  - category: metrics
+    brief:
+      The discovery estimate is 140 enquiries monthly, 46% booking, 58% showing and 35% closing.
+      Treat estimates as estimates and request source reports before causal claims.
+  - category: current_systems
+    brief:
+      Square holds existing appointments, Meta and Instagram produce enquiries, and the front desk
+      uses shared email and manual follow-up. Verify ownership and migration constraints.
+  - category: problems
+    brief:
+      Enquiries wait without an owner, reminders can use stale booking details and data is split
+      across tools. Diagnose the operating bottleneck before selecting a build.
+  - category: hidden_edge_cases
+    brief: The evaluation includes cases beyond the ordinary booking path. Build and test your own
+      failure matrix; the nine required reasoning areas include timing, contact data, location
+      changes and rescheduling. Do not assume a happy-path test proves the release.
+  - category: client_communications
+    brief: Priya asks what changes for Dana and who will maintain it. The later thread requests an
+      additional location on the existing fee and date. Write responses grounded in the saved scope.
+  - category: budget_constraints
+    brief: Discovery opens a discussion around 4500 for a bounded release. The expanded two-location
+      pricing and negotiation scenario has greater scope and risk. Reduce scope, revise the
+      agreement or walk away when necessary; do not imply approval or a universal correct fee.

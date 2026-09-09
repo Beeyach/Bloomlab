@@ -1,0 +1,47 @@
+id: EX-WHAT_WOULD_YOU_BUILD-second-location-qa
+type: WHAT_WOULD_YOU_BUILD
+title: Verify the expanded release
+skills:
+  - SK-JUDGMENT-automation-appropriateness
+  - SK-DIAGNOSE-workflow-troubleshooting
+instructions: 'Your earlier architecture selected both locations. Perform the additional routing
+  checks in the training build: each location offers its own availability and staff, the correct
+  owner receives the enquiry, a reschedule does not cross locations accidentally, and
+  confirmation/reminders name the right location. Record expected and observed results. Hold until
+  all four pass; this extra work is required only for the expanded Boss Client boundary.'
+mode: independent
+difficulty: 3
+estimated_minutes: 40
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: all_tests
+    type: state
+    path: review.all_passed
+    operator: equals
+    value: true
+    description: Every expanded-scope test must pass.
+critical_failures:
+  - id: release
+    type: state
+    path: review.safe_decision
+    operator: equals
+    value: true
+    description: Do not release incomplete expanded-scope work.
+grading:
+  mode: deterministic
+  pass_threshold: 100
+hints: []
+written_fields: []
+topics:
+  - qa.calendar
+  - qa.reschedule
+  - qa.workflow_entry
+review_checks:
+  - key: availability
+    prompt: Test a slot at each location against its staff and hours.
+  - key: ownership
+    prompt: Submit an enquiry for each location and inspect the resulting owner.
+  - key: reschedule
+    prompt: Reschedule at each location and verify old reminders stop without crossing locations.
+  - key: message
+    prompt: Inspect confirmations and reminders for the correct location and time.

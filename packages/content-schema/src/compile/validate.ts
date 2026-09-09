@@ -892,7 +892,10 @@ export function crossValidate(parsed: ParsedContent, issues: IssueList): GraphRe
     requireRef('MISSING_CLIENT', look.clients, project.client, project, 'client', 'client');
     project.skills.forEach((skill, index) => requireSkill(skill, project, `skills.${index}`));
     project.stages.forEach((stage, stageIndex) =>
-      stage.exercises.forEach((exercise, index) =>
+      [
+        ...stage.exercises,
+        ...stage.conditional_exercises.flatMap((rule) => rule.exercises),
+      ].forEach((exercise, index) =>
         requireRef(
           'MISSING_EXERCISE',
           look.exercises,

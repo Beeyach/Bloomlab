@@ -1,0 +1,36 @@
+id: PRJ-reactivation-system
+title: Reactivation System
+tier: field_ready
+client: CL-glowhaus-medspa
+skills:
+  - SK-JUDGMENT-automation-appropriateness
+  - SK-AUTOMATE-workflow-foundations
+  - SK-AUTOMATE-reentry-and-duplicates
+  - SK-DELIVER-client-explanation
+stages:
+  - id: s1
+    name: Choose an eligible audience
+    exercises:
+      - EX-ARCHITECTURE_DECISION-reactivation-segment
+    deliverable: A bounded segment, exclusions, response owner and stopping rule.
+  - id: s2
+    name: Build and test the trial
+    exercises:
+      - EX-BUILD_IT-reactivation-trial
+    deliverable: Actual workflow messages and exclusions verified in the simulator.
+  - id: s3
+    name: Explain the trial and next decision
+    exercises:
+      - EX-WRITE_IT-glowhaus-reporting-review
+    deliverable: A client explanation that separates training observations from causal claims.
+  - id: s4
+    name: Transfer operation and support
+    exercises:
+      - EX-WRITE_IT-glowhaus-handoff
+    deliverable: Documentation, training, ownership and support responsibilities.
+brief: Design a restrained reactivation trial for dormant enquiries with permission. Prevent
+  duplicate invitations, exclude bookings and opt-outs, handle missing phones and give replies a
+  human owner.
+fieldwork_required: false
+portfolio: null
+capstone: false

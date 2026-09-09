@@ -1,0 +1,15 @@
+id: VC-signalworks-b2b
+client: CL-signalworks-b2b
+asset_delivery: text
+voice_id: EXAVITQu4vr4xnSDxMaL
+speech_rate: 1
+style: 0
+stability: 0.55
+allowed_emotion_range:
+  - measured
+language: en
+lines:
+  - id: operating-boundary
+    kind: scenario
+    text: Our customers need support now, not a discovery call next Tuesday.
+    emotion: measured

@@ -33,3 +33,5 @@ export {
   type SkillGraph,
 } from './bundle.ts';
 export * from './portfolio-state.ts';
+
+export * from './client-state.ts';

@@ -1,5 +1,3 @@
-# Starter project (spec §154, CUR-030): Qualification → calendar → confirmation → reminders →
-# cancellation → no-show recovery, for a persistent client.
 id: PRJ-consultation-booking-system
 title: Consultation Booking System
 tier: field_ready
@@ -21,6 +19,7 @@ stages:
     name: Understand the existing workflow
     exercises:
       - EX-RUN_THE_LEAD-booking-confirmation
+      - EX-BUILD_IT-consultation-capacity
     deliverable: A written prediction that matches the execution log.
   - id: s2
     name: Build recovery

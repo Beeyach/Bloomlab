@@ -1,0 +1,71 @@
+id: CL-harbor-dental
+business_name: Harbor Dental
+industry: dentist
+locations:
+  - name: Harbor Dental main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Amir Shah
+    role: Office manager
+    notes:
+      The dental scheduler remains authoritative; a marketing confirmation must clearly describe a
+      request.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: New patient appointment
+    price: 120
+    billing: one_time
+    notes:
+      The dental scheduler remains authoritative; a marketing confirmation must clearly describe a
+      request.
+lead_sources:
+  - Local search and referrals
+current_systems:
+  - Dental practice scheduler
+  - website form
+metrics:
+  monthly_leads: 180
+problems:
+  - Website enquiries look like confirmed appointments although staff still need to check
+    availability.
+  - The dental scheduler remains authoritative; a marketing confirmation must clearly describe a
+    request.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes:
+      The dental scheduler remains authoritative; a marketing confirmation must clearly describe a
+      request.
+hidden_facts:
+  booking_authority: true
+voice:
+  character: VC-harbor-dental
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - Please stop telling people they are booked when they only sent a request.
+history:
+  - date: 2026-09-09
+    event:
+      'Training brief received: Website enquiries look like confirmed appointments although staff
+      still need to check availability.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 2800
+  stated_budget: 1960
+  decision_authority: sole

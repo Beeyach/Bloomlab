@@ -31,6 +31,7 @@ export type { SyncEntity, SyncEnvelope };
 /** Syncable entities that have a local table today. Grows phase by phase. */
 export const LOCAL_SYNC_ENTITIES = [
   'notes',
+  'client_progress',
   'portfolio_projects',
   'portfolio_assets',
   'skill_evidence',

@@ -82,6 +82,17 @@ export const APP_ROUTES: readonly AppRoute[] = [
     path: '/conversations',
     Component: lazy(() => import('../conversations/ConversationsLab')),
   },
+  { id: 'clients', path: '/clients', Component: lazy(() => import('../clients/ClientsScreen')) },
+  {
+    id: 'client',
+    path: '/clients/:clientId',
+    Component: lazy(() => import('../clients/ClientsScreen')),
+  },
+  {
+    id: 'project',
+    path: '/projects/:projectId',
+    Component: lazy(() => import('../clients/ClientsScreen')),
+  },
   {
     id: 'portfolio',
     path: '/portfolio',

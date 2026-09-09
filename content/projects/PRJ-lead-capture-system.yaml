@@ -1,0 +1,33 @@
+id: PRJ-lead-capture-system
+title: Lead Capture System
+tier: field_ready
+client: CL-glowhaus-medspa
+skills:
+  - SK-BUILD-lead-capture-form
+  - SK-ARCHITECT-pipeline-design
+stages:
+  - id: s1
+    name: Define the lead and next action
+    exercises:
+      - EX-WHAT_WOULD_YOU_BUILD-glowhaus-leads
+    deliverable: A defensible customer path and the next action it enables.
+  - id: s2
+    name: Build capture and confirmation
+    exercises:
+      - EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel
+    deliverable: A connected funnel using the account form and calendar.
+  - id: s3
+    name: Make the staff handover work
+    exercises:
+      - EX-BUILD_IT-lead-handover
+    deliverable: Actual contact data, ownership and a recorded next action in the CRM.
+  - id: s4
+    name: Verify the core in GHL
+    exercises:
+      - EX-FIELDWORK-field-ready-core
+    deliverable: Manual evidence from a training account, including repeat capture and missing-phone tests.
+brief: Build a lead capture system that retains the enquiry and gives a staff member a concrete next
+  action. The funnel, CRM handover and real-GHL proof are separate pieces of work.
+fieldwork_required: true
+portfolio: null
+capstone: false

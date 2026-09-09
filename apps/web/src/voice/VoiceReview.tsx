@@ -188,7 +188,17 @@ export default function VoiceReview() {
           ))}
         </select>
       </label>
-      <CharacterReview key={voice.id} voice={voice} />
+      {voice.asset_delivery === 'text' ? (
+        <section>
+          <h2>Written character direction</h2>
+          <p>This character is authored for written roleplay. No saved audio is claimed.</p>
+          {voice.lines.map((line) => (
+            <p key={line.id}>{line.text}</p>
+          ))}
+        </section>
+      ) : (
+        <CharacterReview key={voice.id} voice={voice} />
+      )}
     </section>
   );
 }

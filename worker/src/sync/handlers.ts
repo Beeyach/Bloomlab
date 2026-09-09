@@ -1,3 +1,4 @@
+import { ClientProgressRecordSchema } from '@bloomlab/content-schema';
 import { PortfolioProjectRecordSchema, PortfolioAssetRecordSchema } from '@bloomlab/content-schema';
 import {
   SYNC_ENTITY_KINDS,
@@ -164,6 +165,7 @@ async function pushOne(op: PushOperation, session: Session, db: D1Database): Pro
   let record: SyncRecord;
   try {
     record = validateRecord(op.record);
+    if (op.entity === 'client_progress') record = ClientProgressRecordSchema.parse(record);
     if (op.entity === 'portfolio_projects') record = PortfolioProjectRecordSchema.parse(record);
     if (op.entity === 'portfolio_assets') record = PortfolioAssetRecordSchema.parse(record);
   } catch (error) {

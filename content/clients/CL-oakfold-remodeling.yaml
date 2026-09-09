@@ -1,0 +1,66 @@
+id: CL-oakfold-remodeling
+business_name: Oakfold Remodeling
+industry: remodeling
+locations:
+  - name: Oakfold Remodeling main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Rosa Chen
+    role: Project director
+    notes: Sales intake must not claim a construction estimate or promise a start date before a site
+      assessment.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Renovation consultation
+    price: 150
+    billing: one_time
+    notes: Sales intake must not claim a construction estimate or promise a start date before a site
+      assessment.
+lead_sources:
+  - Architect referrals
+current_systems:
+  - Project management software
+  - telephone enquiries
+metrics:
+  monthly_leads: 26
+problems:
+  - Large and small projects enter the same queue without budget or start-date context.
+  - Sales intake must not claim a construction estimate or promise a start date before a site
+    assessment.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes: Sales intake must not claim a construction estimate or promise a start date before a site
+      assessment.
+hidden_facts:
+  site_assessment: true
+voice:
+  character: VC-oakfold-remodeling
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - A consultation is useful only if the project could fit our next opening.
+history:
+  - date: 2026-09-09
+    event: 'Training brief received: Large and small projects enter the same queue without budget or
+      start-date context.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 3500
+  stated_budget: 2450
+  decision_authority: sole

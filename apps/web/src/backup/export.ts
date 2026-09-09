@@ -1,3 +1,4 @@
+import { ClientProgressRecordSchema } from '@bloomlab/content-schema';
 import { z } from 'zod';
 import { db, type BloomlabDatabase } from '../data/db';
 import { currentVersions } from '../data/learning/versions';
@@ -34,7 +35,10 @@ export const BackupSchema = z.strictObject({
     exercise_attempts: z.array(row),
     private_assets: z.array(row),
   }),
-  projects: z.strictObject({ sim_projects: z.array(row) }),
+  projects: z.strictObject({
+    sim_projects: z.array(row),
+    client_progress: z.array(ClientProgressRecordSchema).default([]),
+  }),
   notes: z.array(row),
   simulator_saves: z.strictObject({ sim_events: z.array(row), sim_snapshots: z.array(row) }),
   portfolio_metadata: z.strictObject({
@@ -187,6 +191,7 @@ export async function createBackup(
     'r',
     [
       ...Object.keys(columns).map((name) => database.table(name)),
+      database.client_progress,
       database.portfolio_projects,
       database.portfolio_assets,
       database.evidence_assets,
@@ -241,6 +246,10 @@ export async function createBackup(
           item_key: a.item_key,
           status: a.status,
         }));
+      const client_progress = (await database.client_progress.toArray())
+        .filter((row) => row.learner_id === device?.learner_id)
+        .sort((a, b) => a.id.localeCompare(b.id))
+        .map((row) => ClientProgressRecordSchema.parse(safeBackupValue(row)));
       const portfolio_projects = (await database.portfolio_projects.toArray())
         .filter((p) => p.learner_id === device?.learner_id)
         .sort((a, b) => a.id.localeCompare(b.id))
@@ -256,7 +265,7 @@ export async function createBackup(
         versions: currentVersions(),
         progress: { skill_progress, campaign_progress, review_queue },
         evidence: { skill_evidence, exercise_attempts, private_assets },
-        projects: { sim_projects },
+        projects: { sim_projects, client_progress },
         notes,
         simulator_saves: { sim_events, sim_snapshots },
         portfolio_metadata: { portfolio_projects, portfolio_assets },

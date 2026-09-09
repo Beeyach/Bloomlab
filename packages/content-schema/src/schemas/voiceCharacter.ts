@@ -15,6 +15,8 @@ export const VoiceCharacterSchema = z
   .strictObject({
     id: ref('voice-characters'),
     client: ref('clients'),
+    /** Text-only roleplay characters do not promise generated audio assets. */
+    asset_delivery: z.enum(['audio', 'text']).default('audio'),
     voice_id: z
       .string()
       .regex(/^[A-Za-z0-9]{20}$/)

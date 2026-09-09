@@ -1,0 +1,98 @@
+id: EX-BUILD_IT-reactivation-trial
+type: BUILD_IT
+title: Build a controlled reactivation trial
+skills:
+  - SK-AUTOMATE-workflow-foundations
+  - SK-AUTOMATE-reentry-and-duplicates
+instructions: "Use the Workflow Lab's reactivation account. A reactivation-approved tag enters the
+  trial, but eligibility must still be checked. Maria and Jordan are approved dormant enquiries:
+  send Maria one SMS and Jordan one email because no phone is available. Never send to opted-out
+  Lena or already-booked Sam. Record reactivation-sent after the invitation and prevent repeat
+  entry. Notify Dana about each eligible invitation so replies have an owner. This is a single
+  invitation trial, not an indefinite drip. Run the scheduled signals, then the repeat-Maria signal,
+  and inspect logs."
+mode: independent
+difficulty: 3
+estimated_minutes: 55
+expected_outcomes:
+  - id: entry
+    type: architecture
+    requirement: trigger_exists
+    ghl_feature: GHL-WF-CONTACT-TAG
+    description: A tag event starts the eligibility check.
+  - id: sms
+    type: event
+    event: sms.sent
+    where:
+      contact_id: maria
+    count:
+      exactly: 1
+    description: Maria receives one invitation, including after repeated entry.
+  - id: email
+    type: event
+    event: email.sent
+    where:
+      contact_id: jordan
+    count:
+      exactly: 1
+    description: Jordan receives one email fallback.
+  - id: owner
+    type: event
+    event: notification.sent
+    count:
+      min: 2
+    description: The response owner is notified for eligible contacts.
+  - id: duplicate
+    type: architecture
+    requirement: reentry_disabled
+    description: The trial prevents automatic repeat enrolment.
+  - id: sent_maria
+    type: state
+    path: contacts.maria.tags
+    operator: contains
+    value: reactivation-sent
+    description: Record the invitation.
+critical_failures:
+  - id: protected_0_0
+    type: negative
+    event: sms.sent
+    where:
+      contact_id: lena
+    description: Do not message an opted-out or already-booked contact.
+  - id: protected_0_1
+    type: negative
+    event: email.sent
+    where:
+      contact_id: lena
+    description: Do not message an opted-out or already-booked contact.
+  - id: protected_1_0
+    type: negative
+    event: sms.sent
+    where:
+      contact_id: booked-client
+    description: Do not message an opted-out or already-booked contact.
+  - id: protected_1_1
+    type: negative
+    event: email.sent
+    where:
+      contact_id: booked-client
+    description: Do not message an opted-out or already-booked contact.
+grading:
+  mode: deterministic
+  pass_threshold: 100
+hints: []
+written_fields: []
+topics:
+  - families.reactivation
+  - workflow.common_systems
+  - workflow.reentry
+  - workflow.communications
+scenario: SC-glowhaus-reactivation
+allowed_features:
+  - GHL-WF-CONTACT-TAG
+  - GHL-WF-IF-ELSE
+  - GHL-WF-SEND-SMS
+  - GHL-WF-SEND-EMAIL
+  - GHL-WF-ADD-CONTACT-TAG
+  - GHL-WF-SEND-INTERNAL-NOTIFICATION
+  - GHL-WF-WORKFLOW-SETTINGS

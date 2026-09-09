@@ -1,0 +1,70 @@
+id: CL-linden-legal
+business_name: Linden Legal
+industry: law_firm
+locations:
+  - name: Linden Legal main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Owen Rivera
+    role: Managing partner
+    notes:
+      Collect minimum routing information; conflict review and legal intake stay with authorised
+      staff and specialist systems.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Initial enquiry review
+    price: 0
+    billing: one_time
+    notes:
+      Collect minimum routing information; conflict review and legal intake stay with authorised
+      staff and specialist systems.
+lead_sources:
+  - Professional referrals
+current_systems:
+  - Case management system
+  - shared reception inbox
+metrics:
+  monthly_leads: 60
+problems:
+  - Prospective clients submit sensitive case details before a conflict review.
+  - Collect minimum routing information; conflict review and legal intake stay with authorised staff
+    and specialist systems.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes:
+      Collect minimum routing information; conflict review and legal intake stay with authorised
+      staff and specialist systems.
+hidden_facts:
+  conflict_review: true
+voice:
+  character: VC-linden-legal
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - Do not imply that sending a form creates a solicitor-client relationship.
+history:
+  - date: 2026-09-09
+    event:
+      'Training brief received: Prospective clients submit sensitive case details before a conflict
+      review.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 4000
+  stated_budget: 2800
+  decision_authority: sole

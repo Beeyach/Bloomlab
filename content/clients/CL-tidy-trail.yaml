@@ -1,0 +1,65 @@
+id: CL-tidy-trail
+business_name: Tidy Trail Cleaning
+industry: cleaning
+locations:
+  - name: Tidy Trail Cleaning main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Ben Okafor
+    role: Owner and scheduler
+    notes: Travel zones and home size must qualify before a booking is offered; recurring schedules
+      depend on crew capacity.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Recurring home clean
+    price: 160
+    billing: recurring
+    notes: Travel zones and home size must qualify before a booking is offered; recurring schedules
+      depend on crew capacity.
+lead_sources:
+  - Neighbour referrals
+current_systems:
+  - Spreadsheet routes
+  - website email
+metrics:
+  monthly_leads: 95
+problems:
+  - The quote form books work outside the crews service radius.
+  - Travel zones and home size must qualify before a booking is offered; recurring schedules depend
+    on crew capacity.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes: Travel zones and home size must qualify before a booking is offered; recurring schedules
+      depend on crew capacity.
+hidden_facts:
+  service_radius: true
+voice:
+  character: VC-tidy-trail
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - A full calendar across the wrong postcodes is not a good week.
+history:
+  - date: 2026-09-09
+    event: 'Training brief received: The quote form books work outside the crews service radius.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 2200
+  stated_budget: 1540
+  decision_authority: sole

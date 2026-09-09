@@ -1,0 +1,67 @@
+id: CL-bridge-recruiting
+business_name: Bridge Recruiting
+industry: recruiting
+locations:
+  - name: Bridge Recruiting main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Darius Cole
+    role: Recruitment director
+    notes: Do not replace applicant tracking with a contact tag; separate candidate processing from
+      employer sales intake.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Employer role briefing
+    price: 0
+    billing: one_time
+    notes: Do not replace applicant tracking with a contact tag; separate candidate processing from
+      employer sales intake.
+lead_sources:
+  - Employer referrals
+current_systems:
+  - Applicant tracking system
+  - business email
+metrics:
+  monthly_leads: 240
+problems:
+  - Candidate enquiries and employer sales leads are mixed in the same public form.
+  - Do not replace applicant tracking with a contact tag; separate candidate processing from
+    employer sales intake.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes: Do not replace applicant tracking with a contact tag; separate candidate processing from
+      employer sales intake.
+hidden_facts:
+  two_audiences: true
+voice:
+  character: VC-bridge-recruiting
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - Applicants should reach recruiting; employers should reach the account lead.
+history:
+  - date: 2026-09-09
+    event:
+      'Training brief received: Candidate enquiries and employer sales leads are mixed in the same
+      public form.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 3800
+  stated_budget: 2660
+  decision_authority: sole

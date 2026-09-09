@@ -1,0 +1,57 @@
+id: EX-ARCHITECTURE_DECISION-boss-scope
+type: ARCHITECTURE_DECISION
+title: Choose the release boundary
+skills:
+  - SK-ARCHITECT-pipeline-design
+  - SK-JUDGMENT-automation-appropriateness
+instructions: Priya is considering a second location, with separate staff and availability. Decide
+  whether the first release serves only South Congress or includes both locations. Both choices can
+  be defensible if the scope, dependencies and acceptance tests match. Select the release boundary
+  and write the data/pipeline design, routing ownership and tradeoff. Your saved choice changes the
+  later QA work in this engagement.
+mode: independent
+difficulty: 3
+estimated_minutes: 35
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: choice
+    type: state
+    path: decision.choice
+    operator: exists
+    description: Choose a release boundary.
+  - id: architecture
+    type: state
+    path: written.architecture_answered
+    operator: equals
+    value: true
+    description: Explain the architecture.
+  - id: tradeoff
+    type: state
+    path: written.tradeoff_answered
+    operator: equals
+    value: true
+    description: Explain the tradeoff.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: architecture
+    label: Data and pipeline design
+    help: Explain typed location data, opportunity ownership, stages and the inputs still to verify.
+    rows: 4
+  - key: tradeoff
+    label: Release tradeoff
+    help: Explain the budget, effort and testing consequence of your chosen boundary.
+    rows: 4
+topics:
+  - data.architecture
+  - judgment.scope
+  - judgment.complexity
+decision_options:
+  - value: single_location
+    label: First location only; second location is excluded
+  - value: two_locations
+    label: Both locations with separate routing and testing

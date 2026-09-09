@@ -1,0 +1,155 @@
+id: EX-WRITE_IT-glowhaus-boss-proposal
+type: WRITE_IT
+title: Propose the release you can defend
+mode: independent
+difficulty: 3
+estimated_minutes: 35
+skills:
+  - SK-DELIVER-proposal-writing
+client: CL-glowhaus-medspa
+scenario: SC-glowhaus-two-locations
+instructions: Return to your saved architecture, price and negotiation work. Write the eight-section
+  proposal for Priya, identifying the selected release boundary and the actual terms you recommend.
+  If the negotiation ended without agreement, present the conditions under which you could
+  responsibly proceed; do not invent acceptance. Include the tested system, staff responsibilities,
+  dependencies, exclusions, dates and approval step. A second location must either be explicitly
+  excluded or carry its added routing and QA scope.
+allowed_features: []
+starting_state: {}
+sales:
+  evidence: []
+  min_findings: 3
+  frame: []
+written_fields:
+  - key: problem
+    label: The problem
+    help: What is happening now, in Priya's own terms, and what it is costing her.
+    rows: 4
+    audience: owner
+    max_words: 120
+    proposal_section: problem
+    cites_evidence: false
+  - key: recommendation
+    label: What you recommend
+    help: The system you are proposing and what it changes, in two or three sentences.
+    rows: 4
+    audience: owner
+    max_words: 100
+    proposal_section: recommendation
+    cites_evidence: false
+  - key: scope
+    label: What is included
+    help: Everything she is getting, named the way he would name it.
+    rows: 6
+    audience: owner
+    max_words: 180
+    proposal_section: scope
+    cites_evidence: false
+  - key: price
+    label: The price
+    help: The project fee, the deposit, when the rest is due, and any monthly fee. Numbers, not ranges.
+    rows: 4
+    audience: owner
+    max_words: 90
+    proposal_section: price
+    cites_evidence: false
+  - key: timeline
+    label: The timeline
+    help: How long it takes, what you need from her, and when he gets it.
+    rows: 4
+    audience: owner
+    max_words: 90
+    proposal_section: timeline
+    cites_evidence: false
+  - key: assumptions
+    label: What you are assuming
+    help: The things you have taken as true to price it this way. Where you are wrong, the price moves.
+    rows: 5
+    audience: owner
+    max_words: 120
+    proposal_section: assumptions
+    cites_evidence: false
+  - key: exclusions
+    label: What is not included
+    help: The things he could reasonably assume are in this and are not.
+    rows: 5
+    audience: owner
+    max_words: 120
+    proposal_section: exclusions
+    cites_evidence: false
+  - key: acceptance
+    label: How he accepts it
+    help: The one thing you are asking her to do, and what happens next once he does it.
+    rows: 3
+    audience: owner
+    max_words: 70
+    proposal_section: acceptance
+    next_step: true
+    cites_evidence: false
+expected_outcomes:
+  - id: a0
+    type: state
+    path: written.problem_answered
+    operator: equals
+    value: true
+    description: Write the The problem section.
+  - id: a1
+    type: state
+    path: written.recommendation_answered
+    operator: equals
+    value: true
+    description: Write the What you recommend section.
+  - id: a2
+    type: state
+    path: written.scope_answered
+    operator: equals
+    value: true
+    description: Write the What is included section.
+  - id: a3
+    type: state
+    path: written.price_answered
+    operator: equals
+    value: true
+    description: Write the The price section.
+  - id: a4
+    type: state
+    path: written.timeline_answered
+    operator: equals
+    value: true
+    description: Write the The timeline section.
+  - id: a5
+    type: state
+    path: written.assumptions_answered
+    operator: equals
+    value: true
+    description: Write the What you are assuming section.
+  - id: a6
+    type: state
+    path: written.exclusions_answered
+    operator: equals
+    value: true
+    description: Write the What is not included section.
+  - id: a7
+    type: state
+    path: written.acceptance_answered
+    operator: equals
+    value: true
+    description: Write the How he accepts it section.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: DELIVERY_COMMUNICATION_RUBRIC_V1
+  pass_threshold: 100
+hints:
+  - level: nudge
+    text:
+      Write the assumptions and exclusions before the recommendation. They are the two sections that
+      decide whether the rest of it holds when the work starts.
+fieldwork: null
+portfolio: PF-application-qualification-system
+topics:
+  - delivery.proposal
+  - delivery.acceptance
+  - bloomwired.proposals
+time_category: retrieval
+response_markers: {}
