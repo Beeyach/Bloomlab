@@ -10,9 +10,11 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { openPage, screenshot, session, setViewport, sleep } from './cdp.mjs';
+import { probeHelpers } from './probe-lib.mjs';
 
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review');
 const BASE = process.env.BASE ?? 'http://localhost:4173';
+const { waitFor } = probeHelpers({ base: BASE });
 const PAGE = process.env.RAIL_PAGE ?? '/skills';
 const WIDTHS = [1440, 1024, 768, 390, 320];
 // Phones: the bar shows the first four areas with their names and a labelled More for the rest.
@@ -197,24 +199,40 @@ async function overflowCase(page, width, reducedMotion) {
   );
   const first = await focused();
   await key(page, 'Enter');
-  await sleep(300);
-  checks.keyboardActivates = await page.evaluate(
-    `location.pathname === ${JSON.stringify(first.href)}`,
+  // URL history can change before React commits a lazy route. Reopening More during that
+  // transition binds it to the previous pathname and the committed navigation closes it.
+  // Wait for the actual active navigation, not a network-speed-dependent fixed pause.
+  checks.keyboardActivates = await waitFor(
+    page,
+    `location.pathname === ${JSON.stringify(first.href)} && [...document.querySelectorAll('nav[aria-label="Primary"] a')].some(a => a.getAttribute('href') === ${JSON.stringify(first.href)} && a.getAttribute('aria-current') === 'page') && !!document.querySelector('main h1')`,
   );
-  if (phone) await click(page, '[data-testid="rail-more"]');
+  if (phone) {
+    await click(page, '[data-testid="rail-more"]');
+    if (
+      !(await waitFor(
+        page,
+        `!document.querySelector('[data-testid="rail-more-menu"]').hidden && document.querySelector('[data-testid="rail-more-menu"]').clientHeight > 0`,
+      ))
+    )
+      throw new Error('More did not become visible after committed keyboard navigation');
+    await page.evaluate(
+      `void (window.__railScroller = document.querySelector('[data-testid="rail-more-menu"]'))`,
+    );
+  }
   await page.evaluate('scrollTo(0, 0)');
 
   await page.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
   await page.evaluate('window.__railScroller.scrollTop = 0');
   await sleep(100);
+  const touchOrigin = await state();
   await page.send('Input.dispatchTouchEvent', {
     type: 'touchStart',
-    touchPoints: [{ x: initial.x, y: initial.y + 80 }],
+    touchPoints: [{ x: touchOrigin.x, y: touchOrigin.y + 80 }],
   });
   for (let step = 1; step <= 10; step++) {
     await page.send('Input.dispatchTouchEvent', {
       type: 'touchMove',
-      touchPoints: [{ x: initial.x, y: initial.y + 80 - step * 20 }],
+      touchPoints: [{ x: touchOrigin.x, y: touchOrigin.y + 80 - step * 20 }],
     });
     await sleep(30);
   }

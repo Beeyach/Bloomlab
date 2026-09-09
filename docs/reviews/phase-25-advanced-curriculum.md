@@ -284,3 +284,27 @@ record belongs in draft PR #27's final verification comment**, after this docume
 deploys; earlier checkpoint IDs are not substitutes for that final head. Keep PR #27 based on
 `codex/phase-24-field-ready` and draft. Stop for independent audit; PR #24/#25/#26/#27 remain
 unmerged. All parked human-acceptance and unrelated partial statuses remain unchanged.
+
+### Rail probe synchronization follow-up
+
+Evidence-only source `f7729d1d80ee448cb9d5175941672d23b2cd7f0f` also passed complete exact-head
+[CI 34347574054](https://github.com/Beeyach/Bloomlab/actions/runs/34347574054): 1,978 tests /
+142 files, both bundle scans, no pending migrations, Production skipped. Worker version
+`13d5af96-f52e-4408-a733-e9a68995a249`; browser and Worker identities matched. All 450 new-surface
+width cases, 32 practical fail/retry/persistence flows and the ordinary Calendar probe passed
+again (`.review/phase-25-final/exact-head-{curriculum,labs,paths,calendar}`). Chromium recorded a
+non-fatal service-worker preload-resource warning; no failed practical or runtime exception.
+
+The old rail probe twice stopped during the first phone touch case with no visible link to
+focus. It reopened More after a fixed 300 ms pause, which did not establish that lazy navigation
+had committed; the component closes a menu associated with the previous pathname. This exposed
+a synchronization gap in the probe. The probe now waits
+for React's active navigation and a visible menu, refreshes its scroller reference and measures
+touch coordinates after navigation. All scroll, focus, activation and overflow assertions remain.
+The corrected probe passes all five widths and ten short-height motion cases against the same
+deployed application (`.review/phase-25-final/rail-navigation-settled/rail-probe.json`). One
+preflight TCP timeout was retried after the health endpoint returned the correct source ID.
+No AppRail styling, width, component or navigation behavior changed in this follow-up.
+
+The final source-head CI and Preview record in PR #27 must include this probe synchronization
+commit. The application/content remain byte-identical to the fully reviewed implementation.
