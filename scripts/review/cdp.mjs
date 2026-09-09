@@ -36,7 +36,8 @@ export async function launchChrome() {
     [
       '--headless=new',
       '--disable-gpu',
-      '--hide-scrollbars',
+      // Overflow reviews opt into real scrollbar gutters to catch narrow-rail clipping.
+      ...(process.env.REVIEW_SCROLLBARS === '1' ? [] : ['--hide-scrollbars']),
       '--no-first-run',
       '--no-default-browser-check',
       // Port 0: Chrome picks a free port and writes it to DevToolsActivePort in the profile.
