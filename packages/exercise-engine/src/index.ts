@@ -36,6 +36,7 @@ export const HINT_LEVELS = ['nudge', 'concept_reminder', 'worked_example'] as co
 
 export type HintLevel = (typeof HINT_LEVELS)[number];
 
+export { fixtureState } from './fixtures.ts';
 export {
   DIMENSION_RULES,
   EXERCISE_GRADER_VERSION,

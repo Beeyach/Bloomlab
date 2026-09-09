@@ -1,0 +1,37 @@
+---
+id: 'LU-connect-google-cloud'
+title: 'Debug permission without sharing a key'
+territory: 'CONNECT'
+tier: 'practitioner'
+skills: ['SK-CONNECT-google-cloud']
+ghl_features: []
+advanced_topics: ['connect.google_cloud']
+estimated_minutes: 12
+summary: 'Separate a Google Cloud project, workload identity, credential and IAM permission while keeping credential custody private.'
+---
+
+# Debug permission without sharing a key
+
+## Four distinct questions
+
+A project groups resources, configuration and billing. A service account is a workload identity. A credential proves identity. An IAM role grants permissions on resources. Possessing a key does not permit access to every project; enabling an API does not grant the caller its permissions.
+
+Name the resource project, actual caller, API and minimum permission. Prefer attached identity, impersonation or federation when supported instead of long-lived keys. A developer's local user identity may differ from the deployed workload's identity.
+
+## Inspect the failing layer
+
+Read the status and structured reason, project, API enablement and IAM policy. A 403 has several possible causes; do not respond by granting Owner. A missing documented read permission needs a narrowly reviewed role on the intended resource. A disabled API requires the authorised project administrator to evaluate enablement. Invalid or expired credentials are authentication problems.
+
+Do not distribute credential files to troubleshoot. Redact private keys, tokens and personal data from logs and screenshots. If a key is exposed, removing it from a file is insufficient: revoke or rotate and investigate use. Do not claim old Git or artifact copies were removed.
+
+## Transfer responsibility safely
+
+Record project owner, workload identity, permitted operations, billing boundary and revocation procedure. Test synthetic inputs with restricted permissions. Keep any unavoidable credentials in authorised server-side secret storage, never browser variables or lesson answers.
+
+The fixture supplies fictional diagnostic records. Identify disabled service versus missing permission and choose secure custody. No project, API enablement or token is created. This operator lesson does not change Bloomlab's parked live Speech-to-Text human-acceptance gate.
+
+## Source and practice
+
+[Official reference](https://docs.cloud.google.com/iam/docs/best-practices-service-accounts), checked 9 September 2026. Recheck the selected service contract before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-connect-google-cloud" />

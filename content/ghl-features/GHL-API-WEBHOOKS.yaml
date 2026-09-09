@@ -1,0 +1,20 @@
+id: GHL-API-WEBHOOKS
+official_name: Webhook Integration Guide
+area: API
+feature_type: capability
+implementation_type: integration
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-09
+source_url: https://marketplace.gohighlevel.com/docs/webhook/WebhookIntegrationGuide/
+known_limitations:
+  - Marketplace event delivery is distinct from workflow webhook actions/triggers.
+  - Local signature-valid flags are supplied fixtures, not cryptographic verification or live
+    delivery.
+skills:
+  - SK-CONNECT-webhook-payloads
+supported_configs: {}
+approximation_note: Local contract-inspection fixtures only; no live API, signature verification or account connection.
+verification_note: Read the official reference on 2026-09-09; versioning lists v3 and date-based
+  versions, authorisation distinguishes Private Integrations and OAuth, and the webhook guide
+  documents Ed25519 plus legacy RSA and retry behaviour.

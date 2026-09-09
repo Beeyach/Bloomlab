@@ -6,7 +6,7 @@ import type { CallResponse } from '@bloomlab/shared';
 import { negotiationOf } from './negotiation/context';
 import { negotiationProjection, type NegotiationState } from './negotiation/engine';
 import type { Exercise } from '@bloomlab/content-schema';
-import { LEARNER_STATE_ROOTS } from '@bloomlab/exercise-engine';
+import { LEARNER_STATE_ROOTS, fixtureState } from '@bloomlab/exercise-engine';
 
 import {
   economicsFor,
@@ -147,6 +147,7 @@ export function learnerState(
   );
   const negotiation = exercise.call ? null : negotiationOf(exercise, response.negotiation);
   return {
+    fixture: fixtureState(exercise.fixture_checks, named),
     sequence: sequenceState(exercise.sequence_steps, response.sequence),
     review: reviewState(exercise.review_checks, response.review),
     call: response.call?.snapshot?.projection ?? {},

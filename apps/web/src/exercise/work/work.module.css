@@ -19,6 +19,7 @@
 .deskNote,
 .help {
   margin: 0;
+  overflow-wrap: anywhere;
   font-size: var(--bl-font-size-sm);
   color: var(--bl-color-text-soft);
 }

@@ -1,0 +1,35 @@
+---
+id: 'LU-connect-dns'
+title: 'Trace a domain before changing it'
+territory: 'CONNECT'
+tier: 'practitioner'
+skills: ['SK-CONNECT-dns']
+ghl_features: []
+advanced_topics: ['connect.dns']
+estimated_minutes: 12
+summary: 'Read DNS records and distinguish a wrong authoritative answer, a cached result and an HTTP routing failure.'
+---
+
+# Trace a domain before changing it
+
+## Names, records and owners
+
+In bookings.glowhaus.example/consult, bookings is a subdomain and /consult is a path. DNS resolves the hostname, not the path. A maps to IPv4; AAAA maps to IPv6; CNAME aliases a hostname; MX selects mail exchangers; TXT carries text such as ownership verification. Registrar, authoritative DNS provider and web host may be different businesses. Establish authority before editing.
+
+Record the exact hostname, type, existing value, requested value and authorised owner. Preserve the previous configuration for rollback. Do not replace mail records while connecting a booking subdomain. An apex is the zone root: do not assume ordinary CNAME support there or invent a universal HighLevel target.
+
+## Separate propagation from errors
+
+Propagation reflects cache expiry, not a universal countdown. Compare the authoritative answer with the recursive resolver's answer and remaining TTL. Waiting will not fix a wrong authoritative record. If authority is correct and a resolver holds an old value within its TTL, repeated edits make diagnosis harder. Negative answers can be cached too.
+
+A verification TXT must be at the requested label with the exact requested value. Adding it at another label cannot prove ownership. After DNS resolves, check TLS, host routing and the intended page. A 404 after successful resolution is a different layer; do not keep editing DNS to repair it.
+
+## Practice boundary
+
+The fictional fixture supplies all answers a real lookup would return. Diagnose the layer and propose a narrow change. No lookup, verification or domain mutation occurs. A passing practical is reasoning evidence, not proof a live domain was connected.
+
+## Source and practice
+
+[Official reference](https://developers.cloudflare.com/dns/manage-dns-records/reference/dns-record-types/), checked 9 September 2026. Recheck the selected service contract before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-connect-dns" />

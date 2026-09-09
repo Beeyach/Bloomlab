@@ -1,0 +1,19 @@
+id: GHL-API-VERSIONING
+official_name: API Versioning
+area: API
+feature_type: capability
+implementation_type: integration
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-09
+source_url: https://marketplace.gohighlevel.com/docs/Versioning/index.html
+known_limitations:
+  - The supplied request contract is fictional; supported version and endpoint schema must be
+    checked before real work.
+skills:
+  - SK-CONNECT-ghl-api
+supported_configs: {}
+approximation_note: Local contract-inspection fixtures only; no live API, signature verification or account connection.
+verification_note: Read the official reference on 2026-09-09; versioning lists v3 and date-based
+  versions, authorisation distinguishes Private Integrations and OAuth, and the webhook guide
+  documents Ed25519 plus legacy RSA and retry behaviour.

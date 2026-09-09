@@ -435,7 +435,7 @@ Implementation and controlled verification: `docs/reviews/phase-24-field-ready.m
 
 ## Phase 25 — Advanced curriculum
 
-- **CUR-023** CONNECT units for every listed topic with practical exercises.
+- **CUR-023** CONNECT units for every listed topic with practical exercises. Phase 25: `advanced.test.ts` derives all nine learn/practical citations and rejects missing units, practicals, unrelated skills, stale features and ungraded fixture contracts. `connect.test.ts` proves correct/empty/wrong JSON through the shared grader; `review/connect-probe.mjs` verifies 90 Academy/runner cases at 1440/1024/768/390/320, nine fail/retry/persist flows with AI Off, keyboard focus, touch and reduced motion. Local fixtures never claim real DNS/API/terminal/cryptographic/deployment execution.
 
 ## Phase 26 — Polish
 

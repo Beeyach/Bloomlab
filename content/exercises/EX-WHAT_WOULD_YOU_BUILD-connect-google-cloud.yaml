@@ -1,0 +1,58 @@
+id: EX-WHAT_WOULD_YOU_BUILD-connect-google-cloud
+type: WHAT_WOULD_YOU_BUILD
+title: Debug permission without sharing a key — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-CONNECT-google-cloud
+client: CL-glowhaus-medspa
+advanced_topics:
+  - connect.google_cloud
+allowed_features: []
+instructions: >-
+  Separate a Google Cloud project, workload identity, credential and IAM permission while keeping
+  credential custody private.
+
+
+  Work from the fictional fixtures below. Submit JSON, not prose, in each named answer. This is a
+  local inspection/repair practical: no DNS lookup, API request, terminal command, cryptographic
+  verification or deployment runs. Never enter actual credentials. Object property order is ignored;
+  types and array order are checked. Read the CONNECT unit for the model and source boundaries.
+written_fields:
+  - key: diagnosis
+    label: Inspect diagnostic reasons
+    help: 'a: API disabled in training-a. b: API enabled, caller lacks documented read permission.
+      Return a and b actions using review_api_enablement, grant_minimum_read_role, grant_owner or
+      share_key.'
+    rows: 6
+  - key: custody
+    label: Protect credentials
+    help:
+      Workload identity federation is supported. Return preferred (federation or long_lived_key),
+      commit_key and browser_key (booleans), exposed_key_action (revoke_and_investigate or
+      delete_current_file_only).
+    rows: 6
+fixture_checks:
+  - key: diagnosis
+    field: diagnosis
+    expected_json: '{"a":"review_api_enablement","b":"grant_minimum_read_role"}'
+  - key: custody
+    field: custody
+    expected_json: '{"preferred":"federation","commit_key":false,"browser_key":false,"exposed_key_action":"revoke_and_investigate"}'
+expected_outcomes:
+  - id: diagnosis
+    type: state
+    path: fixture.diagnosis
+    operator: equals
+    value: true
+    description: Inspect diagnostic reasons matches the objective fixture contract.
+  - id: custody
+    type: state
+    path: fixture.custody
+    operator: equals
+    value: true
+    description: Protect credentials matches the objective fixture contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

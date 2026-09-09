@@ -1,0 +1,22 @@
+id: SK-CONNECT-ghl-api
+title: Choose a current HighLevel API contract
+territory: CONNECT
+tier: practitioner
+summary: Distinguish scoped Private Integrations from OAuth apps and select the documented version
+  without exposing account credentials.
+prerequisites:
+  - SK-CONNECT-http
+ghl_features:
+  - GHL-API-PRIVATE-INTEGRATIONS
+  - GHL-API-VERSIONING
+  - GHL-API-GET-CONTACT
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - ghl-api
+  - integration
+  - operator

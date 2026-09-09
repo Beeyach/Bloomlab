@@ -1,0 +1,55 @@
+id: EX-WHAT_WOULD_YOU_BUILD-connect-workers
+type: WHAT_WOULD_YOU_BUILD
+title: Put the integration boundary behind a Worker — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-CONNECT-workers
+client: CL-glowhaus-medspa
+advanced_topics:
+  - connect.workers
+allowed_features: []
+instructions: >-
+  Trace request and response handling, separate bindings from browser configuration and verify an
+  environment before deployment.
+
+
+  Work from the fictional fixtures below. Submit JSON, not prose, in each named answer. This is a
+  local inspection/repair practical: no DNS lookup, API request, terminal command, cryptographic
+  verification or deployment runs. Never enter actual credentials. Object property order is ignored;
+  types and array order are checked. Read the CONNECT unit for the model and source boundaries.
+written_fields:
+  - key: responses
+    label: Trace the handler
+    help: 'Policy: GET rejects with 405; malformed JSON with 400; unauthorised POST with 401; valid
+      authorised POST accepts with 202. Return the four statuses in that order as a JSON array.'
+    rows: 6
+  - key: bindings
+    label: Place configuration
+    help: Return locations for api_token, public_label, customer_database. Choose worker_secret,
+      public_config, worker_binding or browser_secret.
+    rows: 6
+fixture_checks:
+  - key: responses
+    field: responses
+    expected_json: '[405,400,401,202]'
+  - key: bindings
+    field: bindings
+    expected_json: '{"api_token":"worker_secret","public_label":"public_config","customer_database":"worker_binding"}'
+expected_outcomes:
+  - id: responses
+    type: state
+    path: fixture.responses
+    operator: equals
+    value: true
+    description: Trace the handler matches the objective fixture contract.
+  - id: bindings
+    type: state
+    path: fixture.bindings
+    operator: equals
+    value: true
+    description: Place configuration matches the objective fixture contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

@@ -1,4 +1,5 @@
 import { fieldReadyCoverage, validateFieldReady } from './fieldReady.ts';
+import { advancedCoverage, validateAdvanced } from './advanced.ts';
 import type { ContentBundle, ContentIssue } from '../bundle.ts';
 import { CONTENT_TYPES, type ContentType } from '../ids.ts';
 import { LockSchema, ManifestSchema, type Lock, type Manifest } from '../schemas/index.ts';
@@ -103,7 +104,7 @@ function readLock(sources: ContentSources, issues: IssueList): Lock | null {
 
 /** Whether the lock still describes these sources; the message says what to do when not. */
 export function checkLock(
-  manifest: Manifest,
+  manifest: Pick<Manifest, 'content_version'>,
   lock: Lock | null,
   contentHash: string,
 ): string | null {
@@ -145,6 +146,7 @@ export async function validateSources(
   const { graph } = crossValidate(parsed, issues);
 
   validateFieldReady(parsed, issues);
+  validateAdvanced(parsed, manifest?.advanced_coverage ?? [], issues);
   const errors = issues.errors;
   const fatal = options.strict ? issues.issues : errors;
   if (fatal.length > 0 || !manifest) {
@@ -199,6 +201,7 @@ export async function validateSources(
       content: buildContentCoverage(parsed),
       ghl: buildGhlCoverage(parsed),
       field_ready: fieldReadyCoverage(parsed),
+      advanced: advancedCoverage(parsed),
     },
     freshness: buildFreshness(parsed, now, options.staleAfterDays),
     search: buildSearchIndex(parsed),

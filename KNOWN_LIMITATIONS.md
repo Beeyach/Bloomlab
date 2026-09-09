@@ -1,5 +1,11 @@
 # KNOWN LIMITATIONS
 
+## Phase 25 — CONNECT checkpoint
+
+- CONNECT practicals inspect and repair authored local fixtures. DNS lookup, live API access, webhook cryptography, Git operations, Worker deployment and Google Cloud changes do not execute. A pass demonstrates the supplied contract work, never live-account or production competence. No provider spend or credentials are required.
+- The existing webhook skill still requires separate real-GHL fieldwork for mastery; these fixtures do not satisfy or remove that condition. New foundation skills have one independent practical each; broader practice diversity remains visible in ordinary content coverage.
+- Five-width, keyboard, touch and reduced-motion checks use Chromium emulation, not physical Safari or human acceptance. All Phase 21/22/24 parked statuses remain intact.
+
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
 Last updated: 2026-09-09 (Phase 24 Field Ready)

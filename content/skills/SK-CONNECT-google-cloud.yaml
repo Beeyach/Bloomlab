@@ -1,0 +1,19 @@
+id: SK-CONNECT-google-cloud
+title: Debug permission without sharing a key
+territory: CONNECT
+tier: practitioner
+summary: Separate a Google Cloud project, workload identity, credential and IAM permission while
+  keeping credential custody private.
+prerequisites:
+  - SK-CONNECT-http
+ghl_features: []
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - google-cloud
+  - integration
+  - operator

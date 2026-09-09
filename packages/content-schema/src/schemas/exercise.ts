@@ -1,4 +1,5 @@
 import { SequenceStepsSchema } from './sequence.ts';
+import { advancedTopics, FixtureChecksSchema } from './advanced.ts';
 import { curriculumTopics } from './fieldReady.ts';
 import { FieldworkSchema } from './fieldwork.ts';
 import { CallConfigSchema, CALL_METRICS } from './call.ts';
@@ -453,6 +454,8 @@ export const ExerciseSchema = z
       .array(z.strictObject({ key: z.string().regex(/^[a-z][a-z0-9_]*$/), prompt: markdown }))
       .default([]),
     topics: curriculumTopics,
+    advanced_topics: advancedTopics,
+    fixture_checks: FixtureChecksSchema,
     time_category: z.enum(['practical', 'retrieval']).default('practical'),
     format: z.string().optional(),
   })
@@ -460,6 +463,27 @@ export const ExerciseSchema = z
     const issue = (path: (string | number)[], message: string) =>
       ctx.addIssue({ code: 'custom', path, message });
     requireUnique(ctx, exercise.skills, ['skills'], 'skill');
+    requireUnique(
+      ctx,
+      exercise.fixture_checks.map((check) => check.key),
+      ['fixture_checks'],
+      'fixture check',
+    );
+    for (const check of exercise.fixture_checks) {
+      if (!exercise.written_fields.some((field) => field.key === check.field))
+        issue(['fixture_checks'], `Fixture ${check.key} needs written field ${check.field}`);
+      if (
+        !exercise.expected_outcomes.some(
+          (a) =>
+            a.type === 'state' &&
+            a.path === `fixture.${check.key}` &&
+            a.operator === 'equals' &&
+            a.value === true &&
+            (!a.tier || a.tier === 'required'),
+        )
+      )
+        issue(['fixture_checks'], `Fixture ${check.key} needs a required passing assertion`);
+    }
     requireUnique(ctx, exercise.allowed_features, ['allowed_features'], 'allowed feature');
     requireUnique(
       ctx,
@@ -620,6 +644,11 @@ export const ExerciseSchema = z
       }
       if (assertion.type === 'state') {
         const [root, ...rest] = assertion.path.split('.');
+        if (
+          root === 'fixture' &&
+          !exercise.fixture_checks.some((check) => check.key === rest.join('.'))
+        )
+          issue(at('path'), 'Fixture checks need an authored objective fixture');
         if (
           root === 'sequence' &&
           (!exercise.sequence_steps.length || !['complete', 'valid'].includes(rest.join('.')))

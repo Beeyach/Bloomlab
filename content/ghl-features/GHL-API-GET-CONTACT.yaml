@@ -1,0 +1,16 @@
+id: GHL-API-GET-CONTACT
+official_name: Get Contact
+area: API
+feature_type: capability
+implementation_type: integration
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-09
+source_url: https://marketplace.gohighlevel.com/docs/ghl/contacts/get-contact/index.html
+known_limitations:
+  - Contract-reading exercise only, with a fictional contact identity. No request or real account access.
+  - The v3 introduction documents the /v3 route prefix; verify complete client base URL and endpoint path before real use.
+skills: [SK-CONNECT-ghl-api]
+supported_configs: {}
+approximation_note: The learner inspects a current documented request contract; Bloomlab does not call Get Contact.
+verification_note: Read the official v3 Get Contact endpoint and Contacts API v3 introduction on 2026-09-09. GET, contactId, Version v3 and JSON response are documented.

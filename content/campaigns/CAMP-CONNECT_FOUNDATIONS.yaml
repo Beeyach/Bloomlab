@@ -1,0 +1,93 @@
+id: CAMP-CONNECT_FOUNDATIONS
+title: CONNECT foundations
+pace_hint: Post-Field-Ready technical practice at your own pace
+summary: Read and repair integration contracts using synthetic local fixtures. This route does not
+  certify live deployment or unlock personal Field Ready acceptance.
+requires_campaigns:
+  - CAMP-FIELD_READY
+gates:
+  - id: GATE-1
+    number: 1
+    name: Trace a domain before changing it
+    summary:
+      Read DNS records and distinguish a wrong authoritative answer, a cached result and an HTTP
+      routing failure.
+    skills:
+      - SK-CONNECT-dns
+    pass_criteria:
+      independent_evidence_per_skill: 1
+  - id: GATE-2
+    number: 2
+    name: Repair a payload without changing its meaning
+    summary: Inspect objects, arrays and scalar types; repair malformed JSON while preserving false,
+      zero and missing-value distinctions.
+    skills:
+      - SK-CONNECT-json
+    pass_criteria:
+      independent_evidence_per_skill: 1
+  - id: GATE-3
+    number: 3
+    name: Read both sides of an HTTP exchange
+    summary: Choose methods and headers, diagnose response status and plan retries without exposing
+      credentials or duplicating writes.
+    skills:
+      - SK-CONNECT-http
+    pass_criteria:
+      independent_evidence_per_skill: 1
+  - id: GATE-4
+    number: 4
+    name: Accept an event once when it arrives twice
+    summary: Map webhook payloads, verify authenticity before effects and reason about idempotency,
+      retries and durable recovery.
+    skills:
+      - SK-CONNECT-webhook-payloads
+    pass_criteria:
+      independent_evidence_per_skill: 1
+  - id: GATE-5
+    number: 5
+    name: Choose a current HighLevel API contract
+    summary:
+      Distinguish scoped Private Integrations from OAuth apps and select the documented version
+      without exposing account credentials.
+    skills:
+      - SK-CONNECT-ghl-api
+    pass_criteria:
+      independent_evidence_per_skill: 1
+  - id: GATE-6
+    number: 6
+    name: Keep a reviewable change and recovery path
+    summary:
+      Read branch and commit relationships, select a pull-request base and recover shared work
+      without destructive history rewriting.
+    skills:
+      - SK-CONNECT-git
+    pass_criteria:
+      independent_evidence_per_skill: 1
+  - id: GATE-7
+    number: 7
+    name: Put the integration boundary behind a Worker
+    summary: Trace request and response handling, separate bindings from browser configuration and
+      verify an environment before deployment.
+    skills:
+      - SK-CONNECT-workers
+    pass_criteria:
+      independent_evidence_per_skill: 1
+  - id: GATE-8
+    number: 8
+    name: Debug permission without sharing a key
+    summary: Separate a Google Cloud project, workload identity, credential and IAM permission while
+      keeping credential custody private.
+    skills:
+      - SK-CONNECT-google-cloud
+    pass_criteria:
+      independent_evidence_per_skill: 1
+  - id: GATE-9
+    number: 9
+    name: Transform a payload defensively
+    summary:
+      Trace small JavaScript transforms, preserve meaningful values and test missing or wrongly
+      typed inputs before adding custom code.
+    skills:
+      - SK-CONNECT-javascript
+    pass_criteria:
+      independent_evidence_per_skill: 1

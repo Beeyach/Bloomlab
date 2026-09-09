@@ -1,0 +1,20 @@
+id: SK-CONNECT-workers
+title: Put the integration boundary behind a Worker
+territory: CONNECT
+tier: practitioner
+summary: Trace request and response handling, separate bindings from browser configuration and
+  verify an environment before deployment.
+prerequisites:
+  - SK-CONNECT-http
+  - SK-CONNECT-git
+ghl_features: []
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - workers
+  - integration
+  - operator

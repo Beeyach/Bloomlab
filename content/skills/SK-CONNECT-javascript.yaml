@@ -1,0 +1,20 @@
+id: SK-CONNECT-javascript
+title: Transform a payload defensively
+territory: CONNECT
+tier: practitioner
+summary: Trace small JavaScript transforms, preserve meaningful values and test missing or wrongly
+  typed inputs before adding custom code.
+prerequisites:
+  - SK-CONNECT-json
+  - SK-CONNECT-http
+ghl_features: []
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - javascript
+  - integration
+  - operator

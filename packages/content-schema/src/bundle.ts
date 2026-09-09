@@ -24,6 +24,8 @@ export const ISSUE_CODES = [
   // files
   'FIELD_READY_COVERAGE',
   'FIELD_READY_GHL_CURRENT',
+  'ADVANCED_COVERAGE',
+  'ADVANCED_GHL_CURRENT',
   'INVALID_FORMAT',
   'PARSE_ERROR',
   'SCHEMA',
@@ -203,6 +205,7 @@ export interface ContentBundle {
   indexes: ContentIndexes;
   coverage: {
     field_ready?: FieldReadyCoverage;
+    advanced?: { topic: string; units: string[]; exercises: string[] }[];
     content: ContentCoverageRow[];
     ghl: GhlCoverageRow[];
   };

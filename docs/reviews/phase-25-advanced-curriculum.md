@@ -37,6 +37,37 @@ CUR-015, CUR-031 and the parked Phase 21/22 human-acceptance rows remain unchang
 No real-GHL connection, automatic verification, provider purchase, migration, merge or
 Production deployment is authorized by this implementation record.
 
-## Verification
+## Checkpoint B — CONNECT complete locally
 
-Pending implementation; no Phase 25 acceptance or exact-head deployment claim yet.
+CUR-023 has nine authored units and nine independent local practicals (18 structural JSON checks),
+using eight new graph skills and the existing webhook skill. No one-off page or second store:
+the Academy, named-answer runner, queued draft writes, finalizer and immutable evidence path are
+reused. The pure fixture projection parses JSON; it never executes submitted code or network work.
+Four official API registry entries cover Private Integrations, versioning, Get Contact and
+Marketplace webhooks. Current documentation distinguishes v3/date-based versions and newer
+Ed25519/legacy RSA signature handling. Every lesson and registry entry records its source boundary.
+
+`advanced_topics` citations produce `.content/coverage-advanced.json`. Enforced topic gaps,
+unrelated learning/practical skills, stale referenced features, invalid JSON expectations,
+unknown fields and ungraded fixture checks fail authoring. Field Ready's coverage and acceptance
+remain unchanged. Content/grader versions are `2026.09.22`; no storage migration.
+
+Verification before checkpoint C:
+
+- Complete pinned Node 22 `npm run ci`: **1,947 tests / 136 files passed**, typecheck, lint (the
+  pre-existing hook warning only), formatting, docs, content lock, voice inventory and Production
+  build/provider-secret scan passed. Focused compiler/grader/runner set: **19 tests / 4 files**.
+- Built browser, AI explicitly Off: **90 cases** (all nine units and nine runners at
+  1440/1024/768/390/320); all nine empty-fail/correct-retry flows, queued draft reload, persisted
+  result reload and keyboard focus passed. Touch retry and reduced motion passed at 480 px height.
+  Artifacts: `.review/phase-25-connect/built/connect-probe.json` and Academy/work-area screenshots.
+- The probe caught unbroken JSON help overflowing at 320 px; `overflow-wrap: anywhere` fixes the
+  shared help style without hiding content. A fixture-specific treatment removes the inaccurate
+  business-problem stance and ungraded prose box while retaining the shared runner.
+- Phase 24 rail probe with visible scrollbars: all five widths and all ten 480 px normal/reduced
+  cases passed (`.review/phase-25-connect/rail/rail-probe.json`). No rail redesign or width change.
+- Development hot reloads interrupted early navigation probes; final evidence above is from the
+  immutable built app. Chromium emulation is not physical-device acceptance.
+
+CUR-023 is PASSED for its authored-unit/practical contract, not a live infrastructure certification.
+Checkpoints C–F and final exact-head remote CI/Preview verification remain to be completed.

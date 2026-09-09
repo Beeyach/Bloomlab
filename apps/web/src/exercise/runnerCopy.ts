@@ -152,6 +152,12 @@ export const FAMILY_TREATMENTS: Partial<Record<Exercise['type'], Partial<FamilyT
 export function treatmentFor(exercise: Exercise): FamilyTreatment {
   const overrides = FAMILY_TREATMENTS[exercise.type] ?? {};
   const treatment = { ...DEFAULT_TREATMENT, ...overrides };
+  if (exercise.fixture_checks.length) {
+    treatment.family = 'Local fixture practical';
+    treatment.stance = 'Inspect the supplied data. No external action runs.';
+    treatment.workTitle = 'Your fixture answers';
+    treatment.freeResponse = false;
+  }
   // A pressure exercise offers no support of any kind, whatever its family normally allows.
   if (exercise.mode === 'pressure') treatment.offersLesson = false;
   return treatment;

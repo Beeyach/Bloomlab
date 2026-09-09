@@ -1,0 +1,39 @@
+---
+id: 'LU-connect-workers'
+title: 'Put the integration boundary behind a Worker'
+territory: 'CONNECT'
+tier: 'practitioner'
+skills: ['SK-CONNECT-workers']
+ghl_features: []
+advanced_topics: ['connect.workers']
+estimated_minutes: 12
+summary: 'Trace request and response handling, separate bindings from browser configuration and verify an environment before deployment.'
+---
+
+# Put the integration boundary behind a Worker
+
+## A narrow backend job
+
+A Worker can receive a Request, validate an authorised operation and return a Response. Its module fetch handler receives request, environment bindings and execution context. Returning a Response is different from calling global fetch to make an outbound request. Define a known route, accepted method, input contract and bounded response.
+
+Do not allow the browser to supply an arbitrary upstream URL: that creates an open proxy. Authenticate the caller, authorise operation and account, bound request size and redact logs. Local response tests do not establish deployed permissions.
+
+## Bindings are capabilities
+
+Bindings provide access to configured resources such as D1 or R2. Secret bindings hold sensitive values; ordinary variables hold non-secret configuration. The server's env is not a Vite client variable. Missing bindings require configuration repair, not pasting credentials into source. Preview and Production need intentional resource separation.
+
+A handler can reject a wrong method with 405, malformed JSON with 400 and missing authentication with 401. Accept only after the required work is safely committed or durably handed off. A successful response before an unsafe background task is not reliable delivery.
+
+## Deploy deliberately
+
+Review configuration and compatibility settings, test locally, scan the browser bundle for secrets, deploy only the authorised environment and verify its source identity. Environment bindings may not inherit. Preview success does not authorise Production.
+
+The practical traces a supplied handler policy and places configuration. It runs no Worker or deploy command. The skill is deciding when narrow backend glue is justified; do not replace adequate native workflow configuration with unnecessary maintenance.
+
+Read [bindings](https://developers.cloudflare.com/workers/runtime-apis/bindings/) and [secrets](https://developers.cloudflare.com/workers/configuration/secrets/) before real deployment work.
+
+## Source and practice
+
+[Official reference](https://developers.cloudflare.com/workers/runtime-apis/handlers/fetch/), checked 9 September 2026. Recheck the selected service contract before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-connect-workers" />

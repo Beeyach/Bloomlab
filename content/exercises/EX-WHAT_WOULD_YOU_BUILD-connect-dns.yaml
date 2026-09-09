@@ -1,0 +1,57 @@
+id: EX-WHAT_WOULD_YOU_BUILD-connect-dns
+type: WHAT_WOULD_YOU_BUILD
+title: Trace a domain before changing it — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-CONNECT-dns
+client: CL-glowhaus-medspa
+advanced_topics:
+  - connect.dns
+allowed_features: []
+instructions: >-
+  Read DNS records and distinguish a wrong authoritative answer, a cached result and an HTTP routing
+  failure.
+
+
+  Work from the fictional fixtures below. Submit JSON, not prose, in each named answer. This is a
+  local inspection/repair practical: no DNS lookup, API request, terminal command, cryptographic
+  verification or deployment runs. Never enter actual credentials. Object property order is ignored;
+  types and array order are checked. Read the CONNECT unit for the model and source boundaries.
+written_fields:
+  - key: records
+    label: Repair the record
+    help: Return hostname, type and target for a CNAME from bookings.glowhaus.example to
+      pages.training.example. Omit the /consult path.
+    rows: 6
+  - key: diagnosis
+    label: Separate the failures
+    help:
+      Authority is correct; a resolver has the old target with TTL 120. Another hostname resolves
+      correctly but returns HTTP 404. Return actions keyed dns and page using wait_for_cache,
+      inspect_route or edit_dns.
+    rows: 6
+fixture_checks:
+  - key: records
+    field: records
+    expected_json: '{"hostname":"bookings.glowhaus.example","type":"CNAME","target":"pages.training.example"}'
+  - key: diagnosis
+    field: diagnosis
+    expected_json: '{"dns":"wait_for_cache","page":"inspect_route"}'
+expected_outcomes:
+  - id: records
+    type: state
+    path: fixture.records
+    operator: equals
+    value: true
+    description: Repair the record matches the objective fixture contract.
+  - id: diagnosis
+    type: state
+    path: fixture.diagnosis
+    operator: equals
+    value: true
+    description: Separate the failures matches the objective fixture contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

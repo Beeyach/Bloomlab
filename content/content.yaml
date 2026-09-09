@@ -1,3 +1,15 @@
-content_version: 2026.09.21
+content_version: 2026.09.22
 schema_version: 1
-notes: Phase 24 — Complete Field Ready campaign, twenty clients, five projects and independent capstone.
+notes: Phase 25 checkpoint B — CONNECT foundations and objective local practicals.
+advanced_coverage:
+  [
+    connect.dns,
+    connect.json,
+    connect.http,
+    connect.webhooks,
+    connect.ghl_api,
+    connect.git,
+    connect.workers,
+    connect.google_cloud,
+    connect.javascript,
+  ]

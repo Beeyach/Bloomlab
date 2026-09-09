@@ -1,0 +1,37 @@
+---
+id: 'LU-connect-ghl-api'
+title: 'Choose a current HighLevel API contract'
+territory: 'CONNECT'
+tier: 'practitioner'
+skills: ['SK-CONNECT-ghl-api']
+ghl_features: ['GHL-API-PRIVATE-INTEGRATIONS', 'GHL-API-VERSIONING', 'GHL-API-GET-CONTACT']
+advanced_topics: ['connect.ghl_api']
+estimated_minutes: 12
+summary: 'Distinguish scoped Private Integrations from OAuth apps and select the documented version without exposing account credentials.'
+---
+
+# Choose a current HighLevel API contract
+
+## Access is a bounded decision
+
+Bloomlab does not connect to your HighLevel account. Do not generate a production token or paste credentials into this lesson. Its request plans are fictional.
+
+HighLevel supports scoped Private Integration Tokens for internal work and OAuth for app-style integrations. Private Integrations differ from obsolete unrestricted API v1 keys. Select the minimum endpoint permissions. Agency and sub-account access are different authority scopes, not interchangeable identifiers. Read the [authorisation guidance](https://marketplace.gohighlevel.com/docs/Authorization/authorization_doc/) and [Private Integrations reference](https://marketplace.gohighlevel.com/docs/Authorization/PrivateIntegrationsToken/index.html).
+
+## Pin the selected endpoint contract
+
+The current versioning page lists named v3 alongside supported date-based versions. Older examples may still show Version: 2021-07-28. Do not replace headers blindly or teach one universal version forever. Read the selected endpoint's version, scope, schema and migration notes; record source and date. The current [Get Contact contract](https://marketplace.gohighlevel.com/docs/ghl/contacts/get-contact/index.html) documents GET /contacts/:contactId and Version v3. Its Contacts v3 introduction also specifies the /v3 route prefix. Inspect the complete base URL and path in the selected API client; this practical supplies a fictional contact identity and makes no request.
+
+A request plan identifies method, route, account scope, permission, version and expected response shape. Keep the bearer value in a backend secret. A browser should request an authorised operation from that backend, not possess a reusable integration credential. Do not log credentials while debugging a 401.
+
+## Maintain the adapter
+
+Validate outbound and returned data, follow pagination for collections and handle rate limits. Reconcile ambiguous writes before retrying. Test wrong account, missing scope, malformed input and duplicate deliveries with synthetic fixtures.
+
+OAuth consent, token exchange, refresh, revocation and Marketplace app review are specialist responsibilities. Naming them is not implementation evidence. Prefer native configuration where it meets the need. This practical tests contract-reading and access judgment only; it cannot establish that any real account granted permission.
+
+## Source and practice
+
+[Official reference](https://marketplace.gohighlevel.com/docs/Versioning/index.html), checked 9 September 2026. Recheck the selected service contract before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-connect-ghl-api" />

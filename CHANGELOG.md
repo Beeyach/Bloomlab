@@ -9,6 +9,12 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 25 CONNECT checkpoint
+
+- Nine sourced CONNECT units and nine local fixture practicals reuse the Academy, runner, deterministic grader and existing evidence persistence. Advanced learn/practical coverage is compiler-enforced and emitted as a derived report.
+- Current HighLevel API version, Private Integrations, Get Contact and Marketplace webhook records state their local-only fidelity. No secrets, account connection, fake terminal, provider call or deployment exercise.
+- Fixed long JSON help-text overflow at 320 px and labelled fixture work truthfully without an ungraded free-response box. Preserved independent rail scrolling and all parked human acceptance.
+
 ### Added — Phase 24 Field Ready
 
 - Completed eight-area placement and Gates 1–12 with enforced topic/identity/time/Bloomwired coverage, nineteen-test QA, fourteen judgments and required sales/delivery work.
