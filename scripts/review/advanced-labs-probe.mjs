@@ -3,12 +3,17 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { compileContentDir } from '@bloomlab/content-schema/node';
 import { session, openPage, setViewport, screenshot, sleep } from './cdp.mjs';
 import { probeHelpers } from './probe-lib.mjs';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:4183';
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review/phase-25-labs');
 const HEAD = process.env.REVIEW_HEAD;
+const content = await compileContentDir(resolve('content'));
+const labTopic = (row) => row.advanced_topics.some((topic) => topic.startsWith('labs.'));
+const units = content.learning_units.filter(labTopic);
+const practicals = content.exercises.filter(labTopic);
 mkdirSync(OUT, { recursive: true });
 const result = { base: BASE, widths: [], flows: {}, head: HEAD ?? null };
 const browser = await session();
@@ -373,7 +378,21 @@ try {
     await layout('calendar-class', width);
     await click(page, '[data-testid="group-service"]');
     await layout('calendar-resources', width);
-    console.log(`Advanced Labs: ${width}px, nine surfaces passed`);
+    // Include the four new Lab lessons and account-backed runner work areas, not only Labs.
+    for (const unit of units) {
+      await go(
+        `/academy/${unit.id}`,
+        `document.querySelector('main h1')?.textContent === ${JSON.stringify(unit.title)}`,
+      );
+      await layout(unit.id, width);
+    }
+    for (const exercise of practicals) {
+      await go(`/exercise/${exercise.id}`, `${hasButton('Run it')} || ${hasButton('Try again')}`);
+      if (await page.evaluate(hasButton('Try again'))) await click(page, 'Try again');
+      assert(await waitFor(page, hasButton('Run it')));
+      await layout(exercise.id, width);
+    }
+    console.log(`Advanced Labs: ${width}px, nine Labs and eight lesson/runner surfaces passed`);
   }
   await setViewport(page, 1024, 480);
   await page.send('Emulation.setEmulatedMedia', {

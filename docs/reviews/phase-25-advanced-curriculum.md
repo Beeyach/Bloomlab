@@ -230,3 +230,57 @@ IMPLEMENTED_UNVERIFIED rows, including FLD-001, EXR-020, PRD-005, CUR-015, CUR-0
 seven Phase 21 rows, remain unchanged. PRI-001/002 and NEG-003 remain PARTIAL. Totals:
 313 registered, 246 PASSED, 8 IN_PROGRESS, 22 PARTIAL, 12 IMPLEMENTED_UNVERIFIED,
 2 DEFERRED, 23 NOT_STARTED. No migration, paid provider call or production deployment.
+
+The final Lab probe also covers each new Lab learning unit and account-backed runner work area:
+**85 width cases** (nine Labs plus eight lesson/runner surfaces at every required width), with
+all saved-account, failure/refusal, offline, grading, keyboard, touch and reduced-motion flows
+passing. Artifact: `.review/phase-25-final/labs-local/advanced-labs-probe.json`. The unchanged
+ordinary Calendar probe also passes booking, notice/buffers, working hours, round robin, staff,
+services, confirmation, reschedule, cancellation/recovery, shared Funnel availability, persistence,
+keyboard and five-width/reduced-motion checks (`.review/phase-25-final/calendar-local`).
+Both local Production and Preview builds pass the browser provider/secret scan. Final bundle:
+58 skills, 54 learning units, 104 exercises, ten campaigns, 89 registry entries; content hash
+`02c0e3b709765e1ba3a5bc9f6dcbbdf4e577d7b15e7144a8b8c7c7694135d28b`.
+
+## Deployed implementation verification
+
+Source **`af9483d39f88db62e8a3ce71267bb32b7c4e2e5d`**:
+[CI 34346294789](https://github.com/Beeyach/Bloomlab/actions/runs/34346294789) passed Checks
+and Preview deploy; Production deploy was skipped. Remote Node 22 checks passed **1,978 tests /
+142 files**. Both build jobs passed the browser provider/secret scan; the migration step reported
+**no migrations to apply**. Preview Worker version **`310e1573-bd0a-47d7-af5d-6cfa81555069`**.
+The health endpoint and browser `data-build-id` matched the full source SHA exactly, with content
+`2026.09.26` and simulator `2026.09.23-r1`.
+
+The deployed, AI-Off probes all passed on that source:
+
+- **320 curriculum width cases / 32 fail-retry-draft-result persistence flows**, covering every
+  CONNECT, SCALE, retention, AI and specialty unit/practical. Visible focus, touch and reduced
+  motion passed. `.review/phase-25-final/preview-curriculum/connect-probe.json`.
+- **85 Lab/lesson/runner width cases**, actual account-backed grading and all typed-object,
+  dynamic-list, class/resource, failed/retried/refunded/subscription, reload and offline flows.
+  `.review/phase-25-final/preview-labs/advanced-labs-probe.json`.
+- **45 path/directory/map width cases**, real shared exercise evidence, bookmark reload, unknown
+  bookmark, unfinished Field Ready, keyboard, touch, offline and reduced motion.
+  `.review/phase-25-final/preview-paths/advanced-paths-probe.json`.
+- All five normal rail widths and ten 480 px normal/reduced cases passed with visible scrollbars,
+  independent page/rail scrolling and every navigation/bottom action reachable.
+  `.review/phase-25-final/preview-rail/rail-probe.json`.
+- The existing ordinary Calendar probe also passed in Preview, including its five widths,
+  keyboard, shared-account transitions and reduced motion (`.review/phase-25-final/preview-calendar`).
+
+All required width sets are exactly 1440/1024/768/390/320. Remote desktop Payments and 320 px
+object layouts were inspected. Controlled synthetic data only; **$0 provider spend**. This does
+not establish physical Safari/touch-device acceptance or any personal real-GHL transfer.
+
+Verification caveat for independent audit: one additional local full-suite run observed the
+existing AUDIT reload/remove timing assertion (`salesRunner.test.tsx`); its focused **30 tests**
+passed, and the complete Node 22 chain was rerun successfully. The remote full suite also passed.
+No unrelated sales implementation change or status promotion was made to hide that observation.
+
+This evidence/probe follow-up changes no application, engine or content bytes from the verified
+implementation source. The **final immutable-head CI, Worker version and repeated Preview probe
+record belongs in draft PR #27's final verification comment**, after this documentation commit
+deploys; earlier checkpoint IDs are not substitutes for that final head. Keep PR #27 based on
+`codex/phase-24-field-ready` and draft. Stop for independent audit; PR #24/#25/#26/#27 remain
+unmerged. All parked human-acceptance and unrelated partial statuses remain unchanged.
