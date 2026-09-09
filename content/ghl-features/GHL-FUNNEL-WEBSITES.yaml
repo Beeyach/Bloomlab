@@ -1,0 +1,19 @@
+id: GHL-FUNNEL-WEBSITES
+official_name: Websites
+area: Funnels & Websites
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-08
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000001633
+skills:
+  - SK-BUILD-conversion-copy
+known_limitations:
+  - The native page editor, publishing and domains are not simulated. Field Ready compares paths and
+    practises native layout manually in a training account.
+supported_configs: {}
+approximation_note: The native page editor, publishing and domains are not simulated. Field Ready
+  compares paths and practises native layout manually in a training account.
+verification_note: Read the official HighLevel support article directly on 2026-09-08. Only the
+  documented record/page capability is taught; no advanced UI is claimed.

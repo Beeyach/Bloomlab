@@ -1,4 +1,3 @@
-# ARCHITECTURE DECISION (spec §27): tag vs custom field vs custom value vs opportunity field.
 id: EX-ARCHITECTURE_DECISION-treatment-interest
 type: ARCHITECTURE_DECISION
 title: Where does "treatment interest" live?
@@ -7,6 +6,7 @@ difficulty: 2
 estimated_minutes: 10
 skills:
   - SK-ARCHITECT-tags-vs-custom-fields
+  - SK-ARCHITECT-custom-values
 client: CL-glowhaus-medspa
 instructions: |
   Glowhaus's Meta lead form asks which treatment the lead is interested in: Signature Facial,
@@ -38,7 +38,6 @@ grading:
   mode: mixed
   rubric: SYSTEM_DESIGN_RUBRIC_V1
   pass_threshold: 70
-# The architectures the instructions offer at this level (EXR-009 removes them at later levels).
 decision_options:
   - value: tag
     label: Tag
@@ -48,8 +47,6 @@ decision_options:
     label: Custom value
   - value: opportunity_field
     label: Opportunity field
-# Phrases that count as naming the fact each marker describes. Never shown to the learner; they
-# decide one authored deterministic check, not the quality of the argument.
 response_markers:
   merge_field:
     - merge field
@@ -64,3 +61,8 @@ hints:
     text: Three tags for one question is a value pretending to be three events.
 fieldwork: null
 portfolio: null
+topics:
+  - data.tags
+  - data.custom_fields
+  - data.custom_values
+  - data.architecture

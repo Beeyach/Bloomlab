@@ -1,0 +1,65 @@
+id: EX-BUILD_IT-consultation-capacity
+type: BUILD_IT
+title: Protect the consultation diary
+mode: pressure
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-BUILD-consultation-calendar
+scenario: SC-glowhaus-calendar
+instructions: Work in the [Calendar Lab](/calendar). The fictional Glowhaus consultation needs 45
+  minutes, a 15-minute recovery buffer afterwards and two hours of minimum notice. Configure the
+  existing Consultation calendar. Test a booking, reschedule it and cancel it, inspecting the event
+  history and the remaining capacity. Keep the existing staff and location; a correct duration alone
+  is insufficient.
+allowed_features:
+  - GHL-CAL-CALENDARS
+expected_outcomes:
+  - id: a1
+    type: state
+    path: calendars.consultation.duration_minutes
+    operator: equals
+    value: 45
+    description: The consultation lasts forty-five minutes.
+  - id: a2
+    type: state
+    path: calendars.consultation.post_buffer_minutes
+    operator: equals
+    value: 15
+    description: Staff have a fifteen-minute buffer afterwards.
+  - id: a3
+    type: state
+    path: calendars.consultation.minimum_notice_minutes
+    operator: equals
+    value: 120
+    description: The calendar enforces two hours of notice.
+  - id: e0
+    type: event
+    event: appointment.booked
+    count:
+      min: 1
+    description: The learner tested booked behaviour in the actual simulator.
+  - id: e1
+    type: event
+    event: appointment.rescheduled
+    count:
+      min: 1
+    description: The learner tested rescheduled behaviour in the actual simulator.
+  - id: e2
+    type: event
+    event: appointment.cancelled
+    count:
+      min: 1
+    description: The learner tested cancelled behaviour in the actual simulator.
+critical_failures: []
+grading:
+  mode: deterministic
+  pass_threshold: 100
+hints: []
+fieldwork: null
+portfolio: null
+topics:
+  - booking.calendars
+  - booking.routing
+  - booking.cancellations
+  - booking.reschedules

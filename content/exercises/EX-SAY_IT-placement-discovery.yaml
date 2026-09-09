@@ -1,0 +1,185 @@
+id: EX-SAY_IT-placement-discovery
+type: SAY_IT
+title: "Placement \xB7 a short discovery call"
+mode: independent
+difficulty: 3
+estimated_minutes: 15
+skills:
+  - SK-SELL-discovery-call
+client: CL-summit-coaching
+scenario: SC-summit-discovery
+format: discovery
+instructions: "Placement: work from what you already know. You may skip this assessment\
+  \ and learn the capability instead. This assesses the beginner requirement; later\
+  \ pressure tests and fieldwork still apply.\n\nDiscover Marcus\u2019s current application\
+  \ process, volume, pain, urgency, tools, people, budget and decision process. Reflect\
+  \ his diagnosis and check agreement before discussing a solution. End with a specific\
+  \ next step."
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: call.complete
+    operator: equals
+    value: true
+    description: The call reaches a decision or its authored turn limit.
+  - id: a2
+    type: state
+    path: call.next_step_agreed
+    operator: equals
+    value: true
+    description: An explicit next step or professional exit is agreed.
+critical_failures:
+  - id: c1
+    type: state
+    path: call.pitched_before_diagnosis
+    operator: equals
+    value: false
+    description: The learner waits for an agreed diagnosis before pitching.
+grading:
+  mode: mixed
+  rubric: CALL_PERFORMANCE_RUBRIC_V1
+  pass_threshold: 70
+hints: []
+conversation:
+  client: CL-summit-coaching
+  subject: Discovery call with Marcus
+  channel: chat
+  opening: opening
+  composer_help: Speak your reply, review the transcript, then confirm your intended
+    move.
+  nodes:
+    - id: opening
+      client_message: Hello, Ary. Marcus here. I have a few minutes to talk through
+        the application funnel.
+      moves:
+        - id: agenda
+          label: Agree an agenda and ask about applications
+          kind: ask
+          next: process
+        - id: pitch
+          label: Pitch the funnel before discovery
+          kind: pitch
+          next: objection
+      fallback: clarify
+      covers:
+        - opening
+        - agenda
+    - id: process
+      client_message: Applications arrive by email from Typeform. I reply when I have
+        time, sometimes days later. People book through Calendly and I keep a Notion
+        board. We see about 38 leads in a month.
+      moves:
+        - id: impact
+          label: Ask about the impact and desired result
+          kind: ask
+          next: impact
+        - id: pitch
+          label: Recommend the implementation now
+          kind: pitch
+          next: objection
+      fallback: clarify
+      covers:
+        - current_process
+        - volume
+        - tools
+    - id: impact
+      client_message: I'd rather talk to five right people than twenty wrong ones.
+      moves:
+        - id: people
+          label: Ask who owns replies and when this matters
+          kind: ask
+          next: people
+      fallback: clarify
+      covers:
+        - pain
+        - desired_result
+        - impact
+    - id: people
+      client_message: I sell and deliver everything myself. Slow replies and calls with
+        people who cannot afford the program use time I need for coaching. I want to
+        look at options before committing to a build.
+      moves:
+        - id: decision
+          label: Ask about budget and how the decision will be made
+          kind: ask
+          next: decision
+      fallback: clarify
+      covers:
+        - staff
+        - stakeholders
+        - urgency
+    - id: decision
+      client_message: I was thinking closer to fifteen hundred for the whole thing.
+        I make the decision, but I want two scope options and to understand what the
+        cheaper quote leaves out.
+      moves:
+        - id: reflect
+          label: Summarize the problem and ask for agreement
+          kind: reflect
+          next: agreed
+        - id: pitch
+          label: Sell the full build without checking diagnosis
+          kind: pitch
+          next: objection
+      fallback: clarify
+      covers:
+        - budget
+        - decision_process
+    - id: agreed
+      client_message: Yes. Faster replies to applications and fewer calls with people
+        who are not a fit. I want to see what each scope option would change.
+      moves:
+        - id: next_step
+          label: Agree the application review and proposal next step
+          kind: next_step
+          next: done
+      fallback: clarify
+      diagnosis_agreed: true
+    - id: objection
+      client_message: I do not want more calls if they are the wrong calls. How does
+        your plan change that?
+      moves:
+        - id: discover
+          label: Return to the process and desired result
+          kind: ask
+          next: process
+      fallback: clarify
+    - id: clarify
+      client_message: Which part of the application process do you want to understand
+        next?
+      moves:
+        - id: process
+          label: Ask about applications and tools
+          kind: ask
+          next: process
+        - id: decision
+          label: Ask about decision constraints
+          kind: ask
+          next: decision
+      fallback: clarify
+    - id: done
+      client_message: Send the questions for our application review and confirm a time.
+        Then show me two scope options, including what each leaves out.
+      moves: []
+      end: true
+      covers:
+        - next_step
+      diagnosis_agreed: true
+call:
+  mode: discovery
+  objective: "Understand Marcus\u2019s application process and decision constraints.\
+    \ Check agreement on the diagnosis before discussing a solution, then agree a\
+    \ next step."
+  anchors: []
+  max_turns: 12
+  voice_lines:
+    opening: greeting-01
+    impact: recurring-01
+    objection: objection-02
+  rules: []
+  open_response:
+    node: clarify
+    question: What would that change in the process we are discussing?
+placement_area: spoken_discovery
+portfolio: null

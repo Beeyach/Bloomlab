@@ -1,0 +1,94 @@
+id: EX-WHAT_WOULD_YOU_BUILD-channel-decisions
+type: WHAT_WOULD_YOU_BUILD
+title: Choose an intervention before a funnel
+skills:
+  - SK-STRATEGIZE-funnel-math
+  - SK-STRATEGIZE-bottleneck-diagnosis
+  - SK-JUDGMENT-automation-appropriateness
+instructions: Three fictional Bloomwired enquiries arrive. An emergency HVAC company has a working
+  mobile call link but misses calls while its only technician is on jobs. A therapist has a
+  three-month waiting list and asks for more paid leads. A photographer gets guide downloads from
+  cold social traffic but sends downloaders straight to a high-priced wedding application. For each,
+  choose whether a funnel, an operational change or no acquisition work is appropriate. State
+  traffic intent, awareness, offer, next action, trust and qualification needs. Do not promise
+  outcomes. Then calculate the supplied cohort economics and name what would invalidate your
+  inference.
+mode: pressure
+difficulty: 3
+estimated_minutes: 40
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.hvac_answered
+    operator: equals
+    value: true
+    description: Answer the emergency hvac brief.
+  - id: a2
+    type: state
+    path: written.therapist_answered
+    operator: equals
+    value: true
+    description: Answer the full therapist diary brief.
+  - id: a3
+    type: state
+    path: written.photographer_answered
+    operator: equals
+    value: true
+    description: Answer the guide to application brief.
+  - id: a4
+    type: state
+    path: written.economics_answered
+    operator: equals
+    value: true
+    description: Answer the economics and uncertainty brief.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: hvac
+    label: Emergency HVAC
+    help: Map the journey and operational bottleneck. Would automation solve it without staffing?
+    rows: 4
+  - key: therapist
+    label: Full therapist diary
+    help: Decide whether to accept acquisition work and what capacity fact you must verify.
+    rows: 4
+  - key: photographer
+    label: Guide to application
+    help:
+      Propose a message-matched next step, credible proof and a lower-friction path without removing
+      useful qualification.
+    rows: 4
+  - key: economics
+    label: Economics and uncertainty
+    help:
+      Spend $2,000; 200 leads; 100 bookings; 50 attended; 10 sales; $5,000 collected. Calculate CPL,
+      advertising CAC and AOV. Explain why LTV is not known.
+    rows: 4
+topics:
+  - funnel.customer_journey
+  - funnel.funnel_purpose
+  - funnel.traffic_intent
+  - funnel.offer
+  - funnel.friction
+  - funnel.cta
+  - funnel.conversion
+  - funnel.awareness
+  - funnel.traffic_source
+  - funnel.trust
+  - funnel.qualification
+  - funnel.cpl
+  - funnel.cac
+  - funnel.aov
+  - funnel.ltv
+  - judgment.funnel_needed
+  - judgment.automation_needed
+  - judgment.ghl_appropriate
+  - judgment.custom_code
+  - judgment.accept_project
+  - judgment.uncertainty
+  - judgment.missing_verification

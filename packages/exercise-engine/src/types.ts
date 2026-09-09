@@ -102,6 +102,7 @@ export type ContextSource = (typeof CONTEXT_SOURCES)[number];
  */
 export const LEARNER_STATE_ROOTS = [
   'call',
+  'review',
   'prediction',
   'decision',
   'answer',

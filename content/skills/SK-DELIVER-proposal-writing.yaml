@@ -2,8 +2,7 @@ id: SK-DELIVER-proposal-writing
 title: Proposal writing
 territory: DELIVER
 tier: field_ready
-summary: >-
-  Write a proposal that states the problem, the recommendation, scope, price, timeline,
+summary: Write a proposal that states the problem, the recommendation, scope, price, timeline,
   assumptions, exclusions and how the client accepts it — short enough to be read.
 prerequisites:
   - SK-SELL-project-pricing
@@ -15,4 +14,14 @@ mastery_requirements:
   pressure_test: false
   fieldwork_required: false
   sales_use: true
-keywords: [proposal, scope, assumptions, exclusions, acceptance]
+keywords:
+  - proposal
+  - scope
+  - assumptions
+  - exclusions
+  - acceptance
+identities:
+  - GHL Systems Builder
+  - Conversion & Sales Operator
+evidence_areas:
+  - client_explanation

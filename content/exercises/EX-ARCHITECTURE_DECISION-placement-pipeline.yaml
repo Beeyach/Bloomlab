@@ -1,0 +1,43 @@
+id: EX-ARCHITECTURE_DECISION-placement-pipeline
+type: ARCHITECTURE_DECISION
+title: Placement · follow the opportunity
+skills:
+  - SK-ARCHITECT-pipeline-design
+instructions: One contact asks about a facial today and a membership next month. There are two
+  separately priced decisions. The facial is awaiting consultation; the membership was declined.
+  Name where each deal's value, stage and outcome belongs, who follows up, and the next action.
+  Explain why marking the contact itself Lost would erase useful information.
+mode: independent
+difficulty: 3
+estimated_minutes: 10
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.model_answered
+    operator: equals
+    value: true
+    description: Answer the record model brief.
+  - id: a2
+    type: state
+    path: written.next_answered
+    operator: equals
+    value: true
+    description: Answer the next action brief.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: model
+    label: Record model
+    help: Describe contact versus deal, with one value and one owner for each deal.
+    rows: 4
+  - key: next
+    label: Next action
+    help: What should happen next for each deal, including the declined one?
+    rows: 4
+topics: []
+placement_area: pipeline_basics

@@ -232,6 +232,7 @@
 }
 
 .field input,
+.field select,
 .response {
   box-sizing: border-box;
   width: 100%;
@@ -244,7 +245,8 @@
   color: var(--bl-color-text);
 }
 
-.field input {
+.field input,
+.field select {
   min-height: 44px;
 }
 
@@ -254,12 +256,14 @@
 }
 
 .field input:focus-visible,
+.field select:focus-visible,
 .response:focus-visible {
   outline: 2px solid var(--bl-color-focus);
   outline-offset: 2px;
 }
 
 .field input:disabled,
+.field select:disabled,
 .response:disabled {
   background: var(--bl-color-mist);
   color: var(--bl-color-text-soft);

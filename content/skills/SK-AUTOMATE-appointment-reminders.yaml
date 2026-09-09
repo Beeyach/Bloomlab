@@ -2,9 +2,8 @@ id: SK-AUTOMATE-appointment-reminders
 title: Appointment reminders
 territory: AUTOMATE
 tier: field_ready
-summary: >-
-  Build reminders that wait relative to the appointment, respect the calendar's time zone, and
-  never fire for a cancelled or already-reminded booking.
+summary: Build reminders that wait relative to the appointment, respect the calendar's time zone,
+  and never fire for a cancelled or already-reminded booking.
 prerequisites:
   - SK-AUTOMATE-workflow-foundations
   - SK-BUILD-consultation-calendar
@@ -19,4 +18,14 @@ mastery_requirements:
   independent_evidence: 3
   pressure_test: true
   fieldwork_required: true
-keywords: [reminder, appointment-relative wait, timezone, cancellation, late booking]
+keywords:
+  - reminder
+  - appointment-relative wait
+  - timezone
+  - cancellation
+  - late booking
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+evidence_areas:
+  - automation

@@ -1,44 +1,48 @@
-# FUNNEL AUTOPSY (spec §27, EXR-010). The learner reads a funnel's own traffic and separates what
-# is observably wrong from what might explain it.
-#
-# A different job from FUNNEL ASSEMBLY: nothing is built here. The funnel already exists and has
-# three weeks of visits behind it, and the work is reading them — where the traffic came from, how
-# far it got, what it started and did not finish, where it stopped.
-#
-# The two answers are graded separately on purpose. A problem is something the data says; a
-# hypothesis is something that would explain it and has not been tested. A learner who writes one
-# in the box for the other has not made the distinction the exercise is about, and the markers
-# below decide that deterministically without judging the prose (D-070, D-143).
 id: EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic
 type: FUNNEL_AUTOPSY
 title: Forty visits, fourteen leads
-mode: practice
+mode: pressure
 difficulty: 3
 estimated_minutes: 25
 skills:
   - SK-STRATEGIZE-funnel-math
   - SK-STRATEGIZE-bottleneck-diagnosis
 scenario: SC-glowhaus-reporting
-instructions: |
-  Glowhaus spent three weeks sending paid traffic to the consultation funnel. Priya wants to know
+instructions: 'Glowhaus spent three weeks sending paid traffic to the consultation
+  funnel. Priya wants to know
+
   whether the funnel is the problem before she spends anything else.
 
-  Open the funnel in the **Funnel Lab**, run the reporting window if it has not run yet, and read
-  the **Autopsy**: traffic source, conversion, how far down each step the traffic got, form
+
+  Open the funnel in the **Funnel Lab**, run the reporting window if it has not run
+  yet, and read
+
+  the **Autopsy**: traffic source, conversion, how far down each step the traffic
+  got, form
+
   completion, booking rate and drop-off.
+
 
   Then write two things down, separately.
 
-  **The problem** is something the data says. A number, a stage, a count. It is not a guess and it
+
+  **The problem** is something the data says. A number, a stage, a count. It is not
+  a guess and it
+
   contains no "because".
 
-  **The hypothesis** is what might explain it. It is a guess, it is allowed to be wrong, and the
+
+  **The hypothesis** is what might explain it. It is a guess, it is allowed to be
+  wrong, and the
+
   only thing that makes it a good one is that you could test it.
+
+  '
 allowed_features: []
 starting_state:
   funnel_id: fn-consult
-  notes: >-
-    The funnel is built and has already run. Nothing needs building; the window may need running.
+  notes: The funnel is built and has already run. Nothing needs building; the window
+    may need running.
 written_fields:
   - key: problem
     label: What is the problem?
@@ -46,7 +50,8 @@ written_fields:
     rows: 4
   - key: hypothesis
     label: What might explain it?
-    help: One thing that would account for the problem, and that you could test. It is allowed to be wrong.
+    help: One thing that would account for the problem, and that you could test. It
+      is allowed to be wrong.
     rows: 4
 response_markers:
   names_a_stage:
@@ -63,8 +68,8 @@ response_markers:
     - '22'
     - '26'
     - '40'
-    - 'per cent'
-    - 'percent'
+    - per cent
+    - percent
   is_an_explanation:
     - because
     - probably
@@ -122,7 +127,8 @@ expected_outcomes:
     value: names_a_stage
     tier: quality
     dimension: architecture
-    description: The problem names where in the funnel it is, not only that something is wrong.
+    description: The problem names where in the funnel it is, not only that something
+      is wrong.
   - id: a5
     type: state
     path: written.hypothesis_mentions
@@ -130,7 +136,8 @@ expected_outcomes:
     value: is_an_explanation
     tier: required
     dimension: explanation
-    description: The hypothesis is written as an explanation rather than as a second observation.
+    description: The hypothesis is written as an explanation rather than as a second
+      observation.
   - id: a6
     type: state
     path: written.hypothesis_mentions
@@ -146,16 +153,17 @@ expected_outcomes:
     value: names_a_source
     tier: bonus
     dimension: architecture
-    description: The problem distinguishes between the traffic sources rather than treating them as one.
+    description: The problem distinguishes between the traffic sources rather than treating
+      them as one.
 critical_failures:
   - id: c1
     type: state
     path: written.problem_mentions
     operator: not_contains
     value: is_an_explanation
-    description: >-
-      The problem statement explains rather than observes. Separating what happened from why is
-      the whole exercise, so an explanation in the problem box fails it whatever else is right.
+    description: The problem statement explains rather than observes. Separating what
+      happened from why is the whole exercise, so an explanation in the problem box
+      fails it whatever else is right.
 grading:
   mode: deterministic
   weights:
@@ -165,15 +173,17 @@ grading:
     maintainability: 0
     explanation: 45
   pass_threshold: 70
-hints:
-  - level: nudge
-    text: Read the six views before you write anything. Two of them disagree about how healthy this funnel is.
-  - level: concept_reminder
-    text: A problem survives being read aloud to the client without an argument. A hypothesis is the sentence after "because", and you should be able to say how you would check it.
-  - level: worked_example
-    text: >-
-      Problem — of the twenty-two visits that started the form, only fourteen submitted it.
-      Hypothesis — the form may be asking for more than somebody who has just arrived is willing
-      to give, which we could test by dropping a field and watching completion.
+hints: []
 fieldwork: null
 portfolio: null
+topics:
+  - funnel.funnel_math
+  - funnel.booking_rate
+  - funnel.show_rate
+  - funnel.close_rate
+  - funnel.bottleneck
+  - funnel.conversion
+  - funnel.traffic_source
+  - diagnosis.funnel
+  - diagnosis.bottleneck
+  - diagnosis.metrics

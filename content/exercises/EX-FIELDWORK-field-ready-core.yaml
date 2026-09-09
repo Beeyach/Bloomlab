@@ -1,0 +1,147 @@
+id: EX-FIELDWORK-field-ready-core
+type: FIELDWORK
+title: Verify the core lead and booking system in GHL
+mode: independent
+difficulty: 3
+estimated_minutes: 120
+skills:
+  - SK-BUILD-lead-capture-form
+  - SK-AUTOMATE-workflow-foundations
+  - SK-AUTOMATE-reentry-and-duplicates
+  - SK-BUILD-consultation-calendar
+  - SK-AUTOMATE-appointment-reminders
+  - SK-AUTOMATE-no-show-recovery
+  - SK-BUILD-conversion-copy
+  - SK-ARCHITECT-tags-vs-custom-fields
+  - SK-ARCHITECT-custom-values
+  - SK-ARCHITECT-pipeline-design
+  - SK-JUDGMENT-automation-appropriateness
+scenario: SC-glowhaus-no-show
+instructions: In a dedicated GHL training subaccount, build and inspect a fictional
+  lead-to-consultation system. Use only training data and safe test recipients you
+  control. Keep outbound workflows in Draft except when a deliberately controlled
+  test requires otherwise. Never connect Bloomlab to GHL or submit credentials. Demonstrate
+  the form, field mapping, pipeline, calendar, qualification route, confirmation,
+  reminder exceptions and a mobile page. Collect the manual proof below; Bloomlab
+  checks completeness and your recorded test outcomes, not the GHL account itself.
+allowed_features:
+  - GHL-FORM-FORMS
+  - GHL-FORM-SURVEYS
+  - GHL-CRM-CONTACTS
+  - GHL-CRM-CUSTOM-FIELDS
+  - GHL-CRM-CUSTOM-VALUES
+  - GHL-CRM-PIPELINES
+  - GHL-CAL-CALENDARS
+  - GHL-FUNNEL-FUNNELS
+  - GHL-FUNNEL-WEBSITES
+  - GHL-CRM-SMART-LISTS
+starting_state: {}
+expected_outcomes:
+  - id: proof_complete
+    type: state
+    path: answer.fieldwork_complete
+    operator: equals
+    value: true
+    description: Required manual proof, passing recorded tests and post-proof reasoning
+      are complete.
+critical_failures: []
+grading:
+  mode: deterministic
+  pass_threshold: 80
+hints: []
+fieldwork:
+  required: true
+  tasks:
+    - Build the fictional lead form, qualification survey, typed fields and shared values
+      in a training account. Define a useful pipeline and responsible owner.
+    - Configure a consultation calendar with staff, availability, notice, cancellation
+      and reschedule settings.
+    - Create the confirmation, reminders and exception paths. Inspect matching entry,
+      non-matching entry, missing phone, do-not-disturb and duplicate events.
+    - Build a native training page and compare a Website navigation path with a focused
+      Funnel path. Inspect desktop, tablet and phone.
+    - Create a Smart List filter from the test contact data and check membership changes
+      after a field update. Inspect payment terms without making a real charge.
+  evidence:
+    - screenshot
+    - configuration_answers
+    - explanation
+    - test_results
+  proof:
+    screenshots:
+      - key: core_configuration
+        prompt: Show the training system configuration with account details and contact
+          data cropped.
+    configuration:
+      - key: records
+        prompt: Describe the field mappings, pipeline stages, owner and shared values.
+          Do not paste private addresses or credentials.
+      - key: booking
+        prompt: Describe qualification, calendar routing and the reminder timing and
+          exit rules.
+      - key: pages
+        prompt: Describe the native Funnel and Website page inspection and the payment
+          boundary.
+    explanations:
+      - key: contract
+        prompt: Explain how the lead gets a next action and what stops inappropriate
+          follow-up.
+    tests:
+      - key: capture
+        prompt: Submit and repeat a fictional lead. Compare fields, owner, pipeline
+          and confirmation.
+      - key: qualification
+        prompt: Test eligible, ineligible and uncertain survey answers and the resulting
+          next step.
+      - key: booking
+        prompt: Test ordinary and late bookings, missing phone and do-not-disturb. Record
+          observed reminders and exceptions.
+      - key: changes
+        prompt: Test cancellation, rescheduling and duplicate events. Confirm the appropriate
+          old work stops.
+      - key: pages
+        prompt: Complete the native page path on desktop, tablet and mobile, including
+          invalid input and recovery.
+      - key: segmentation
+        prompt: Change a test field and inspect the Smart List membership before and
+          after.
+      - key: payment_boundary
+        prompt: Inspect the product and stated one-time or recurring terms in a safe
+          test context; confirm no unintended charge.
+  reasoning_questions:
+    - key: data_choice
+      prompt: Why did you choose a custom field rather than tags or a shared custom
+        value for the changing answer?
+    - key: timing
+      prompt: What changes for a late booking, reschedule or second location, and how
+        would you verify it?
+    - key: limits
+      prompt: Which tests did Bloomlab not verify for you, and what evidence would you
+        retain for handoff?
+    - key: appropriate_boundary
+      prompt: Which requested step did you deliberately leave manual or outside GHL?
+        Explain the input or maintenance constraint and how you verified that boundary
+        in the training build.
+portfolio: null
+topics:
+  - lead.capture
+  - lead.forms
+  - lead.confirmation
+  - lead.follow_up
+  - lead.crm_capture
+  - lead.pipeline
+  - lead.next_action
+  - booking.forms
+  - booking.surveys
+  - booking.qualification
+  - booking.calendars
+  - booking.routing
+  - booking.reminders
+  - booking.cancellations
+  - booking.reschedules
+  - booking.no_shows
+  - conversion.funnel_builder
+  - conversion.websites
+  - conversion.mobile
+  - conversion.payments
+  - data.smart_lists

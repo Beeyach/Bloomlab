@@ -2,9 +2,8 @@ id: SK-SELL-evidence-based-audit
 title: Evidence-based audit
 territory: SELL
 tier: field_ready
-summary: >-
-  Audit a business from the outside and label every finding Verified, Likely or Unknown, so the
-  claims you make to a prospect are ones you can stand behind.
+summary: Audit a business from the outside and label every finding Verified, Likely or Unknown, so
+  the claims you make to a prospect are ones you can stand behind.
 prerequisites:
   - SK-STRATEGIZE-funnel-math
 ghl_features: []
@@ -16,4 +15,13 @@ mastery_requirements:
   pressure_test: true
   fieldwork_required: false
   sales_use: true
-keywords: [audit, verified, likely, unknown, evidence]
+keywords:
+  - audit
+  - verified
+  - likely
+  - unknown
+  - evidence
+identities:
+  - Conversion & Sales Operator
+evidence_areas:
+  - sales

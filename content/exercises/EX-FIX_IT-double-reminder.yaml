@@ -1,20 +1,18 @@
-# FIX IT (spec §27): symptoms only — "Maria received two reminder messages. Expected one."
 id: EX-FIX_IT-double-reminder
 type: FIX_IT
 title: Maria received two reminders
-mode: practice
+mode: pressure
 difficulty: 3
 estimated_minutes: 25
 skills:
   - SK-AUTOMATE-reentry-and-duplicates
   - SK-DIAGNOSE-workflow-troubleshooting
 scenario: SC-glowhaus-double-reminder
-instructions: |
-  Dana says: "Maria got two reminder texts yesterday, word for word the same. One lead replied
-  *stop texting me*. I only built one reminder."
-
-  Find out why, using the execution logs before you open any workflow. Fix the cause — not the
-  symptom — so every booked lead gets exactly one reminder the day before.
+instructions: "Dana says: \"Maria got two reminder texts yesterday, word for word\
+  \ the same. One lead replied\n*stop texting me*. I only built one reminder.\"\n\n\
+  Find out why, using the execution logs before you open any workflow. Fix the cause\
+  \ \u2014 not the\nsymptom \u2014 so every booked lead gets exactly one reminder\
+  \ the day before.\n"
 allowed_features:
   - GHL-WF-APPOINTMENT-STATUS
   - GHL-WF-CUSTOMER-BOOKED-APPOINTMENT
@@ -28,14 +26,18 @@ expected_outcomes:
   - id: a1
     type: event
     event: sms.sent
-    count: { exactly: 1 }
-    where: { contact_id: maria, purpose: reminder_24h }
+    count:
+      exactly: 1
+    where:
+      contact_id: maria
+      purpose: reminder_24h
     description: Maria receives exactly one reminder.
   - id: a2
     type: architecture
     requirement: action_exists
     ghl_feature: GHL-WF-ADD-CONTACT-TAG
-    description: The booked tag is still applied (the tagging workflow keeps its real job).
+    description: The booked tag is still applied (the tagging workflow keeps its real
+      job).
   - id: a3
     type: state
     path: contacts.maria.tags
@@ -46,8 +48,10 @@ critical_failures:
   - id: c1
     type: event
     event: sms.sent
-    count: { max: 1 }
-    where: { contact_id: maria }
+    count:
+      max: 1
+    where:
+      contact_id: maria
     description: More than one reminder to the same contact is the original fault.
 grading:
   mode: deterministic
@@ -58,12 +62,12 @@ grading:
     maintainability: 10
     explanation: 10
   pass_threshold: 70
-hints:
-  - level: nudge
-    text: Two identical texts usually means two senders, not one sender running twice. Which workflows enrolled Maria yesterday?
-  - level: concept_reminder
-    text: Customer Booked Appointment and Appointment Status (New) both fire on the same booking. Two workflows listening to the same moment will both act.
-  - level: worked_example
-    text: Open Booking Tags — it has a copied Wait and Send SMS after the tag. Remove those two steps (or the whole reminder branch) and leave the reminder to Appointment Reminders.
+hints: []
 fieldwork: null
 portfolio: null
+topics:
+  - workflow.reentry
+  - workflow.communications
+  - workflow.common_systems
+  - diagnosis.workflow
+  - diagnosis.logs

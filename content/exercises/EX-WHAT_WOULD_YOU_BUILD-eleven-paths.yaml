@@ -1,0 +1,144 @@
+id: EX-WHAT_WOULD_YOU_BUILD-eleven-paths
+type: WHAT_WOULD_YOU_BUILD
+title: Design the next step for eleven businesses
+skills:
+  - SK-STRATEGIZE-funnel-math
+  - SK-JUDGMENT-automation-appropriateness
+instructions: 'For each fictional brief, write a short page/system sequence: visitor intent, offer,
+  information requested, next action and responsible follow-up. Name the funnel family if one is
+  useful, or defend a simpler alternative. Do not copy the same capture-and-book sequence into every
+  answer. Judge what the customer and operator each need.'
+mode: independent
+difficulty: 3
+estimated_minutes: 55
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.lead_capture_answered
+    operator: equals
+    value: true
+    description: Answer the lead capture brief.
+  - id: a2
+    type: state
+    path: written.lead_magnet_answered
+    operator: equals
+    value: true
+    description: Answer the lead magnet brief.
+  - id: a3
+    type: state
+    path: written.consultation_answered
+    operator: equals
+    value: true
+    description: Answer the consultation brief.
+  - id: a4
+    type: state
+    path: written.appointment_answered
+    operator: equals
+    value: true
+    description: Answer the appointment brief.
+  - id: a5
+    type: state
+    path: written.quote_request_answered
+    operator: equals
+    value: true
+    description: Answer the quote request brief.
+  - id: a6
+    type: state
+    path: written.application_answered
+    operator: equals
+    value: true
+    description: Answer the application brief.
+  - id: a7
+    type: state
+    path: written.assessment_answered
+    operator: equals
+    value: true
+    description: Answer the assessment brief.
+  - id: a8
+    type: state
+    path: written.vsl_to_call_answered
+    operator: equals
+    value: true
+    description: Answer the vsl to call brief.
+  - id: a9
+    type: state
+    path: written.content_to_booking_answered
+    operator: equals
+    value: true
+    description: Answer the content to booking brief.
+  - id: a10
+    type: state
+    path: written.service_inquiry_answered
+    operator: equals
+    value: true
+    description: Answer the service inquiry brief.
+  - id: a11
+    type: state
+    path: written.reactivation_answered
+    operator: equals
+    value: true
+    description: Answer the reactivation brief.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: lead_capture
+    label: lead capture
+    help: A cleaning company wants a callback for a standard service.
+    rows: 4
+  - key: lead_magnet
+    label: lead magnet
+    help: A coach offers a preparation worksheet to people who are not ready for a call.
+    rows: 4
+  - key: consultation
+    label: consultation
+    help: A med spa offers a suitability consultation, without promising treatment eligibility.
+    rows: 4
+  - key: appointment
+    label: appointment
+    help: A photographer books a clearly described mini-session.
+    rows: 4
+  - key: quote_request
+    label: quote request
+    help: A roofer needs location, roof type and an inspection before naming a price.
+    rows: 4
+  - key: application
+    label: application
+    help: A consultant has limited engagements and a minimum project size.
+    rows: 4
+  - key: assessment
+    label: assessment
+    help: A fitness coach uses a readiness assessment, not a medical diagnosis.
+    rows: 4
+  - key: vsl_to_call
+    label: vsl to call
+    help: A coach explains a complex programme before inviting applications.
+    rows: 4
+  - key: content_to_booking
+    label: content to booking
+    help: A therapist publishes a service explainer with an optional enquiry path.
+    rows: 4
+  - key: service_inquiry
+    label: service inquiry
+    help: A wedding vendor needs date and venue before confirming availability.
+    rows: 4
+  - key: reactivation
+    label: reactivation
+    help: A local gym invites eligible former trial members to ask about a new schedule.
+    rows: 4
+topics:
+  - families.lead_capture
+  - families.lead_magnet
+  - families.consultation
+  - families.appointment
+  - families.quote_request
+  - families.application
+  - families.assessment
+  - families.vsl_to_call
+  - families.content_to_booking
+  - families.service_inquiry
+  - families.reactivation

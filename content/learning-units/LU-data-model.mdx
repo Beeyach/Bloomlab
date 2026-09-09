@@ -1,0 +1,58 @@
+---
+id: LU-data-model
+title: Store the fact at the right level
+territory: ARCHITECT
+tier: field_ready
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+  - SK-ARCHITECT-custom-values
+  - SK-ARCHITECT-pipeline-design
+topics:
+  - data.contacts
+  - data.tags
+  - data.custom_fields
+  - data.custom_values
+  - data.opportunities
+  - data.pipelines
+  - data.assignments
+  - data.architecture
+  - data.smart_lists
+  - data.companies
+  - data.modeling
+estimated_minutes: 25
+ghl_features:
+  - GHL-CRM-CONTACTS
+  - GHL-CRM-TAGS
+  - GHL-CRM-CUSTOM-FIELDS
+  - GHL-CRM-CUSTOM-VALUES
+  - GHL-CRM-OPPORTUNITIES
+  - GHL-CRM-PIPELINES
+  - GHL-CRM-SMART-LISTS
+summary: A contact represents a person. An opportunity represents a particular commercial decision
+  involving that person. A pipeline describes stages of that decision. A person can have several
+  decisions at once; putting one deal's price or outcome on the contact makes the next deal
+  overwrite it. Decide what each record represents before naming fields.
+---
+
+## Start with the thing the fact describes
+
+A contact represents a person. An opportunity represents a particular commercial decision involving that person. A pipeline describes stages of that decision. A person can have several decisions at once; putting one deal's price or outcome on the contact makes the next deal overwrite it. Decide what each record represents before naming fields.
+
+A tag is a label, useful for membership or a recorded event. A custom field holds a typed value on a record. A custom value is a shared account setting used in templates. A booking destination shared by the location can be a custom value; an individual customer's treatment interest cannot. Record the writer, readers and allowed changes for each fact. If two systems can overwrite the same field, decide which one owns it and what to do when their values conflict.
+
+## Make the pipeline useful to staff
+
+Stages should describe a decision moving forward, not every workflow node. “Consultation booked” is useful because staff can say what evidence moves a deal into it. “SMS number three” is usually implementation detail. Distinguish a stage from an opportunity's outcome/status. Define entry, exit and the next owner for each stage. An owner on the contact and an owner on the opportunity answer related but different questions; inspect both rather than assuming one assignment updated the other.
+
+## Segment without copying the truth
+
+A Smart List is a saved contact filter, not another place to type the same customer data. Define the conditions and test a record entering and leaving the segment when its underlying field changes. Bloomlab does not simulate the complete Smart Lists interface; the practical segment design is written here and the native behaviour is inspected manually in GHL. Companies group business records and associated contacts. A company is not a convenient substitute for every repeated child record.
+
+## The veterinary problem
+
+A fictional veterinary clinic has households, two adult contacts per household, several pets per household and repeated visits for each pet. A pet name in one contact field fails when the second pet arrives. An opportunity per visit might track a commercial decision but does not automatically become a clinical record. Model the relationships explicitly. Consider whether the existing veterinary system should remain authoritative and GHL should hold only communication and commercial data. Do not propose copying sensitive clinical information just because a custom object could hold it.
+
+Field Ready asks you to recognise the boundary and defend an architecture. Implementing custom-object schemas, company workflows and advanced associations belongs to later tiers. Explain a simpler current arrangement, what it cannot do, and how you would verify an integration before promising it. Uncertainty with a test plan is stronger than inventing a native feature.
+
+<Exercise id="EX-ARCHITECTURE_DECISION-veterinary-records" />
+<Exercise id="EX-FIX_IT-jordan-treatment-interest" />

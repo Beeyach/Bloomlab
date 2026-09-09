@@ -1,0 +1,82 @@
+id: EX-WRITE_IT-consultation-copy
+type: WRITE_IT
+title: Write the consultation page yourself
+skills:
+  - SK-BUILD-conversion-copy
+instructions: Write for a fictional Glowhaus consultation page. The ad promises a free suitability
+  conversation in Austin; treatment eligibility and price are discussed afterwards. The clinic has
+  approved a plain explanation of its consultation process, but has supplied no permissioned
+  testimonials or outcome statistics. Write the page's key copy, a mobile ordering plan and the
+  confirmation. No automatic drafting is provided. Do not invent proof or guarantee a result.
+mode: pressure
+difficulty: 3
+estimated_minutes: 35
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.headline_answered
+    operator: equals
+    value: true
+    description: Answer the headline and opening brief.
+  - id: a2
+    type: state
+    path: written.proof_answered
+    operator: equals
+    value: true
+    description: Answer the reason to believe brief.
+  - id: a3
+    type: state
+    path: written.cta_answered
+    operator: equals
+    value: true
+    description: Answer the cta and qualification brief.
+  - id: a4
+    type: state
+    path: written.mobile_answered
+    operator: equals
+    value: true
+    description: Answer the mobile order and testing brief.
+  - id: a5
+    type: state
+    path: written.confirmation_answered
+    operator: equals
+    value: true
+    description: Answer the confirmation and payment boundary brief.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: headline
+    label: Headline and opening
+    help: Match the ad promise and explain who the conversation is for.
+    rows: 4
+  - key: proof
+    label: Reason to believe
+    help: Use the approved process explanation; name what further proof needs permission or verification.
+    rows: 4
+  - key: cta
+    label: CTA and qualification
+    help: State the action and only the questions whose answers change the next step.
+    rows: 4
+  - key: mobile
+    label: Mobile order and testing
+    help: Specify the reading order, labels, error recovery and what you will inspect at narrow widths.
+    rows: 4
+  - key: confirmation
+    label: Confirmation and payment boundary
+    help: Explain what has and has not been booked or purchased; contrast a free consultation with a
+      paid recurring offer.
+    rows: 4
+topics:
+  - conversion.hierarchy
+  - conversion.message_match
+  - conversion.cta_placement
+  - conversion.copy
+  - conversion.proof
+  - conversion.qualification_friction
+  - conversion.mobile
+  - conversion.payments

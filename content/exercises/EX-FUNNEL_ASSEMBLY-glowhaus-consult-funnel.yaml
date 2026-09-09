@@ -1,12 +1,3 @@
-# FUNNEL ASSEMBLY (spec §27, EXR-011): "Give blocks or blank architecture. Learner creates the
-# page/funnel information structure. Do not force one universal order where multiple solutions are
-# valid."
-#
-# Every check below is an existence rule or a partial order, deliberately. There is no expected
-# sequence anywhere in this file, and there could not be: a one-page funnel that captures and then
-# books, and a two-step funnel that qualifies with a survey first, are both defensible answers to
-# this brief, and both pass. What is not defensible is asking for details before saying what the
-# thing is, or selling a membership on a page written to book a free consultation — and those fail.
 id: EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel
 type: FUNNEL_ASSEMBLY
 title: Assemble Glowhaus's consultation funnel
@@ -16,6 +7,7 @@ estimated_minutes: 35
 skills:
   - SK-BUILD-lead-capture-form
   - SK-BUILD-consultation-calendar
+  - SK-BUILD-conversion-copy
 scenario: SC-glowhaus-funnel
 instructions: |
   Glowhaus is about to put $1,200 a month behind ads for free consultations. The account already
@@ -45,7 +37,9 @@ allowed_features:
   - GHL-FORM-SURVEYS
   - GHL-CAL-CALENDARS
 starting_state:
-  notes: The account has the form, the survey, the calendar, the product and the welcome workflow. It has no funnel.
+  notes:
+    The account has the form, the survey, the calendar, the product and the welcome workflow. It
+    has no funnel.
 expected_outcomes:
   - id: a1
     type: architecture
@@ -115,9 +109,6 @@ critical_failures:
     description: The membership is not sold on this funnel; the consultation is free.
 grading:
   mode: deterministic
-  # Only the three dimensions this exercise actually checks carry weight. A funnel assembly has no
-  # edge cases to run and no written explanation to read; giving either a share would move the
-  # score for reasons the exercise never measures.
   weights:
     correctness: 40
     edge_cases: 0
@@ -127,9 +118,12 @@ grading:
   pass_threshold: 70
 hints:
   - level: nudge
-    text: Ads bring strangers. What does a stranger need to know before they will hand over a phone number?
+    text: Ads bring strangers. What does a stranger need to know before they will hand over a phone
+      number?
   - level: concept_reminder
-    text: A funnel step has one job. Two jobs on one step is fine when the second one follows from the first — telling them what it is, then asking. Two unrelated jobs is a step nobody finishes.
+    text:
+      A funnel step has one job. Two jobs on one step is fine when the second one follows from the
+      first — telling them what it is, then asking. Two unrelated jobs is a step nobody finishes.
   - level: worked_example
     text: |
       One defensible shape: a **capture** step with a headline, the problem, the outcome, proof
@@ -139,3 +133,16 @@ hints:
       the calendar. Both put the offer before the ask and capture before booking.
 fieldwork: null
 portfolio: PF-consultation-booking-system
+topics:
+  - conversion.hierarchy
+  - conversion.cta_placement
+  - conversion.proof
+  - conversion.qualification_friction
+  - conversion.mobile
+  - conversion.funnel_builder
+  - booking.forms
+  - booking.surveys
+  - booking.qualification
+  - booking.calendars
+  - lead.capture
+  - lead.forms

@@ -430,6 +430,21 @@ export const ExerciseSchema = z
     fieldwork: FieldworkSchema.nullable().default(null),
     portfolio: portfolioRef.nullable().default(null),
     /** WRITE IT / SAY IT / EXPLAIN IT: what kind of piece, in the spec's own words. */
+    placement_area: z
+      .enum([
+        'funnel_reasoning',
+        'lead_capture',
+        'workflow_basics',
+        'fields_vs_values',
+        'pipeline_basics',
+        'basic_pricing',
+        'written_prospect_response',
+        'spoken_discovery',
+      ])
+      .optional(),
+    review_checks: z
+      .array(z.strictObject({ key: z.string().regex(/^[a-z][a-z0-9_]*$/), prompt: markdown }))
+      .default([]),
     topics: curriculumTopics,
     time_category: z.enum(['practical', 'retrieval']).default('practical'),
     format: z.string().optional(),
@@ -456,6 +471,14 @@ export const ExerciseSchema = z
       [...exercise.expected_outcomes, ...exercise.critical_failures].map((a) => a.id),
       ['expected_outcomes'],
       'assertion id',
+    );
+    if (exercise.placement_area && (exercise.hints.length > 0 || exercise.mode !== 'independent'))
+      issue(['placement_area'], 'Placement requires independent work without instructional hints');
+    requireUnique(
+      ctx,
+      exercise.review_checks.map((check) => check.key),
+      ['review_checks'],
+      'review check',
     );
     const expectedType = /^EX-([A-Z_]+)-/.exec(exercise.id)?.[1];
     if (expectedType !== exercise.type)
@@ -590,6 +613,15 @@ export const ExerciseSchema = z
       }
       if (assertion.type === 'state') {
         const [root, ...rest] = assertion.path.split('.');
+        if (
+          root === 'review' &&
+          (!exercise.review_checks.length ||
+            !['complete', 'safe_decision', 'all_passed'].includes(rest.join('.')))
+        )
+          issue(
+            at('path'),
+            'Review checks require an authored checklist and a known review metric',
+          );
         // A decision the exercise offers as options must expect one of them.
         if (
           root === 'decision' &&

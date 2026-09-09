@@ -2,9 +2,8 @@ id: SK-JUDGMENT-automation-appropriateness
 title: Is automation the answer?
 territory: JUDGMENT
 tier: field_ready
-summary: >-
-  Before building, decide whether the problem needs a workflow at all, whether GHL is the right
-  tool, and what would break if the automation ran on every contact it could reach.
+summary: Before building, decide whether the problem needs a workflow at all, whether GHL is the
+  right tool, and what would break if the automation ran on every contact it could reach.
 prerequisites:
   - SK-AUTOMATE-workflow-foundations
   - SK-STRATEGIZE-bottleneck-diagnosis
@@ -19,4 +18,13 @@ mastery_requirements:
   pressure_test: true
   fieldwork_required: false
   sales_use: true
-keywords: [judgment, appropriate, over-automation, simplicity]
+keywords:
+  - judgment
+  - appropriate
+  - over-automation
+  - simplicity
+identities:
+  - Funnel Strategist
+  - Technical GHL Specialist
+evidence_areas:
+  - funnel_strategy

@@ -1,13 +1,9 @@
-# The Field Ready campaign (spec §8, §11; CUR-002): thirteen competency gates through the master
-# graph. Gates reference skill IDs only. Gates with no skills yet are reported by the compiler as
-# GATE_WITHOUT_SKILLS until their curriculum is authored (Phase 24).
 id: CAMP-FIELD_READY
 title: Field Ready
 pace_hint: 'Suggested pace: ~30 days at 3–5 hours/day'
-summary: >-
-  From placement to a capstone the learner performs partly in real GHL: funnel thinking, lead
-  systems, data foundations, workflows, booking, conversion, diagnosis, prospecting, selling,
-  pricing, delivery. Passing means capable, not expert.
+summary: 'From placement to a capstone the learner performs partly in real GHL: funnel thinking,
+  lead systems, data foundations, workflows, booking, conversion, diagnosis, prospecting, selling,
+  pricing, delivery. Passing means capable, not expert.'
 requires_campaigns: []
 gates:
   - id: GATE-0
@@ -23,6 +19,8 @@ gates:
       - SK-ARCHITECT-tags-vs-custom-fields
       - SK-ARCHITECT-pipeline-design
       - SK-SELL-project-pricing
+      - SK-SELL-written-prospect-response
+      - SK-SELL-discovery-call
     pass_criteria:
       independent_evidence_per_skill: 1
       notes: Placement never blocks; it only clears what is already demonstrated.
@@ -86,7 +84,8 @@ gates:
     number: 6
     name: Conversion and Copy
     summary: Page hierarchy, message match, CTA placement, conversion copy, proof, mobile conversion design.
-    skills: []
+    skills:
+      - SK-BUILD-conversion-copy
     pass_criteria:
       independent_evidence_per_skill: 2
       notes: Curriculum for this gate is authored in Phase 24.
@@ -106,6 +105,7 @@ gates:
     skills:
       - SK-SELL-evidence-based-audit
       - SK-SELL-prospect-selection
+      - SK-SELL-written-prospect-response
     pass_criteria:
       independent_evidence_per_skill: 2
       pressure_test_required: true
@@ -142,7 +142,9 @@ gates:
   - id: GATE-12
     number: 12
     name: Field Ready Capstone
-    summary: No instructional handholding — diagnose, design, price, negotiate, propose, build, test, explain; part of it in real GHL.
+    summary:
+      No instructional handholding — diagnose, design, price, negotiate, propose, build, test,
+      explain; part of it in real GHL.
     skills: []
     pass_criteria:
       independent_evidence_per_skill: 1

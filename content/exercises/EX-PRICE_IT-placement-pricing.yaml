@@ -1,0 +1,231 @@
+id: EX-PRICE_IT-placement-pricing
+type: PRICE_IT
+title: Placement · price a bounded build
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-SELL-project-pricing
+scenario: SC-summit-discovery
+instructions: >
+  Placement: work from what you already know. You may skip this assessment and learn the capability
+  instead. This assesses the beginner requirement; later pressure tests and fieldwork still apply.
+
+
+  Marcus has agreed the build. Now price it.
+
+
+  Decide what stays in the deal, then set a project fee, a rush fee, a deposit, a recurring fee,
+
+  a timeline, how many rounds of revisions are included, and what is explicitly not included.
+
+  Everything you take out of the scope says what it leaves Marcus with, so read those before you
+
+  move anything.
+
+
+  Then explain the number in three sentences Marcus would accept.
+
+
+  There is no single right price. There are wrong ones, and you will see why after you submit.
+allowed_features: []
+starting_state: {}
+pricing:
+  currency: USD
+  cost:
+    hourly_cost: 55
+    risk_allowance_percent_per_point: 5
+  margin:
+    floor_percent: 40
+    healthy_percent: 55
+  timeline:
+    standard_days: 21
+    rush_below_days: 10
+    rush_extra_hours: 4
+  revision_hours: 2
+  requirements:
+    - id: fewer_unqualified
+      need:
+        I keep taking calls with people who were never going to buy. I want to know before the call
+        whether someone can actually afford this.
+      satisfied_by:
+        - application_form
+        - qualification_routing
+    - id: faster_replies
+      need:
+        Someone applies on a Friday and hears nothing until Monday. By then they have booked with
+        someone else.
+      satisfied_by:
+        - qualification_routing
+        - applicant_follow_up
+    - id: calls_actually_happen
+      need: About a third of the calls that do get booked never happen.
+      satisfied_by:
+        - discovery_calendar
+        - no_show_recovery
+    - id: keep_my_questions
+      need: I spent a year working out the questions I ask in Typeform. I do not want to start again.
+      satisfied_by:
+        - typeform_migration
+    - id: change_it_myself
+      need: I need to be able to change a question without booking a call with you.
+      satisfied_by:
+        - handover
+  scope:
+    - id: application_form
+      name: Application form
+      description: The form applicants fill in, with the qualifying questions Marcus already asks.
+      hours: 4
+      consequence: There is nothing for anyone to apply through, so nothing else in this deal runs.
+      locked: true
+      dimensions:
+        - deliverables
+        - copy
+    - id: qualification_routing
+      name: Qualification routing
+      description: Sorts each application into book now, follow up, or decline, based on the answers.
+      hours: 5
+      consequence: Every application looks the same again and Marcus reads each one himself before deciding.
+      requires:
+        - application_form
+      dimensions:
+        - deliverables
+        - workflow_complexity
+    - id: discovery_calendar
+      name: Discovery calendar
+      description: A booking calendar with his real availability, buffers and confirmations.
+      hours: 3
+      consequence: Qualified applicants get an email asking them to reply with times, and Marcus books by hand.
+      dimensions:
+        - deliverables
+        - integration
+    - id: applicant_follow_up
+      name: Follow-up for applicants who go quiet
+      description: A short sequence for people who apply and then do not book.
+      hours: 3
+      consequence: An applicant who does not book on the day hears nothing further.
+      requires:
+        - application_form
+      dimensions:
+        - deliverables
+        - workflow_complexity
+    - id: no_show_recovery
+      name: No-show recovery
+      description: Reminders before the call and a rebooking path for anyone who misses it.
+      hours: 2
+      consequence: A missed call stays missed unless Marcus notices the empty slot and chases it himself.
+      requires:
+        - discovery_calendar
+      dimensions:
+        - deliverables
+        - workflow_complexity
+    - id: typeform_migration
+      name: Moving the Typeform questions
+      description: Rebuilding his existing questions and bringing across the applications already submitted.
+      hours: 3
+      consequence: Marcus retypes his questions into the new form and his past applications stay in Typeform.
+      dimensions:
+        - migration
+    - id: handover
+      name: Handover
+      description: A walkthrough recording and a one-page map of what runs when, so he can change a question.
+      hours: 2
+      consequence: Marcus calls you every time a question needs changing, and this becomes support work.
+      dimensions:
+        - support
+        - assumptions
+  control_dimensions:
+    - revisions
+    - exclusions
+    - rush
+  scope_training: false
+written_fields:
+  - key: the_number
+    label: Explain the number
+    help:
+      Three sentences Marcus would accept. What he is getting, what it costs, and why it is not the
+      cheapest quote he has.
+    rows: 5
+    audience: owner
+    max_words: 120
+expected_outcomes:
+  - id: a1
+    type: state
+    path: price.complete
+    operator: equals
+    value: true
+    description: All eight of the deal's answers are set.
+    tier: required
+  - id: a2
+    type: state
+    path: price.requirements_met
+    operator: equals
+    value: true
+    description: Everything Marcus asked for still has something in the deal answering it.
+    tier: required
+  - id: a3
+    type: state
+    path: price.scope_dependencies_met
+    operator: equals
+    value: true
+    description: Nothing left in the deal depends on something taken out of it.
+    tier: required
+  - id: a4
+    type: state
+    path: price.deposit_within_total
+    operator: equals
+    value: true
+    description: The deposit is part of the total, not larger than it.
+    tier: required
+  - id: a5
+    type: state
+    path: price.exclusions_count
+    operator: gte
+    value: 2
+    description: At least two things are named as explicitly not included.
+    tier: required
+  - id: a6
+    type: state
+    path: price.rush_justified
+    operator: equals
+    value: true
+    description: 'The rush fee matches the timeline: charged when the work is compressed, zero when it is not.'
+    tier: required
+  - id: a7
+    type: state
+    path: price.covers_risk
+    operator: equals
+    value: true
+    description: The quote covers delivery plus the contingency this client's risk asks for.
+    tier: quality
+  - id: a8
+    type: state
+    path: price.margin_at_least_floor
+    operator: equals
+    value: true
+    description: The margin on the one-time work is at or above the floor this business works to.
+    tier: quality
+  - id: a9
+    type: state
+    path: price.scope.typeform_migration.included
+    operator: equals
+    value: true
+    description: Migration is in the deal and paid for, rather than absorbed as a favour.
+    tier: quality
+critical_failures:
+  - id: c1
+    type: state
+    path: price.at_or_above_floor
+    operator: equals
+    value: true
+    description:
+      The total is at or above what delivering the scope costs. A quote below it loses money
+      on every hour of the build.
+grading:
+  mode: mixed
+  rubric: PRICING_REASONING_RUBRIC_V1
+  pass_threshold: 70
+hints: []
+fieldwork: null
+portfolio: null
+placement_area: basic_pricing

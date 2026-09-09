@@ -1,0 +1,63 @@
+id: EX-WHAT_WOULD_YOU_BUILD-placement-funnel
+type: WHAT_WOULD_YOU_BUILD
+title: Placement · reason from the funnel
+skills:
+  - SK-STRATEGIZE-funnel-math
+instructions: A fictional consultation business reports 200 enquiries, 100 bookings, 50 attended
+  calls and 10 sales in one month. Sales total $5,000; acquisition spend was $2,000. Enter rates as
+  whole percentages and costs as whole dollar amounts. Identify the first question you would ask
+  before proposing more traffic. This is placement, not a promise that these numbers predict next
+  month.
+mode: independent
+difficulty: 3
+estimated_minutes: 12
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: prediction.booking_rate
+    operator: equals
+    value: '50'
+    description: Calculate booking rate from its own denominator.
+  - id: a2
+    type: state
+    path: prediction.show_rate
+    operator: equals
+    value: '50'
+    description: Calculate show rate from its own denominator.
+  - id: a3
+    type: state
+    path: prediction.close_rate
+    operator: equals
+    value: '20'
+    description: Calculate close rate from its own denominator.
+  - id: a4
+    type: state
+    path: prediction.cost_per_lead
+    operator: equals
+    value: '10'
+    description: Calculate cost per lead from its own denominator.
+  - id: a5
+    type: state
+    path: prediction.cost_per_customer
+    operator: equals
+    value: '200'
+    description: Calculate cost per customer from its own denominator.
+  - id: a6
+    type: state
+    path: prediction.average_order_value
+    operator: equals
+    value: '500'
+    description: Calculate average order value from its own denominator.
+critical_failures: []
+grading:
+  mode: deterministic
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: question
+    label: Your next question
+    help: What is missing, and how would you verify it?
+    rows: 4
+topics: []
+placement_area: funnel_reasoning

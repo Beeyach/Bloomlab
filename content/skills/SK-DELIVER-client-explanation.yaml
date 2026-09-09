@@ -2,8 +2,7 @@ id: SK-DELIVER-client-explanation
 title: Client explanation
 territory: DELIVER
 tier: field_ready
-summary: >-
-  Explain a system to a business owner in their language, and the same system to another GHL
+summary: Explain a system to a business owner in their language, and the same system to another GHL
   builder in precise terms, without inventing behaviour either way.
 prerequisites:
   - SK-AUTOMATE-workflow-foundations
@@ -15,4 +14,13 @@ mastery_requirements:
   pressure_test: false
   fieldwork_required: false
   sales_use: true
-keywords: [explanation, audience, jargon, handoff]
+keywords:
+  - explanation
+  - audience
+  - jargon
+  - handoff
+identities:
+  - GHL Systems Builder
+  - Conversion & Sales Operator
+evidence_areas:
+  - client_explanation

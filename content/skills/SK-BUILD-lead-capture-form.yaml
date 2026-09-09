@@ -2,9 +2,8 @@ id: SK-BUILD-lead-capture-form
 title: Lead capture form
 territory: BUILD
 tier: field_ready
-summary: >-
-  Build a form whose fields map to the right contact fields, mark the right ones required, and
-  make its submission start the follow-up workflow.
+summary: Build a form whose fields map to the right contact fields, mark the right ones required,
+  and make its submission start the follow-up workflow.
 prerequisites: []
 ghl_features:
   - GHL-FORM-FORMS
@@ -15,4 +14,15 @@ mastery_requirements:
   independent_evidence: 2
   pressure_test: false
   fieldwork_required: true
-keywords: [form, field mapping, required fields, confirmation]
+keywords:
+  - form
+  - field mapping
+  - required fields
+  - confirmation
+identities:
+  - GHL Systems Builder
+  - Funnel Strategist
+evidence_areas:
+  - ghl_implementation
+  - fieldwork
+  - fieldwork

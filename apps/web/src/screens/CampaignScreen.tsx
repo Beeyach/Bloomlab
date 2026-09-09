@@ -66,7 +66,7 @@ function Gate({
             Assesses {plural(gate.total, 'capability', 'capabilities')} you may already have;
             {gate.cleared.length > 0
               ? ` ${plural(gate.cleared.length, 'is', 'are')} already demonstrated.`
-              : ' none demonstrated yet, so the campaign starts at Gate 1.'}
+              : ' take placement to show what you already know, or begin wherever your prerequisites allow.'}
           </p>
         ) : gate.total === 0 ? (
           <p className={styles.criteria}>
@@ -77,6 +77,20 @@ function Gate({
             {gate.passed_count} of {gate.total} capabilities demonstrated · pass with{' '}
             {definition ? criteriaWords(definition.pass_criteria) : 'independent demonstrations'}
           </p>
+        )}
+        {definition?.placement && (
+          <ul className={styles.skills}>
+            {content.exercises
+              .filter((exercise) => exercise.placement_area)
+              .map((exercise) => (
+                <li key={exercise.id} className={styles.skill}>
+                  <Link className={styles.skillLink} to={`/exercise/${exercise.id}`}>
+                    {exercise.title}
+                  </Link>
+                  <span className={styles.skillNote}>{exercise.estimated_minutes} min</span>
+                </li>
+              ))}
+          </ul>
         )}
         {gate.skills.length > 0 && (
           <ul className={styles.skills}>

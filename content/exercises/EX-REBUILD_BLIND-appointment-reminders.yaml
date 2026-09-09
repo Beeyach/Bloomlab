@@ -1,4 +1,3 @@
-# REBUILD BLIND (spec §27): no lesson, no step-by-step support.
 id: EX-REBUILD_BLIND-appointment-reminders
 type: REBUILD_BLIND
 title: Rebuild the reminder system from nothing
@@ -7,6 +6,7 @@ difficulty: 4
 estimated_minutes: 30
 skills:
   - SK-AUTOMATE-appointment-reminders
+  - SK-AUTOMATE-workflow-foundations
 scenario: SC-glowhaus-no-show
 instructions: |
   Glowhaus's reminder workflow was deleted. Rebuild it: one reminder 24 hours before every
@@ -19,7 +19,6 @@ allowed_features:
   - GHL-WF-IF-ELSE
   - GHL-WF-REMOVE-FROM-WORKFLOW
 starting_state:
-  # The contact whose appointment the timing checks measure against (appointment.start).
   contact_id: maria
 expected_outcomes:
   - id: a1
@@ -39,14 +38,19 @@ expected_outcomes:
   - id: a3
     type: event
     event: sms.sent
-    count: { exactly: 2 }
-    where: { contact_id: maria, purpose: reminder }
+    count:
+      exactly: 2
+    where:
+      contact_id: maria
+      purpose: reminder
     description: Exactly two reminders per booking.
 critical_failures:
   - id: c1
     type: negative
     event: sms.sent
-    where: { contact_id: maria, appointment_status: cancelled }
+    where:
+      contact_id: maria
+      appointment_status: cancelled
     description: A cancelled appointment must not receive a reminder.
 grading:
   mode: deterministic
@@ -60,3 +64,8 @@ grading:
 hints: []
 fieldwork: null
 portfolio: null
+topics:
+  - workflow.waits
+  - workflow.timing
+  - workflow.branching
+  - workflow.common_systems

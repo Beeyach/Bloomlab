@@ -27,18 +27,20 @@ export function sessionContentOf(bundle: ContentBundle): SessionContent {
     ),
     exercises_by_skill: bundle.indexes.exercises_by_skill,
     exercises: Object.fromEntries(
-      bundle.exercises.map((exercise) => [
-        exercise.id,
-        {
-          id: exercise.id,
-          type: exercise.type,
-          mode: exercise.mode,
-          estimated_minutes: exercise.estimated_minutes,
-          skills: exercise.skills,
-          fieldwork_required:
-            exercise.type === 'FIELDWORK' || exercise.fieldwork?.required === true,
-        },
-      ]),
+      bundle.exercises
+        .filter((exercise) => !exercise.placement_area)
+        .map((exercise) => [
+          exercise.id,
+          {
+            id: exercise.id,
+            type: exercise.type,
+            mode: exercise.mode,
+            estimated_minutes: exercise.estimated_minutes,
+            skills: exercise.skills,
+            fieldwork_required:
+              exercise.type === 'FIELDWORK' || exercise.fieldwork?.required === true,
+          },
+        ]),
     ),
   };
 }

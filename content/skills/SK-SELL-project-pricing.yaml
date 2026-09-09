@@ -2,9 +2,8 @@ id: SK-SELL-project-pricing
 title: Project pricing
 territory: SELL
 tier: field_ready
-summary: >-
-  Price a scoped build with a defensible project fee, deposit, timeline, revisions, inclusions
-  and exclusions, and explain the number without apologising for it.
+summary: Price a scoped build with a defensible project fee, deposit, timeline, revisions,
+  inclusions and exclusions, and explain the number without apologising for it.
 prerequisites:
   - SK-SELL-discovery-call
 ghl_features: []
@@ -16,4 +15,14 @@ mastery_requirements:
   pressure_test: true
   fieldwork_required: false
   sales_use: true
-keywords: [pricing, deposit, scope, margin, risk, exclusions]
+keywords:
+  - pricing
+  - deposit
+  - scope
+  - margin
+  - risk
+  - exclusions
+identities:
+  - Conversion & Sales Operator
+evidence_areas:
+  - pricing

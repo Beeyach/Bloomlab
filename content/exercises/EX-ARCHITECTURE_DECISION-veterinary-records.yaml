@@ -1,0 +1,90 @@
+id: EX-ARCHITECTURE_DECISION-veterinary-records
+type: ARCHITECTURE_DECISION
+title: One household, three pets, several decisions
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+  - SK-ARCHITECT-custom-values
+  - SK-ARCHITECT-pipeline-design
+instructions: A fictional veterinary clinic asks Bloomwired to replace a spreadsheet. Jamie and Alex
+  share a household, own three pets, and may book repeat visits. The clinic already has a veterinary
+  record system. Staff want reminders, a view of outstanding commercial enquiries and one shared
+  booking destination. They suggest putting each pet in a tag and overwriting “latest visit” on
+  Jamie's contact. Design a maintainable alternative in your own words. There are no architecture
+  options to select. Keep clinical records out of this training exercise.
+mode: pressure
+difficulty: 3
+estimated_minutes: 40
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.entities_answered
+    operator: equals
+    value: true
+    description: Answer the entities and relationships brief.
+  - id: a2
+    type: state
+    path: written.facts_answered
+    operator: equals
+    value: true
+    description: Answer the fields and shared settings brief.
+  - id: a3
+    type: state
+    path: written.operations_answered
+    operator: equals
+    value: true
+    description: Answer the pipeline, ownership and segmentation brief.
+  - id: a4
+    type: state
+    path: written.boundary_answered
+    operator: equals
+    value: true
+    description: Answer the limits and verification brief.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: entities
+    label: Entities and relationships
+    help:
+      Distinguish people, households, pets, visits, companies and commercial opportunities. Where
+      should the authoritative data remain?
+    rows: 4
+  - key: facts
+    label: Fields and shared settings
+    help:
+      Choose tags, typed fields and custom values for concrete facts. Explain the failure caused by
+      storing several pets in one changing value.
+    rows: 4
+  - key: operations
+    label: Pipeline, ownership and segmentation
+    help: Define stages, statuses, owner and next action; give a Smart List filter and an
+      entering/leaving test case.
+    rows: 4
+  - key: boundary
+    label: Limits and verification
+    help:
+      Say whether GHL or custom code is appropriate, what is outside Field Ready, and what you must
+      verify before accepting the project.
+    rows: 4
+topics:
+  - data.contacts
+  - data.tags
+  - data.custom_fields
+  - data.custom_values
+  - data.opportunities
+  - data.pipelines
+  - data.assignments
+  - data.architecture
+  - data.smart_lists
+  - data.companies
+  - data.modeling
+  - judgment.data_choice
+  - judgment.ghl_appropriate
+  - judgment.custom_code
+  - judgment.complexity
+  - judgment.uncertainty
+  - judgment.missing_verification
