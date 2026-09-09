@@ -1,0 +1,27 @@
+id: SK-SCALE-agency-specialist
+title: Scope SaaS, white-label and Marketplace operations
+territory: SCALE
+tier: specialist
+summary: Keep distribution, branding, billing and app permission
+  responsibilities separate from ordinary client builds.
+prerequisites:
+  - SK-SCALE-agency-architecture
+  - SK-CONNECT-ghl-api
+ghl_features:
+  - GHL-AGENCY-SAAS
+  - GHL-AGENCY-WHITELABEL
+  - GHL-APP-DISTRIBUTION
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - scale-specialist
+  - post-Field-Ready
+  - training

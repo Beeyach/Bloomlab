@@ -9,6 +9,11 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 25 SCALE and retention checkpoint
+
+- Nine units/practicals cover template release discipline, snapshot portability, agency boundaries, specialist distribution, evidence-based retention and four distinct Bloomwired vertical Demonstration Builds.
+- Content-derived learn/practical enforcement and AI-Off contract mutation tests preserve real-GHL fieldwork and exclude specialist distribution from Field Ready. No live snapshot, account provisioning, client-outcome claim or paid call.
+
 ### Added — Phase 25 advanced Labs checkpoint
 
 - Shared-account companies, typed custom objects, associations, narrow object notifications and live Smart Lists; class capacity and service-resource availability with booking/rescheduling enforcement.

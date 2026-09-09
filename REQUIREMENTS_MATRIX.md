@@ -67,7 +67,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | CUR-023 | CONNECT curriculum: DNS, JSON, HTTP, webhooks, APIs (current GHL API practice, no obsolete patterns), Git/GitHub, Cloudflare Workers, Google Cloud, JavaScript for operator work; Marketplace/App extension specialist only. | P1 | 25 | PASSED | §19 |
 | CUR-024 | SELL curriculum: ICP, research, evidence-based audit, prospect qualification, cold email, social outreach, cold calls, discovery, listening, technical discovery, presentation, client language, pricing, scope, negotiation, closing. | P1 | 24 | PASSED | §20 |
 | CUR-025 | DELIVER curriculum: proposal, change requests, onboarding, build order dependencies, client communication, handoff, retention (later). | P1 | 24 | PASSED | §21 |
-| CUR-026 | SCALE curriculum: templates, naming standards, deployment checklist, snapshots, vertical systems (Bloomwired Med Spa Core, Coach Lead Path, Home Services Follow-Up, Photographer Inquiry System), agency architecture; SaaS / white label / Marketplace specialist only. | P2 | 25 | NOT_STARTED | §22 |
+| CUR-026 | SCALE curriculum: templates, naming standards, deployment checklist, snapshots, vertical systems (Bloomwired Med Spa Core, Coach Lead Path, Home Services Follow-Up, Photographer Inquiry System), agency architecture; SaaS / white label / Marketplace specialist only. | P2 | 25 | PASSED | §22 |
 | CUR-027 | GHL AI curriculum taught only after deterministic understanding; covers when workflows beat AI, Conversation AI, Voice AI, workflow AI actions, agents, knowledge bases, tools, MCP/external tools, escalation, permissions, hallucination risk, cost, logs, irreversible actions. Product names verified from official GHL sources. | P2 | 25 | NOT_STARTED | §23 |
 | CUR-028 | Supporting GHL specialties present in the full graph (reputation, reviews, Social Planner, courses, memberships, communities, client portal, affiliates, ecommerce, blogs, SEO, IVR, prospecting tool, ad reporting, rentals, services, resources, contracts, estimates, invoices, payment links, subscriptions, advanced reporting); not all in Field Ready. | P2 | 25 | NOT_STARTED | §24 |
 | CUR-029 | Learner increasingly writes copy without automatically using AI. | P1 | 24 | PASSED | §15 |
@@ -231,7 +231,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | SAL-012 | Build order taught as dependencies (data → pipeline → calendar → forms → workflows → funnel → tracking → QA), not random building. | P1 | 24 | PASSED | §21 |
 | SAL-013 | Client communication types: update, blocker, delay, approval, revision, technical explanation. | P1 | 16 | PASSED | §21 |
 | SAL-014 | Handoff: documentation, training, ownership, support. | P1 | 24 | PASSED | §21 |
-| SAL-015 | Retention (later): reporting, maintenance, retainer, expansion, referral, account strategy. | P2 | 25 | NOT_STARTED | §21 |
+| SAL-015 | Retention (later): reporting, maintenance, retainer, expansion, referral, account strategy. | P2 | 25 | PASSED | §21 |
 | SAL-016 | Scope training: deliverables, assumptions, exclusions, revisions, dependencies, location count, workflow complexity, migration, integration, rush, copy, design, support. | P1 | 17 | PASSED | §20 |
 
 ## PRI — Pricing

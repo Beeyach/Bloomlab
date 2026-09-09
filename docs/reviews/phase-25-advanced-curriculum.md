@@ -118,3 +118,33 @@ associations, narrow object notifications, one-group segments, one resource per 
 USD single-line billing and full successful refunds. First Lab price remains the legacy Funnel
 default; later prices are explicitly selected in Payments. No physical Safari or human transfer
 acceptance is inferred. All parked statuses and unrelated partials remain unchanged.
+
+## Checkpoint D — SCALE and retention
+
+Nine authored unit/practical pairs cover naming/templates/release checklists, snapshot portability,
+agency account ownership, specialist SaaS/white-label/Marketplace scope, retention and the four
+named vertical systems. Each vertical is a distinct Demonstration Build blueprint with manifest,
+entry/exit decisions, exclusions, measurement contract and failure-case QA. They are training
+work, not imported native snapshots or claimed client outcomes. Existing snapshot fieldwork remains
+required separately; its registry execution fidelity stays REAL_GHL.
+
+The retained shared fixture runner checks eighteen supplied policy contracts with AI Off. It
+does not claim to assess arbitrary prose or execute a rollout. Retention includes reporting
+denominators/percentage points, maintenance duties, bounded retainer versus expansion, referral
+permission and account strategy. Specialist distribution is outside Field Ready. Current official
+snapshot refresh/push, account designation, white-label desktop and Marketplace distribution
+sources were read on 9 September 2026 and recorded in the feature registry.
+
+Focused compiler and grading regressions: **7 tests / 3 files passed**. They derive all nine
+learn/practical pairs and exact four vertical names, preserve fieldwork and specialist tier, and
+check empty/correct/individually corrupted answers. Content `2026.09.24`; no migration or provider
+spend. Checkpoints E/F and final exact-head CI/Preview remain pending.
+
+Typecheck, lint (existing warning only), formatting and Production build/provider scan pass.
+Built Chromium with AI Off passes **90 cases**: all nine lessons and nine runners at exactly
+1440/1024/768/390/320, nine empty-fail/correct-retry/draft/result-reload flows, keyboard visible
+focus, touch retry and reduced motion at 480 px height. Artifact:
+`.review/phase-25-scale/built/connect-probe.json`. CUR-026 and SAL-015 are PASSED for these
+authored curriculum/practical contracts, not live client or real-GHL acceptance.
+Checkpoint C exact-head CI **34342382869** passed on
+`5385480f3e58bc920b03212fb6742958ec3031d7`; final remote identity will be reverified after F.

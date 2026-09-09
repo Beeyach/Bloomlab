@@ -2,6 +2,15 @@ import { z } from 'zod';
 
 /** Acceptance topics. Citations are derived from authored units and practicals. */
 export const ADVANCED_TOPICS = [
+  'scale.templates',
+  'scale.portability',
+  'scale.agency',
+  'scale.specialist',
+  'retention.account_strategy',
+  'scale.vertical_medspa',
+  'scale.vertical_coach',
+  'scale.vertical_home_services',
+  'scale.vertical_photographer',
   'labs.companies_objects',
   'labs.smart_lists',
   'labs.scheduling',

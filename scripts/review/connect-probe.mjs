@@ -10,13 +10,13 @@ import { probeHelpers } from './probe-lib.mjs';
 const BASE = process.env.BASE ?? 'http://127.0.0.1:4173';
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review/phase-25-connect');
 const HEAD = process.env.REVIEW_HEAD;
+// The same authored-fixture surface serves later SCALE/AI/specialty checkpoints.
+const prefixes = (process.env.REVIEW_TOPICS ?? 'connect.').split(',');
+const selected = (topics) =>
+  topics.some((topic) => prefixes.some((prefix) => topic.startsWith(prefix)));
 const content = await compileContentDir(resolve('content'));
-const units = content.learning_units.filter((unit) =>
-  unit.advanced_topics.some((topic) => topic.startsWith('connect.')),
-);
-const exercises = content.exercises.filter((exercise) =>
-  exercise.advanced_topics.some((topic) => topic.startsWith('connect.')),
-);
+const units = content.learning_units.filter((unit) => selected(unit.advanced_topics));
+const exercises = content.exercises.filter((exercise) => selected(exercise.advanced_topics));
 const { waitFor, click, typeInto, hasButton } = probeHelpers({ base: BASE });
 mkdirSync(OUT, { recursive: true });
 const results = { base: BASE, head: HEAD ?? null, widths: [], practicals: [], identity: null };
@@ -27,8 +27,12 @@ const measure = () =>
     `(() => ({ width: innerWidth, scrollWidth: document.documentElement.scrollWidth, title: document.querySelector('main h1')?.textContent, fields: [...document.querySelectorAll('textarea')].map(el => ({ label: el.closest('label')?.textContent.trim(), width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height })) }))()`,
   );
 try {
-  assert.equal(units.length, 9);
-  assert.equal(exercises.length, 9);
+  assert(units.length > 0 && exercises.length > 0, 'Selected curriculum exists');
+  if (!process.env.REVIEW_TOPICS) {
+    assert.equal(units.length, 9);
+    assert.equal(exercises.length, 9);
+  }
+  assert(exercises.every((exercise) => exercise.fixture_checks.length >= 2));
   await openPage(page, `${BASE}/settings/ai`);
   assert(await waitFor(page, '!!document.querySelector("main select")'));
   await page.evaluate(
@@ -66,7 +70,7 @@ try {
     );
     await screenshot(page, `${OUT}/runner-${width}.png`, undefined, false);
     results.widths.push({ width, cases });
-    console.log(`CONNECT: ${width}px, ${cases.length} layouts passed`);
+    console.log(`Curriculum ${prefixes.join(',')}: ${width}px, ${cases.length} layouts passed`);
   }
   await setViewport(page, 1024, 480);
   await page.send('Emulation.setEmulatedMedia', {
@@ -164,5 +168,5 @@ try {
   await browser.close();
 }
 console.log(
-  `CONNECT: ${results.widths.length * 18} width cases; ${results.practicals.length} fail/retry/persist passes; touch and reduced motion passed.`,
+  `Curriculum: ${results.widths.reduce((sum, row) => sum + row.cases.length, 0)} width cases; ${results.practicals.length} fail/retry/persist passes; touch and reduced motion passed.`,
 );

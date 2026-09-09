@@ -1,0 +1,40 @@
+---
+id: LU-scale-portability
+title: Refresh and transport a snapshot safely
+territory: SCALE
+tier: practitioner
+skills:
+  - SK-SCALE-snapshot-portability
+ghl_features:
+  - GHL-SNAP-SNAPSHOTS
+  - GHL-CRM-CUSTOM-VALUES
+advanced_topics:
+  - scale.portability
+estimated_minutes: 15
+summary: Distinguish snapshot assets, live data, refresh, selective updates and
+  destination repair.
+---
+
+# Refresh and transport a snapshot safely
+
+## Configuration is not a customer database
+
+HighLevel Snapshots capture selected reusable configuration from a source sub-account. Contacts, appointments, conversations and processor connections are not a portable customer database inside that snapshot. Destination permissions, integrations and client-specific configuration still require attention. A successful load is not evidence that the customer's end-to-end journey works.
+
+Begin with a manifest: required fields and values, entry points, workflows, calendar dependencies and each destination override. Mark every unknown instead of replacing it with source-client data. For a second location, verify timezone, staff assignment and booking destination before enabling contact-facing work. Use fictional records for training and minimise personal information in evidence.
+
+## Refresh is not automatic propagation
+
+Changing the source does not automatically change a snapshot. Refresh selects source changes; a subsequent push selects linked destinations and assets. Internal agency destinations and external agencies have different update paths. Read the current refresh article before relying on one process for both.
+
+The documented removal of workflow steps can remove contacts waiting on those steps. Therefore a migration review must ask what is currently enrolled, not only whether the new graph looks correct. Keep evidence of the selected assets, destination versions and failures. Retry failed assets deliberately; do not claim the whole release succeeded because some assets completed.
+
+## A transfer rehearsal
+
+Rehearse one isolated destination with explicit local values. Compare its manifest with the source, test capture through booking and cancellation, and inspect for wrong-brand text or links. Explain what must be reconnected and who owns it. A defect discovered here is useful: repair the source or document a justified override, then repeat the relevant tests.
+
+This local practical classifies a fictional transfer and orders a release. It supplements the existing Snapshot portability fieldwork; it does not satisfy the separate real-GHL proof, screenshots, reasoning or manual confirmation required for mastery. Nothing in this lesson loads or pushes a real snapshot.
+
+[Official HighLevel reference](https://help.gohighlevel.com/support/solutions/articles/48000982583-refresh-or-update-snapshots-in-highlevel), checked 9 September 2026. Recheck before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-scale-portability" />

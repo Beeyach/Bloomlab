@@ -1,0 +1,57 @@
+id: EX-WHAT_WOULD_YOU_BUILD-scale-portability
+type: WHAT_WOULD_YOU_BUILD
+title: Refresh and transport a snapshot safely — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SCALE-snapshot-portability
+client: CL-glowhaus-medspa
+advanced_topics:
+  - scale.portability
+allowed_features:
+  - GHL-SNAP-SNAPSHOTS
+  - GHL-CRM-CUSTOM-VALUES
+instructions: Distinguish snapshot assets, live data, refresh, selective updates
+  and destination repair. Work only from the fictional policy and assets in the
+  named fields. Submit JSON, not prose. Types and array order are checked;
+  property order is ignored. This local contract-repair exercise executes no
+  snapshot, account change, message, deployment or purchase. It is demonstration
+  work, not a client outcome.
+written_fields:
+  - key: transfer
+    label: Classify this transfer
+    help: Return copy=[workflow,custom_fields], reconnect=[payment_connection],
+      exclude=[contacts,appointments], in that order. These are the only five
+      supplied assets.
+    rows: 6
+  - key: update
+    label: Handle a deleted wait step
+    help: A new release deletes a wait with active contacts. Return
+      automatic_snapshot_refresh=false, review_enrolled_contacts=true,
+      operation_order=[refresh,test,push_selected], and
+      real_fieldwork_complete=false.
+    rows: 6
+fixture_checks:
+  - key: transfer
+    field: transfer
+    expected_json: '{"copy":["workflow","custom_fields"],"reconnect":["payment_connection"],"exclude":["contacts","appointments"]}'
+  - key: update
+    field: update
+    expected_json: '{"automatic_snapshot_refresh":false,"review_enrolled_contacts":true,"operation_order":["refresh","test","push_selected"],"real_fieldwork_complete":false}'
+expected_outcomes:
+  - id: transfer
+    type: state
+    path: fixture.transfer
+    operator: equals
+    value: true
+    description: Classify this transfer satisfies the supplied contract.
+  - id: update
+    type: state
+    path: fixture.update
+    operator: equals
+    value: true
+    description: Handle a deleted wait step satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

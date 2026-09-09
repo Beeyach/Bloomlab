@@ -1,0 +1,54 @@
+id: EX-WHAT_WOULD_YOU_BUILD-scale-agency
+type: WHAT_WOULD_YOU_BUILD
+title: Separate agency operations from client accounts — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SCALE-agency-architecture
+client: CL-glowhaus-medspa
+advanced_topics:
+  - scale.agency
+allowed_features:
+  - GHL-AGENCY-SUBACCOUNTS
+instructions: Assign account ownership, least-privilege access, usage
+  responsibility and change authority. Work only from the fictional policy and
+  assets in the named fields. Submit JSON, not prose. Types and array order are
+  checked; property order is ignored. This local contract-repair exercise
+  executes no snapshot, account change, message, deployment or purchase. It is
+  demonstration work, not a client outcome.
+written_fields:
+  - key: accounts
+    label: Assign the workspaces
+    help: For agency billing and client bookings return agency_billing=agency_owned,
+      client_bookings=client_owned, shared_customer_database=false.
+    rows: 6
+  - key: access
+    label: Restrict contractor access
+    help: A copywriter may edit content for client-a only. Return
+      locations=[client-a], agency_admin=false, revoke_at_handoff=true,
+      unlimited_usage_in_retainer=false.
+    rows: 6
+fixture_checks:
+  - key: accounts
+    field: accounts
+    expected_json: '{"agency_billing":"agency_owned","client_bookings":"client_owned","shared_customer_database":false}'
+  - key: access
+    field: access
+    expected_json: '{"locations":["client-a"],"agency_admin":false,"revoke_at_handoff":true,"unlimited_usage_in_retainer":false}'
+expected_outcomes:
+  - id: accounts
+    type: state
+    path: fixture.accounts
+    operator: equals
+    value: true
+    description: Assign the workspaces satisfies the supplied contract.
+  - id: access
+    type: state
+    path: fixture.access
+    operator: equals
+    value: true
+    description: Restrict contractor access satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

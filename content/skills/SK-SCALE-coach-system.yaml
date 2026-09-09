@@ -1,0 +1,27 @@
+id: SK-SCALE-coach-system
+title: Coach Lead Path
+territory: SCALE
+tier: advanced
+summary: Configure and QA a reusable training system where a fit-qualified
+  application reaches a discovery conversation without unsupported promises.
+prerequisites:
+  - SK-SCALE-reusable-templates
+  - SK-SCALE-snapshot-portability
+ghl_features:
+  - GHL-FORM-SURVEYS
+  - GHL-CRM-PIPELINES
+  - GHL-CAL-CALENDARS
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - vertical-coach
+  - post-Field-Ready
+  - training

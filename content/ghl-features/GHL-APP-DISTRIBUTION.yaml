@@ -1,0 +1,19 @@
+id: GHL-APP-DISTRIBUTION
+official_name: Marketplace App Distribution
+area: Marketplace
+feature_type: product
+implementation_type: native_ghl
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002141-marketplace-app-distribution-type
+skills:
+  - SK-SCALE-agency-specialist
+known_limitations:
+  - Conceptual instruction and objective local policy fixtures only. No account
+    provisioning, billing, app build, installation or live permissions are
+    simulated. Plan-specific eligibility must be checked before real work.
+approximation_note: Conceptual scope decisions, not a native product simulator or live acceptance.
+verification_note: Official HighLevel documentation read on 2026-09-09. SaaS,
+  white-label and Marketplace operations are specialist-only.
+supported_configs: {}

@@ -1,7 +1,16 @@
-content_version: 2026.09.23
+content_version: 2026.09.24
 schema_version: 1
-notes: Phase 25 checkpoint C — shared-account advanced Labs and practicals.
+notes: Phase 25 checkpoint D — SCALE, retention and four vertical training systems.
 advanced_coverage:
+  - scale.templates
+  - scale.portability
+  - scale.agency
+  - scale.specialist
+  - retention.account_strategy
+  - scale.vertical_medspa
+  - scale.vertical_coach
+  - scale.vertical_home_services
+  - scale.vertical_photographer
   - labs.companies_objects
   - labs.smart_lists
   - labs.scheduling

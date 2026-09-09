@@ -1,0 +1,24 @@
+id: SK-SELL-retention
+title: Run an evidence-based account review
+territory: SELL
+tier: advanced
+summary: Turn reporting and maintenance into a bounded retainer, justified
+  expansion and permission-based referral discussion.
+prerequisites:
+  - SK-DELIVER-client-explanation
+  - SK-SELL-project-pricing
+ghl_features: []
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - retention
+  - post-Field-Ready
+  - training

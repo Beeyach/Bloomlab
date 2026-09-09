@@ -1,0 +1,27 @@
+id: SK-SCALE-home-services-system
+title: Home Services Follow-Up
+territory: SCALE
+tier: advanced
+summary: Configure and QA a reusable training system where a service-area
+  inquiry reaches an accountable estimate follow-up.
+prerequisites:
+  - SK-SCALE-reusable-templates
+  - SK-SCALE-snapshot-portability
+ghl_features:
+  - GHL-FORM-FORMS
+  - GHL-CRM-PIPELINES
+  - GHL-WF-SEND-SMS
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - vertical-home-services
+  - post-Field-Ready
+  - training

@@ -1,0 +1,55 @@
+id: EX-WHAT_WOULD_YOU_BUILD-scale-templates
+type: WHAT_WOULD_YOU_BUILD
+title: Name and release a reusable system — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SCALE-reusable-templates
+client: CL-glowhaus-medspa
+advanced_topics:
+  - scale.templates
+allowed_features:
+  - GHL-CRM-CUSTOM-VALUES
+instructions: Separate reusable assets from client configuration and sequence an
+  accountable release checklist. Work only from the fictional policy and assets
+  in the named fields. Submit JSON, not prose. Types and array order are
+  checked; property order is ignored. This local contract-repair exercise
+  executes no snapshot, account change, message, deployment or purchase. It is
+  demonstration work, not a client outcome.
+written_fields:
+  - key: manifest
+    label: Repair the release manifest
+    help: Use the grammar vertical.purpose.type.version for a medspa booking
+      workflow at v2. Return asset_name, booking_url_source (custom_value or
+      literal_client_url), secret_in_template, and preserve_client_overrides.
+    rows: 6
+  - key: release
+    label: Sequence the release
+    help: 'Return steps, an array in this dependency order: inventory,
+      configure_destination, test_training_destination, owner_approval, pilot,
+      monitor. Then return production_authorized=false for this local exercise.'
+    rows: 6
+fixture_checks:
+  - key: manifest
+    field: manifest
+    expected_json: '{"asset_name":"medspa.booking.workflow.v2","booking_url_source":"custom_value","secret_in_template":false,"preserve_client_overrides":true}'
+  - key: release
+    field: release
+    expected_json: '{"steps":["inventory","configure_destination","test_training_destination","owner_approval","pilot","monitor"],"production_authorized":false}'
+expected_outcomes:
+  - id: manifest
+    type: state
+    path: fixture.manifest
+    operator: equals
+    value: true
+    description: Repair the release manifest satisfies the supplied contract.
+  - id: release
+    type: state
+    path: fixture.release
+    operator: equals
+    value: true
+    description: Sequence the release satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

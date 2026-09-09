@@ -14,6 +14,44 @@ beforeAll(async () => {
   };
 });
 describe('CUR-023 content-derived coverage', () => {
+  it('covers SCALE and retention with four explicit vertical demonstrations and preserved fieldwork', () => {
+    const rows = advancedCoverage(content).filter(
+      (row) => row.topic.startsWith('scale.') || row.topic.startsWith('retention.'),
+    );
+    expect(rows).toHaveLength(9);
+    for (const row of rows) {
+      expect(row.units).toHaveLength(1);
+      expect(row.exercises).toHaveLength(1);
+      expect(
+        content.learning_units.find((unit) => unit.id === row.units[0])!.word_count,
+      ).toBeGreaterThan(200);
+    }
+    for (const title of [
+      'Bloomwired Med Spa Core',
+      'Coach Lead Path',
+      'Home Services Follow-Up',
+      'Photographer Inquiry System',
+    ])
+      expect(
+        content.learning_units.some(
+          (unit) =>
+            unit.title === title &&
+            unit.advanced_topics.some((topic) => topic.startsWith('scale.vertical_')),
+        ),
+      ).toBe(true);
+    expect(
+      content.skills.find((skill) => skill.id === 'SK-SCALE-snapshot-portability')!
+        .mastery_requirements.fieldwork_required,
+    ).toBe(true);
+    expect(content.skills.find((skill) => skill.id === 'SK-SCALE-agency-specialist')!.tier).toBe(
+      'specialist',
+    );
+    expect(
+      content.campaigns
+        .find((campaign) => campaign.id === 'CAMP-FIELD_READY')!
+        .gates.flatMap((gate) => gate.skills),
+    ).not.toContain('SK-SCALE-agency-specialist');
+  });
   it('covers every enabled advanced Lab with instruction and an account-backed practical', () => {
     for (const row of advancedCoverage(content).filter((row) => row.topic.startsWith('labs.'))) {
       expect(row.units.length, row.topic).toBeGreaterThan(0);
