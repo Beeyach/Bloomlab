@@ -28,7 +28,10 @@ export async function projectEvidence(
       started_at: at,
       response: {
         ...emptyResponse(),
-        choice: options.choice ?? null,
+        choice:
+          exercise.decision_options.find((option) => option.value === options.choice)?.value ??
+          exercise.decision_options[0]?.value ??
+          null,
         text: 'Controlled canonical evidence fixture; not a real client or human GHL result.',
       },
       real_ghl:

@@ -447,6 +447,9 @@ describe('Unit completion is idempotent across devices (D-062, SYNC-008)', () =>
 });
 
 describe('Phase 7 navigation into the Academy', () => {
+  const firstUnit = content.learning_units.find(
+    (candidate) => candidate.id === 'LU-customer-path',
+  )!;
   it('Continue opens the unit directly when the engine says the next step is a unit', async () => {
     renderAt('/');
     const object = (await screen.findByRole('heading', { level: 2, name: 'Funnel math' })).closest(
@@ -454,7 +457,9 @@ describe('Phase 7 navigation into the Academy', () => {
     ) as HTMLElement;
     expect(object).toHaveTextContent('Next · Read');
     fireEvent.click(within(object).getByRole('button', { name: 'Continue' }));
-    expect(await screen.findByRole('heading', { level: 1, name: unit.title })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: firstUnit.title }),
+    ).toBeInTheDocument();
     expect(await screen.findByRole('button', { name: 'Finish this unit' })).toBeInTheDocument();
   });
 
@@ -464,9 +469,11 @@ describe('Phase 7 navigation into the Academy', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Build my session' }));
     const plan = await screen.findByTestId('session-plan');
     const first = within(plan).getAllByRole('link')[0]!;
-    expect(first).toHaveAttribute('href', `/academy/${UNIT}?skill=${SKILL}`);
+    expect(first).toHaveAttribute('href', `/academy/${firstUnit.id}?skill=${SKILL}`);
     fireEvent.click(first);
-    expect(await screen.findByRole('heading', { level: 1, name: unit.title })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: firstUnit.title }),
+    ).toBeInTheDocument();
   });
 
   it('the capability sheet offers the real unit', async () => {
@@ -474,7 +481,7 @@ describe('Phase 7 navigation into the Academy', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Funnel math' });
     expect(within(dialog).getByRole('link', { name: 'Read this unit' })).toHaveAttribute(
       'href',
-      `/academy/${UNIT}?skill=${SKILL}`,
+      `/academy/${firstUnit.id}?skill=${SKILL}`,
     );
   });
 

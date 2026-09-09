@@ -18,3 +18,7 @@ mastery_requirements:
   pressure_test: false
   fieldwork_required: true
 keywords: [webhook, JSON, payload, POST, mapping]
+
+identities:
+  - Technical GHL Specialist
+  - GHL Systems Builder

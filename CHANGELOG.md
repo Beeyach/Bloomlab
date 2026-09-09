@@ -9,6 +9,12 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 24 Field Ready
+
+- Completed eight-area placement and Gates 1–12 with enforced topic/identity/time/Bloomwired coverage, nineteen-test QA, fourteen judgments and required sales/delivery work.
+- Added twenty persistent clients, five practical starter projects and an eleven-stage Boss Client whose scope choice adds later QA. IndexedDB 8 and strict existing D1 metadata sync retain notes and canonical selections with explicit conflicts.
+- Composed the independent capstone with nine inputs/actions, eight submitted reasoning answers and manual GHL proof. Completion requires all campaign/project evidence and ten independently evaluated readiness areas. Human acceptance stays unverified; no provider spend, GHL inspection, production deployment or merge.
+
 ### Added — Phase 23 portfolio and local data export
 
 - Real Portfolio shell/list/detail routes collect saved project work into ten normalized artifact references with authored Simulation Project/Demonstration Build labels and explicit missing evidence. Submitted build representations are preserved with new attempts; existing private Fieldwork screenshots retain owner checks and truthful deletion/unavailability states.

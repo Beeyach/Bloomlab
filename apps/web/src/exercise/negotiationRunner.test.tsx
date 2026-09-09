@@ -18,7 +18,7 @@ import {
 import { finalizeAttempt } from './finalize';
 import { negotiationOf } from './negotiation/context';
 import { NegotiationThread } from './work/NegotiationThread';
-const exercise = content.exercises.find((e) => e.type === 'NEGOTIATE_IT')!;
+const exercise = content.exercises.find((e) => e.id === 'EX-NEGOTIATE_IT-summit-freelancer-quote')!;
 const open = async () => {
   const view = render(
     <MemoryRouter initialEntries={[`/exercise/${exercise.id}`]}>

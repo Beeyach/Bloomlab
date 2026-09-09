@@ -121,13 +121,16 @@ export function nextStepFor(ctx: Context, skillId: string): SessionItem | null {
   if (!atLeast(evaluation, 'GUIDED')) {
     return (
       exercise('first practice: a guided exercise', (e) => e.mode === 'guided') ??
-      exercise('first practice', (e) => e.mode === 'practice')
+      exercise('first practice', (e) => e.mode === 'practice') ??
+      exercise('practise independently', (e) => e.mode === 'independent') ??
+      exercise('independent pressure assessment', (e) => e.mode === 'pressure')
     );
   }
   if (!atLeast(evaluation, 'PRACTICED')) {
     return (
       exercise('practise without a worked example', (e) => e.mode === 'practice') ??
-      exercise('practise independently', (e) => e.mode === 'independent')
+      exercise('practise independently', (e) => e.mode === 'independent') ??
+      exercise('independent pressure assessment', (e) => e.mode === 'pressure')
     );
   }
   const needed = Math.max(2, req.independent_evidence);
@@ -140,6 +143,10 @@ export function nextStepFor(ctx: Context, skillId: string): SessionItem | null {
       exercise(
         `independent evidence ${counts.independent_passes}/${needed}: practise without hints`,
         (e) => e.mode === 'practice',
+      ) ??
+      exercise(
+        `independent evidence ${counts.independent_passes}/${needed}: pressure assessment`,
+        (e) => e.mode === 'pressure',
       )
     );
   }

@@ -33,6 +33,7 @@ export function SequencePlan({
               <h3>{step.label}</h3>
               <p>{step.brief}</p>
               <button
+                className={styles.hintButton}
                 type="button"
                 disabled={disabled || index === 0}
                 aria-label={`Move ${step.label} earlier`}
@@ -41,6 +42,7 @@ export function SequencePlan({
                 Move earlier
               </button>{' '}
               <button
+                className={styles.hintButton}
                 type="button"
                 disabled={disabled || index === order.length - 1}
                 aria-label={`Move ${step.label} later`}

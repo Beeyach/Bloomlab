@@ -236,8 +236,8 @@ describe('attempt lifecycle and idempotency (D-068)', () => {
     expect(await db.exercise_attempts.count()).toBe(1);
     expect(await db.skill_evidence.count()).toBe(decision.skills.length);
     const evidence = await db.skill_evidence.toArray();
-    expect(evidence.map((row) => row.id)).toEqual(
-      decision.skills.map((skill) => `ea:${attempt.attempt_id}:${skill}`),
+    expect(evidence.map((row) => row.id).sort()).toEqual(
+      decision.skills.map((skill) => `ea:${attempt.attempt_id}:${skill}`).sort(),
     );
   });
 
@@ -334,7 +334,7 @@ describe('hints and assistance (EXR-022, MAS-007)', () => {
     const guided = byId(RUN_THE_LEAD);
     expect(guided.mode).toBe('guided');
     expect(evidenceKindFor(guided, 'normal')).toBe('guided_practice');
-    expect(evidenceKindFor(byId(FIX_IT), 'normal')).toBe('deterministic_exercise');
+    expect(evidenceKindFor(byId(FIX_IT), 'normal')).toBe('pressure_test');
     expect(evidenceKindFor(byId(OPEN_ENDED), 'normal')).toBe('independent_exercise');
     expect(evidenceKindFor(byId(REBUILD), 'normal')).toBe('pressure_test');
     expect(evidenceKindFor(byId(REBUILD), 'retrieval')).toBe('retrieval');

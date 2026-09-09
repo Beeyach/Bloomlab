@@ -95,7 +95,7 @@ describe('Command Center (DES-010, PRD-012)', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
     // A new learner's next step for Funnel math is its unit (Phase 8), not the capability sheet.
     expect(
-      await screen.findByRole('heading', { level: 1, name: "Funnel math, in the owner's numbers" }),
+      await screen.findByRole('heading', { level: 1, name: 'Start with the next decision' }),
     ).toBeInTheDocument();
   });
 
@@ -250,10 +250,9 @@ describe('Skill Map (DES-011, PRD-013)', () => {
     renderAt(`/skills/${BOTTLENECK}`);
     const dialog = await screen.findByRole('dialog', { name: 'Bottleneck diagnosis' });
     expect(dialog).toHaveTextContent('Next required');
-    // Phase 15 authored a practice-mode exercise for this capability, so the builder now has a
-    // first step to offer rather than nothing.
-    expect(dialog).toHaveTextContent('Forty visits, fourteen leads');
-    expect(dialog).toHaveTextContent('first practice');
+    // Phase 24 teaches customer-path reasoning before first practice.
+    expect(dialog).toHaveTextContent('Start with the next decision');
+    expect(dialog).toHaveTextContent('first exposure');
     expect(dialog).not.toHaveTextContent('Opens after');
     expect(within(dialog).getByRole('link', { name: /Funnel math/ })).toBeInTheDocument();
     expect(dialog).toHaveTextContent('demonstrated');
@@ -268,7 +267,7 @@ describe('Skill Map (DES-011, PRD-013)', () => {
     expect(dialog).toHaveTextContent('Retrieval due in');
     // The builder offers the next step towards the evidence still owed, from the Phase 15
     // exercises this capability now has.
-    expect(dialog).toHaveTextContent('Forty visits, fourteen leads');
+    expect(dialog).toHaveTextContent('Design the next step for eleven businesses');
     const evidence = within(dialog).getByRole('heading', { name: 'Evidence' })
       .parentElement as HTMLElement;
     expect(within(evidence).getByText('Demonstrated')).toBeInTheDocument();

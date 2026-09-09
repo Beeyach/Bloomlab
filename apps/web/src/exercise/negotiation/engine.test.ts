@@ -21,7 +21,7 @@ import {
   type NegotiationAction,
   type NegotiationState,
 } from './engine';
-const exercise = content.exercises.find((e) => e.type === 'NEGOTIATE_IT')!;
+const exercise = content.exercises.find((e) => e.id === 'EX-NEGOTIATE_IT-summit-freelancer-quote')!;
 const config = exercise.negotiation!;
 const economics = economicsFor(exercise);
 const initial = () => negotiationOf(exercise)!;

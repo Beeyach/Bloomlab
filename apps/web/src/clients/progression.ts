@@ -1,8 +1,9 @@
-export const clientProgressId = (client: string) => `cp:${client}`;
 import type { ClientProgressRecord, ContentBundle, Project } from '@bloomlab/content-schema';
 import { isIndependentPass, isPass, validateEvidence } from '@bloomlab/mastery-engine';
 import type { ExerciseAttemptRecord, SkillEvidenceRecord } from '../data/types';
 import { stripEnvelope } from '../data/learning/shape';
+
+export const clientProgressId = (client: string) => `cp:${client}`;
 
 export interface ProjectStageView {
   id: string;
@@ -32,8 +33,12 @@ export function eligibleProjectAttempt(
     attempt.exercise_id !== exerciseId ||
     attempt.result !== 'passed' ||
     attempt.critical_failures.length ||
-    !attempt.completed_at ||
+    !Number.isFinite(Date.parse(attempt.started_at)) ||
+    !Number.isFinite(Date.parse(attempt.completed_at)) ||
+    Date.parse(attempt.completed_at) < Date.parse(attempt.started_at) ||
     !attempt.response ||
+    (exercise.decision_options.length > 0 &&
+      !exercise.decision_options.some((option) => option.value === attempt.response?.choice)) ||
     attempt.versions.content !== bundle.content_version ||
     !['exercise', 'fieldwork'].includes(attempt.source.type) ||
     attempt.source.id !== exerciseId ||
@@ -54,6 +59,8 @@ export function eligibleProjectAttempt(
         !row.deleted_at &&
         row.learner_id === learnerId &&
         row.attempt_id === attempt.id &&
+        row.source.type === attempt.source.type &&
+        row.source.id === attempt.source.id &&
         row.exercise_id === exerciseId &&
         row.skill_id === skill &&
         row.versions.content === attempt.versions.content &&
@@ -76,7 +83,10 @@ export function projectProgress(
   bundle: ContentBundle,
 ) {
   const engagement =
-    record?.learner_id === learnerId && !record.deleted_at
+    record?.learner_id === learnerId &&
+    record.client_id === project.client &&
+    record.id === clientProgressId(project.client) &&
+    !record.deleted_at
       ? record.engagements[project.id]
       : undefined;
   const selections =

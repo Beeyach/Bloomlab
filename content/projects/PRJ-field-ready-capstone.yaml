@@ -154,7 +154,7 @@ inputs:
       across tools. Diagnose the operating bottleneck before selecting a build.
   - category: hidden_edge_cases
     brief: The evaluation includes cases beyond the ordinary booking path. Build and test your own
-      failure matrix; the nine required reasoning areas include timing, contact data, location
+      failure matrix; the eight required reasoning areas include timing, contact data, location
       changes and rescheduling. Do not assume a happy-path test proves the release.
   - category: client_communications
     brief: Priya asks what changes for Dana and who will maintain it. The later thread requests an

@@ -2,7 +2,17 @@
 
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
-Last updated: 2026-09-08 (Phase 23 portfolio)
+Last updated: 2026-09-09 (Phase 24 Field Ready)
+
+## Phase 24 — Field Ready
+
+- PRD-005, CUR-015 and CUR-031 are implemented but human-unverified. Controlled canonical fixtures prove routing, composition and completion; they are not Ary's actual GHL work or reasoning acceptance. The certificate reports training evidence, not external inspection or client outcomes. FLD-001/EXR-020 and all seven Phase 21 human-unverified statuses remain parked.
+- Mixed written/discovery/copy judgments retain the existing optional AI gateway. AI Off supports teaching, practice, deterministic checks and draft persistence; a pending rubric does not become a quality pass. Broad pricing/classifier quality has no new live evidence, so PRI-001/002 and NEG-003 remain PARTIAL. No real-provider spend was requested for this phase.
+- Fifteen new client characters have authored text directions and lines only. They cannot be generated as audio or used in Call Room content. The five existing accepted audio characters and forty manifest assets are unchanged; twenty audible voices are not claimed.
+- Relationship journals and selected attempt references sync as mutable snapshots. Divergent versions require an explicit choice; prose and project selections are not automatically merged. Earlier Boss selections invalidate later selections. Current project selections require matching content version, owner and valid evidence; old evidence remains historical. The two-location architecture choice adds real QA obligations; numerical pricing/negotiation drafts remain their existing individual exercise records, with proposal cross-reference performed by the learner.
+- Twenty persistent clients are not twenty completed Portfolio projects. The five starter engagements and two existing Portfolio templates are implemented; PORT-003's full twenty-project progression remains NOT_STARTED.
+- Browser review uses Chromium at the five required widths, keyboard and touch emulation. It does not replace physical Safari acceptance. The existing Workflow Lab 500-event frame-time ceiling still misses in this container; functional workflow and deterministic regression checks pass (see earlier phase timing records).
+- IndexedDB migration 8 adds client progress and resets sync pull cursors for replay. The existing D1 client_progress table is reused; no new D1 migration or schema version rewrite. No GHL OAuth/API inspection, browser scraping, public profile, production deploy or merge is added.
 
 ## Phase 23 — Portfolio
 

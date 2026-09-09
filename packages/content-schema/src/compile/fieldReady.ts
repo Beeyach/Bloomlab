@@ -85,8 +85,10 @@ export function fieldReadyCoverage(content: Omit<ParsedContent, 'paths'>) {
     missing_topics: topics
       .filter((topic) => !topic.units.length || !topic.exercises.length)
       .map((topic) => topic.topic),
-    identities: skills.map((skill) => ({ skill: skill.id, identities: skill.identities })),
-    missing_identities: skills.filter((skill) => !skill.identities.length).map((skill) => skill.id),
+    identities: content.skills.map((skill) => ({ skill: skill.id, identities: skill.identities })),
+    missing_identities: content.skills
+      .filter((skill) => !skill.identities.length)
+      .map((skill) => skill.id),
     missing_practical: skills
       .filter((skill) => !exercises.some((exercise) => exercise.skills.includes(skill.id)))
       .map((skill) => skill.id),

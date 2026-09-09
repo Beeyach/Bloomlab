@@ -168,6 +168,8 @@ describe('Persistent clients and saved project evidence', () => {
     expect(eligibleProjectAttempt(boss, id, attempt!, evidence, owner, content)).toBe(true);
     for (const change of [
       { learner_id: 'other' },
+      { started_at: 'invalid' },
+      { completed_at: '2020-01-01T00:00:00Z' },
       { result: 'failed' as const },
       { hints_used: ['nudge' as const] },
       { versions: { ...attempt!.versions, content: 'old' } },
@@ -176,6 +178,27 @@ describe('Persistent clients and saved project evidence', () => {
         eligibleProjectAttempt(boss, id, { ...attempt!, ...change }, evidence, owner, content),
       ).toBe(false);
     expect(eligibleProjectAttempt(boss, id, attempt!, [], owner, content)).toBe(false);
+    expect(
+      eligibleProjectAttempt(
+        boss,
+        id,
+        attempt!,
+        evidence.map((row) => ({ ...row, source: { ...row.source, id: 'other' } })),
+        owner,
+        content,
+      ),
+    ).toBe(false);
+    const scope = await projectEvidence(db, 'EX-ARCHITECTURE_DECISION-boss-scope');
+    expect(
+      eligibleProjectAttempt(
+        boss,
+        scope.attempt!.exercise_id!,
+        { ...scope.attempt!, response: { ...scope.attempt!.response!, choice: null } },
+        scope.evidence,
+        owner,
+        content,
+      ),
+    ).toBe(false);
     await expect(selectProjectAttempt(boss.id, 'pricing', id, attempt!.id, db)).rejects.toThrow(
       /earlier/,
     );

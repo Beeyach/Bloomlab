@@ -139,3 +139,10 @@ it('tags future STRATEGIZE and advanced automation boundaries without adding Pha
       .every((skill) => skill.tier === 'field_ready'),
   ).toBe(true);
 });
+
+it('requires identity metadata on the entire master graph, including future-tier skills', () => {
+  const broken = structuredClone(content);
+  const future = broken.skills.find((skill) => skill.tier === 'practitioner')!;
+  future.identities = [];
+  expect(fieldReadyCoverage(broken).missing_identities).toContain(future.id);
+});

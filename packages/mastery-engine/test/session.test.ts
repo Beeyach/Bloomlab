@@ -223,3 +223,23 @@ describe('session builder (spec §33, TA§70; MAS-006)', () => {
     expect(plan.blocks[0]?.items[0]?.reason).toMatch(/without hints/);
   });
 });
+
+it('keeps a required capability runnable when its only authored practical is independent or pressure', () => {
+  for (const mode of ['independent', 'pressure'] as const) {
+    const vehicle = { ...CONTENT.exercises['EX-EDGE_CASE-alpha-solo']!, mode };
+    const content = {
+      ...CONTENT,
+      exercises_by_skill: { [ALPHA.id]: [vehicle.id] },
+      exercises: { [vehicle.id]: vehicle },
+    };
+    for (const history of [
+      [evidence({ kind: 'exposure', at: at(1) })],
+      [evidence({ kind: 'independent_exercise', at: at(1) })],
+    ]) {
+      const plan = buildSession(inputFor(history, new Date(at(1)), { content }));
+      expect(
+        plan.blocks.flatMap((block) => block.items).some((item) => item.content_id === vehicle.id),
+      ).toBe(true);
+    }
+  }
+});

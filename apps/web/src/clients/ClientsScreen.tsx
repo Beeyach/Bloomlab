@@ -79,12 +79,14 @@ function Relationship({ record }: { record: ClientProgressRecord }) {
 export default function ClientsScreen() {
   const { clientId, projectId } = useParams();
   const [query, setQuery] = useState('');
+  const [retry, setRetry] = useState(0);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
   const [notice, setNotice] = useState('');
   const [chosen, setChosen] = useState<Record<string, string>>({});
   const initialize = () => {
     setError('');
+    setRetry((value) => value + 1);
     void ensureClients().catch(() =>
       setError('Client records could not be opened. Retry when device storage is available.'),
     );
@@ -112,7 +114,7 @@ export default function ClientsScreen() {
         error: 'Saved client work could not be read. Retry when device storage is available.',
       };
     }
-  }, []);
+  }, [retry]);
   const project = content.projects.find((row) => row.id === projectId);
   const client = content.clients.find((row) => row.id === (project?.client ?? clientId));
   const record = data?.records.find(
