@@ -1,5 +1,6 @@
 import { fieldReadyCoverage, validateFieldReady } from './fieldReady.ts';
 import { advancedCoverage, validateAdvanced } from './advanced.ts';
+import { validateAdvancedPaths } from './advancedPaths.ts';
 import type { ContentBundle, ContentIssue } from '../bundle.ts';
 import { CONTENT_TYPES, type ContentType } from '../ids.ts';
 import { LockSchema, ManifestSchema, type Lock, type Manifest } from '../schemas/index.ts';
@@ -147,6 +148,7 @@ export async function validateSources(
 
   validateFieldReady(parsed, issues);
   validateAdvanced(parsed, manifest?.advanced_coverage ?? [], issues);
+  if (manifest?.advanced_paths_enforced) validateAdvancedPaths(parsed, issues);
   const errors = issues.errors;
   const fatal = options.strict ? issues.issues : errors;
   if (fatal.length > 0 || !manifest) {

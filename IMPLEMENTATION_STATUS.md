@@ -6,7 +6,7 @@ Last updated: 2026-09-09
 
 ## CURRENT PHASE
 
-Phase 25 — Advanced curriculum is in progress on `codex/phase-25-advanced-curriculum`, stacked against `codex/phase-24-field-ready`. Checkpoints A–D are complete: CONNECT, shared-account advanced Labs, SCALE and retention have enforced instruction/practical coverage. Checkpoint C complete Node 22 CI passes 1,963 tests / 139 files; D focused checks pass 7 tests / 3 files and 90 five-width lesson/runner cases with all nine fail/retry/persist flows. E/F, final exact-head remote CI/Preview and independent audit remain required. No parked human acceptance changed and no PR is merged.
+Phase 25 — Advanced curriculum is implemented on `codex/phase-25-advanced-curriculum`, draft PR #27 against `codex/phase-24-field-ready`. Checkpoints A–F completed in order: CONNECT first, shared-account advanced Labs, SCALE/retention, deterministic-first AI/specialties, then seven curated paths over one graph. Complete Node 22 CI passes 1,978 tests / 142 files; checkpoint and five-width browser evidence is in `docs/reviews/phase-25-advanced-curriculum.md`. Final exact-head remote CI/Preview verification is being recorded before stopping for independent audit. No parked human acceptance changed and no PR is merged.
 
 Phase 24 — Field Ready is implemented on `codex/phase-24-field-ready`, the third stacked draft against `codex/phase-23-portfolio`. Placement, Gates 1–12, twenty clients, five evidence-driven projects, eleven-stage Boss Client and the bounded completion view are implemented. Evidence and remaining acceptance are recorded in `docs/reviews/phase-24-field-ready.md`; exact-head CI/Preview identity belongs in the draft PR. Stop for independent audit. PR #24 and #25 remain parked/unmerged and their human-acceptance statuses are preserved.
 
@@ -45,18 +45,19 @@ Phase 21 update-check recovery: a failed update/build check is visible even when
 ## VERSIONS
 
 - app: 0.1.0
-- content: 2026.09.25 (`content/content.yaml`, locked by `content/content.lock.yaml`)
+- content: 2026.09.26 (`content/content.yaml`, locked by `content/content.lock.yaml`)
 - simulator: 2026.09.23-r1 (`SIMULATOR_VERSION`, carried on every run and saved run and stamped on evidence)
 - mastery rules: 2026.09.09-r5 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
 - exercise grader: 2026.09.22 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
 
 ## PASSED
 
-- CUR-027, CUR-028 — Phase 25 E: six deterministic-first AI and eight supporting-specialty unit/practical pairs, covering twelve AI and all 23 specialty topics. Focused 9 tests / 3 files, 140 five-width browser cases and fourteen AI-Off fail/retry/persistence flows pass. Official current product names and conceptual limitations are recorded; no native AI or external execution is claimed. Checkpoints A–E complete; F and final exact-head verification remain.
+- CUR-032 — Phase 25 F: seven named paths, one recommendation and shared evidence without an unearned Field Ready award. Focused path/compiler/Field Ready regressions pass 25 tests / 4 files; 45 path/directory/map browser layouts plus actual shared exercise evidence, bookmark, keyboard, touch, offline and reduced motion pass. The five-width and ten short-height rail cases pass.
+- CUR-027, CUR-028 — Phase 25 E: six deterministic-first AI and eight supporting-specialty unit/practical pairs, covering twelve AI and all 23 specialty topics. Focused 9 tests / 3 files, 140 five-width browser cases and fourteen AI-Off fail/retry/persistence flows pass. Official current product names and conceptual limitations are recorded; no native AI or external execution is claimed. Checkpoint evidence is historical; final verification is recorded in the Phase 25 review.
 
 - CUR-026, SAL-015 — Phase 25 D: nine unit/practical pairs with four distinct vertical Demonstration Builds, SCALE release/account discipline and evidence-based retention. Compiler/AI-Off grading mutation checks and all 90 five-width browser cases, nine fail/retry/persist flows, touch/focus/reduced motion pass; no real snapshot or client outcomes claimed.
 
-- CRM-002, CRM-005, CAL-002, PAY-001 — Phase 25 checkpoint C: shared-account advanced CRM, dynamic segments, class/resource scheduling and synthetic Payments Lab. Complete Node 22 CI: 1,963 tests / 139 files; four account-backed practicals, 45 five-width browser cases and short-height rail pass. Checkpoints A–C complete; D–F and final exact-head verification remain. See the Phase 25 review for limits and evidence.
+- CRM-002, CRM-005, CAL-002, PAY-001 — Phase 25 checkpoint C: shared-account advanced CRM, dynamic segments, class/resource scheduling and synthetic Payments Lab. Checkpoint Node 22 CI: 1,963 tests / 139 files; four account-backed practicals, 45 five-width browser cases and short-height rail pass. See the Phase 25 review for limits and final verification evidence.
 
 - CUR-023 — Phase 25 checkpoint B: all nine CONNECT topic groups have authored instruction and objective fixture practicals. Compiler mutation tests, grading tests, built five-width/AI-Off/failure/retry/persistence/keyboard/touch/reduced-motion probe; see `docs/reviews/phase-25-advanced-curriculum.md`. This does not certify live DNS, API, cryptographic or deployment work.
 - PRD-006, CUR-003 — Phase 24 evidence: Eight authored placement areas; strong and weak profiles select different early work while independent/pressure requirements remain (placement tests, real numeric browser submission/reload).
@@ -432,4 +433,4 @@ The proposal feedback blocker is remediated and the saved human call recovered w
 
 ## ROLL-UP
 
-313 requirements registered · 245 PASSED · 8 IN_PROGRESS · 22 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 24 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 246 PASSED · 8 IN_PROGRESS · 22 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 23 NOT_STARTED. Run the validator for the live count by status and priority.

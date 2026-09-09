@@ -1,0 +1,98 @@
+id: CAMP-BLOOMWIRED_OPERATOR
+title: Bloomwired Operator Path
+pace_hint: Post-Field-Ready · progress by evidence, at your own pace
+summary: 'The recommended broad operator continuation: reliable account behavior, accountable
+  client work and reusable vertical demonstrations before optional specialization.'
+requires_campaigns:
+  - CAMP-FIELD_READY
+  - CAMP-CONNECT_FOUNDATIONS
+post_field_ready: true
+recommended: true
+gates:
+  - id: GATE-1
+    number: 1
+    name: Account behavior
+    summary: Explain advanced CRM, live segments, capacity and synthetic billing consequences.
+    skills:
+      - SK-ARCHITECT-companies-objects
+      - SK-ARCHITECT-smart-lists
+      - SK-BUILD-advanced-scheduling
+      - SK-BUILD-payment-lifecycle
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-2
+    number: 2
+    name: Operator interfaces
+    summary: Read integration contracts and retain separate real-GHL proof requirements.
+    skills:
+      - SK-CONNECT-json
+      - SK-CONNECT-http
+      - SK-CONNECT-webhook-payloads
+      - SK-CONNECT-ghl-api
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-3
+    number: 3
+    name: Account stewardship
+    summary: Report honestly, bound support and make commercial and public communication decisions
+      explicit.
+    skills:
+      - SK-SELL-retention
+      - SK-DELIVER-commercial-documents
+      - SK-DELIVER-reputation-social
+      - SK-DIAGNOSE-advanced-reporting
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-4
+    number: 4
+    name: Portable releases
+    summary: Use named assets, destination QA and accountable ownership.
+    skills:
+      - SK-SCALE-reusable-templates
+      - SK-SCALE-snapshot-portability
+      - SK-SCALE-agency-architecture
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-5
+    number: 5
+    name: Vertical training systems
+    summary: Rehearse four distinct demonstration blueprints, not fabricated client wins.
+    skills:
+      - SK-SCALE-medspa-system
+      - SK-SCALE-coach-system
+      - SK-SCALE-home-services-system
+      - SK-SCALE-photographer-system
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-6
+    number: 6
+    name: Judgment before specialization
+    summary: Choose a narrower AI or specialist path only when the business problem justifies it.
+    skills:
+      - SK-JUDGMENT-ai-boundaries
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.

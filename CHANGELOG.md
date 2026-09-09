@@ -9,6 +9,11 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 25 post-Field-Ready paths
+
+- Seven compiler-enforced curated routes over the existing graph, with the recommended Bloomwired Operator Path. Campaign selection is bookmarkable and shares actual evidence; preview wording preserves unfinished Field Ready and manual human acceptance.
+- Loading/error/retry, path-contract mutation and shared-progress regressions; committed five-width path/map, keyboard, touch, offline and reduced-motion probe. The independent 104 px rail and short-height regression remain intact.
+
 ### Added — Phase 25 GHL AI and supporting specialties
 
 - Six deterministic-first GHL AI units/practicals cover current product roles, customer messaging/voice, workflow actions, knowledge, tools/permissions and operational risk. The compiler rejects AI skills that lose their deterministic prerequisites.

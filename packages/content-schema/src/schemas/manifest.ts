@@ -13,6 +13,7 @@ export const ManifestSchema = z.strictObject({
   /** Bumped when the schemas change shape in a way that invalidates older bundles. */
   schema_version: z.number().int().min(1),
   advanced_coverage: advancedTopics,
+  advanced_paths_enforced: z.boolean().default(false),
   notes: z.string().optional(),
 });
 

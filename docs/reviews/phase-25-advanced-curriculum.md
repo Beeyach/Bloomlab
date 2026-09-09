@@ -178,3 +178,55 @@ a blank document during navigation; the committed probe now captures URL/resourc
 diagnostics, and a fresh full rerun passed. Chromium emulation is not physical-device acceptance.
 CUR-027/028 are PASSED for their curriculum/graph contracts. Checkpoint D exact-head CI
 **34343170304** passed on `177b3434cd1351a9a861e23fd71ee5a2d99a7f4a`.
+
+## Checkpoint F — seven post-Field-Ready paths
+
+Automation Specialist, Funnel & Conversion Specialist, Sales Operator, Technical GHL Specialist,
+Agency Systems, GHL AI Specialist and the recommended Bloomwired Operator Path are authored
+campaigns over existing skill IDs. The compiler requires exactly those seven distinct paths,
+one recommendation, Field Ready foundations and real unit/practical coverage. All advanced
+unit skills appear in the curated routes. The original Advanced Automation campaign is retained.
+
+The existing Campaign screen now has a native labelled selector, bookmarkable `?path=` URLs,
+foundation links and a seven-path directory. It reads the existing live learner evaluation,
+shows loading/storage error/retry, and explicitly distinguishes preview/work-ahead from earned
+Field Ready. Selecting or passing a path neither duplicates evidence nor replaces personal
+acceptance. Gate demonstrations remain separate from full skill mastery/manual fieldwork.
+
+Focused path/compiler and existing campaign/Field Ready regressions: **25 tests / 4 files pass**.
+The compiler caught and rejected two prerequisite-order mistakes during authoring, now corrected.
+Typecheck, lint (existing hook warning), formatting and Production build/provider scan pass.
+Content `2026.09.26`, 400 source files; no migration or provider spend.
+
+Built Chromium with AI Off: **45 path/directory/map layouts** at 1440/1024/768/390/320 pass,
+including every path's exact graph links, recommendation and unfinished Field Ready boundary.
+A real independent exercise result appears in both AI Specialist and Bloomwired Operator, while
+Field Ready remains incomplete. Bookmark reload, unknown bookmark, visible keyboard focus,
+offline route/progress, touch and reduced motion pass. Artifacts:
+`.review/phase-25-paths/verified/advanced-paths-probe.json`. Desktop/320 screenshots were inspected.
+The first probe used a touch coordinate during resize scroll anchoring; the corrected probe
+waits for layout and verifies the hit target before dispatching touch. No app change was needed.
+The rail probe passes five normal widths and ten 480 px normal/reduced cases with visible
+scrollbars (`.review/phase-25-paths/rail/rail-probe.json`), retaining the 104 px independent rail.
+
+CUR-032 is PASSED for the curated-path contract. Checkpoint E exact-head CI **34344650661**
+passed on `4d7491d07eec5aa054c8fc8c15ba722faca23bfc`, with Production deploy skipped.
+Final complete Node 22 and exact-head remote verification follow this implementation checkpoint;
+independent audit remains required and no stacked PR is merged.
+
+## Final verification — local source checks
+
+Complete `npm run ci` on Node **22.23.2** (repository `.nvmrc`: 22) passes **1,978 tests /
+142 files**, all workspace typechecks, lint (one pre-existing ExerciseRunner hook warning),
+formatting, control-doc validation, content lock/coverage, voice inventory and Production build
+with browser provider/secret scan. The first complete run exposed an old single-campaign outbox
+expectation; its regression now verifies all three applicable campaign rows while requiring just
+one shared evidence/attempt/skill record. Focused learning persistence: **10 tests / 1 file pass**.
+The entire check chain was then rerun successfully, not just the failing test.
+
+Exactly the ten assigned Phase 25 rows changed to PASSED against the audited Phase 24 base:
+CUR-023/026/027/028/032, CRM-002/005, CAL-002, PAY-001 and SAL-015. All twelve existing
+IMPLEMENTED_UNVERIFIED rows, including FLD-001, EXR-020, PRD-005, CUR-015, CUR-031 and the
+seven Phase 21 rows, remain unchanged. PRI-001/002 and NEG-003 remain PARTIAL. Totals:
+313 registered, 246 PASSED, 8 IN_PROGRESS, 22 PARTIAL, 12 IMPLEMENTED_UNVERIFIED,
+2 DEFERRED, 23 NOT_STARTED. No migration, paid provider call or production deployment.

@@ -2,6 +2,8 @@
 
 ## Phase 25 — advanced curriculum checkpoints
 
+- The seven post-Field-Ready paths curate existing skill IDs and reuse the same evidence. Selecting a path is a bookmark, not an earned identity, a new store or a replacement for Field Ready's required projects/manual proof. Path gates ask for explicit independent training demonstrations; full skill mastery can still require more diverse evidence or real-GHL fieldwork. These routes have unit/practical coverage, not separate advanced client projects; the compiler's advisory no-project warnings remain visible. Existing Advanced Automation is retained for historical references.
+
 - GHL AI instruction is deterministic-first and uses no runtime model. Product/trace fixtures do not execute Conversation AI, Voice AI, Workflow AI actions, Managed Agents or MCP tools. Current official pages contain mixed Managed Agents/SuperAgents naming; the curriculum uses the newer comparison and explicitly qualifies legacy Flow Agents and product-specific MCP/log availability. No live agent accuracy, voice quality or permission enforcement is certified.
 - All 23 supporting specialties have full-graph learning/practical citations, grouped into eight related units. Reputation/Social Planner, learning access, ecommerce/affiliates, blogs/SEO, IVR, prospecting/reporting, Rentals and commercial documents are conceptual local contract work (C), not standalone native Labs. Existing class/resource and billing simulations retain their narrower B records. No account connection, publishing, scraping, call, ranking guarantee or client-outcome claim.
 

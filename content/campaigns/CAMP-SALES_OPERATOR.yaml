@@ -1,0 +1,68 @@
+id: CAMP-SALES_OPERATOR
+title: Sales Operator
+pace_hint: Post-Field-Ready · progress by evidence, at your own pace
+summary: Develop evidence-based account conversations from prospect selection through bounded
+  delivery and retention.
+requires_campaigns:
+  - CAMP-FIELD_READY
+  - CAMP-CONNECT_FOUNDATIONS
+post_field_ready: true
+recommended: false
+gates:
+  - id: GATE-1
+    number: 1
+    name: Sales judgment
+    summary: Inspect evidence, discover constraints and defend an explicit scope.
+    skills:
+      - SK-STRATEGIZE-funnel-math
+      - SK-STRATEGIZE-bottleneck-diagnosis
+      - SK-SELL-prospect-selection
+      - SK-SELL-evidence-based-audit
+      - SK-SELL-discovery-call
+      - SK-SELL-project-pricing
+      - SK-SELL-negotiation-basics
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-2
+    number: 2
+    name: Strategy and commercial state
+    summary: Connect the business bottleneck with the difference between a proposal and paid work.
+    skills:
+      - SK-BUILD-payment-lifecycle
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-3
+    number: 3
+    name: Delivery and retention
+    summary: Make handoff, maintenance, retainer, expansion and referral responsibilities explicit.
+    skills:
+      - SK-DELIVER-proposal-writing
+      - SK-DELIVER-client-explanation
+      - SK-DELIVER-commercial-documents
+      - SK-SELL-retention
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-4
+    number: 4
+    name: Account reporting
+    summary: Interpret the evidence before recommending the next engagement.
+    skills:
+      - SK-DIAGNOSE-advanced-reporting
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.

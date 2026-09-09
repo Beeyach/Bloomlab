@@ -1,6 +1,7 @@
-content_version: 2026.09.25
+content_version: 2026.09.26
 schema_version: 1
-notes: Phase 25 checkpoint E — deterministic-first GHL AI and supporting specialties.
+notes: Phase 25 checkpoint F — seven curated post-Field-Ready paths over one graph.
+advanced_paths_enforced: true
 advanced_coverage:
   - ai.deterministic_first
   - ai.conversation
