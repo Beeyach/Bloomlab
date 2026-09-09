@@ -11,7 +11,8 @@ import { getAsset } from './storage';
 import { sha256, voiceIdentity } from './identity';
 import { elevenLabs, type VoiceProvider } from './provider';
 
-const voice = content.voice_characters[0]!;
+const audioCharacters = content.voice_characters.filter((row) => row.asset_delivery === 'audio');
+const voice = audioCharacters[0]!;
 const line = voice.lines[0]!;
 const bytes = new Uint8Array([0x49, 0x44, 0x33, 1, 2, 3, 4, 5, 6, 7]).buffer;
 const provider = () =>
@@ -55,7 +56,7 @@ describe('VOI-002 immutable generation and private playback', () => {
     expect(await voiceIdentity({ ...voice }, { ...line })).toEqual(original);
     expect(original.object_key).toMatch(/^voice\/v1\/VC-[\w-]+\/[\w-]+\/[a-f0-9]{64}\.mp3$/);
     for (const v of [
-      { ...voice, voice_id: content.voice_characters[1]!.voice_id },
+      { ...voice, voice_id: audioCharacters[1]!.voice_id },
       { ...voice, speech_rate: 0.9 },
       { ...voice, style: 0.5 },
       { ...voice, stability: 0.8 },
@@ -317,4 +318,13 @@ describe('SEC-001 ElevenLabs boundary', () => {
       voice_settings: { speed: voice.speech_rate, style: voice.style, stability: voice.stability },
     });
   });
+});
+
+it('does not generate provider audio for a text-only Phase 24 character', async () => {
+  const character = content.voice_characters.find((row) => row.asset_delivery === 'text')!;
+  const p = provider();
+  await expect(generateVoice(character.id, character.lines[0]!.id, env, p)).rejects.toThrow(
+    'authored_line_not_found',
+  );
+  expect(p).not.toHaveBeenCalled();
 });

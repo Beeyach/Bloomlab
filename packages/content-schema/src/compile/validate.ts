@@ -484,7 +484,7 @@ export function crossValidate(parsed: ParsedContent, issues: IssueList): GraphRe
           }
         }
       });
-      if (!gate.placement && gate.skills.length === 0) {
+      if (!gate.placement && gate.skills.length === 0 && !gate.projects_required) {
         issues.warning(
           'GATE_WITHOUT_SKILLS',
           fileOf(campaign.id),
@@ -723,6 +723,13 @@ export function crossValidate(parsed: ParsedContent, issues: IssueList): GraphRe
         );
       const client = look.clients.get(scenario?.client ?? exercise.client ?? '');
       const voice = client ? look.voices.get(client.voice.character) : undefined;
+      if (voice?.asset_delivery === 'text')
+        issues.error(
+          'SCHEMA',
+          fileOf(exercise.id),
+          'A text-only character cannot supply a Call Room voice',
+          { id: exercise.id, path: 'call' },
+        );
       for (const [nodeId, lineId] of Object.entries(exercise.call.voice_lines)) {
         const text =
           exercise.conversation?.nodes.find((n) => n.id === nodeId)?.client_message ??

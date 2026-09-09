@@ -1,3 +1,4 @@
+export const clientProgressId = (client: string) => `cp:${client}`;
 import type { ClientProgressRecord, ContentBundle, Project } from '@bloomlab/content-schema';
 import { isIndependentPass, isPass, validateEvidence } from '@bloomlab/mastery-engine';
 import type { ExerciseAttemptRecord, SkillEvidenceRecord } from '../data/types';

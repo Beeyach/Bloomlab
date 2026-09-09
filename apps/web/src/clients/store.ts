@@ -8,9 +8,10 @@ import { db, type BloomlabDatabase } from '../data/db';
 import { ensureDevice } from '../data/device';
 import { randomId } from '../data/envelope';
 import { createSyncableStore } from '../data/stores';
-import { projectProgress } from './progression';
+import { projectProgress, clientProgressId } from './progression';
+import { recomputeProgress } from '../data/learning/progress';
+export { clientProgressId } from './progression';
 
-export const clientProgressId = (client: string) => `cp:${client}`;
 export async function ensureClients(database = db, bundle = content) {
   return database.transaction(
     'rw',
@@ -75,7 +76,7 @@ export async function selectProjectAttempt(
   database: BloomlabDatabase = db,
   bundle: ContentBundle = content,
 ) {
-  return database.transaction(
+  const saved = await database.transaction(
     'rw',
     [
       database.device,
@@ -141,4 +142,6 @@ export async function selectProjectAttempt(
       return store.patch(record.id, { engagements: updated.engagements });
     },
   );
+  await recomputeProgress(database, { bundle });
+  return saved;
 }

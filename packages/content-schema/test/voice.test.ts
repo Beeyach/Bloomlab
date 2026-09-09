@@ -41,16 +41,20 @@ describe('VOI-001/002/004 authored voice registry', () => {
       }).success,
     ).toBe(false);
   });
-  it('resolves every current client and covers the six kinds for each with stable distinct catalog IDs', async () => {
+  it('resolves every client; accepted audio characters retain six kinds and distinct catalog IDs while new written characters claim no audio', async () => {
     const bundle = await compileContentDir(root);
     expect(bundle.voice_characters).toHaveLength(bundle.clients.length);
-    expect(new Set(bundle.voice_characters.map((v) => v.voice_id)).size).toBe(
-      bundle.clients.length,
-    );
+    expect(
+      new Set(
+        bundle.voice_characters.filter((v) => v.asset_delivery === 'audio').map((v) => v.voice_id),
+      ).size,
+    ).toBe(bundle.voice_characters.filter((v) => v.asset_delivery === 'audio').length);
     for (const client of bundle.clients) {
       const v = bundle.voice_characters.find((v) => v.id === client.voice.character)!;
       expect(v.client).toBe(client.id);
-      expect(new Set(v.lines.map((l) => l.kind))).toEqual(new Set(VOICE_LINE_KINDS));
+      if (v.asset_delivery === 'audio')
+        expect(new Set(v.lines.map((l) => l.kind))).toEqual(new Set(VOICE_LINE_KINDS));
+      else expect(v.lines.every((line) => line.text.length > 30)).toBe(true);
     }
   });
   it('fails compilation for a missing registry reference', async () => {

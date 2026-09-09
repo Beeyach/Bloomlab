@@ -80,6 +80,7 @@ export function evaluateCampaign(
   campaign: CampaignDefinition,
   skills: ReadonlyMap<string, SkillDefinition>,
   evaluations: ReadonlyMap<string, SkillEvaluation>,
+  completedProjects: ReadonlySet<string> = new Set(),
 ): CampaignEvaluation {
   const evaluationOf = (id: string) => evaluations.get(id) ?? unseen(id);
   const gates: GateEvaluation[] = [...campaign.gates]
@@ -101,14 +102,22 @@ export function evaluateCampaign(
       });
       const passedCount = statuses.filter((s) => s.passes).length;
       const cleared = gate.assesses.filter((id) => atLeast(evaluationOf(id), 'INDEPENDENT'));
+      const missingProjects = gate.projects_required
+        ? gate.projects.filter((id) => !completedProjects.has(id))
+        : [];
+      const hasRequiredWork =
+        statuses.length > 0 || Boolean(gate.projects_required && gate.projects.length);
       let status: GateEvaluation['status'];
       if (gate.placement) status = 'optional';
-      else if (statuses.length > 0 && passedCount === statuses.length) status = 'passed';
+      else if (hasRequiredWork && passedCount === statuses.length && missingProjects.length === 0)
+        status = 'passed';
+      else if (gate.projects_required && passedCount === statuses.length) status = 'in_progress';
       else if (statuses.some((s) => evaluationOf(s.skill_id).counts.evidence > 0))
         status = 'in_progress';
       else if (statuses.some((s) => s.available)) status = 'available';
       else status = 'locked';
       return {
+        ...(gate.projects_required ? { missing_projects: missingProjects } : {}),
         gate: gate.id,
         number: gate.number,
         name: gate.name,

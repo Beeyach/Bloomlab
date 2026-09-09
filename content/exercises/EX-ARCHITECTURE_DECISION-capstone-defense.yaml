@@ -1,0 +1,155 @@
+id: EX-ARCHITECTURE_DECISION-capstone-defense
+type: ARCHITECTURE_DECISION
+title: Defend the system you delivered
+skills:
+  - SK-JUDGMENT-automation-appropriateness
+  - SK-DELIVER-client-explanation
+instructions: Use your own saved engagement work and manual GHL proof. Answer all eight questions
+  with the actual design decision, evidence and remaining limitation. Do not describe an ideal
+  system you did not build. Where something is unverified, state how you would verify it before
+  promising it. This is an independent defense, with no normal hints or automatic drafting.
+mode: pressure
+difficulty: 4
+estimated_minutes: 40
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.custom_field_answered
+    operator: equals
+    value: true
+    description: Answer the why use a custom field rather than a tag or account value for this fact? brief.
+  - id: a2
+    type: state
+    path: written.pipeline_answered
+    operator: equals
+    value: true
+    description: Answer the why does the pipeline represent these decisions and owners? brief.
+  - id: a3
+    type: state
+    path: written.late_booking_answered
+    operator: equals
+    value: true
+    description: Answer the what happens when someone books late? brief.
+  - id: a4
+    type: state
+    path: written.second_location_answered
+    operator: equals
+    value: true
+    description: Answer the what changes when a second location is included? brief.
+  - id: a5
+    type: state
+    path: written.missing_phone_answered
+    operator: equals
+    value: true
+    description: Answer the what happens when the phone number is missing? brief.
+  - id: a6
+    type: state
+    path: written.reschedule_answered
+    operator: equals
+    value: true
+    description: Answer the what happens when someone reschedules? brief.
+  - id: a7
+    type: state
+    path: written.price_answered
+    operator: equals
+    value: true
+    description: Answer the why is this price defensible for the scope and risk? brief.
+  - id: a8
+    type: state
+    path: written.lower_budget_answered
+    operator: equals
+    value: true
+    description: Answer the what would you remove for a lower budget while preserving safe delivery? brief.
+critical_failures:
+  - id: reasoning_0
+    type: state
+    path: written.custom_field_answered
+    operator: equals
+    value: true
+    description: Every required capstone reasoning question must be answered.
+  - id: reasoning_1
+    type: state
+    path: written.pipeline_answered
+    operator: equals
+    value: true
+    description: Every required capstone reasoning question must be answered.
+  - id: reasoning_2
+    type: state
+    path: written.late_booking_answered
+    operator: equals
+    value: true
+    description: Every required capstone reasoning question must be answered.
+  - id: reasoning_3
+    type: state
+    path: written.second_location_answered
+    operator: equals
+    value: true
+    description: Every required capstone reasoning question must be answered.
+  - id: reasoning_4
+    type: state
+    path: written.missing_phone_answered
+    operator: equals
+    value: true
+    description: Every required capstone reasoning question must be answered.
+  - id: reasoning_5
+    type: state
+    path: written.reschedule_answered
+    operator: equals
+    value: true
+    description: Every required capstone reasoning question must be answered.
+  - id: reasoning_6
+    type: state
+    path: written.price_answered
+    operator: equals
+    value: true
+    description: Every required capstone reasoning question must be answered.
+  - id: reasoning_7
+    type: state
+    path: written.lower_budget_answered
+    operator: equals
+    value: true
+    description: Every required capstone reasoning question must be answered.
+grading:
+  mode: mixed
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: custom_field
+    label: Why use a custom field rather than a tag or account value for this fact?
+    help: Refer to the decision and test evidence from your own engagement.
+    rows: 4
+  - key: pipeline
+    label: Why does the pipeline represent these decisions and owners?
+    help: Refer to the decision and test evidence from your own engagement.
+    rows: 4
+  - key: late_booking
+    label: What happens when someone books late?
+    help: Refer to the decision and test evidence from your own engagement.
+    rows: 4
+  - key: second_location
+    label: What changes when a second location is included?
+    help: Refer to the decision and test evidence from your own engagement.
+    rows: 4
+  - key: missing_phone
+    label: What happens when the phone number is missing?
+    help: Refer to the decision and test evidence from your own engagement.
+    rows: 4
+  - key: reschedule
+    label: What happens when someone reschedules?
+    help: Refer to the decision and test evidence from your own engagement.
+    rows: 4
+  - key: price
+    label: Why is this price defensible for the scope and risk?
+    help: Refer to the decision and test evidence from your own engagement.
+    rows: 4
+  - key: lower_budget
+    label: What would you remove for a lower budget while preserving safe delivery?
+    help: Refer to the decision and test evidence from your own engagement.
+    rows: 4
+topics:
+  - judgment.uncertainty
+  - judgment.missing_verification
+  - selling.explanation
+time_category: retrieval

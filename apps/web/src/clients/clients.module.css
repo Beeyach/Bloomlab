@@ -108,3 +108,20 @@
     padding: 20px;
   }
 }
+
+.certificate {
+  margin: 32px 0;
+  padding: clamp(20px, 4vw, 40px);
+  background: var(--bl-color-surface);
+  border: 1px solid var(--bl-color-border);
+  border-left: 4px solid var(--bl-color-lavender);
+  border-radius: var(--bl-radius-lg);
+}
+.certificate h2 {
+  font-family: var(--bl-font-display);
+  font-size: 32px;
+}
+.certificate li {
+  padding: 8px 0;
+  line-height: 1.6;
+}

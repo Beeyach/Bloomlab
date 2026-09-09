@@ -71,3 +71,71 @@ describe('Phase 24 compiler contracts', () => {
     expect(issues.errors.some((issue) => issue.code === 'FIELD_READY_GHL_CURRENT')).toBe(true);
   });
 });
+
+it('final Field Ready coverage is enforced, complete and within the authored time/industry targets', () => {
+  const report = fieldReadyCoverage(content);
+  expect(content.campaigns.find((row) => row.id === 'CAMP-FIELD_READY')?.coverage_enforced).toBe(
+    true,
+  );
+  expect(report.missing_topics).toEqual([]);
+  expect(report.missing_identities).toEqual([]);
+  expect(report.missing_practical).toEqual([]);
+  expect(report.bloomwired_percent).toBeGreaterThanOrEqual(70);
+  expect(report.ratio_passes).toBe(true);
+  // The shipped mix is also inside the narrower relative ten-percent ranges.
+  expect(report.ratio.instruction).toBeGreaterThanOrEqual(18);
+  expect(report.ratio.instruction).toBeLessThanOrEqual(22);
+  expect(report.ratio.practical).toBeGreaterThanOrEqual(54);
+  expect(report.ratio.practical).toBeLessThanOrEqual(66);
+  expect(report.ratio.retrieval).toBeGreaterThanOrEqual(18);
+  expect(report.ratio.retrieval).toBeLessThanOrEqual(22);
+  for (const family of [
+    'PRICE_IT',
+    'NEGOTIATE_IT',
+    'SAY_IT',
+    'WRITE_IT',
+    'PROSPECT_IT',
+    'FIELDWORK',
+  ])
+    expect(report.exercise_families).toContain(family);
+});
+it('rejects capstone hints, missing inputs/actions/reasoning and an unauthored consequence choice', () => {
+  for (const mutation of ['hints', 'inputs', 'actions', 'reasoning', 'choice'] as const) {
+    const broken = structuredClone(content);
+    const project = broken.projects.find((row) => row.capstone)!;
+    if (mutation === 'hints')
+      broken.exercises
+        .find((row) => row.id === project.stages[0]!.exercises[0])!
+        .hints.push({ level: 'nudge', text: 'A hint that must never be available.' });
+    if (mutation === 'inputs') project.inputs.pop();
+    if (mutation === 'actions')
+      project.stages.forEach((stage) => {
+        stage.actions = [];
+      });
+    if (mutation === 'reasoning') project.reasoning_questions.pop();
+    if (mutation === 'choice')
+      project.stages.find(
+        (stage) => stage.conditional_exercises.length,
+      )!.conditional_exercises[0]!.choice = 'invented';
+    const issues = new IssueList();
+    validateFieldReady(broken, issues);
+    expect(issues.errors.length, mutation).toBeGreaterThan(0);
+  }
+});
+it('tags future STRATEGIZE and advanced automation boundaries without adding Phase 25 dependencies', () => {
+  const campaign = content.campaigns.find((row) => row.id === 'CAMP-FIELD_READY')!;
+  expect(
+    campaign.future_boundaries
+      .filter((row) => row.territory === 'STRATEGIZE')
+      .map((row) => row.tier),
+  ).toEqual(['practitioner', 'advanced', 'specialist']);
+  expect(campaign.future_boundaries.find((row) => row.territory === 'AUTOMATE')?.topics).toContain(
+    'race conditions',
+  );
+  const ids = campaign.gates.flatMap((gate) => gate.skills);
+  expect(
+    content.skills
+      .filter((skill) => ids.includes(skill.id))
+      .every((skill) => skill.tier === 'field_ready'),
+  ).toBe(true);
+});

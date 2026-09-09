@@ -64,7 +64,10 @@ export const ProjectSchema = z
     );
     requireUnique(
       ctx,
-      project.stages.flatMap((s) => s.exercises),
+      project.stages.flatMap((s) => [
+        ...s.exercises,
+        ...s.conditional_exercises.flatMap((rule) => rule.exercises),
+      ]),
       ['stages'],
       'exercise across stages',
     );

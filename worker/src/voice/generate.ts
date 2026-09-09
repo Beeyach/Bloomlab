@@ -15,7 +15,8 @@ export interface VoiceEnvironment {
 export function authoredLine(character: string, id: string) {
   const voice = content.voice_characters.find((v) => v.id === character);
   const line = voice?.lines.find((l) => l.id === id);
-  if (!voice || !line) throw new VoiceError('authored_line_not_found', 404);
+  if (!voice || !line || voice.asset_delivery === 'text')
+    throw new VoiceError('authored_line_not_found', 404);
   return { voice, line };
 }
 

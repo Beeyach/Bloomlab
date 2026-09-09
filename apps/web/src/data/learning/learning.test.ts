@@ -176,7 +176,7 @@ describe('learner records on the local-first path (DATA-001, DATA-002, MAS-003)'
     expect(plan.blocks[0]?.kind).toBe('campaign');
     expect(plan.blocks[0]?.items[0]).toMatchObject({
       kind: 'unit',
-      content_id: 'LU-funnel-math-basics',
+      content_id: 'LU-customer-path',
     });
     expect(plan.continue_available).toBe(true);
   });

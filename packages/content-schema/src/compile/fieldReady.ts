@@ -1,4 +1,9 @@
-import { FIELD_READY_TOPIC_IDS } from '../schemas/fieldReady.ts';
+import {
+  FIELD_READY_TOPIC_IDS,
+  BOSS_STAGES,
+  CAPSTONE_INPUTS,
+  CAPSTONE_ACTIONS,
+} from '../schemas/fieldReady.ts';
 import type { ParsedContent } from './validate.ts';
 import type { IssueList } from './validate.ts';
 
@@ -75,6 +80,7 @@ export function fieldReadyCoverage(content: Omit<ParsedContent, 'paths'>) {
     : 0;
   return {
     campaign: campaign?.id ?? null,
+    future_boundaries: campaign?.future_boundaries ?? [],
     topics,
     missing_topics: topics
       .filter((topic) => !topic.units.length || !topic.exercises.length)
@@ -116,6 +122,61 @@ export function validateFieldReady(content: ParsedContent, issues: IssueList): v
     );
   if (!report.bloomwired_passes)
     reportGap(`Bloomwired scenarios: ${report.bloomwired_percent}% (minimum 70%)`);
+  for (const project of content.projects.filter((row) => row.capstone || row.boss_client)) {
+    const exercises = project.stages
+      .flatMap((stage) => [
+        ...stage.exercises,
+        ...stage.conditional_exercises.flatMap((rule) => rule.exercises),
+      ])
+      .map((id) => content.exercises.find((row) => row.id === id))
+      .filter((row) => row !== undefined);
+    if (
+      project.boss_client &&
+      JSON.stringify(project.stages.map((stage) => stage.engagement_stage)) !==
+        JSON.stringify(BOSS_STAGES)
+    )
+      reportGap(`${project.id}: Boss Client requires all eleven ordered engagement stages`);
+    for (const stage of project.stages)
+      for (const rule of stage.conditional_exercises) {
+        const source = content.exercises.find((row) => row.id === rule.from_exercise);
+        if (!source?.decision_options.some((option) => option.value === rule.choice))
+          reportGap(`${project.id}: consequence refers to an unauthored decision choice`);
+      }
+    if (!project.capstone) continue;
+    if (new Set(project.inputs.map((input) => input.category)).size !== CAPSTONE_INPUTS.length)
+      reportGap(`${project.id}: capstone requires all nine input categories`);
+    if (
+      CAPSTONE_ACTIONS.some(
+        (action) => !project.stages.some((stage) => stage.actions.includes(action)),
+      )
+    )
+      reportGap(`${project.id}: capstone requires all nine actions`);
+    if (
+      project.reasoning_questions.length !== 8 ||
+      !exercises.some((exercise) =>
+        project.reasoning_questions.every((question) =>
+          exercise.written_fields.some((field) => field.label === question),
+        ),
+      )
+    )
+      reportGap(`${project.id}: all eight reasoning questions require a submission exercise`);
+    if (
+      !project.fieldwork_required ||
+      !exercises.some((exercise) => exercise.type === 'FIELDWORK' && exercise.fieldwork?.proof)
+    )
+      reportGap(`${project.id}: capstone requires manual real-GHL proof`);
+    if (
+      exercises.some(
+        (exercise) =>
+          exercise.hints.length ||
+          !['independent', 'pressure'].includes(exercise.mode) ||
+          (exercise.call?.anchors.length ?? 0) > 0,
+      )
+    )
+      reportGap(
+        `${project.id}: capstone work must be independent with no normal hints or call anchors`,
+      );
+  }
   const features = new Map(content.ghl_features.map((feature) => [feature.id, feature]));
   const checkFeatures = (id: string, references: string[]) => {
     for (const featureId of references)

@@ -140,11 +140,7 @@ grading:
   mode: mixed
   rubric: DELIVERY_COMMUNICATION_RUBRIC_V1
   pass_threshold: 100
-hints:
-  - level: nudge
-    text:
-      Write the assumptions and exclusions before the recommendation. They are the two sections that
-      decide whether the rest of it holds when the work starts.
+hints: []
 fieldwork: null
 portfolio: PF-application-qualification-system
 topics:

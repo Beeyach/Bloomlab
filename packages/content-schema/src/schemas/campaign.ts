@@ -1,3 +1,4 @@
+import { TERRITORIES } from '../ids.ts';
 import { z } from 'zod';
 
 import { campaignRef, projectRef, ref, requireUnique, skillRef, title } from './common.ts';
@@ -24,6 +25,7 @@ const gate = z.strictObject({
     notes: z.string().optional(),
   }),
   projects: z.array(projectRef).default([]),
+  projects_required: z.boolean().default(false),
 });
 
 export const CampaignSchema = z
@@ -37,6 +39,21 @@ export const CampaignSchema = z
     requires_campaigns: z.array(campaignRef).default([]),
     gates: z.array(gate).min(1),
     coverage_enforced: z.boolean().default(false),
+    future_boundaries: z
+      .array(
+        z.strictObject({
+          territory: z.enum(TERRITORIES),
+          tier: z.enum(['practitioner', 'advanced', 'specialist']),
+          topics: z.array(z.string().min(3)).min(1),
+        }),
+      )
+      .default([]),
+    completion: z
+      .strictObject({
+        statement: z.string().min(30),
+        capabilities: z.array(z.string().min(10)).length(9),
+      })
+      .optional(),
   })
   .superRefine((campaign, ctx) => {
     requireUnique(
@@ -46,6 +63,12 @@ export const CampaignSchema = z
       'gate id',
     );
     campaign.gates.forEach((g, index) => {
+      if (g.projects_required && !g.projects.length)
+        ctx.addIssue({
+          code: 'custom',
+          path: ['gates', index, 'projects'],
+          message: 'A required project gate must name its projects',
+        });
       const previous = campaign.gates[index - 1];
       if (previous && g.number <= previous.number) {
         ctx.addIssue({

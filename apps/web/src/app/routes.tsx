@@ -13,6 +13,11 @@ export interface AppRoute {
 
 export const APP_ROUTES: readonly AppRoute[] = [
   {
+    id: 'field-ready',
+    path: '/field-ready',
+    Component: lazy(() => import('../clients/FieldReadyScreen')),
+  },
+  {
     id: 'home',
     path: '/',
     Component: lazy(() => import('../screens/CommandCenter')),

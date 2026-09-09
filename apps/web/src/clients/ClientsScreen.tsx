@@ -148,30 +148,30 @@ export default function ClientsScreen() {
   }
   if (error || data?.error)
     return (
-      <main className={styles.page}>
+      <section className={styles.page}>
         <h1>Clients</h1>
         <p role="alert">{error || data?.error}</p>
         <Button onClick={initialize}>Retry</Button>
-      </main>
+      </section>
     );
   if (!data || !data.device)
     return (
-      <main className={styles.page}>
+      <section className={styles.page}>
         <h1>Clients</h1>
         <p role="status">Opening saved client work…</p>
-      </main>
+      </section>
     );
   if ((clientId && !client) || (projectId && !project))
     return (
-      <main className={styles.page}>
+      <section className={styles.page}>
         <h1>Client work unavailable</h1>
         <p>This authored client or project could not be found.</p>
         <Link to="/clients">Return to Clients</Link>
-      </main>
+      </section>
     );
   if (project && progress)
     return (
-      <main className={styles.page}>
+      <section className={styles.page}>
         <Link to={`/clients/${project.client}`}>Back to {client?.business_name}</Link>
         <h1>{project.title}</h1>
         <p>
@@ -329,11 +329,11 @@ export default function ClientsScreen() {
         {project.portfolio && (
           <Link to={`/portfolio/${project.portfolio}`}>View saved Portfolio work</Link>
         )}
-      </main>
+      </section>
     );
   if (client)
     return (
-      <main className={styles.page}>
+      <section className={styles.page}>
         <Link to="/clients">All clients</Link>
         <h1>{client.business_name}</h1>
         <p>
@@ -408,7 +408,7 @@ export default function ClientsScreen() {
         ) : (
           <p role="status">Preparing this client's local record…</p>
         )}
-      </main>
+      </section>
     );
   const visible = content.clients.filter((row) =>
     `${row.business_name} ${row.industry.replaceAll('_', ' ')}`
@@ -416,7 +416,7 @@ export default function ClientsScreen() {
       .includes(query.toLowerCase()),
   );
   return (
-    <main className={styles.page}>
+    <section className={styles.page}>
       <h1>Clients</h1>
       <p>
         Fictional businesses with different systems, constraints and people. Keep your decisions and
@@ -455,6 +455,6 @@ export default function ClientsScreen() {
       ) : (
         <p role="status">No clients match this search.</p>
       )}
-    </main>
+    </section>
   );
 }

@@ -1,3 +1,5 @@
+import { projectProgress } from '../../clients/progression';
+import { clientProgressId } from '../../clients/progression';
 import type { ContentBundle } from '@bloomlab/content-schema';
 import {
   evaluateCampaign,
@@ -59,8 +61,28 @@ export async function evaluateLearner(
   const evidence = await loadEvidence(database, device.learner_id);
   const evaluations = evaluateSkills(bundle.skills, evidence, now);
   const skills = new Map(bundle.skills.map((skill) => [skill.id, skill]));
+  const [clients, attempts, evidenceRecords] = await Promise.all([
+    database.client_progress.toArray(),
+    database.exercise_attempts.toArray(),
+    database.skill_evidence.toArray(),
+  ]);
+  const completedProjects = new Set(
+    bundle.projects
+      .filter(
+        (project) =>
+          projectProgress(
+            project,
+            clients.find((row) => row.id === clientProgressId(project.client)),
+            attempts,
+            evidenceRecords,
+            device.learner_id,
+            bundle,
+          ).complete,
+      )
+      .map((project) => project.id),
+  );
   const campaigns = bundle.campaigns.map((campaign) =>
-    evaluateCampaign(campaign, skills, evaluations),
+    evaluateCampaign(campaign, skills, evaluations, completedProjects),
   );
   return {
     learner_id: device.learner_id,

@@ -43,6 +43,8 @@ gates:
     pass_criteria:
       independent_evidence_per_skill: 2
       fieldwork_required: true
+    projects:
+      - PRJ-lead-capture-system
   - id: GATE-3
     number: 3
     name: GHL Data Foundations
@@ -54,6 +56,8 @@ gates:
     pass_criteria:
       independent_evidence_per_skill: 2
       pressure_test_required: true
+    projects:
+      - PRJ-lead-capture-system
   - id: GATE-4
     number: 4
     name: Workflow Foundations
@@ -66,6 +70,8 @@ gates:
       independent_evidence_per_skill: 2
       pressure_test_required: true
       fieldwork_required: true
+    projects:
+      - PRJ-reactivation-system
   - id: GATE-5
     number: 5
     name: Booking and Qualification
@@ -89,6 +95,8 @@ gates:
     pass_criteria:
       independent_evidence_per_skill: 2
       notes: Curriculum for this gate is authored in Phase 24.
+    projects:
+      - PRJ-application-funnel-proposal
   - id: GATE-7
     number: 7
     name: Diagnosis and QA
@@ -98,6 +106,8 @@ gates:
     pass_criteria:
       independent_evidence_per_skill: 3
       pressure_test_required: true
+    projects:
+      - PRJ-field-ready-capstone
   - id: GATE-8
     number: 8
     name: Prospecting and Audits
@@ -109,6 +119,8 @@ gates:
     pass_criteria:
       independent_evidence_per_skill: 2
       pressure_test_required: true
+    projects:
+      - PRJ-field-ready-capstone
   - id: GATE-9
     number: 9
     name: Discovery and Selling
@@ -119,6 +131,8 @@ gates:
     pass_criteria:
       independent_evidence_per_skill: 2
       pressure_test_required: true
+    projects:
+      - PRJ-field-ready-capstone
   - id: GATE-10
     number: 10
     name: Pricing and Negotiation
@@ -139,15 +153,86 @@ gates:
       - SK-DELIVER-proposal-writing
     pass_criteria:
       independent_evidence_per_skill: 2
+    projects:
+      - PRJ-reactivation-system
   - id: GATE-12
     number: 12
     name: Field Ready Capstone
-    summary:
-      No instructional handholding — diagnose, design, price, negotiate, propose, build, test,
-      explain; part of it in real GHL.
+    summary: Complete the five practical project records, including the independent eleven-stage
+      capstone and manual real-GHL evidence. This gate evaluates saved project work rather than
+      duplicating capabilities already assessed in Gates 1–11.
     skills: []
     pass_criteria:
       independent_evidence_per_skill: 1
       pressure_test_required: true
       fieldwork_required: true
       notes: The capstone project (Full Bloomwired Client) is authored in Phase 24.
+    projects:
+      - PRJ-lead-capture-system
+      - PRJ-consultation-booking-system
+      - PRJ-application-funnel-proposal
+      - PRJ-reactivation-system
+      - PRJ-field-ready-capstone
+    projects_required: true
+coverage_enforced: true
+completion:
+  statement: Field Ready means you can deliver bounded, common Bloomwired systems and explain your
+    decisions. Keep scope within your demonstrated capability, verify uncertainty and involve
+    appropriate help when the work exceeds it. This certificate records training evidence; it does
+    not guarantee client outcomes.
+  capabilities:
+    - Diagnose common Bloomwired business problems.
+    - Implement core funnel, lead, booking and GHL systems.
+    - Troubleshoot common workflow and funnel failures.
+    - Speak with prospects and conduct useful discovery.
+    - Write clear sales and client communications.
+    - Scope and price common implementation work.
+    - Negotiate basic objections and protect responsible scope.
+    - Complete selected real-GHL fieldwork with manual proof.
+    - Recognize the limits of your competence and verify what you do not yet know.
+future_boundaries:
+  - territory: STRATEGIZE
+    tier: practitioner
+    topics:
+      - webinar
+      - evergreen webinar
+      - challenge
+      - workshop
+      - direct purchase
+      - checkout
+      - order bump
+      - upsell
+      - downsell
+      - subscription
+      - trial
+      - membership
+      - course enrollment
+  - territory: STRATEGIZE
+    tier: advanced
+    topics:
+      - multi-funnel architecture
+      - lifecycle strategy
+      - retention
+      - referral
+      - churn prevention
+      - experimentation
+      - advanced diagnosis
+  - territory: STRATEGIZE
+    tier: specialist
+    topics:
+      - complete business-system architecture
+  - territory: AUTOMATE
+    tier: advanced
+    topics:
+      - modular automation
+      - naming
+      - workflow responsibility
+      - date logic
+      - webhooks
+      - data manipulation
+      - ecommerce automation
+      - reliability
+      - idempotency concepts
+      - race conditions
+      - large automation architecture
+      - custom workflow extensions later

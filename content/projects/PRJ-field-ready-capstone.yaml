@@ -107,7 +107,9 @@ stages:
     name: Change request
     exercises:
       - EX-WRITE_IT-glowhaus-scope-change
-    deliverable: A bounded commercial response to added work.
+      - EX-ARCHITECTURE_DECISION-capstone-defense
+    deliverable: A bounded commercial response to added work. Defend all eight implementation and
+      commercial decisions using your saved work.
     engagement_stage: change_request
 brief: Take Glowhaus from an outside-in audit to a maintainable consultation release. Work
   independently through the eleven-stage engagement. Saved results and their evidence determine
