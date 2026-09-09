@@ -2,6 +2,10 @@ import { z } from 'zod';
 
 /** Acceptance topics. Citations are derived from authored units and practicals. */
 export const ADVANCED_TOPICS = [
+  'labs.companies_objects',
+  'labs.smart_lists',
+  'labs.scheduling',
+  'labs.payments',
   'connect.dns',
   'connect.json',
   'connect.http',

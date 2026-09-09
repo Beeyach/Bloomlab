@@ -1,0 +1,35 @@
+---
+id: 'LU-advanced-scheduling'
+title: 'Schedule against seats, people and physical resources'
+territory: 'BUILD'
+tier: 'practitioner'
+skills: ['SK-BUILD-advanced-scheduling']
+ghl_features: ['GHL-CAL-CALENDARS', 'GHL-CAL-CLASSES', 'GHL-CAL-RESOURCES']
+advanced_topics: ['labs.scheduling']
+estimated_minutes: 15
+summary: 'Test overlapping class capacity and shared service resources without weakening ordinary calendar constraints.'
+---
+
+# Schedule against seats, people and physical resources
+
+## Capacity answers a different question
+
+A class has one host and several attendee seats. The host is not replaced by a pool of unrelated round-robin staff. Every overlapping attendee booking consumes a seat. A sixty-minute booking can reduce availability at more than one thirty-minute start. A separate appointment on another calendar can still occupy the same host.
+
+In [Calendar Lab](/calendar), choose Consultation and change its type to Class Booking. Keep one host and set Seats per class to 2. Choose a free time and book two different fictional contacts. The first booking should leave one seat; the second should remove that opening. Cancel one attendee and verify the seat returns. Change minimum notice and observe that spare capacity does not override the notice window.
+
+## A physical unit is not another staff member
+
+Resources in Services represent assets whose availability constrains a service. Quantity and capacity differ: Room 1 and Room 2 are separate units; capacity is how many simultaneous bookings one unit can support. A service assigned equivalent alternatives reserves one available resource, not every listed unit.
+
+In Service & location settings, define resource room-one, name Training room, capacity 1. Select Treatments and assign room-one to the Signature Facial service. Save. Book an available treatment and inspect the chosen resource. A second service using the same unit must respect its reservation even if another staff member is free. Cancellation releases the resource; rescheduling must find a current valid opening.
+
+## Diagnose constraints in order
+
+An empty diary does not prove a bug. Check the account clock, time zone, weekly hours, duration, slot interval, notice, staff conflicts, seat count and resource occupancy. Buffers consume time around a booking; changing a service’s duration must not rewrite the duration stored on an earlier appointment. Try a refusal and confirm the account is unchanged.
+
+This local model omits recurring series, date-specific hours, external calendar sync, location-specific resource capacity and the separate Rooms & Equipment product configuration. It is not a claim those features are identical.
+
+[Class seats](https://help.gohighlevel.com/support/solutions/articles/155000000956-show-seats-per-slot-for-class-booking-on-the-booking-widget) and [service resources](https://help.gohighlevel.com/support/solutions/articles/155000003505-resources-in-services), checked 9 September 2026.
+
+<Exercise id="EX-BUILD_IT-advanced-scheduling" />

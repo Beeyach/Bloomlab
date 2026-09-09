@@ -1,0 +1,33 @@
+---
+id: 'LU-companies-objects'
+title: 'Model repeated things without duplicating people'
+territory: 'ARCHITECT'
+tier: 'practitioner'
+skills: ['SK-ARCHITECT-companies-objects']
+ghl_features: ['GHL-CRM-COMPANIES', 'GHL-CRM-CUSTOM-OBJECTS']
+advanced_topics: ['labs.companies_objects']
+estimated_minutes: 15
+summary: 'Choose standard records first; build typed object records, labelled associations and a bounded object automation.'
+---
+
+# Model repeated things without duplicating people
+
+## Choose the smallest useful model
+
+A company represents an organisation; a contact represents a person. Link several people to the same company instead of copying the company name into a new contact every time it changes. An opportunity represents a possible sale. Before introducing a custom object, ask what repeats independently, which fields belong to it, who owns its lifecycle and what relationship needs a label.
+
+For a fictional property agency, one owner can own several properties and a property can have several owners. A Property object is useful. For a med spa wanting to email “interested leads”, a second Lead object is usually excessive: Contacts plus a field or smart list already describes the audience. Bloomlab permits that poor but valid schema so its maintenance cost can be examined; it does not declare every new object a good decision.
+
+## Build and test the relationship
+
+Open [CRM companies](/crm?area=companies). Save company agency, then associate Maria with it. Rename the same company identifier and check that Maria remains the same contact. In [custom objects](/crm?area=objects), define properties with required number field value and optional boolean field ready. Create home-one with value 250000 and ready true. Link Maria using association owner-one labelled Owner. The association is a reference, not another copy of Maria.
+
+Before creating a second record, add automation property-review: created, ready equals true, recipient Priya, message Review property. Create home-two with ready true. Inspect the generated internal notification. Updating home-two will not fire a created-only rule. Change the automation to updated and test again. A failed schema edit must leave existing records unchanged.
+
+## Know what is being approximated
+
+HighLevel has object-based workflows and cross-object actions. This Lab implements only a record-created/updated condition followed by an internal notification recorded in the same simulator log. It does not enroll the object as a contact or email associated people. Field types, association targets, permissions and uniqueness controls are narrower here. Check the current feature support matrix before promising custom-object data in another product area; official pages can disagree as rollout support changes.
+
+[Companies](https://help.gohighlevel.com/support/solutions/articles/155000004430-getting-started-with-companies), [object modelling](https://help.gohighlevel.com/support/solutions/articles/155000003896-getting-started-with-custom-objects), and [cross-object workflows](https://help.gohighlevel.com/support/solutions/articles/155000006701-custom-object-and-company-based-workflow-actions-triggers), checked 9 September 2026.
+
+<Exercise id="EX-BUILD_IT-companies-objects" />

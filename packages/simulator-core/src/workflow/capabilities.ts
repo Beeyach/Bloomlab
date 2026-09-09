@@ -57,6 +57,51 @@ const str = (value: unknown): string | null => (typeof value === 'string' ? valu
 const TRIGGER_CAPABILITIES: TriggerCapability[] = [
   {
     kind: 'trigger',
+    feature: 'GHL-WF-PAYMENT-RECEIVED',
+    events: ['PAYMENT_RECEIVED', 'PAYMENT_FAILED'],
+    filters: [
+      { key: 'payment_status', label: 'Payment Status (success / failed)', kind: 'text' },
+      { key: 'product', label: 'Global Product identifier', kind: 'text' },
+      { key: 'source', label: 'Source', kind: 'text' },
+      { key: 'amount', label: 'Amount', kind: 'number' },
+    ],
+    match: (event, account) => {
+      const payment = account.payments[String(event.payload.payment_id)];
+      return payment
+        ? {
+            contact_id: payment.contact_id,
+            context: {},
+            values: {
+              payment_status: event.type === 'PAYMENT_FAILED' ? 'failed' : 'success',
+              product: payment.product_id,
+              amount: payment.amount,
+              source: str(event.payload.payment_source) ?? 'manual',
+            },
+          }
+        : null;
+    },
+  },
+  {
+    kind: 'trigger',
+    feature: 'GHL-WF-REFUND',
+    events: ['REFUND_ISSUED'],
+    filters: [
+      { key: 'product', label: 'Product identifier', kind: 'text' },
+      { key: 'amount', label: 'Refund amount', kind: 'number' },
+    ],
+    match: (event, account) => {
+      const payment = account.payments[String(event.payload.payment_id)];
+      return payment
+        ? {
+            contact_id: payment.contact_id,
+            context: {},
+            values: { product: payment.product_id, amount: payment.amount },
+          }
+        : null;
+    },
+  },
+  {
+    kind: 'trigger',
     feature: 'GHL-WF-FORM-SUBMITTED',
     events: ['FORM_SUBMITTED'],
     filters: [{ key: 'form', label: 'Form is', kind: 'text', reference: 'forms' }],

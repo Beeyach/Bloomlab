@@ -201,6 +201,7 @@ export interface ScenarioExternalEndpoint {
  * scenario that only says "a 30-minute consultation calendar" keeps meaning exactly that.
  */
 export interface ScenarioCalendar {
+  seats_per_class?: number;
   id: string;
   name: string;
   duration_minutes: number;
@@ -1033,6 +1034,7 @@ function compileCalendar(calendar: ScenarioCalendar): Calendar {
   const type: CalendarType = calendar.type ?? 'personal';
   return {
     id: calendar.id,
+    ...(type === 'class' ? { seats_per_class: calendar.seats_per_class ?? 1 } : {}),
     name: calendar.name,
     type,
     timezone: calendar.timezone ?? null,

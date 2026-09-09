@@ -1,20 +1,23 @@
-# Name verified 2026-09-02 on "A List of Workflow Triggers" (Payments group).
 id: GHL-WF-PAYMENT-RECEIVED
 official_name: Payment Received
 area: Workflows
 feature_type: trigger
 implementation_type: native_ghl
 status: current
-simulation_fidelity: C
-last_verified: 2026-09-02
-source_url: https://help.gohighlevel.com/support/solutions/articles/155000002292-a-list-of-workflow-triggers
-known_limitations:
-  - Payments are not simulated in v1 (Payments Lab is a later phase); the trigger is taught conceptually.
+simulation_fidelity: B
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003534-workflow-trigger-payment-received
 skills:
-  - SK-AUTOMATE-workflow-foundations
-supported_configs:
-  filters:
-    - Payment source
-    - Amount
-approximation_note: Conceptual demonstration — no payment is processed in the simulator.
-verification_note: Name confirmed on the triggers list page, 2026-09-02; filters not individually verified.
+  - SK-BUILD-payment-lifecycle
+known_limitations:
+  - PAYMENT_RECEIVED and PAYMENT_FAILED share this adapter with success/failed status, product,
+    source and amount filters. The official guide introduction emphasises success but its Payment
+    Status instructions and FAQ explicitly include failure. No gateway requests, all native
+    subfilters or automatic billing are simulated.
+supported_configs: {}
+approximation_note: PAYMENT_RECEIVED and PAYMENT_FAILED share this adapter with success/failed
+  status, product, source and amount filters. The official guide introduction emphasises success but
+  its Payment Status instructions and FAQ explicitly include failure. No gateway requests, all
+  native subfilters or automatic billing are simulated.
+verification_note: Read the current official HighLevel article on 2026-09-09. Local behaviour is
+  deliberately narrower than the platform; no real account verification is implied.

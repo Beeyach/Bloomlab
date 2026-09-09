@@ -1,0 +1,25 @@
+id: SK-BUILD-payment-lifecycle
+title: Trace an offer through payment, failure and refund
+territory: BUILD
+tier: practitioner
+summary: Create explicit prices and local offers, then test their financial and workflow
+  consequences in the shared account.
+prerequisites:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features:
+  - GHL-PAY-LINKS
+  - GHL-PAY-INVOICES
+  - GHL-PAY-SUBSCRIPTIONS
+  - GHL-PAY-PRODUCTS
+  - GHL-WF-PAYMENT-RECEIVED
+  - GHL-WF-REFUND
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - payment-lifecycle
+  - advanced
+  - shared account

@@ -170,10 +170,10 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
 | CRM-001 | CRM Lab supports contacts, fields, tags, opportunities, pipelines, assignments, activity history, notes, tasks. Phase 11: all nine are worked in the Lab at `/crm` on the shared simulated account, and every change is a simulator event through one command layer (D-094) — 35 engine tests, 22 data-layer tests, 22 screen tests, a 27-check browser probe and a five-width review probe, all green. | P0 | 11 | PASSED | §55 |
-| CRM-002 | Companies and custom objects added later (schemas, records, associations, workflows, limitations, when excessive). | P2 | 25 | NOT_STARTED | §55, §17 |
+| CRM-002 | Companies and custom objects added later (schemas, records, associations, workflows, limitations, when excessive). | P2 | 25 | PASSED | §55, §17 |
 | CRM-003 | Poor architectural choices are allowed when technically possible; later consequences teach why they were poor. Phase 11: a tag where a field belongs is allowed and unremarked (tests), and the consequence is `EX-FIX_IT-jordan-treatment-interest`, a deterministic exercise graded from the learner's own CRM account through the first registered exercise runtime (D-097): it fails while the interest is three tags and passes once it is one field. | P1 | 11 | PASSED | §55 |
 | CRM-004 | High information density on desktop; mobile uses stage view / deliberate local horizontal scroller. Phase 11: dense rows and a two-pane workspace at 1440 / 1024; a stage switcher over a snapping local scroller at 768 / 390 / 320; seventeen states audited at all five widths with no page-level overflow and nothing removed (`npm run review:crm-review`). | P1 | 11 | PASSED | §72, §83 |
-| CRM-005 | Smart list segmentation. | P2 | 25 | NOT_STARTED | §17 |
+| CRM-005 | Smart list segmentation. | P2 | 25 | PASSED | §17 |
 
 ## FUN — Funnel Lab
 
@@ -189,7 +189,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
 | CAL-001 | Calendar Lab supports progressively: duration, availability, buffers, minimum notice, staff, assignment, round robin, services, locations, confirmation, reschedule, cancellation. | P1 | 14 | PASSED | §57 |
-| CAL-002 | Advanced resource rules (classes, resources, complex scheduling) later. | P3 | 25 | NOT_STARTED | §57, §15 |
+| CAL-002 | Advanced resource rules (classes, resources, complex scheduling) later. | P3 | 25 | PASSED | §57, §15 |
 | CAL-003 | Booking events (APPOINTMENT_BOOKED / RESCHEDULED / CANCELLED / STATUS_CHANGED) fire workflows through the shared simulator. | P0 | 14 | PASSED | §44, §57 |
 
 ## CONV — Conversations
@@ -203,7 +203,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| PAY-001 | Payments Lab (later): product, price, one-time, subscription, payment link, invoice, failed payment, refund; payment events fire workflows. | P2 | 25 | NOT_STARTED | §59 |
+| PAY-001 | Payments Lab (later): product, price, one-time, subscription, payment link, invoice, failed payment, refund; payment events fire workflows. | P2 | 25 | PASSED | §59 |
 
 ## REP — Reporting Lab
 

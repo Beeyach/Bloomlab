@@ -15,6 +15,7 @@ import {
 
 import { ContactDetail } from './ContactDetail';
 import { CrmSetup } from './CrmSetup';
+import { AdvancedCrm } from './AdvancedCrm';
 import { PipelineBoard } from './PipelineBoard';
 import { createContact } from './commands';
 import styles from './crm.module.css';
@@ -61,11 +62,14 @@ const savedAt = (iso: string): string => {
   }
 };
 
-type Area = 'contacts' | 'pipeline' | 'setup';
+type Area = 'contacts' | 'pipeline' | 'setup' | 'companies' | 'objects' | 'lists';
 const AREAS: { id: Area; label: string }[] = [
   { id: 'contacts', label: 'Contacts' },
   { id: 'pipeline', label: 'Pipeline' },
   { id: 'setup', label: 'Setup' },
+  { id: 'companies', label: 'Companies' },
+  { id: 'objects', label: 'Custom objects' },
+  { id: 'lists', label: 'Smart lists' },
 ];
 
 export default function CrmLab() {
@@ -254,6 +258,9 @@ export default function CrmLab() {
           <p className={styles.empty}>No pipelines yet. Setup is where they are created.</p>
         ))}
       {area === 'setup' && <CrmSetup run={run} apply={apply} />}
+      {(area === 'companies' || area === 'objects' || area === 'lists') && (
+        <AdvancedCrm key={area} run={run} apply={apply} area={area} />
+      )}
     </Stack>
   );
 }

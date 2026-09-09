@@ -435,6 +435,10 @@ Implementation and controlled verification: `docs/reviews/phase-24-field-ready.m
 
 ## Phase 25 — Advanced curriculum
 
+- **CRM-002, CRM-005** `advanced-crm.test.ts` verifies shared company references, typed schemas, atomic refusal, labelled contact associations, generated object notifications/replay and dynamic typed AND/OR membership. `advanced-labs-probe.mjs` creates, edits, reloads and grades actual account state, including membership changes.
+- **CAL-002** `advanced-labs.test.ts` verifies overlapping class capacity, cancellation, notice/host constraints, rescheduling, peak resource occupancy, equivalent alternatives and refusal of forged duration/service bypass. The browser books two class attendees, cancels to release a seat and books an assigned resource before grading.
+- **PAY-001** Core tests verify products/prices, invoices/links/subscriptions, failed/retried/duplicate/refunded charges, workflow event adapters, replay and revenue. Browser coverage includes offline renewal, reload and the account-backed practical. Presentation tests cover loading, storage error, refusal and empty catalogue. All nine changed Lab surfaces are checked at 1440/1024/768/390/320 with AI Off, visible keyboard focus, touch and reduced motion; the Phase 24 short-height rail remains required.
+
 - **CUR-023** CONNECT units for every listed topic with practical exercises. Phase 25: `advanced.test.ts` derives all nine learn/practical citations and rejects missing units, practicals, unrelated skills, stale features and ungraded fixture contracts. `connect.test.ts` proves correct/empty/wrong JSON through the shared grader; `review/connect-probe.mjs` verifies 90 Academy/runner cases at 1440/1024/768/390/320, nine fail/retry/persist flows with AI Off, keyboard focus, touch and reduced motion. Local fixtures never claim real DNS/API/terminal/cryptographic/deployment execution.
 
 ## Phase 26 — Polish

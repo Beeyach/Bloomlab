@@ -1,0 +1,21 @@
+id: SK-ARCHITECT-companies-objects
+title: Model repeated things without duplicating people
+territory: ARCHITECT
+tier: practitioner
+summary: Choose standard records first; build typed object records, labelled associations and a
+  bounded object automation.
+prerequisites:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features:
+  - GHL-CRM-COMPANIES
+  - GHL-CRM-CUSTOM-OBJECTS
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - companies-objects
+  - advanced
+  - shared account

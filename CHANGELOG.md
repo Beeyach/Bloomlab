@@ -9,6 +9,12 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 25 advanced Labs checkpoint
+
+- Shared-account companies, typed custom objects, associations, narrow object notifications and live Smart Lists; class capacity and service-resource availability with booking/rescheduling enforcement.
+- Payments Lab products/prices, links/invoices, explicit subscriptions, failure/retry/refund lifecycle and shared workflow/revenue consequences. Four sourced units and account-backed practicals use existing grading and persistence.
+- Typed/reference/idempotency/replay regressions, loading/error/empty presentation tests and a committed five-width account-flow/grading probe. Synthetic data only, no migration or paid provider, no parked human-status change.
+
 ### Added — Phase 25 CONNECT checkpoint
 
 - Nine sourced CONNECT units and nine local fixture practicals reuse the Academy, runner, deterministic grader and existing evidence persistence. Advanced learn/practical coverage is compiler-enforced and emitted as a derived report.

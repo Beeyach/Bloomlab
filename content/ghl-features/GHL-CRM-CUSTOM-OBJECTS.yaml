@@ -1,0 +1,23 @@
+id: GHL-CRM-CUSTOM-OBJECTS
+official_name: Custom Objects
+area: Contacts
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003896-getting-started-with-custom-objects
+skills:
+  - SK-ARCHITECT-companies-objects
+known_limitations:
+  - Schemas, typed records and labelled many-to-many contact associations are simulated. The narrow
+    created/updated condition-to-internal-notification automation is not a complete object-based
+    workflow builder. No outbound delivery, object-to-object associations, unique fields, bulk
+    operations or platform object limits are reproduced.
+supported_configs: {}
+approximation_note: Schemas, typed records and labelled many-to-many contact associations are
+  simulated. The narrow created/updated condition-to-internal-notification automation is not a
+  complete object-based workflow builder. No outbound delivery, object-to-object associations,
+  unique fields, bulk operations or platform object limits are reproduced.
+verification_note: Read the current official HighLevel article on 2026-09-09. Local behaviour is
+  deliberately narrower than the platform; no real account verification is implied.

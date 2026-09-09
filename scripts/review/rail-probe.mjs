@@ -29,6 +29,7 @@ const DESTINATIONS = [
   '/calendar',
   '/conversations',
   '/reporting',
+  '/payments',
   '/incident',
   '/clients',
   '/portfolio',

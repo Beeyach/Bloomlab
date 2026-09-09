@@ -17,6 +17,8 @@ import { sameDefinition } from './edit';
 import { Appointments, BookingPanel } from './Lifecycle';
 import { chainSince, logWatermark } from './session';
 import { Settings } from './Settings';
+import { Resources } from './Resources';
+import { saveResource } from './commands';
 import { DEFAULT_CALENDAR_SCENARIO_ID, scenarioFor, useCalendarRun } from './useCalendarRun';
 import { clockTime, schedule, VISIBLE_DAYS } from './week';
 import { GROUP_LABELS, GROUPS, ISSUE_WORDS, type Group } from './words';
@@ -273,6 +275,12 @@ export default function CalendarLab() {
       </div>
       <div role="tabpanel" aria-label={GROUP_LABELS[group]}>
         <Settings group={group} draft={draft} account={account} onChange={change} />
+        {group === 'service' && (
+          <Resources
+            busy={busy}
+            onSave={(resource) => act((current) => saveResource(current, scenario, resource))}
+          />
+        )}
       </div>
     </>
   );

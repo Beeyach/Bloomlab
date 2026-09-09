@@ -121,6 +121,12 @@ export function Workspace({
                         data-testid={`slot-${slot.starts_at}`}
                       >
                         <span className={styles.slotTime}>{clockTime(slot.starts_at, zone)}</span>
+                        {slot.seats_remaining !== undefined && (
+                          <span>{slot.seats_remaining} seats left</span>
+                        )}
+                        {slot.resource_id && (
+                          <span>{account.resources?.[slot.resource_id]?.name}</span>
+                        )}
                         <span className={styles.slotHost}>
                           {slot.host_id
                             ? (account.users[slot.host_id]?.name ?? slot.host_id)

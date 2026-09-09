@@ -1,0 +1,84 @@
+id: EX-BUILD_IT-smart-lists
+type: BUILD_IT
+title: Keep a saved audience connected to current data — account practical
+mode: independent
+difficulty: 3
+estimated_minutes: 35
+skills:
+  - SK-ARCHITECT-smart-lists
+scenario: SC-glowhaus-crm
+advanced_topics:
+  - labs.smart_lists
+instructions: 'In [CRM smart lists](/crm?area=lists), save reachable-meta / Reachable Meta leads
+  with match all and two rules: tags is text meta-lead; dnd is boolean false. Inspect real members.
+  Change Maria’s DND on, observe her exclusion, then restore it off. The grade checks the saved rule
+  contract and the contact update event; inspect membership yourself as well. Saving a list does not
+  send or grant consent.'
+allowed_features:
+  - GHL-CRM-SMART-LISTS
+expected_outcomes:
+  - id: a0
+    type: state
+    path: advanced_crm.lists.reachable-meta.match
+    operator: equals
+    value: all
+    description: The segment combines its rules with AND.
+  - id: a1
+    type: state
+    path: advanced_crm.lists.reachable-meta.rules.0.field
+    operator: equals
+    value: tags
+    description: The first rule reads real tags.
+  - id: a2
+    type: state
+    path: advanced_crm.lists.reachable-meta.rules.0.value
+    operator: equals
+    value: meta-lead
+    description: The first rule selects Meta leads.
+  - id: a3
+    type: state
+    path: advanced_crm.lists.reachable-meta.rules.1.field
+    operator: equals
+    value: dnd
+    description: The second rule reads DND.
+  - id: a4
+    type: state
+    path: advanced_crm.lists.reachable-meta.rules.1.value
+    operator: equals
+    value: false
+    description: DND uses a boolean, not text.
+  - id: event
+    type: event
+    event: contact.updated
+    count:
+      min: 1
+    description: The practical produced an actual shared-account event.
+    where:
+      contact_id: maria
+      dnd: true
+  - id: contract_0
+    type: state
+    path: advanced_crm.lists.reachable-meta.rules.2
+    operator: absent
+    description: The saved list contains exactly the two specified rules, without an extra condition.
+  - id: contract_1
+    type: state
+    path: advanced_crm.lists.reachable-meta.rules.0.operator
+    operator: equals
+    value: is
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_2
+    type: state
+    path: advanced_crm.lists.reachable-meta.rules.1.operator
+    operator: equals
+    value: is
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_3
+    type: state
+    path: contacts.maria.dnd
+    operator: equals
+    value: false
+    description: The saved account follows the practical's explicit model contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

@@ -71,3 +71,50 @@ Verification before checkpoint C:
 
 CUR-023 is PASSED for its authored-unit/practical contract, not a live infrastructure certification.
 Checkpoints C–F and final exact-head remote CI/Preview verification remain to be completed.
+
+## Checkpoint C — shared-account advanced Labs
+
+CRM-002/005, CAL-002 and PAY-001 now have four authored units and four account-backed practicals.
+Company links, typed object schemas/records/labelled associations and narrow created/updated
+notification rules use the shared event reducer. Smart-list membership is a live typed AND/OR
+projection over contacts, not a stored count. Classes enforce overlapping seat occupancy;
+service resource alternatives use peak concurrent capacity, shared buffers and authoritative
+booking/rescheduling checks. Ordinary calendar event fixtures remain unchanged.
+
+The Payments Lab models products, immutable prices, payment links, single-line invoices,
+explicit subscription charges, failed/retried payments and full refunds. Received/failed/refund
+events traverse the existing workflow engine and revenue projection. All payment attempts are
+synthetic; there is no processor, automatic renewal clock or real delivery. Optional account
+collections preserve old checkpoint hashes. Content `2026.09.23`, simulator `2026.09.23-r1`;
+no migration, parallel learner store or runtime provider requirement.
+
+Evidence before checkpoint D:
+
+- Complete pinned Node 22 CI: **1,963 tests / 139 files passed**, typecheck, lint (existing hook
+  warning only), format, control docs, content lock, voice inventory and Production provider/secret
+  scan. Visible-scrollbar rail probe passes five widths and ten 480 px normal/reduced cases,
+  including the added Payments destination (`.review/phase-25-labs/rail/rail-probe.json`).
+
+- Focused content/core/presentation regressions: **19 tests / 4 files passed**. They cover typed
+  atomic refusal, reference checks, replay, dynamic membership, overlapping classes, cancellation,
+  rescheduling, peak-versus-sequential resource occupancy, service-bypass refusal, payment
+  idempotency, workflows, revenue reversal and subscription lifecycle. Loading/error/empty
+  Payments presentation has direct tests.
+- Built Chromium probe, AI Off: all four practicals grade actual saved Lab accounts. Company
+  rename/link reload, object automation/refusal/reload, live segmentation, failed invoice retry,
+  duplicate paid invoice refusal, refund, offline subscription renewal/reload, two class attendees,
+  cancellation/released seat and resource booking pass. All **45 surface/width cases** pass at
+  1440/1024/768/390/320, plus keyboard visible focus, touch and reduced motion at short height.
+  Artifact: `.review/phase-25-labs/graded-final/advanced-labs-probe.json`.
+- The grading probe caught an unsupported array-length assertion; checking absence of the third
+  smart-list rule now uses the grader's supported numeric path. The calendar probe waits for the
+  cancellation write before clicking the deliberately disabled resource-save control. Resource
+  saves now announce persistence success or failure.
+- Checkpoint B exact-head CI **34337363569** passed on `42b16caea13b82b8bc830de1c293fd2029d1338d`.
+  Final Phase 25 exact-head CI/Preview evidence remains pending until checkpoints D–F finish.
+
+Current official feature records explicitly delimit company fields, contact-only object
+associations, narrow object notifications, one-group segments, one resource per service booking,
+USD single-line billing and full successful refunds. First Lab price remains the legacy Funnel
+default; later prices are explicitly selected in Payments. No physical Safari or human transfer
+acceptance is inferred. All parked statuses and unrelated partials remain unchanged.

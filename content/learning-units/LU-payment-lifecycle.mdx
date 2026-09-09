@@ -1,0 +1,43 @@
+---
+id: 'LU-payment-lifecycle'
+title: 'Trace an offer through payment, failure and refund'
+territory: 'BUILD'
+tier: 'practitioner'
+skills: ['SK-BUILD-payment-lifecycle']
+ghl_features:
+  [
+    'GHL-PAY-PRODUCTS',
+    'GHL-PAY-LINKS',
+    'GHL-PAY-INVOICES',
+    'GHL-PAY-SUBSCRIPTIONS',
+    'GHL-WF-PAYMENT-RECEIVED',
+    'GHL-WF-REFUND',
+  ]
+advanced_topics: ['labs.payments']
+estimated_minutes: 15
+summary: 'Create explicit prices and local offers, then test their financial and workflow consequences in the shared account.'
+---
+
+# Trace an offer through payment, failure and refund
+
+## Product, price and offer
+
+A product says what is sold. A price fixes an amount and a billing interval. A payment link points to a purchasable price; an invoice also identifies the customer who owes it. A subscription is an ongoing agreement, not a single successful transaction. Do not call a saved product “paid” because a setup form accepted it.
+
+Open [Payments Lab](/payments). Save product training-service and create one-time price training-once for 2500 US cents, then monthly price training-monthly for the same amount. These are fictional prices for training, not a pricing recommendation. Create invoice training-invoice for Maria using training-once and link training-link using training-monthly.
+
+## Failure is an event, not collected revenue
+
+Record an invoice attempt training-failed with synthetic outcome Failed and a reason. The invoice stays open and revenue does not increase. Record training-retry as a separate successful attempt; the invoice becomes paid. The same attempt identifier cannot be used twice. Now record a full refund of training-retry. Revenue reverses, but the invoice is not silently reopened.
+
+Use the monthly link with a new subscription identifier training-sub and record success. A later failed subscription attempt must be visible as a failure, not a new sale. Retry explicitly. Refund of a prior charge and cancellation of future billing are separate decisions. This Lab records charges only when instructed at the simulator clock; it runs no automatic billing schedule.
+
+## Inspect the cross-Lab consequences
+
+Follow the Workflow Lab link from Payments so it opens the same scenario. Publish a Payment Received workflow with Payment Status failed before testing failure, and inspect the enrollment. Use success for fulfillment. Refund is a separate trigger. Do not grant access merely because an invoice exists. The current official Payment Received guide’s introduction emphasises success, while its status-filter instructions and FAQ explicitly include failed payments.
+
+No provider, real charge, sent invoice, card details or customer credentials are involved. The simulation supports USD single-line invoices and full successful refunds; taxes, trials, proration, disputes and partial refunds remain outside it. The first Lab price becomes the product's default for existing Funnel checkout; additional price selection happens in Payments Lab. A failed initial subscription remains incomplete; a failed renewal of an established subscription becomes past due.
+
+[Products](https://help.gohighlevel.com/support/solutions/articles/155000005071-getting-started-create-sell-products), [payment trigger](https://help.gohighlevel.com/support/solutions/articles/155000003534-workflow-trigger-payment-received) and [refund trigger](https://help.gohighlevel.com/support/solutions/articles/155000003537-trigger-refund), checked 9 September 2026.
+
+<Exercise id="EX-BUILD_IT-payment-lifecycle" />

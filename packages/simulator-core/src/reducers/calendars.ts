@@ -36,6 +36,17 @@ import { entity, put, result, type ReducerResult } from './shared.ts';
 
 const ID = /^[a-zA-Z0-9][a-zA-Z0-9_-]*$/;
 
+export function resourceSaved(account: AccountState, event: SimulatorEvent): ReducerResult {
+  const id = requireString(event.payload, 'id', event.type);
+  if (!ID.test(id) || ['__proto__', 'constructor', 'prototype'].includes(id))
+    fail('INVALID_PAYLOAD', 'Resource needs a safe identifier.', {});
+  const capacity = whole(event.payload.capacity, 'resource capacity', id, event.type, { min: 1 });
+  const resource = { id, name: requireString(event.payload, 'name', event.type), capacity };
+  return result({ ...account, resources: { ...account.resources, [id]: resource } }, [
+    { kind: 'input', at: event.at, event_id: event.id, data: { resource_id: id, capacity } },
+  ]);
+}
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
@@ -112,7 +123,7 @@ export function readCalendar(
   const assignment = readAssignment(candidate.assignment, type as CalendarType, id, eventType);
   const locations = readLocations(candidate.locations, id, eventType);
   uniqueIds(locations, 'locations', id);
-  const services = readServices(candidate.services, id, eventType, locations);
+  const services = readServices(candidate.services, id, eventType, locations, account);
   uniqueIds(services, 'services', id);
   const availability = readAvailability(candidate.availability, id, eventType);
 
@@ -134,6 +145,14 @@ export function readCalendar(
 
   return {
     id,
+    ...(type === 'class'
+      ? {
+          seats_per_class: whole(candidate.seats_per_class, 'seats per class', id, eventType, {
+            min: 1,
+            fallback: 1,
+          }),
+        }
+      : {}),
     name,
     type: type as CalendarType,
     timezone,
@@ -286,6 +305,7 @@ function readServices(
   calendarId: string,
   eventType: string,
   locations: readonly CalendarLocation[],
+  account: AccountState,
 ): CalendarService[] {
   if (raw === undefined || raw === null) return [];
   if (!Array.isArray(raw)) {
@@ -301,6 +321,19 @@ function readServices(
       });
     }
     const shaped = value;
+    let resourceIds: string[] | undefined;
+    if (shaped.resource_ids !== undefined) {
+      if (
+        !Array.isArray(shaped.resource_ids) ||
+        shaped.resource_ids.some((v) => typeof v !== 'string')
+      )
+        fail('INVALID_PAYLOAD', 'Resource ids must be a list.', {});
+      resourceIds = shaped.resource_ids as string[];
+      if (new Set(resourceIds).size !== resourceIds.length)
+        fail('INVALID_PAYLOAD', 'Resources cannot repeat.', {});
+      for (const resourceId of resourceIds)
+        entity(account.resources ?? {}, resourceId, 'resource', eventType);
+    }
     const name = text(shaped.name);
     if (!name) {
       fail('INVALID_PAYLOAD', `Calendar ${calendarId} service ${shaped.id} needs a name`, {
@@ -326,6 +359,7 @@ function readServices(
     }
     return {
       id: shaped.id as string,
+      ...(resourceIds === undefined ? {} : { resource_ids: resourceIds }),
       name,
       duration_minutes: duration,
       staff_ids: staff.map((row) => {

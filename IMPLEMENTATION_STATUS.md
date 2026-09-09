@@ -45,12 +45,14 @@ Phase 21 update-check recovery: a failed update/build check is visible even when
 ## VERSIONS
 
 - app: 0.1.0
-- content: 2026.09.22 (`content/content.yaml`, locked by `content/content.lock.yaml`)
-- simulator: 2026.09.11-r2 (`SIMULATOR_VERSION`, carried on every run and saved run and stamped on evidence)
+- content: 2026.09.23 (`content/content.yaml`, locked by `content/content.lock.yaml`)
+- simulator: 2026.09.23-r1 (`SIMULATOR_VERSION`, carried on every run and saved run and stamped on evidence)
 - mastery rules: 2026.09.09-r5 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
 - exercise grader: 2026.09.22 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
 
 ## PASSED
+
+- CRM-002, CRM-005, CAL-002, PAY-001 — Phase 25 checkpoint C: shared-account advanced CRM, dynamic segments, class/resource scheduling and synthetic Payments Lab. Complete Node 22 CI: 1,963 tests / 139 files; four account-backed practicals, 45 five-width browser cases and short-height rail pass. Checkpoints A–C complete; D–F and final exact-head verification remain. See the Phase 25 review for limits and evidence.
 
 - CUR-023 — Phase 25 checkpoint B: all nine CONNECT topic groups have authored instruction and objective fixture practicals. Compiler mutation tests, grading tests, built five-width/AI-Off/failure/retry/persistence/keyboard/touch/reduced-motion probe; see `docs/reviews/phase-25-advanced-curriculum.md`. This does not certify live DNS, API, cryptographic or deployment work.
 - PRD-006, CUR-003 — Phase 24 evidence: Eight authored placement areas; strong and weak profiles select different early work while independent/pressure requirements remain (placement tests, real numeric browser submission/reload).
@@ -426,4 +428,4 @@ The proposal feedback blocker is remediated and the saved human call recovered w
 
 ## ROLL-UP
 
-313 requirements registered · 237 PASSED · 8 IN_PROGRESS · 22 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 32 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 241 PASSED · 8 IN_PROGRESS · 22 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 28 NOT_STARTED. Run the validator for the live count by status and priority.

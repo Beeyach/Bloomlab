@@ -1,0 +1,21 @@
+id: GHL-WF-REFUND
+official_name: Refund
+area: Workflows
+feature_type: trigger
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003537-trigger-refund
+skills:
+  - SK-BUILD-payment-lifecycle
+known_limitations:
+  - Only full successful local refunds are simulated; product and amount filters reach the shared
+    workflow engine. Failed and partial refund attempts and provider-specific behaviour are not
+    simulated.
+supported_configs: {}
+approximation_note: Only full successful local refunds are simulated; product and amount filters
+  reach the shared workflow engine. Failed and partial refund attempts and provider-specific
+  behaviour are not simulated.
+verification_note: Read the current official HighLevel article on 2026-09-09. Local behaviour is
+  deliberately narrower than the platform; no real account verification is implied.

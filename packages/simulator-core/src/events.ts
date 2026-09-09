@@ -6,6 +6,21 @@ import { fail } from './errors.ts';
  * feature it uses that feature's real name from the registry instead (GHL-010).
  */
 export const SIMULATOR_EVENT_TYPES = [
+  // Bloomlab account edits, not claims of native HighLevel trigger names.
+  'COMPANY_SAVED',
+  'COMPANY_CONTACT_LINKED',
+  'OBJECT_SCHEMA_SAVED',
+  'OBJECT_RECORD_SAVED',
+  'OBJECT_ASSOCIATION_SAVED',
+  'OBJECT_AUTOMATION_SAVED',
+  'SMART_LIST_SAVED',
+  'RESOURCE_SAVED',
+  'PRODUCT_SAVED',
+  'PRICE_CREATED',
+  'PAYMENT_LINK_SAVED',
+  'INVOICE_CREATED',
+  'PAYMENT_CHECKOUT',
+  'SUBSCRIPTION_CANCELLED',
   'CONTACT_CREATED',
   'CONTACT_UPDATED',
   'TAG_ADDED',

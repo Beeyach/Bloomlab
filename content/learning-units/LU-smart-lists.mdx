@@ -1,0 +1,35 @@
+---
+id: 'LU-smart-lists'
+title: 'Keep a saved audience connected to current data'
+territory: 'ARCHITECT'
+tier: 'practitioner'
+skills: ['SK-ARCHITECT-smart-lists']
+ghl_features: ['GHL-CRM-SMART-LISTS']
+advanced_topics: ['labs.smart_lists']
+estimated_minutes: 15
+summary: 'Build a live contact segment, test its inclusion boundary and distinguish membership from consent.'
+---
+
+# Keep a saved audience connected to current data
+
+## A query, not a copied list
+
+A smart list saves a question about the account. Its membership changes as the answer changes. Exporting a CSV makes a snapshot; saving the filter does not. Start with the operational job: which contacts need a follow-up review, which are missing a field, or which have an open opportunity? A large audience count is not a success metric by itself.
+
+The Lab evaluates fields, an operator and a typed value. Text false is not boolean false. A missing number is not zero. Tags are a collection: is lead asks whether that tag is present. Opportunity status reads the contact’s real associated deals, not a label typed into the contact record.
+
+## Test the boundary in this account
+
+Open [CRM smart lists](/crm?area=lists). Create list reachable-meta named Reachable Meta leads, match all. Add tags is text meta-lead and dnd is boolean false. In the initial fictional account, Maria and Jordan match while Lena does not. Inspect the names, not just the total.
+
+Open Maria’s contact, turn Do Not Disturb on, then return to the list. Maria should leave without anyone editing the saved list. Restore her prior setting after testing. Switch all to any and predict the consequence: the tag alone can now include a DND contact. That is a segmentation mistake, not permission to message them. Messaging safeguards still apply separately.
+
+Create a second list for missing email and inspect Theo. Add a numeric custom field and use greater to test a strict threshold. A value equal to the threshold must not match. Test a deliberately empty segment; zero members can be a correct answer.
+
+## Platform and consent boundaries
+
+HighLevel supports a broader advanced-filter system, including nested AND/OR groups and channel-specific DND fields. This simulation has one all/any group, selected standard/contact fields, tags and opportunity status. It does not simulate list sharing or bulk outreach. Saving a segment sends nothing. A saved list is not consent, lawful basis or evidence that an address can receive mail.
+
+[Advanced Filters in Smart Lists](https://help.gohighlevel.com/support/solutions/articles/155000007530-advanced-filters-in-smart-lists), checked 9 September 2026. Recheck operator availability for the actual field before reproducing the filter in HighLevel.
+
+<Exercise id="EX-BUILD_IT-smart-lists" />

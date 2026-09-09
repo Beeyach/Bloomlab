@@ -1,13 +1,3 @@
-# Re-verified 2026-09-04 for Phase 14 through search-result summaries of the official help-centre
-# articles: "Understanding Calendar Availability Settings" (slot duration, slot interval, buffer,
-# minimum scheduling notice, Look Busy), "Round Robin Calendars Setup Guide | Distribution &
-# Availability Logic" and "Appointment Distribution Logic for Round Robin Calendars" (Optimize for
-# Availability, Optimize for Equal Distribution), "How to configure Staff Member selection in
-# Round Robin Calendars?" (Allow staff selection during booking, NEO widget only), "How To Create
-# Service Calendars" (service duration, staff assignment, per-staff location), "Multiple Meeting
-# Location Selector in Calendar" (Address, Phone, Zoom, Google Meet, Custom, Ask the Booker) and
-# "Booking Widget: Set Cancellation & Reschedule Rules". The build environment's proxy rejects
-# help.gohighlevel.com with a 403 at the CONNECT, so the articles could not be opened directly.
 id: GHL-CAL-CALENDARS
 official_name: Calendars
 area: Calendars
@@ -18,16 +8,24 @@ simulation_fidelity: B
 last_verified: 2026-09-04
 source_url: https://help.gohighlevel.com/support/solutions/articles/48001155718-adjusting-availability-settings-for-individual-calendars
 known_limitations:
-  - >-
-    Simulated — Personal Booking, Round Robin and Service calendars with weekly working hours, appointment duration, slot interval, pre and post buffer, minimum scheduling notice, a booking window, a team with an order, both round-robin distribution methods, staff selection, services that set their own duration and eligible staff, meeting locations, and cancellation and reschedule permissions with a cutoff.
-  - >-
-    Not simulated — date-specific hours, linked and conflict calendars, Look Busy, appointments-per-day and per-slot limits, calendar groups, recurring appointments, Class Booking, Collective, Group and Event calendars, rooms, equipment and other resources, and payment at booking.
-  - >-
-    Optimize for Equal Distribution counts each team member's bookings on that calendar in the slot's own month and gives the booking to whoever has fewest, ties broken by the order the calendar lists them. HighLevel additionally limits a member's availability temporarily when they run too far ahead of the team; that part is not simulated.
-  - >-
-    Zoom and Google Meet locations store a link the learner supplies. Bloomlab creates no meeting on either platform and generates no dynamic link.
-  - >-
-    Working hours are whole windows inside one day in the calendar's own zone, between 00:00 and 23:59. A window that crosses midnight is authored as two.
+  - Simulated — Personal Booking, Round Robin and Service calendars with weekly working hours,
+    appointment duration, slot interval, pre and post buffer, minimum scheduling notice, a booking
+    window, a team with an order, both round-robin distribution methods, staff selection, services
+    that set their own duration and eligible staff, meeting locations, and cancellation and
+    reschedule permissions with a cutoff.
+  - Not simulated — date-specific hours, linked and conflict calendars, Look Busy,
+    appointments-per-day limits, calendar groups, recurring appointments, Collective, Group and
+    Event calendars, the separate Rooms & Equipment configuration, and payment at booking. Phase 25
+    adds Class Booking seats and service resources, separately sourced in GHL-CAL-CLASSES and
+    GHL-CAL-RESOURCES.
+  - Optimize for Equal Distribution counts each team member's bookings on that calendar in the
+    slot's own month and gives the booking to whoever has fewest, ties broken by the order the
+    calendar lists them. HighLevel additionally limits a member's availability temporarily when they
+    run too far ahead of the team; that part is not simulated.
+  - Zoom and Google Meet locations store a link the learner supplies. Bloomlab creates no meeting on
+    either platform and generates no dynamic link.
+  - Working hours are whole windows inside one day in the calendar's own zone, between 00:00 and
+    23:59. A window that crosses midnight is authored as two.
 skills:
   - SK-BUILD-consultation-calendar
 supported_configs:
@@ -76,7 +74,12 @@ supported_configs:
     - name: booking
       type: json
       required: false
-approximation_note: >-
-  Training approximation — three calendar families are simulated with real availability, assignment and service behaviour. Class, Collective, Group and Event calendars, resources and payment at booking are practised in GoHighLevel.
-verification_note: >-
-  Calendar types, availability settings, both round-robin distribution methods, staff selection, service duration and staff assignment, the six meeting-location kinds and the cancellation and reschedule toggles were confirmed on 2026-09-04 from search-result summaries of the official help-centre articles listed above. The articles could not be opened directly from the build environment, whose proxy refuses help.gohighlevel.com with a 403.
+approximation_note: Training approximation — Personal, Round Robin, Service and Class Booking use
+  the same availability engine. Class seat capacity and service resource reservations have their own
+  current registry records. Collective, Group and Event calendars and payment at booking remain
+  real-GHL practice.
+verification_note: Calendar types, availability settings, both round-robin distribution methods,
+  staff selection, service duration and staff assignment, the six meeting-location kinds and the
+  cancellation and reschedule toggles were confirmed on 2026-09-04 from search-result summaries of
+  the official help-centre articles listed above. The articles could not be opened directly from the
+  build environment, whose proxy refuses help.gohighlevel.com with a 403.

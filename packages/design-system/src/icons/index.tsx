@@ -203,6 +203,13 @@ export const IconReport = (p: IconProps) => (
   </Icon>
 );
 
+/** A receipt for the local Payments Lab, in the existing stroke icon family. */
+export const IconReceipt = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 7h6M9 11h6M9 15h3" />
+  </Icon>
+);
+
 /** A magnifier over a break: the Incident Room's destination (SIM-011, DES-013). */
 export const IconIncident = (p: IconProps) => (
   <Icon {...p}>

@@ -1,0 +1,21 @@
+id: GHL-CAL-CLASSES
+official_name: Class Booking
+area: Calendars
+feature_type: capability
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000000956-show-seats-per-slot-for-class-booking-on-the-booking-widget
+skills:
+  - SK-BUILD-advanced-scheduling
+known_limitations:
+  - One host and overlapping attendee seat counts use the shared availability engine. Weekly working
+    windows, notice and other-calendar host conflicts still apply. Recurring series,
+    meeting-platform capacity and real booking widgets are not simulated.
+supported_configs: {}
+approximation_note: One host and overlapping attendee seat counts use the shared availability
+  engine. Weekly working windows, notice and other-calendar host conflicts still apply. Recurring
+  series, meeting-platform capacity and real booking widgets are not simulated.
+verification_note: Read the current official HighLevel article on 2026-09-09. Local behaviour is
+  deliberately narrower than the platform; no real account verification is implied.

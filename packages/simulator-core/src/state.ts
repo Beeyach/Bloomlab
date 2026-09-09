@@ -2,6 +2,8 @@ import type { SimulatorEvent } from './events.ts';
 import type { ExecutionRecord } from './execution.ts';
 import type { RandomState } from './random.ts';
 import type { ScheduledEvent } from './scheduler.ts';
+import type { AdvancedCrm } from './advanced-crm.ts';
+import type { PaymentsCatalog } from './payments-lab.ts';
 
 /**
  * One simulated GoHighLevel account (spec §41, §43; SIM-001, SIM-004).
@@ -115,11 +117,10 @@ export interface Opportunity {
 /* ---- calendars (CAL-001, spec §44) ------------------------------------------------------ */
 
 /**
- * The calendar families Bloomlab simulates. HighLevel also ships Class Booking, Collective,
- * Group and Event calendars; those are practised in GHL and named as omissions in the registry
- * rather than approximated here (registry GHL-CAL-CALENDARS).
+ * The calendar families Bloomlab simulates. Collective, Group and Event remain real-GHL
+ * practice. Class capacity and service resources have explicit Phase 25 registry boundaries.
  */
-export const CALENDAR_TYPES = ['personal', 'round_robin', 'service'] as const;
+export const CALENDAR_TYPES = ['personal', 'round_robin', 'service', 'class'] as const;
 export type CalendarType = (typeof CALENDAR_TYPES)[number];
 
 /**
@@ -174,6 +175,8 @@ export interface CalendarLocation {
  * duration, narrow the staff who may take it, and carry its own location into the booking.
  */
 export interface CalendarService {
+  /** Equivalent resources; the engine reserves one available unit, not all of them. */
+  resource_ids?: string[];
   id: string;
   name: string;
   /** Overrides the calendar's duration when set. */
@@ -203,6 +206,7 @@ export interface CalendarBookingRules {
  * the Funnel Lab ask that engine rather than each holding a rule of their own (D-129).
  */
 export interface Calendar {
+  seats_per_class?: number;
   id: string;
   name: string;
   type: CalendarType;
@@ -242,6 +246,8 @@ export type BookedBy = 'customer' | 'staff';
  * was booked for is recorded on it rather than looked up later (D-128).
  */
 export interface Appointment {
+  /** The actual resource reserved at booking, unaffected by later service edits. */
+  resource_id?: string | null;
   id: string;
   contact_id: string;
   calendar_id: string;
@@ -706,6 +712,10 @@ export interface Workflow {
 }
 
 export interface AccountState {
+  payments_catalog?: PaymentsCatalog;
+  resources?: Record<string, { id: string; name: string; capacity: number }>;
+  /** Added only by an advanced edit, preserving historical checkpoint hashes. */
+  advanced_crm?: AdvancedCrm;
   account: Account;
   users: Record<string, User>;
   contacts: Record<string, Contact>;

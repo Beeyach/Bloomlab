@@ -1,6 +1,11 @@
 # KNOWN LIMITATIONS
 
-## Phase 25 — CONNECT checkpoint
+## Phase 25 — advanced curriculum checkpoints
+
+- Advanced CRM supports company names/contact links, typed object fields/records, labelled contact associations and a narrow created/updated condition-to-internal-notification rule. It is not the complete HighLevel object workflow builder; no outbound object communication, object-to-object associations, unique fields or bulk operations. Smart Lists support one AND/OR group over current account data, not nested groups or every native filter.
+- Classes/resources extend the same availability engine. Resources are equivalent alternatives; one available physical unit is reserved per service booking using its capacity. No external calendar, recurring series, location inventory, separate Rooms/Equipment or payment-at-booking integration. Earlier Phase 14 omissions below describe that historical checkpoint; classes and service resources are now present.
+- Payments are synthetic USD integer-cent prices, single-line invoices, explicit subscription attempts and full refunds of successful payments. No processor, tax/discount/proration, partial refund, automatic renewal/retry scheduler or real invoice delivery. Prices are immutable; the first Lab price supplies the existing Funnel product default, while Payments explicitly chooses prices. Refunding does not cancel a subscription or reopen an invoice.
+- New account collections are optional and use existing run persistence/sync. No migration or separate progress store. Local fixtures and account practicals do not establish real-GHL or live-payment competence.
 
 - CONNECT practicals inspect and repair authored local fixtures. DNS lookup, live API access, webhook cryptography, Git operations, Worker deployment and Google Cloud changes do not execute. A pass demonstrates the supplied contract work, never live-account or production competence. No provider spend or credentials are required.
 - The existing webhook skill still requires separate real-GHL fieldwork for mastery; these fixtures do not satisfy or remove that condition. New foundation skills have one independent practical each; broader practice diversity remains visible in ordinary content coverage.

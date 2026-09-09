@@ -1,15 +1,17 @@
-content_version: 2026.09.22
+content_version: 2026.09.23
 schema_version: 1
-notes: Phase 25 checkpoint B — CONNECT foundations and objective local practicals.
+notes: Phase 25 checkpoint C — shared-account advanced Labs and practicals.
 advanced_coverage:
-  [
-    connect.dns,
-    connect.json,
-    connect.http,
-    connect.webhooks,
-    connect.ghl_api,
-    connect.git,
-    connect.workers,
-    connect.google_cloud,
-    connect.javascript,
-  ]
+  - labs.companies_objects
+  - labs.smart_lists
+  - labs.scheduling
+  - labs.payments
+  - connect.dns
+  - connect.json
+  - connect.http
+  - connect.webhooks
+  - connect.ghl_api
+  - connect.git
+  - connect.workers
+  - connect.google_cloud
+  - connect.javascript

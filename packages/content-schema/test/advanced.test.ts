@@ -14,8 +14,20 @@ beforeAll(async () => {
   };
 });
 describe('CUR-023 content-derived coverage', () => {
+  it('covers every enabled advanced Lab with instruction and an account-backed practical', () => {
+    for (const row of advancedCoverage(content).filter((row) => row.topic.startsWith('labs.'))) {
+      expect(row.units.length, row.topic).toBeGreaterThan(0);
+      expect(row.exercises.length, row.topic).toBeGreaterThan(0);
+      const unit = content.learning_units.find((unit) => unit.id === row.units[0])!;
+      const exercise = content.exercises.find((exercise) => exercise.id === row.exercises[0])!;
+      expect(unit.word_count).toBeGreaterThan(200);
+      expect(exercise.scenario).toBeTruthy();
+      expect(exercise.expected_outcomes.some((check) => check.type === 'event')).toBe(true);
+      expect(exercise.expected_outcomes.some((check) => check.type === 'state')).toBe(true);
+    }
+  });
   it('has nine distinct units and runnable objective practicals on the same graph', () => {
-    const rows = advancedCoverage(content);
+    const rows = advancedCoverage(content).filter((row) => row.topic.startsWith('connect.'));
     expect(rows).toHaveLength(9);
     for (const row of rows) {
       expect(row.units).toHaveLength(1);
