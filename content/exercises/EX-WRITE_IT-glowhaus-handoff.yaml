@@ -1,0 +1,96 @@
+id: EX-WRITE_IT-glowhaus-handoff
+type: WRITE_IT
+title: Leave a system someone can own
+skills:
+  - SK-DELIVER-proposal-writing
+  - SK-DELIVER-client-explanation
+instructions: Your consultation build has passed its recorded training tests. Priya wants the keys
+  and asks whether you will keep changing things indefinitely. Dana has never handled a failed
+  message; Theo will be away next week. Write the handoff package outline and client instructions.
+  Separate tests already recorded from tests still needed in their live account. A release request
+  is not evidence of client acceptance.
+mode: independent
+difficulty: 3
+estimated_minutes: 40
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.documentation_answered
+    operator: equals
+    value: true
+    description: Answer the documentation brief.
+  - id: a2
+    type: state
+    path: written.training_answered
+    operator: equals
+    value: true
+    description: Answer the training brief.
+  - id: a3
+    type: state
+    path: written.ownership_answered
+    operator: equals
+    value: true
+    description: Answer the ownership brief.
+  - id: a4
+    type: state
+    path: written.support_answered
+    operator: equals
+    value: true
+    description: Answer the support brief.
+critical_failures:
+  - id: required_0
+    type: state
+    path: written.documentation_answered
+    operator: equals
+    value: true
+    description: Missing documentation leaves the handoff incomplete.
+  - id: required_1
+    type: state
+    path: written.training_answered
+    operator: equals
+    value: true
+    description: Missing training leaves the handoff incomplete.
+  - id: required_2
+    type: state
+    path: written.ownership_answered
+    operator: equals
+    value: true
+    description: Missing ownership leaves the handoff incomplete.
+  - id: required_3
+    type: state
+    path: written.support_answered
+    operator: equals
+    value: true
+    description: Missing support leaves the handoff incomplete.
+grading:
+  mode: mixed
+  rubric: DELIVERY_COMMUNICATION_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: documentation
+    label: Documentation
+    help: Provide the system map, naming rules, change log, known limits, QA evidence and recovery
+      instructions the maintainer needs.
+    rows: 4
+  - key: training
+    label: Training
+    help: 'Plan the staff walkthrough and teach-back: booking, reschedule, failed message and manual
+      recovery. Who attends and how will they demonstrate use?'
+    rows: 4
+  - key: ownership
+    label: Ownership
+    help: Name who controls assets, billing, account roles, domains and future changes; document
+      transfer and removal of unneeded access.
+    rows: 4
+  - key: support
+    label: Support
+    help: Define the support window, included fixes, response expectations, escalation path and paid
+      change process.
+    rows: 4
+topics:
+  - delivery.handoff
+  - delivery.qa
+  - delivery.updates
+time_category: retrieval

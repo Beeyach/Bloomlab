@@ -1,0 +1,47 @@
+id: EX-WRITE_IT-social-outreach
+type: WRITE_IT
+title: An owner posts about missed enquiries
+skills:
+  - SK-SELL-written-prospect-response
+instructions: A local service owner has posted publicly that staff lose track of enquiries between
+  messages and bookings. They have not asked for a software pitch and you cannot see their internal
+  system. Write a short social message that responds to the stated problem, offers one useful next
+  step and makes no private-system claim. Then write a follow-up that adds information if they
+  invite you to continue. Do not imply they replied before they have.
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.message_answered
+    operator: equals
+    value: true
+    description: Answer the first message brief.
+  - id: a2
+    type: state
+    path: written.follow_up_answered
+    operator: equals
+    value: true
+    description: Answer the invited follow-up brief.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: message
+    label: First message
+    help: Stay within the public evidence and the relationship you actually have.
+    rows: 4
+  - key: follow_up
+    label: Invited follow-up
+    help: Provide one useful new detail and a next step they can decline.
+    rows: 4
+topics:
+  - prospecting.social_outreach
+  - prospecting.follow_up
+  - bloomwired.outreach
+time_category: retrieval

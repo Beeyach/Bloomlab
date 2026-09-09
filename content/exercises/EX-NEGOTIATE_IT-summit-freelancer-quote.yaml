@@ -1,15 +1,15 @@
-# Phase 18: standalone authored negotiation over the Phase 17 pricing contract.
 id: EX-NEGOTIATE_IT-summit-freelancer-quote
 type: NEGOTIATE_IT
 title: Someone else quoted nine hundred
-mode: practice
+mode: pressure
 difficulty: 3
 estimated_minutes: 20
 skills:
   - SK-SELL-negotiation-basics
 scenario: SC-summit-discovery
 instructions: >-
-  This practice starts with the standalone agreement shown below. Marcus has a cheaper quote and will test the scope, payment and delivery terms.
+  This practice starts with the standalone agreement shown below. Marcus has a cheaper quote and
+  will test the scope, payment and delivery terms.
 
 
   Read each reply, write back, and choose a move. Configure any change before sending it. You may
@@ -71,9 +71,7 @@ grading:
   mode: mixed
   rubric: PRICING_REASONING_RUBRIC_V1
   pass_threshold: 70
-hints:
-  - level: nudge
-    text: What does the 900 quote leave out? Say that before you say anything about your price.
+hints: []
 fieldwork: null
 portfolio: null
 negotiation:
@@ -746,3 +744,9 @@ negotiation:
       fallback:
         I am not sure which part of the agreement you want to change. Could you choose a move and
         make the terms explicit?
+topics:
+  - pricing.negotiation
+  - pricing.reduce_scope
+  - pricing.walk_away
+  - judgment.accept_project
+  - judgment.price

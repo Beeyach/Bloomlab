@@ -1,0 +1,119 @@
+id: EX-WRITE_IT-glowhaus-scope-change
+type: WRITE_IT
+title: A second location, same deadline
+skills:
+  - SK-DELIVER-proposal-writing
+  - SK-SELL-negotiation-basics
+instructions: The signed price includes one location, one calendar and two reminder messages. Priya
+  asks to add a second location with separate staff, routing, copy and QA by Friday, “as a small
+  favour.” The current deadline already uses the agreed capacity. Respond in the client thread.
+  Choose the commercial action you are taking and write its boundaries, impact and next step in your
+  own words. Selecting a move does not grade the quality of your writing.
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: complete
+    type: state
+    path: conversation.complete
+    operator: equals
+    value: true
+    description: Finish the client exchange.
+  - id: boundary
+    type: state
+    path: conversation.flags.scope_protected
+    operator: equals
+    value: true
+    description: Make a bounded commercial decision.
+critical_failures:
+  - id: unpaid
+    type: state
+    path: conversation.flags.unpaid_scope
+    operator: equals
+    value: false
+    description: Do not commit unpaid work without a scope tradeoff.
+grading:
+  mode: mixed
+  rubric: DELIVERY_COMMUNICATION_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields: []
+topics:
+  - delivery.change_requests
+  - pricing.scope
+  - pricing.reduce_scope
+  - pricing.negotiation
+  - judgment.scope
+  - judgment.accept_project
+time_category: retrieval
+conversation:
+  client: CL-glowhaus-medspa
+  subject: Can you include our second location?
+  channel: email
+  opening: request
+  composer_help: Write your reply, then identify the action it takes.
+  nodes:
+    - id: request
+      client_message:
+        Could you add the second location by Friday for the same fee? It is just another
+        calendar, surely.
+      moves:
+        - id: hold
+          label: Hold the signed scope
+          kind: answer
+          next: held
+        - id: rescope
+          label: Trade existing deliverables for a revised scope
+          kind: answer
+          next: rescoped
+        - id: reprice
+          label: Quote the added work and revised date
+          kind: answer
+          next: repriced
+        - id: free
+          label: Accept the added work at no cost or tradeoff
+          kind: answer
+          next: unpaid
+      fallback: clarify
+    - id: clarify
+      client_message:
+        I cannot tell what is included or what happens to Friday. Please make the commercial
+        decision clear.
+      moves:
+        - id: clarify
+          label: Clarify the scope decision
+          kind: clarify
+          next: request
+      fallback: request
+    - id: held
+      client_message:
+        All right. Keep Friday to the first location. Send the boundary in writing so my
+        manager understands.
+      flags:
+        - scope_protected
+      covers:
+        - next_step
+      end: true
+    - id: rescoped
+      client_message: Send the revised deliverables and the test coverage before I approve the swap.
+        Nothing is authorised yet.
+      flags:
+        - scope_protected
+      covers:
+        - next_step
+      end: true
+    - id: repriced
+      client_message: Please send the added fee, dependencies and date. I will decide before you begin.
+      flags:
+        - scope_protected
+      covers:
+        - next_step
+      end: true
+    - id: unpaid
+      client_message:
+        Great, I have told both managers everything will be ready Friday for the same fee.
+        They will expect separate routing and full testing.
+      flags:
+        - unpaid_scope
+      end: true

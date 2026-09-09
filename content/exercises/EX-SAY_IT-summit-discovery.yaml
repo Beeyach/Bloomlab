@@ -1,7 +1,7 @@
 id: EX-SAY_IT-summit-discovery
 type: SAY_IT
 title: Discovery call with Marcus
-mode: practice
+mode: pressure
 difficulty: 3
 estimated_minutes: 15
 skills:
@@ -168,12 +168,7 @@ call:
   objective:
     Understand Marcus’s application process and decision constraints. Check agreement on the
     diagnosis before discussing a solution, then agree a next step.
-  anchors:
-    - Process and volume
-    - Pain, impact and urgency
-    - People and tools
-    - Budget and decision
-    - Reflect before proposing
+  anchors: []
   max_turns: 12
   voice_lines:
     opening: greeting-01
@@ -183,3 +178,11 @@ call:
   open_response:
     node: clarify
     question: What would that change in the process we are discussing?
+topics:
+  - selling.discovery
+  - selling.zoom
+  - selling.listening
+  - selling.questions
+  - selling.diagnosis
+  - selling.technical_discovery
+time_category: retrieval
