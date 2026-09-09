@@ -51,6 +51,7 @@ const AREAS: Area[] = [
   { to: '/conversations', label: 'Inbox', icon: IconChat },
   { to: '/reporting', label: 'Reporting', icon: IconReport },
   { to: '/incident', label: 'Incidents', icon: IconIncident },
+  { to: '/clients', label: 'Clients', icon: IconRecords },
   { to: '/portfolio', label: 'Portfolio', icon: IconRecords },
   { to: '/playground', label: 'Playground', icon: IconSandbox },
 ];

@@ -1,3 +1,5 @@
+import { sequenceState } from './sequence';
+import { reviewState, type ReviewResponse } from './review';
 import { completionMissing } from '../fieldwork/proof';
 import type { FieldworkResponse } from '@bloomlab/shared';
 import type { CallResponse } from '@bloomlab/shared';
@@ -26,6 +28,8 @@ import { emptySalesResponse, salesState, type JargonTerm, type SalesResponse } f
  */
 
 export interface LearnerResponse {
+  review?: ReviewResponse;
+  sequence?: string[];
   fieldwork?: FieldworkResponse;
   call?: CallResponse;
   /** Free written work: the reasoning, the diagnosis, the prediction in prose. */
@@ -143,6 +147,8 @@ export function learnerState(
   );
   const negotiation = exercise.call ? null : negotiationOf(exercise, response.negotiation);
   return {
+    sequence: sequenceState(exercise.sequence_steps, response.sequence),
+    review: reviewState(exercise.review_checks, response.review),
     call: response.call?.snapshot?.projection ?? {},
     negotiation:
       negotiation && exercise.negotiation

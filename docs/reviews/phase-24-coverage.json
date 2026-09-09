@@ -1,0 +1,1321 @@
+{
+  "campaign": "CAMP-FIELD_READY",
+  "future_boundaries": [
+    {
+      "territory": "STRATEGIZE",
+      "tier": "practitioner",
+      "topics": [
+        "webinar",
+        "evergreen webinar",
+        "challenge",
+        "workshop",
+        "direct purchase",
+        "checkout",
+        "order bump",
+        "upsell",
+        "downsell",
+        "subscription",
+        "trial",
+        "membership",
+        "course enrollment"
+      ]
+    },
+    {
+      "territory": "STRATEGIZE",
+      "tier": "advanced",
+      "topics": [
+        "multi-funnel architecture",
+        "lifecycle strategy",
+        "retention",
+        "referral",
+        "churn prevention",
+        "experimentation",
+        "advanced diagnosis"
+      ]
+    },
+    {
+      "territory": "STRATEGIZE",
+      "tier": "specialist",
+      "topics": ["complete business-system architecture"]
+    },
+    {
+      "territory": "AUTOMATE",
+      "tier": "advanced",
+      "topics": [
+        "modular automation",
+        "naming",
+        "workflow responsibility",
+        "date logic",
+        "webhooks",
+        "data manipulation",
+        "ecommerce automation",
+        "reliability",
+        "idempotency concepts",
+        "race conditions",
+        "large automation architecture",
+        "custom workflow extensions later"
+      ]
+    }
+  ],
+  "topics": [
+    {
+      "topic": "funnel.customer_journey",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.funnel_purpose",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.traffic_intent",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.offer",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.friction",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.cta",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.conversion",
+      "units": ["LU-customer-path", "LU-funnel-math-basics"],
+      "exercises": [
+        "EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic",
+        "EX-WHAT_WOULD_YOU_BUILD-channel-decisions"
+      ]
+    },
+    {
+      "topic": "funnel.funnel_math",
+      "units": ["LU-funnel-math-basics"],
+      "exercises": ["EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic"]
+    },
+    {
+      "topic": "funnel.bottleneck",
+      "units": ["LU-funnel-math-basics"],
+      "exercises": ["EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic"]
+    },
+    {
+      "topic": "funnel.awareness",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.traffic_source",
+      "units": ["LU-customer-path"],
+      "exercises": [
+        "EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic",
+        "EX-WHAT_WOULD_YOU_BUILD-channel-decisions"
+      ]
+    },
+    {
+      "topic": "funnel.trust",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.qualification",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.cpl",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.booking_rate",
+      "units": ["LU-funnel-math-basics"],
+      "exercises": ["EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic"]
+    },
+    {
+      "topic": "funnel.show_rate",
+      "units": ["LU-funnel-math-basics"],
+      "exercises": ["EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic"]
+    },
+    {
+      "topic": "funnel.close_rate",
+      "units": ["LU-funnel-math-basics"],
+      "exercises": ["EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic"]
+    },
+    {
+      "topic": "funnel.cac",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.aov",
+      "units": ["LU-funnel-math-basics"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "funnel.ltv",
+      "units": ["LU-customer-path"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-channel-decisions"]
+    },
+    {
+      "topic": "families.lead_capture",
+      "units": ["LU-funnel-families"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-eleven-paths"]
+    },
+    {
+      "topic": "families.lead_magnet",
+      "units": ["LU-funnel-families"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-eleven-paths"]
+    },
+    {
+      "topic": "families.consultation",
+      "units": ["LU-funnel-families"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-eleven-paths"]
+    },
+    {
+      "topic": "families.appointment",
+      "units": ["LU-funnel-families"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-eleven-paths"]
+    },
+    {
+      "topic": "families.quote_request",
+      "units": ["LU-funnel-families"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-eleven-paths"]
+    },
+    {
+      "topic": "families.application",
+      "units": ["LU-funnel-families"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-eleven-paths"]
+    },
+    {
+      "topic": "families.assessment",
+      "units": ["LU-funnel-families"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-eleven-paths"]
+    },
+    {
+      "topic": "families.vsl_to_call",
+      "units": ["LU-funnel-families"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-eleven-paths"]
+    },
+    {
+      "topic": "families.content_to_booking",
+      "units": ["LU-funnel-families"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-eleven-paths"]
+    },
+    {
+      "topic": "families.service_inquiry",
+      "units": ["LU-funnel-families"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-eleven-paths"]
+    },
+    {
+      "topic": "families.reactivation",
+      "units": ["LU-funnel-families"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-reactivation-segment",
+        "EX-BUILD_IT-reactivation-trial",
+        "EX-WHAT_WOULD_YOU_BUILD-eleven-paths"
+      ]
+    },
+    {
+      "topic": "lead.capture",
+      "units": ["LU-lead-system"],
+      "exercises": [
+        "EX-FIELDWORK-field-ready-core",
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application"
+      ]
+    },
+    {
+      "topic": "lead.forms",
+      "units": ["LU-lead-system"],
+      "exercises": [
+        "EX-FIELDWORK-field-ready-core",
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application"
+      ]
+    },
+    {
+      "topic": "lead.confirmation",
+      "units": ["LU-lead-system"],
+      "exercises": ["EX-BUILD_IT-lead-handover", "EX-FIELDWORK-field-ready-core"]
+    },
+    {
+      "topic": "lead.follow_up",
+      "units": ["LU-lead-system"],
+      "exercises": ["EX-BUILD_IT-lead-handover", "EX-FIELDWORK-field-ready-core"]
+    },
+    {
+      "topic": "lead.crm_capture",
+      "units": ["LU-lead-system"],
+      "exercises": ["EX-BUILD_IT-lead-handover", "EX-FIELDWORK-field-ready-core"]
+    },
+    {
+      "topic": "lead.pipeline",
+      "units": ["LU-lead-system"],
+      "exercises": ["EX-BUILD_IT-lead-handover", "EX-FIELDWORK-field-ready-core"]
+    },
+    {
+      "topic": "lead.next_action",
+      "units": ["LU-lead-system"],
+      "exercises": ["EX-BUILD_IT-lead-handover", "EX-FIELDWORK-field-ready-core"]
+    },
+    {
+      "topic": "data.contacts",
+      "units": ["LU-data-model"],
+      "exercises": ["EX-ARCHITECTURE_DECISION-veterinary-records"]
+    },
+    {
+      "topic": "data.tags",
+      "units": ["LU-data-model", "LU-tags-vs-custom-fields"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-treatment-interest",
+        "EX-ARCHITECTURE_DECISION-veterinary-records"
+      ]
+    },
+    {
+      "topic": "data.custom_fields",
+      "units": ["LU-data-model", "LU-tags-vs-custom-fields"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-treatment-interest",
+        "EX-ARCHITECTURE_DECISION-veterinary-records"
+      ]
+    },
+    {
+      "topic": "data.custom_values",
+      "units": ["LU-data-model", "LU-tags-vs-custom-fields"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-treatment-interest",
+        "EX-ARCHITECTURE_DECISION-veterinary-records"
+      ]
+    },
+    {
+      "topic": "data.opportunities",
+      "units": ["LU-data-model", "LU-tags-vs-custom-fields"],
+      "exercises": ["EX-ARCHITECTURE_DECISION-veterinary-records"]
+    },
+    {
+      "topic": "data.pipelines",
+      "units": ["LU-data-model"],
+      "exercises": ["EX-ARCHITECTURE_DECISION-veterinary-records"]
+    },
+    {
+      "topic": "data.assignments",
+      "units": ["LU-data-model"],
+      "exercises": ["EX-ARCHITECTURE_DECISION-veterinary-records"]
+    },
+    {
+      "topic": "data.architecture",
+      "units": ["LU-data-model", "LU-tags-vs-custom-fields"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-boss-scope",
+        "EX-ARCHITECTURE_DECISION-treatment-interest",
+        "EX-ARCHITECTURE_DECISION-veterinary-records"
+      ]
+    },
+    {
+      "topic": "data.smart_lists",
+      "units": ["LU-data-model"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-reactivation-segment",
+        "EX-ARCHITECTURE_DECISION-veterinary-records",
+        "EX-FIELDWORK-field-ready-core"
+      ]
+    },
+    {
+      "topic": "data.companies",
+      "units": ["LU-data-model"],
+      "exercises": ["EX-ARCHITECTURE_DECISION-veterinary-records"]
+    },
+    {
+      "topic": "data.modeling",
+      "units": ["LU-data-model"],
+      "exercises": ["EX-ARCHITECTURE_DECISION-veterinary-records"]
+    },
+    {
+      "topic": "workflow.foundations",
+      "units": ["LU-workflow-contracts", "LU-workflow-foundations"],
+      "exercises": ["EX-BUILD_IT-no-show-recovery", "EX-RUN_THE_LEAD-booking-confirmation"]
+    },
+    {
+      "topic": "workflow.triggers",
+      "units": ["LU-workflow-contracts", "LU-workflow-foundations"],
+      "exercises": ["EX-BUILD_IT-no-show-recovery", "EX-RUN_THE_LEAD-booking-confirmation"]
+    },
+    {
+      "topic": "workflow.filters",
+      "units": ["LU-workflow-contracts", "LU-workflow-foundations"],
+      "exercises": ["EX-BUILD_IT-no-show-recovery", "EX-RUN_THE_LEAD-booking-confirmation"]
+    },
+    {
+      "topic": "workflow.actions",
+      "units": ["LU-workflow-contracts", "LU-workflow-foundations"],
+      "exercises": ["EX-BUILD_IT-no-show-recovery", "EX-RUN_THE_LEAD-booking-confirmation"]
+    },
+    {
+      "topic": "workflow.waits",
+      "units": ["LU-workflow-contracts", "LU-workflow-foundations"],
+      "exercises": ["EX-BUILD_IT-no-show-recovery", "EX-REBUILD_BLIND-appointment-reminders"]
+    },
+    {
+      "topic": "workflow.branching",
+      "units": ["LU-workflow-contracts", "LU-workflow-foundations"],
+      "exercises": ["EX-BUILD_IT-no-show-recovery", "EX-REBUILD_BLIND-appointment-reminders"]
+    },
+    {
+      "topic": "workflow.reentry",
+      "units": ["LU-workflow-contracts"],
+      "exercises": ["EX-BUILD_IT-reactivation-trial", "EX-FIX_IT-double-reminder"]
+    },
+    {
+      "topic": "workflow.timing",
+      "units": ["LU-workflow-contracts"],
+      "exercises": ["EX-BUILD_IT-no-show-recovery", "EX-REBUILD_BLIND-appointment-reminders"]
+    },
+    {
+      "topic": "workflow.communications",
+      "units": ["LU-workflow-contracts", "LU-workflow-foundations"],
+      "exercises": [
+        "EX-BUILD_IT-reactivation-trial",
+        "EX-FIX_IT-double-reminder",
+        "EX-RUN_THE_LEAD-booking-confirmation"
+      ]
+    },
+    {
+      "topic": "workflow.pipeline_automation",
+      "units": ["LU-workflow-contracts"],
+      "exercises": ["EX-BUILD_IT-no-show-recovery"]
+    },
+    {
+      "topic": "workflow.common_systems",
+      "units": ["LU-workflow-contracts"],
+      "exercises": [
+        "EX-BUILD_IT-no-show-recovery",
+        "EX-BUILD_IT-reactivation-trial",
+        "EX-FIX_IT-double-reminder",
+        "EX-REBUILD_BLIND-appointment-reminders"
+      ]
+    },
+    {
+      "topic": "booking.forms",
+      "units": ["LU-booking-qualification"],
+      "exercises": [
+        "EX-FIELDWORK-field-ready-core",
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application"
+      ]
+    },
+    {
+      "topic": "booking.surveys",
+      "units": ["LU-booking-qualification"],
+      "exercises": [
+        "EX-FIELDWORK-field-ready-core",
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application"
+      ]
+    },
+    {
+      "topic": "booking.qualification",
+      "units": ["LU-booking-qualification"],
+      "exercises": [
+        "EX-FIELDWORK-field-ready-core",
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application"
+      ]
+    },
+    {
+      "topic": "booking.calendars",
+      "units": ["LU-booking-qualification"],
+      "exercises": [
+        "EX-BUILD_IT-consultation-capacity",
+        "EX-FIELDWORK-field-ready-core",
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application"
+      ]
+    },
+    {
+      "topic": "booking.routing",
+      "units": ["LU-booking-qualification"],
+      "exercises": ["EX-BUILD_IT-consultation-capacity", "EX-FIELDWORK-field-ready-core"]
+    },
+    {
+      "topic": "booking.reminders",
+      "units": ["LU-booking-qualification"],
+      "exercises": ["EX-FIELDWORK-field-ready-core"]
+    },
+    {
+      "topic": "booking.cancellations",
+      "units": ["LU-booking-qualification"],
+      "exercises": ["EX-BUILD_IT-consultation-capacity", "EX-FIELDWORK-field-ready-core"]
+    },
+    {
+      "topic": "booking.reschedules",
+      "units": ["LU-booking-qualification"],
+      "exercises": ["EX-BUILD_IT-consultation-capacity", "EX-FIELDWORK-field-ready-core"]
+    },
+    {
+      "topic": "booking.no_shows",
+      "units": ["LU-booking-qualification"],
+      "exercises": ["EX-FIELDWORK-field-ready-core"]
+    },
+    {
+      "topic": "conversion.hierarchy",
+      "units": ["LU-conversion-copy"],
+      "exercises": [
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application",
+        "EX-WRITE_IT-consultation-copy"
+      ]
+    },
+    {
+      "topic": "conversion.message_match",
+      "units": ["LU-conversion-copy"],
+      "exercises": ["EX-WRITE_IT-consultation-copy"]
+    },
+    {
+      "topic": "conversion.cta_placement",
+      "units": ["LU-conversion-copy"],
+      "exercises": [
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application",
+        "EX-WRITE_IT-consultation-copy"
+      ]
+    },
+    {
+      "topic": "conversion.copy",
+      "units": ["LU-conversion-copy"],
+      "exercises": ["EX-WRITE_IT-consultation-copy"]
+    },
+    {
+      "topic": "conversion.proof",
+      "units": ["LU-conversion-copy"],
+      "exercises": [
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application",
+        "EX-WRITE_IT-consultation-copy"
+      ]
+    },
+    {
+      "topic": "conversion.qualification_friction",
+      "units": ["LU-conversion-copy"],
+      "exercises": [
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application",
+        "EX-WRITE_IT-consultation-copy"
+      ]
+    },
+    {
+      "topic": "conversion.mobile",
+      "units": ["LU-conversion-copy"],
+      "exercises": [
+        "EX-FIELDWORK-field-ready-core",
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application",
+        "EX-WRITE_IT-consultation-copy"
+      ]
+    },
+    {
+      "topic": "conversion.funnel_builder",
+      "units": ["LU-conversion-copy"],
+      "exercises": [
+        "EX-FIELDWORK-field-ready-core",
+        "EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel",
+        "EX-FUNNEL_ASSEMBLY-summit-application"
+      ]
+    },
+    {
+      "topic": "conversion.websites",
+      "units": ["LU-conversion-copy"],
+      "exercises": ["EX-FIELDWORK-field-ready-core"]
+    },
+    {
+      "topic": "conversion.payments",
+      "units": ["LU-conversion-copy"],
+      "exercises": ["EX-FIELDWORK-field-ready-core", "EX-WRITE_IT-consultation-copy"]
+    },
+    {
+      "topic": "diagnosis.workflow",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-FIX_IT-double-reminder"]
+    },
+    {
+      "topic": "diagnosis.funnel",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic"]
+    },
+    {
+      "topic": "diagnosis.logs",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-FIX_IT-double-reminder", "EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "diagnosis.edge_cases",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "diagnosis.metrics",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": [
+        "EX-FIX_IT-glowhaus-reporting-bottleneck",
+        "EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic"
+      ]
+    },
+    {
+      "topic": "diagnosis.qa",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "diagnosis.bottleneck",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": [
+        "EX-FIX_IT-glowhaus-reporting-bottleneck",
+        "EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic"
+      ]
+    },
+    {
+      "topic": "diagnosis.deliverability",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "diagnosis.sms_reliability",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "diagnosis.analytics",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": [
+        "EX-FIX_IT-glowhaus-reporting-bottleneck",
+        "EX-WRITE_IT-glowhaus-reporting-review"
+      ]
+    },
+    {
+      "topic": "diagnosis.experimentation",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release", "EX-WRITE_IT-glowhaus-reporting-review"]
+    },
+    {
+      "topic": "qa.pages",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.forms",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.links",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.validation",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.field_mapping",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.workflow_entry",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": [
+        "EX-WHAT_WOULD_YOU_BUILD-qa-release",
+        "EX-WHAT_WOULD_YOU_BUILD-second-location-qa"
+      ]
+    },
+    {
+      "topic": "qa.workflow_exit",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.sms",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.email",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.calendar",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": [
+        "EX-WHAT_WOULD_YOU_BUILD-qa-release",
+        "EX-WHAT_WOULD_YOU_BUILD-second-location-qa"
+      ]
+    },
+    {
+      "topic": "qa.cancellation",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.reschedule",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": [
+        "EX-WHAT_WOULD_YOU_BUILD-qa-release",
+        "EX-WHAT_WOULD_YOU_BUILD-second-location-qa"
+      ]
+    },
+    {
+      "topic": "qa.pipeline",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.payments",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.tracking",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.desktop",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.tablet",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.mobile",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "qa.edge_cases",
+      "units": ["LU-diagnosis-qa"],
+      "exercises": ["EX-WHAT_WOULD_YOU_BUILD-qa-release"]
+    },
+    {
+      "topic": "prospecting.icp",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": ["EX-PROSPECT_IT-three-businesses"]
+    },
+    {
+      "topic": "prospecting.selection",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": ["EX-PROSPECT_IT-three-businesses"]
+    },
+    {
+      "topic": "prospecting.evidence",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": ["EX-AUDIT_IT-glowhaus-boss", "EX-AUDIT_IT-northwind-outside-in"]
+    },
+    {
+      "topic": "prospecting.research",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": [
+        "EX-AUDIT_IT-glowhaus-boss",
+        "EX-AUDIT_IT-northwind-outside-in",
+        "EX-PROSPECT_IT-three-businesses"
+      ]
+    },
+    {
+      "topic": "prospecting.outreach",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": ["EX-WRITE_IT-northwind-cold-email", "EX-WRITE_IT-northwind-interested-reply"]
+    },
+    {
+      "topic": "prospecting.cold_email",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": ["EX-WRITE_IT-northwind-cold-email"]
+    },
+    {
+      "topic": "prospecting.follow_up",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": [
+        "EX-WRITE_IT-northwind-cold-email",
+        "EX-WRITE_IT-ridgeline-breakup",
+        "EX-WRITE_IT-social-outreach"
+      ]
+    },
+    {
+      "topic": "prospecting.audit_quality",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": ["EX-AUDIT_IT-glowhaus-boss", "EX-AUDIT_IT-northwind-outside-in"]
+    },
+    {
+      "topic": "prospecting.social_outreach",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": ["EX-WRITE_IT-social-outreach"]
+    },
+    {
+      "topic": "prospecting.qualification",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": ["EX-PROSPECT_IT-three-businesses", "EX-WRITE_IT-northwind-interested-reply"]
+    },
+    {
+      "topic": "selling.cold_calls",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": ["EX-SAY_IT-northwind-cold-call"]
+    },
+    {
+      "topic": "selling.discovery",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": ["EX-SAY_IT-summit-discovery", "EX-WRITE_IT-glowhaus-boss-discovery"]
+    },
+    {
+      "topic": "selling.zoom",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": ["EX-SAY_IT-summit-discovery"]
+    },
+    {
+      "topic": "selling.listening",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": [
+        "EX-SAY_IT-northwind-cold-call",
+        "EX-SAY_IT-summit-discovery",
+        "EX-WRITE_IT-glowhaus-boss-discovery"
+      ]
+    },
+    {
+      "topic": "selling.questions",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": ["EX-SAY_IT-northwind-cold-call", "EX-SAY_IT-summit-discovery"]
+    },
+    {
+      "topic": "selling.diagnosis",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": ["EX-SAY_IT-summit-discovery"]
+    },
+    {
+      "topic": "selling.explanation",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-capstone-defense",
+        "EX-EXPLAIN_IT-no-show-system",
+        "EX-SAY_IT-glowhaus-client-explanation"
+      ]
+    },
+    {
+      "topic": "selling.outcomes",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": ["EX-EXPLAIN_IT-no-show-system", "EX-SAY_IT-glowhaus-client-explanation"]
+    },
+    {
+      "topic": "selling.technical_discovery",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": ["EX-SAY_IT-summit-discovery", "EX-WRITE_IT-glowhaus-boss-discovery"]
+    },
+    {
+      "topic": "selling.presentation",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": ["EX-SAY_IT-glowhaus-client-explanation", "EX-SAY_IT-summit-proposal"]
+    },
+    {
+      "topic": "selling.client_language",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": [
+        "EX-EXPLAIN_IT-no-show-system",
+        "EX-SAY_IT-glowhaus-client-explanation",
+        "EX-WRITE_IT-glowhaus-reporting-review"
+      ]
+    },
+    {
+      "topic": "selling.closing",
+      "units": ["LU-discovery-and-explanation"],
+      "exercises": ["EX-SAY_IT-summit-proposal"]
+    },
+    {
+      "topic": "pricing.scope",
+      "units": ["LU-price-and-boundaries"],
+      "exercises": [
+        "EX-PRICE_IT-glowhaus-two-locations",
+        "EX-PRICE_IT-summit-application-funnel",
+        "EX-WRITE_IT-glowhaus-scope-change"
+      ]
+    },
+    {
+      "topic": "pricing.fixed",
+      "units": ["LU-price-and-boundaries"],
+      "exercises": ["EX-PRICE_IT-glowhaus-two-locations", "EX-PRICE_IT-summit-application-funnel"]
+    },
+    {
+      "topic": "pricing.recurring",
+      "units": ["LU-price-and-boundaries"],
+      "exercises": ["EX-PRICE_IT-glowhaus-two-locations", "EX-PRICE_IT-summit-application-funnel"]
+    },
+    {
+      "topic": "pricing.deposit",
+      "units": ["LU-price-and-boundaries"],
+      "exercises": ["EX-PRICE_IT-glowhaus-two-locations", "EX-PRICE_IT-summit-application-funnel"]
+    },
+    {
+      "topic": "pricing.revisions",
+      "units": ["LU-price-and-boundaries"],
+      "exercises": ["EX-PRICE_IT-glowhaus-two-locations", "EX-PRICE_IT-summit-application-funnel"]
+    },
+    {
+      "topic": "pricing.exclusions",
+      "units": ["LU-price-and-boundaries"],
+      "exercises": ["EX-PRICE_IT-glowhaus-two-locations", "EX-PRICE_IT-summit-application-funnel"]
+    },
+    {
+      "topic": "pricing.risk",
+      "units": ["LU-price-and-boundaries"],
+      "exercises": ["EX-PRICE_IT-glowhaus-two-locations", "EX-PRICE_IT-summit-application-funnel"]
+    },
+    {
+      "topic": "pricing.negotiation",
+      "units": ["LU-price-and-boundaries"],
+      "exercises": [
+        "EX-NEGOTIATE_IT-glowhaus-boss",
+        "EX-NEGOTIATE_IT-summit-freelancer-quote",
+        "EX-WRITE_IT-glowhaus-scope-change"
+      ]
+    },
+    {
+      "topic": "pricing.reduce_scope",
+      "units": ["LU-price-and-boundaries"],
+      "exercises": [
+        "EX-NEGOTIATE_IT-glowhaus-boss",
+        "EX-NEGOTIATE_IT-summit-freelancer-quote",
+        "EX-WRITE_IT-glowhaus-scope-change"
+      ]
+    },
+    {
+      "topic": "pricing.walk_away",
+      "units": ["LU-price-and-boundaries"],
+      "exercises": ["EX-NEGOTIATE_IT-glowhaus-boss", "EX-NEGOTIATE_IT-summit-freelancer-quote"]
+    },
+    {
+      "topic": "delivery.proposal",
+      "units": ["LU-bounded-delivery"],
+      "exercises": ["EX-WRITE_IT-glowhaus-boss-proposal", "EX-WRITE_IT-summit-proposal"]
+    },
+    {
+      "topic": "delivery.acceptance",
+      "units": ["LU-bounded-delivery"],
+      "exercises": [
+        "EX-WRITE_IT-glowhaus-boss-proposal",
+        "EX-WRITE_IT-glowhaus-onboarding",
+        "EX-WRITE_IT-summit-proposal"
+      ]
+    },
+    {
+      "topic": "delivery.onboarding",
+      "units": ["LU-bounded-delivery"],
+      "exercises": ["EX-WRITE_IT-glowhaus-onboarding"]
+    },
+    {
+      "topic": "delivery.build_order",
+      "units": ["LU-bounded-delivery"],
+      "exercises": ["EX-ARCHITECTURE_DECISION-delivery-sequence"]
+    },
+    {
+      "topic": "delivery.updates",
+      "units": ["LU-bounded-delivery"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-delivery-sequence",
+        "EX-WRITE_IT-glowhaus-build-week",
+        "EX-WRITE_IT-glowhaus-handoff",
+        "EX-WRITE_IT-glowhaus-slipped-date"
+      ]
+    },
+    {
+      "topic": "delivery.qa",
+      "units": ["LU-bounded-delivery"],
+      "exercises": ["EX-WRITE_IT-glowhaus-handoff"]
+    },
+    {
+      "topic": "delivery.handoff",
+      "units": ["LU-bounded-delivery"],
+      "exercises": ["EX-WRITE_IT-glowhaus-handoff"]
+    },
+    {
+      "topic": "delivery.change_requests",
+      "units": ["LU-bounded-delivery"],
+      "exercises": ["EX-WRITE_IT-glowhaus-scope-change"]
+    },
+    {
+      "topic": "bloomwired.icp",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": ["EX-PROSPECT_IT-three-businesses"]
+    },
+    {
+      "topic": "bloomwired.positioning",
+      "units": ["LU-bloomwired-prospecting", "LU-price-and-boundaries"],
+      "exercises": ["EX-WRITE_IT-northwind-cold-email"]
+    },
+    {
+      "topic": "bloomwired.pricing",
+      "units": ["LU-price-and-boundaries"],
+      "exercises": ["EX-PRICE_IT-glowhaus-two-locations"]
+    },
+    {
+      "topic": "bloomwired.audits",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": ["EX-AUDIT_IT-glowhaus-boss", "EX-AUDIT_IT-northwind-outside-in"]
+    },
+    {
+      "topic": "bloomwired.outreach",
+      "units": ["LU-bloomwired-prospecting"],
+      "exercises": ["EX-WRITE_IT-northwind-cold-email", "EX-WRITE_IT-social-outreach"]
+    },
+    {
+      "topic": "bloomwired.proposals",
+      "units": ["LU-bounded-delivery"],
+      "exercises": ["EX-WRITE_IT-glowhaus-boss-proposal", "EX-WRITE_IT-summit-proposal"]
+    },
+    {
+      "topic": "judgment.funnel_needed",
+      "units": ["LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-WHAT_WOULD_YOU_BUILD-channel-decisions"
+      ]
+    },
+    {
+      "topic": "judgment.automation_needed",
+      "units": ["LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-WHAT_WOULD_YOU_BUILD-channel-decisions"
+      ]
+    },
+    {
+      "topic": "judgment.ghl_appropriate",
+      "units": ["LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-ARCHITECTURE_DECISION-veterinary-records",
+        "EX-WHAT_WOULD_YOU_BUILD-channel-decisions"
+      ]
+    },
+    {
+      "topic": "judgment.data_choice",
+      "units": ["LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-ARCHITECTURE_DECISION-veterinary-records"
+      ]
+    },
+    {
+      "topic": "judgment.custom_code",
+      "units": ["LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-ARCHITECTURE_DECISION-veterinary-records",
+        "EX-WHAT_WOULD_YOU_BUILD-channel-decisions"
+      ]
+    },
+    {
+      "topic": "judgment.contact_prospect",
+      "units": ["LU-bloomwired-prospecting", "LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-ARCHITECTURE_DECISION-reactivation-segment",
+        "EX-PROSPECT_IT-three-businesses"
+      ]
+    },
+    {
+      "topic": "judgment.audit_evidence",
+      "units": ["LU-bloomwired-prospecting", "LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-AUDIT_IT-glowhaus-boss",
+        "EX-AUDIT_IT-northwind-outside-in"
+      ]
+    },
+    {
+      "topic": "judgment.accept_project",
+      "units": ["LU-bounded-delivery", "LU-price-and-boundaries", "LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-NEGOTIATE_IT-glowhaus-boss",
+        "EX-NEGOTIATE_IT-summit-freelancer-quote",
+        "EX-WHAT_WOULD_YOU_BUILD-channel-decisions",
+        "EX-WRITE_IT-glowhaus-scope-change"
+      ]
+    },
+    {
+      "topic": "judgment.scope",
+      "units": ["LU-bounded-delivery", "LU-price-and-boundaries", "LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-boss-scope",
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-PRICE_IT-glowhaus-two-locations",
+        "EX-WRITE_IT-glowhaus-scope-change"
+      ]
+    },
+    {
+      "topic": "judgment.price",
+      "units": ["LU-price-and-boundaries", "LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-NEGOTIATE_IT-glowhaus-boss",
+        "EX-NEGOTIATE_IT-summit-freelancer-quote",
+        "EX-PRICE_IT-glowhaus-two-locations"
+      ]
+    },
+    {
+      "topic": "judgment.complexity",
+      "units": ["LU-bounded-delivery", "LU-price-and-boundaries", "LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-boss-scope",
+        "EX-ARCHITECTURE_DECISION-delivery-sequence",
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-ARCHITECTURE_DECISION-veterinary-records",
+        "EX-PRICE_IT-glowhaus-two-locations"
+      ]
+    },
+    {
+      "topic": "judgment.uncertainty",
+      "units": ["LU-bloomwired-prospecting", "LU-price-and-boundaries", "LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-capstone-defense",
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-ARCHITECTURE_DECISION-veterinary-records",
+        "EX-AUDIT_IT-glowhaus-boss",
+        "EX-AUDIT_IT-northwind-outside-in",
+        "EX-WHAT_WOULD_YOU_BUILD-channel-decisions",
+        "EX-WHAT_WOULD_YOU_BUILD-qa-release"
+      ]
+    },
+    {
+      "topic": "judgment.what_breaks",
+      "units": ["LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-WHAT_WOULD_YOU_BUILD-qa-release"
+      ]
+    },
+    {
+      "topic": "judgment.missing_verification",
+      "units": ["LU-bloomwired-prospecting", "LU-bounded-delivery", "LU-professional-judgment"],
+      "exercises": [
+        "EX-ARCHITECTURE_DECISION-capstone-defense",
+        "EX-ARCHITECTURE_DECISION-delivery-sequence",
+        "EX-ARCHITECTURE_DECISION-professional-judgment",
+        "EX-ARCHITECTURE_DECISION-veterinary-records",
+        "EX-AUDIT_IT-glowhaus-boss",
+        "EX-AUDIT_IT-northwind-outside-in",
+        "EX-WHAT_WOULD_YOU_BUILD-channel-decisions",
+        "EX-WHAT_WOULD_YOU_BUILD-qa-release"
+      ]
+    }
+  ],
+  "missing_topics": [],
+  "identities": [
+    {
+      "skill": "SK-ARCHITECT-custom-values",
+      "identities": ["Technical GHL Specialist"]
+    },
+    {
+      "skill": "SK-ARCHITECT-pipeline-design",
+      "identities": ["Technical GHL Specialist"]
+    },
+    {
+      "skill": "SK-ARCHITECT-tags-vs-custom-fields",
+      "identities": ["Technical GHL Specialist"]
+    },
+    {
+      "skill": "SK-AUTOMATE-appointment-reminders",
+      "identities": ["GHL Systems Builder", "Technical GHL Specialist"]
+    },
+    {
+      "skill": "SK-AUTOMATE-no-show-recovery",
+      "identities": ["GHL Systems Builder", "Technical GHL Specialist"]
+    },
+    {
+      "skill": "SK-AUTOMATE-reentry-and-duplicates",
+      "identities": ["GHL Systems Builder", "Technical GHL Specialist"]
+    },
+    {
+      "skill": "SK-AUTOMATE-workflow-foundations",
+      "identities": ["GHL Systems Builder", "Technical GHL Specialist"]
+    },
+    {
+      "skill": "SK-BUILD-consultation-calendar",
+      "identities": ["GHL Systems Builder", "Funnel Strategist"]
+    },
+    {
+      "skill": "SK-BUILD-conversion-copy",
+      "identities": ["GHL Systems Builder", "Funnel Strategist"]
+    },
+    {
+      "skill": "SK-BUILD-lead-capture-form",
+      "identities": ["GHL Systems Builder", "Funnel Strategist"]
+    },
+    {
+      "skill": "SK-CONNECT-webhook-payloads",
+      "identities": ["Technical GHL Specialist", "GHL Systems Builder"]
+    },
+    {
+      "skill": "SK-DELIVER-client-explanation",
+      "identities": ["GHL Systems Builder", "Conversion & Sales Operator"]
+    },
+    {
+      "skill": "SK-DELIVER-proposal-writing",
+      "identities": ["GHL Systems Builder", "Conversion & Sales Operator"]
+    },
+    {
+      "skill": "SK-DIAGNOSE-workflow-troubleshooting",
+      "identities": ["Technical GHL Specialist"]
+    },
+    {
+      "skill": "SK-JUDGMENT-automation-appropriateness",
+      "identities": ["Funnel Strategist", "Technical GHL Specialist"]
+    },
+    {
+      "skill": "SK-SCALE-snapshot-portability",
+      "identities": ["Technical GHL Specialist", "GHL Systems Builder"]
+    },
+    {
+      "skill": "SK-SELL-discovery-call",
+      "identities": ["Conversion & Sales Operator"]
+    },
+    {
+      "skill": "SK-SELL-evidence-based-audit",
+      "identities": ["Conversion & Sales Operator"]
+    },
+    {
+      "skill": "SK-SELL-negotiation-basics",
+      "identities": ["Conversion & Sales Operator"]
+    },
+    {
+      "skill": "SK-SELL-project-pricing",
+      "identities": ["Conversion & Sales Operator"]
+    },
+    {
+      "skill": "SK-SELL-prospect-selection",
+      "identities": ["Conversion & Sales Operator"]
+    },
+    {
+      "skill": "SK-SELL-written-prospect-response",
+      "identities": ["Conversion & Sales Operator"]
+    },
+    {
+      "skill": "SK-STRATEGIZE-bottleneck-diagnosis",
+      "identities": ["Funnel Strategist"]
+    },
+    {
+      "skill": "SK-STRATEGIZE-funnel-math",
+      "identities": ["Funnel Strategist"]
+    }
+  ],
+  "missing_identities": [],
+  "missing_practical": [],
+  "minutes": {
+    "instruction": 470,
+    "practical": 1392,
+    "retrieval": 522
+  },
+  "ratio": {
+    "instruction": 19.71476510067114,
+    "practical": 58.38926174496645,
+    "retrieval": 21.895973154362416
+  },
+  "ratio_tolerance_percentage_points": 10,
+  "ratio_passes": true,
+  "scenarios": [
+    {
+      "id": "SC-glowhaus-calendar",
+      "client": "CL-glowhaus-medspa",
+      "industry": "med_spa",
+      "bloomwired": true
+    },
+    {
+      "id": "SC-glowhaus-crm",
+      "client": "CL-glowhaus-medspa",
+      "industry": "med_spa",
+      "bloomwired": true
+    },
+    {
+      "id": "SC-glowhaus-double-reminder",
+      "client": "CL-glowhaus-medspa",
+      "industry": "med_spa",
+      "bloomwired": true
+    },
+    {
+      "id": "SC-glowhaus-funnel",
+      "client": "CL-glowhaus-medspa",
+      "industry": "med_spa",
+      "bloomwired": true
+    },
+    {
+      "id": "SC-glowhaus-no-show",
+      "client": "CL-glowhaus-medspa",
+      "industry": "med_spa",
+      "bloomwired": true
+    },
+    {
+      "id": "SC-glowhaus-reactivation",
+      "client": "CL-glowhaus-medspa",
+      "industry": "med_spa",
+      "bloomwired": true
+    },
+    {
+      "id": "SC-glowhaus-reporting",
+      "client": "CL-glowhaus-medspa",
+      "industry": "med_spa",
+      "bloomwired": true
+    },
+    {
+      "id": "SC-glowhaus-two-locations",
+      "client": "CL-glowhaus-medspa",
+      "industry": "med_spa",
+      "bloomwired": true
+    },
+    {
+      "id": "SC-northwind-audit",
+      "client": "CL-northwind-hvac",
+      "industry": "hvac",
+      "bloomwired": true
+    },
+    {
+      "id": "SC-summit-application-build",
+      "client": "CL-summit-coaching",
+      "industry": "coach",
+      "bloomwired": true
+    },
+    {
+      "id": "SC-summit-discovery",
+      "client": "CL-summit-coaching",
+      "industry": "coach",
+      "bloomwired": true
+    }
+  ],
+  "bloomwired_percent": 100,
+  "bloomwired_passes": true,
+  "exercise_families": [
+    "ARCHITECTURE_DECISION",
+    "AUDIT_IT",
+    "BUILD_IT",
+    "EDGE_CASE",
+    "EXPLAIN_IT",
+    "FIELDWORK",
+    "FIX_IT",
+    "FUNNEL_ASSEMBLY",
+    "FUNNEL_AUTOPSY",
+    "NEGOTIATE_IT",
+    "PRICE_IT",
+    "PROSPECT_IT",
+    "REBUILD_BLIND",
+    "RUN_THE_LEAD",
+    "SAY_IT",
+    "WHAT_WOULD_YOU_BUILD",
+    "WRITE_IT"
+  ]
+}

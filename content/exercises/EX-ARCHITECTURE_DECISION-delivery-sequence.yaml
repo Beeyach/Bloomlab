@@ -1,0 +1,102 @@
+id: EX-ARCHITECTURE_DECISION-delivery-sequence
+type: ARCHITECTURE_DECISION
+title: Plan the build around its dependencies
+skills:
+  - SK-DELIVER-proposal-writing
+  - SK-JUDGMENT-automation-appropriateness
+instructions: Glowhaus wants to design pages first while its manager is still deciding how locations
+  and opportunities work. You have one builder and a ten-day window. Arrange the eight deliverables
+  into a releasable dependency plan. Explain what can be researched in parallel and which build
+  decisions must wait. The final QA stage is the release test; small tests still belong throughout
+  the build.
+mode: independent
+difficulty: 3
+estimated_minutes: 35
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: ordered
+    type: state
+    path: sequence.valid
+    operator: equals
+    value: true
+    description: Order the work by its dependencies.
+  - id: reasoned
+    type: state
+    path: written.dependencies_answered
+    operator: equals
+    value: true
+    description: Explain the dependency decisions.
+  - id: blocked
+    type: state
+    path: written.blocked_input_answered
+    operator: equals
+    value: true
+    description: Plan around the missing input.
+critical_failures:
+  - id: dependencies
+    type: state
+    path: sequence.valid
+    operator: equals
+    value: true
+    description: Do not build downstream deliverables before their prerequisites.
+grading:
+  mode: mixed
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: dependencies
+    label: Why this plan
+    help: Explain the dependencies that would make the proposed pages-first plan cause rework.
+    rows: 4
+  - key: blocked_input
+    label: An input arrives late
+    help:
+      The calendar owner is unavailable for two days. What can proceed, what pauses, and what date
+      will you communicate?
+    rows: 4
+topics:
+  - delivery.build_order
+  - delivery.updates
+  - judgment.complexity
+  - judgment.missing_verification
+sequence_steps:
+  - key: funnel
+    label: Funnel
+    brief: Connect the approved capture and automation to a coherent customer path.
+    depends_on:
+      - workflows
+  - key: forms
+    label: Forms
+    brief: Collect only information the chosen calendar and route can actually use.
+    depends_on:
+      - calendar
+  - key: data
+    label: Data model
+    brief: Contact identity, field types and location values are inputs to the deal records.
+    depends_on: []
+  - key: qa
+    label: QA
+    brief: Test the integrated build, including tracking, before requesting acceptance.
+    depends_on:
+      - tracking
+  - key: pipeline
+    label: Pipeline
+    brief: Stages and ownership must refer to the agreed contact and opportunity model.
+    depends_on:
+      - data
+  - key: tracking
+    label: Tracking
+    brief: Instrument the final path and event names; draft URLs are insufficient.
+    depends_on:
+      - funnel
+  - key: workflows
+    label: Workflows
+    brief: Entry and branches depend on the released form schema and booking behaviour.
+    depends_on:
+      - forms
+  - key: calendar
+    label: Calendar
+    brief: Routing and booking must move a deal through the approved pipeline.
+    depends_on:
+      - pipeline

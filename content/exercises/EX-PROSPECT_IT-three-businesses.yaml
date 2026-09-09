@@ -1,9 +1,7 @@
-# PROSPECT IT (spec §27, EXR-012, SAL-002): Contact / Maybe / Skip, with the evidence behind it.
-# The evaluation below is hidden from the learner. Contact is not the right answer three times.
 id: EX-PROSPECT_IT-three-businesses
 type: PROSPECT_IT
 title: Contact, maybe, or skip?
-mode: practice
+mode: pressure
 difficulty: 2
 estimated_minutes: 20
 skills:
@@ -23,138 +21,153 @@ allowed_features: []
 starting_state: {}
 sales:
   evidence:
-    # Northwind
     - id: ev-nw-reply-22h
       client: CL-northwind-hvac
       source: test_enquiry
-      observation: >-
+      observation:
         You submitted their website form at 11:00 on a Wednesday. The reply arrived by email at
         09:12 the next morning, 22 hours later.
       direct: true
     - id: ev-nw-ads
       client: CL-northwind-hvac
       source: ad
-      observation: >-
+      observation:
         Their Google ad for "AC repair Columbus" is running today and points at a landing page
         with a request-service form.
       direct: true
     - id: ev-nw-plan
       client: CL-northwind-hvac
       source: public_offer
-      observation: >-
+      observation:
         The site publishes a maintenance plan at $19 a month, two tune-ups a year, and a $89
         diagnostic visit.
       direct: true
     - id: ev-nw-replacement
       client: CL-northwind-hvac
       source: website
-      observation: >-
-        A system replacement page quotes "from $7,800" and asks people to call for a quote.
+      observation: A system replacement page quotes "from $7,800" and asks people to call for a quote.
       direct: true
     - id: ev-nw-owner
       client: CL-northwind-hvac
       source: google_business_profile
-      observation: >-
-        The profile is managed under the owner's own name, Gary Lindqvist, and he answers
+      observation: The profile is managed under the owner's own name, Gary Lindqvist, and he answers
         reviews himself.
       direct: true
-    # Ridgeline
     - id: ev-rr-ticket
       client: CL-ridgeline-roofing
       source: website
-      observation: >-
-        Roof replacements are the main job on the site, with financing offered over 60 months.
+      observation: Roof replacements are the main job on the site, with financing offered over 60 months.
       direct: true
     - id: ev-rr-inspection
       client: CL-ridgeline-roofing
       source: website
-      observation: >-
+      observation:
         The only call to action is a free inspection, booked through a form that says someone
         will be in touch.
       direct: true
     - id: ev-rr-network
       client: CL-ridgeline-roofing
       source: website
-      observation: >-
+      observation:
         The footer carries a contractor network badge, and the privacy page says leads are
         handled in the network's system.
       direct: true
     - id: ev-rr-reviews
       client: CL-ridgeline-roofing
       source: review
-      observation: >-
-        Several recent reviews mention waiting a day or two for someone to call back after a
-        storm.
+      observation: Several recent reviews mention waiting a day or two for someone to call back after a storm.
       direct: false
-    # Halcyon
     - id: ev-hy-prices
       client: CL-halcyon-yoga
       source: public_offer
-      observation: >-
-        The price list is a $18 drop-in, a $150 ten-class pass, and $89 a month unlimited.
+      observation: The price list is a $18 drop-in, a $150 ten-class pass, and $89 a month unlimited.
       direct: true
     - id: ev-hy-app
       client: CL-halcyon-yoga
       source: website
-      observation: >-
-        Every Book button on the site opens the operator's class app on a different domain.
+      observation: Every Book button on the site opens the operator's class app on a different domain.
       direct: true
     - id: ev-hy-operator
       client: CL-halcyon-yoga
       source: google_business_profile
-      observation: >-
+      observation:
         Six studios in the city share the same branding, the same app and one head-office phone
         number.
       direct: true
     - id: ev-hy-manager
       client: CL-halcyon-yoga
       source: social
-      observation: >-
+      observation:
         The studio's posts are signed by a manager, and the account bio points at the operator
         for anything except the schedule.
       direct: true
   prospect_briefs:
     - client: CL-northwind-hvac
-      acceptable_decisions: [contact]
+      acceptable_decisions:
+        - contact
       strongest_decision: contact
       axes:
         - axis: icp_fit
-          evidence: [ev-nw-ads, ev-nw-replacement]
+          evidence:
+            - ev-nw-ads
+            - ev-nw-replacement
         - axis: economics
-          evidence: [ev-nw-replacement, ev-nw-plan]
+          evidence:
+            - ev-nw-replacement
+            - ev-nw-plan
         - axis: recurring_need
-          evidence: [ev-nw-plan, ev-nw-ads]
+          evidence:
+            - ev-nw-plan
+            - ev-nw-ads
         - axis: technical_fit
-          evidence: [ev-nw-ads, ev-nw-reply-22h]
+          evidence:
+            - ev-nw-ads
+            - ev-nw-reply-22h
         - axis: decision_maker_access
-          evidence: [ev-nw-owner]
+          evidence:
+            - ev-nw-owner
     - client: CL-ridgeline-roofing
-      acceptable_decisions: [contact, maybe]
+      acceptable_decisions:
+        - contact
+        - maybe
       strongest_decision: maybe
-      unresolved: >-
+      unresolved:
         Whether Dale can change how leads are followed up, or whether the contractor network's
         system decides that for him.
       axes:
         - axis: icp_fit
-          evidence: [ev-rr-inspection, ev-rr-ticket]
+          evidence:
+            - ev-rr-inspection
+            - ev-rr-ticket
         - axis: economics
-          evidence: [ev-rr-ticket]
+          evidence:
+            - ev-rr-ticket
         - axis: recurring_need
-          evidence: [ev-rr-inspection, ev-rr-reviews]
+          evidence:
+            - ev-rr-inspection
+            - ev-rr-reviews
         - axis: technical_fit
-          evidence: [ev-rr-network]
+          evidence:
+            - ev-rr-network
         - axis: decision_maker_access
-          evidence: [ev-rr-network]
+          evidence:
+            - ev-rr-network
     - client: CL-halcyon-yoga
-      acceptable_decisions: [skip]
+      acceptable_decisions:
+        - skip
       strongest_decision: skip
       axes:
         - axis: economics
-          evidence: [ev-hy-prices]
+          evidence:
+            - ev-hy-prices
         - axis: technical_fit
-          evidence: [ev-hy-app, ev-hy-operator]
+          evidence:
+            - ev-hy-app
+            - ev-hy-operator
         - axis: decision_maker_access
-          evidence: [ev-hy-manager, ev-hy-operator]
+          evidence:
+            - ev-hy-manager
+            - ev-hy-operator
 expected_outcomes:
   - id: a1
     type: state
@@ -186,8 +199,13 @@ grading:
   mode: mixed
   rubric: AUDIT_EVIDENCE_RUBRIC_V1
   pass_threshold: 70
-hints:
-  - level: nudge
-    text: One of these three is a business you should not contact. Work out which dimension makes it a skip before you write anything.
+hints: []
 fieldwork: null
 portfolio: null
+topics:
+  - prospecting.icp
+  - prospecting.selection
+  - prospecting.research
+  - prospecting.qualification
+  - bloomwired.icp
+  - judgment.contact_prospect

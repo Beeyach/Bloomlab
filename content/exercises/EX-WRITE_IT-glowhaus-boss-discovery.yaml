@@ -1,0 +1,142 @@
+id: EX-WRITE_IT-glowhaus-boss-discovery
+type: WRITE_IT
+title: Discover the operating constraints
+skills:
+  - SK-DELIVER-client-explanation
+  - SK-SELL-discovery-call
+instructions: Priya can answer a written discovery thread between treatments. Establish the process
+  and commercial constraints, reflect the diagnosis and obtain agreement before pitching. Write each
+  response yourself. Her statements are training evidence, not inspected account facts.
+mode: independent
+difficulty: 3
+estimated_minutes: 30
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: diagnosis
+    type: state
+    path: conversation.diagnosis_agreed
+    operator: equals
+    value: true
+    description: Agree the diagnosis.
+  - id: next
+    type: state
+    path: conversation.next_step_agreed
+    operator: equals
+    value: true
+    description: Agree a next step.
+  - id: complete
+    type: state
+    path: conversation.complete
+    operator: equals
+    value: true
+    description: Complete the exchange.
+critical_failures:
+  - id: early
+    type: state
+    path: conversation.pitched_before_diagnosis
+    operator: equals
+    value: false
+    description: Do not pitch before an agreed diagnosis.
+grading:
+  mode: mixed
+  rubric: SALES_DISCOVERY_RUBRIC_V2
+  pass_threshold: 80
+hints: []
+written_fields: []
+topics:
+  - selling.discovery
+  - selling.technical_discovery
+  - selling.listening
+time_category: retrieval
+conversation:
+  client: CL-glowhaus-medspa
+  subject: A consultation system we can operate
+  channel: email
+  opening: opening
+  composer_help: Ask or reflect in your own words, then select your action.
+  nodes:
+    - id: opening
+      client_message: We have half an hour by email. I want the front desk to know what to do with
+        enquiries, but I do not want another system nobody owns.
+      covers:
+        - opening
+        - agenda
+      moves:
+        - id: process
+          label: Ask about the current process and pain
+          kind: ask
+          next: process
+        - id: pitch
+          label: Pitch a system immediately
+          kind: pitch
+          next: early
+      fallback: opening
+    - id: process
+      client_message:
+        We receive about 140 enquiries a month through ads, Instagram and the phone. Dana
+        follows up by hand, except Mondays when she is away. About 46 percent book, 58 percent
+        attend, and 35 percent of those buy. These are our estimates. We want a same-day next action
+        and fewer reminders with stale times.
+      covers:
+        - current_process
+        - pain
+        - desired_result
+        - volume
+        - impact
+        - staff
+      moves:
+        - id: constraints
+          label: Ask about tools, decision and constraints
+          kind: ask
+          next: constraints
+        - id: pitch
+          label: Propose before clarifying the constraints
+          kind: pitch
+          next: early
+      fallback: process
+    - id: constraints
+      client_message:
+        Square owns existing appointments. I own the account, but the designer controls the
+        domain. Theo will approve calendar rules. I decide the fee after Dana and Theo confirm the
+        workflow. We are considering a second location, but it may need a separate release. I can
+        discuss a bounded project up to 4500, with support separately. Verify account capabilities
+        and access before promising dates.
+      covers:
+        - tools
+        - technical
+        - stakeholders
+        - budget
+        - decision_process
+        - urgency
+      moves:
+        - id: reflect
+          label: Reflect the diagnosis and check agreement
+          kind: reflect
+          next: agreed
+        - id: pitch
+          label: Pitch without checking the diagnosis
+          kind: pitch
+          next: early
+      fallback: constraints
+    - id: agreed
+      client_message:
+        'Yes, that is the problem: a reliable next action and correct booking changes, with
+        clear staff ownership. Keep the first release manageable. Send your recommendation with the
+        unresolved checks and a next step.'
+      diagnosis_agreed: true
+      moves:
+        - id: next
+          label: Recommend a bounded next step
+          kind: next_step
+          next: done
+      fallback: agreed
+    - id: done
+      client_message: Send the scope and dependencies for review. I have not approved implementation yet.
+      covers:
+        - next_step
+      end: true
+    - id: early
+      client_message:
+        You are promising a build before we have agreed what is wrong or who owns it. We
+        need to restart discovery.
+      end: true

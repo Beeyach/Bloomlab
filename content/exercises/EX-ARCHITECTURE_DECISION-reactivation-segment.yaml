@@ -1,0 +1,57 @@
+id: EX-ARCHITECTURE_DECISION-reactivation-segment
+type: ARCHITECTURE_DECISION
+title: Choose who can enter reactivation
+skills:
+  - SK-JUDGMENT-automation-appropriateness
+  - SK-ARCHITECT-tags-vs-custom-fields
+instructions: Dana proposes sending the old enquiry list a discount every day. The list contains
+  dormant people with permission, current bookings, opt-outs and records without a phone. Design a
+  bounded eligibility rule, one useful offer, a reply owner and a stopping rule. State the evidence
+  you need before anyone is included.
+mode: independent
+difficulty: 3
+estimated_minutes: 30
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.eligibility_answered
+    operator: equals
+    value: true
+    description: Answer the eligibility and exclusions brief.
+  - id: a2
+    type: state
+    path: written.stop_answered
+    operator: equals
+    value: true
+    description: Answer the stopping and ownership brief.
+  - id: a3
+    type: state
+    path: written.measure_answered
+    operator: equals
+    value: true
+    description: Answer the a small trial brief.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: eligibility
+    label: Eligibility and exclusions
+    help: Define the facts required to include someone, and who must be excluded.
+    rows: 4
+  - key: stop
+    label: Stopping and ownership
+    help: Define repeat prevention, response handling, opt-out handling and the owner of unresolved
+      replies.
+    rows: 4
+  - key: measure
+    label: A small trial
+    help: Define the test cohort and what evidence would justify continuing, changing or stopping.
+    rows: 4
+topics:
+  - families.reactivation
+  - data.smart_lists
+  - judgment.contact_prospect

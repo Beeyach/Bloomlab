@@ -393,6 +393,8 @@ Phase 23 evidence: `apps/web/src/portfolio/portfolio.test.tsx` and `boundary.tes
 
 ## Phase 24 — Field Ready content
 
+Implementation and controlled verification: `docs/reviews/phase-24-field-ready.md` (per-requirement proof). Personal transfer and real-GHL execution remain unaccepted: PRD-005, CUR-015 and CUR-031 are IMPLEMENTED_UNVERIFIED. Phase 22 FLD-001/EXR-020 and the seven Phase 21 human rows are unchanged.
+
 - **PRD-005** A full run from placement to capstone is completed by the learner and reviewed against the §4 reasoning list.
 - **PRD-006 / CUR-003** Gate 0 assesses the eight areas; strong results skip mapped early requirements.
 - **PRD-008** Field Ready certificate copy lists the nine capabilities and no "expert" claim.

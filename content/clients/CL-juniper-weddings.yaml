@@ -1,0 +1,67 @@
+id: CL-juniper-weddings
+business_name: Juniper Gatherings
+industry: wedding_vendor
+locations:
+  - name: Juniper Gatherings main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Sofia Reed
+    role: Planner and owner
+    notes: Date qualification, availability and deposit policy must be explicit; a form confirmation
+      cannot reserve an event.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Wedding planning package
+    price: 4200
+    billing: package
+    notes: Date qualification, availability and deposit policy must be explicit; a form confirmation
+      cannot reserve an event.
+lead_sources:
+  - Venue referrals
+current_systems:
+  - Shared calendar
+  - proposal documents
+metrics:
+  monthly_leads: 38
+problems:
+  - Enquiries omit event date or venue, and couples assume a date is held after submitting.
+  - Date qualification, availability and deposit policy must be explicit; a form confirmation cannot
+    reserve an event.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes: Date qualification, availability and deposit policy must be explicit; a form confirmation
+      cannot reserve an event.
+hidden_facts:
+  date_hold: true
+voice:
+  character: VC-juniper-weddings
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - We can discuss a date, but it is not reserved until the agreement and deposit.
+history:
+  - date: 2026-09-09
+    event:
+      'Training brief received: Enquiries omit event date or venue, and couples assume a date is
+      held after submitting.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 2700
+  stated_budget: 1890
+  decision_authority: sole

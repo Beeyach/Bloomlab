@@ -1,0 +1,50 @@
+---
+id: LU-booking-qualification
+title: A booking is a commitment by both sides
+territory: BUILD
+tier: field_ready
+skills:
+  - SK-BUILD-consultation-calendar
+  - SK-AUTOMATE-appointment-reminders
+  - SK-AUTOMATE-no-show-recovery
+topics:
+  - booking.forms
+  - booking.surveys
+  - booking.qualification
+  - booking.calendars
+  - booking.routing
+  - booking.reminders
+  - booking.cancellations
+  - booking.reschedules
+  - booking.no_shows
+estimated_minutes: 22
+ghl_features:
+  - GHL-CAL-CALENDARS
+  - GHL-FORM-FORMS
+  - GHL-FORM-SURVEYS
+summary: 'For Glowhaus, the consultation has a purpose, a duration, a location and an eligible host.
+  Explain these before asking the visitor to book. Use a short form for contact details and a survey
+  when several answers determine fit. Ask only what staff use. Define what an ineligible or
+  uncertain answer does: another route, a human review or an honest decline, never a dead end
+  disguise'
+---
+
+## Establish fit before reserving capacity
+
+For Glowhaus, the consultation has a purpose, a duration, a location and an eligible host. Explain these before asking the visitor to book. Use a short form for contact details and a survey when several answers determine fit. Ask only what staff use. Define what an ineligible or uncertain answer does: another route, a human review or an honest decline, never a dead end disguised as a successful booking.
+
+## Availability is an operational rule
+
+Configure the calendar's duration, notice, buffers, weekly hours, staff and locations. A slot visible in the browser does not establish that every staff member can deliver that service. Test the first and last available slots, a too-soon booking, an unavailable host and the location the visitor receives. If round robin is used, inspect the eligible team and the assignment result rather than expecting a particular person from an unexplained order.
+
+## Confirmation and reminders have different jobs
+
+Confirmation says the reservation exists and gives the practical details. A reminder arrives in relation to that reservation and offers a usable route to change it. Test a lead who supplied no phone and someone who cannot receive SMS; decide how staff will see the exception. Avoid sending the same message from a calendar notification and a separate workflow without deliberately checking the combined output.
+
+## Changed plans are ordinary cases
+
+Cancellation releases capacity and should stop the messages attached to the cancelled appointment. Rescheduling must carry the new time and location consistently; an old reminder is worse than no reminder. A late booking must not receive a message pretending the appointment is tomorrow when it starts in an hour. A no-show is different from a cancellation and deserves a different follow-up. Test all four separately in the shared Calendar and Workflow Labs, read the execution history and document the next owner.
+
+<Exercise id="EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel" />
+<Exercise id="EX-EDGE_CASE-late-booking-reminder" />
+<Exercise id="EX-EDGE_CASE-no-show-missing-phone" />

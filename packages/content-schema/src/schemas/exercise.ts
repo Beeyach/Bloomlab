@@ -1,3 +1,5 @@
+import { SequenceStepsSchema } from './sequence.ts';
+import { curriculumTopics } from './fieldReady.ts';
 import { FieldworkSchema } from './fieldwork.ts';
 import { CallConfigSchema, CALL_METRICS } from './call.ts';
 import { NegotiationConfigSchema, NEGOTIATION_METRICS } from './negotiation.ts';
@@ -272,7 +274,7 @@ interface SalesPathSubject {
   type: ExerciseType;
   written_fields: { key: string; audience: string; message_type?: string }[];
   sales: { frame: { element: string }[] };
-  conversation: { nodes: { covers: string[]; situation?: string }[] } | null;
+  conversation: { nodes: { covers: string[]; flags?: string[]; situation?: string }[] } | null;
   pricing: { scope: { id: string }[] } | null;
   negotiation: unknown | null;
   call?: { mode: string };
@@ -370,6 +372,11 @@ function salesPathIssues(exercise: SalesPathSubject, root: string, rest: string[
           nodes.some((node) => node.covers.includes(topic)),
           `no turn of this thread covers ${topic}`,
         );
+      } else if (rest[0] === 'flags') {
+        needs(
+          nodes.some((node) => node.flags?.includes(rest[1] ?? '')),
+          'Unknown conversation consequence flag',
+        );
       } else if (rest[0] === 'situations') {
         const situation = rest[1] ?? '';
         needs(
@@ -429,6 +436,24 @@ export const ExerciseSchema = z
     fieldwork: FieldworkSchema.nullable().default(null),
     portfolio: portfolioRef.nullable().default(null),
     /** WRITE IT / SAY IT / EXPLAIN IT: what kind of piece, in the spec's own words. */
+    placement_area: z
+      .enum([
+        'funnel_reasoning',
+        'lead_capture',
+        'workflow_basics',
+        'fields_vs_values',
+        'pipeline_basics',
+        'basic_pricing',
+        'written_prospect_response',
+        'spoken_discovery',
+      ])
+      .optional(),
+    sequence_steps: SequenceStepsSchema.default([]),
+    review_checks: z
+      .array(z.strictObject({ key: z.string().regex(/^[a-z][a-z0-9_]*$/), prompt: markdown }))
+      .default([]),
+    topics: curriculumTopics,
+    time_category: z.enum(['practical', 'retrieval']).default('practical'),
     format: z.string().optional(),
   })
   .superRefine((exercise, ctx) => {
@@ -453,6 +478,14 @@ export const ExerciseSchema = z
       [...exercise.expected_outcomes, ...exercise.critical_failures].map((a) => a.id),
       ['expected_outcomes'],
       'assertion id',
+    );
+    if (exercise.placement_area && (exercise.hints.length > 0 || exercise.mode !== 'independent'))
+      issue(['placement_area'], 'Placement requires independent work without instructional hints');
+    requireUnique(
+      ctx,
+      exercise.review_checks.map((check) => check.key),
+      ['review_checks'],
+      'review check',
     );
     const expectedType = /^EX-([A-Z_]+)-/.exec(exercise.id)?.[1];
     if (expectedType !== exercise.type)
@@ -587,6 +620,20 @@ export const ExerciseSchema = z
       }
       if (assertion.type === 'state') {
         const [root, ...rest] = assertion.path.split('.');
+        if (
+          root === 'sequence' &&
+          (!exercise.sequence_steps.length || !['complete', 'valid'].includes(rest.join('.')))
+        )
+          issue(at('path'), 'Sequence checks need authored steps and a known metric');
+        if (
+          root === 'review' &&
+          (!exercise.review_checks.length ||
+            !['complete', 'safe_decision', 'all_passed'].includes(rest.join('.')))
+        )
+          issue(
+            at('path'),
+            'Review checks require an authored checklist and a known review metric',
+          );
         // A decision the exercise offers as options must expect one of them.
         if (
           root === 'decision' &&

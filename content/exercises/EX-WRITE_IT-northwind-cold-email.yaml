@@ -1,6 +1,3 @@
-# WRITE IT (spec §27, EXR-014, SAL-003): the first email and the follow-up, both built on
-# something actually observed. The six cold-email concepts live in the rubric; the word caps, the
-# next step and the citation are checked here.
 id: EX-WRITE_IT-northwind-cold-email
 type: WRITE_IT
 title: Cold email to Gary, and the follow-up
@@ -9,6 +6,7 @@ difficulty: 2
 estimated_minutes: 20
 skills:
   - SK-SELL-evidence-based-audit
+  - SK-SELL-written-prospect-response
 scenario: SC-northwind-audit
 format: cold_email
 instructions: |
@@ -26,24 +24,21 @@ sales:
   evidence:
     - id: ev-nw-reply-22h
       source: test_enquiry
-      observation: >-
-        You submitted their website form at 11:00 on Wednesday. The reply came at 09:12 the next
-        morning, 22 hours later.
+      observation:
+        You submitted their website form at 11:00 on Wednesday. The reply came at 09:12 the
+        next morning, 22 hours later.
       direct: true
     - id: ev-nw-no-text
       source: test_enquiry
-      observation: >-
-        Nothing else arrived: no text, no second email, no call to the number you gave.
+      observation: 'Nothing else arrived: no text, no second email, no call to the number you gave.'
       direct: true
     - id: ev-nw-ads-page
       source: landing_page
-      observation: >-
-        Their Google Ads landing page has the same form and no phone number above the fold.
+      observation: Their Google Ads landing page has the same form and no phone number above the fold.
       direct: true
     - id: ev-nw-competitor
       source: ad
-      observation: >-
-        Two competitors on the same search show a click-to-call extension; Northwind's ad does not.
+      observation: Two competitors on the same search show a click-to-call extension; Northwind's ad does not.
       direct: false
 written_fields:
   - key: initial_email
@@ -95,6 +90,15 @@ grading:
   pass_threshold: 70
 hints:
   - level: nudge
-    text: Your test enquiry took 22 hours to get a reply. That is evidence. "Your marketing is weak" is not.
+    text:
+      Your test enquiry took 22 hours to get a reply. That is evidence. "Your marketing is weak" is
+      not.
 fieldwork: null
 portfolio: null
+topics:
+  - prospecting.outreach
+  - prospecting.cold_email
+  - prospecting.follow_up
+  - bloomwired.outreach
+  - bloomwired.positioning
+time_category: retrieval

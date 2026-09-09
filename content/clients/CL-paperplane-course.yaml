@@ -1,0 +1,70 @@
+id: CL-paperplane-course
+business_name: Paperplane Learning
+industry: course_creator
+locations:
+  - name: Paperplane Learning main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Nico Evans
+    role: Course founder
+    notes:
+      Purchase state and communication permission need an explicit exit rule; the course platform
+      owns delivery.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Portfolio workshop
+    price: 240
+    billing: one_time
+    notes:
+      Purchase state and communication permission need an explicit exit rule; the course platform
+      owns delivery.
+lead_sources:
+  - Newsletter and recorded workshops
+current_systems:
+  - Course platform
+  - email list
+metrics:
+  monthly_leads: 440
+problems:
+  - Newsletter subscribers receive sales follow-ups after buying the workshop.
+  - Purchase state and communication permission need an explicit exit rule; the course platform owns
+    delivery.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes:
+      Purchase state and communication permission need an explicit exit rule; the course platform
+      owns delivery.
+hidden_facts:
+  purchase_exit: true
+voice:
+  character: VC-paperplane-course
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - Once someone buys, teach them. Stop asking them to buy the same thing.
+history:
+  - date: 2026-09-09
+    event:
+      'Training brief received: Newsletter subscribers receive sales follow-ups after buying the
+      workshop.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 2100
+  stated_budget: 1470
+  decision_authority: sole

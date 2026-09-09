@@ -19,3 +19,7 @@ mastery_requirements:
   pressure_test: false
   fieldwork_required: true
 keywords: [snapshot, portability, second location, naming, reusable]
+
+identities:
+  - Technical GHL Specialist
+  - GHL Systems Builder

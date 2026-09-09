@@ -6,7 +6,7 @@
  * threshold: states are earned by kinds of evidence, assistance and repetition.
  */
 
-export const MASTERY_RULES_VERSION = '2026.09.03-r4';
+export const MASTERY_RULES_VERSION = '2026.09.09-r5';
 
 /** The eight states (spec §29). NEEDS_REFRESH is an overlay on an earned ladder state. */
 export const MASTERY_STATES = [

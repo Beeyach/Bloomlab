@@ -133,3 +133,9 @@ call:
   open_response:
     node: clarify
     question: What would that change in the process we are discussing?
+topics:
+  - selling.explanation
+  - selling.outcomes
+  - selling.presentation
+  - selling.client_language
+time_category: retrieval

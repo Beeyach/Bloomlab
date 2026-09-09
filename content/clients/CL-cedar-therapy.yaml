@@ -1,0 +1,66 @@
+id: CL-cedar-therapy
+business_name: Cedar Counselling
+industry: therapist
+locations:
+  - name: Cedar Counselling main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Nadia Bell
+    role: Practice director
+    notes: The clinical platform remains the clinical system of record; intake must avoid collecting
+      treatment histories.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Introductory fit call
+    price: 0
+    billing: one_time
+    notes: The clinical platform remains the clinical system of record; intake must avoid collecting
+      treatment histories.
+lead_sources:
+  - Professional referrals
+current_systems:
+  - Clinical practice platform
+  - an independent website
+metrics:
+  monthly_leads: 48
+problems:
+  - New enquiry scheduling is separate from clinical records, and visitors confuse the two.
+  - The clinical platform remains the clinical system of record; intake must avoid collecting
+    treatment histories.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes: The clinical platform remains the clinical system of record; intake must avoid collecting
+      treatment histories.
+hidden_facts:
+  clinical_boundary: true
+voice:
+  character: VC-cedar-therapy
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - Keep treatment notes out of marketing. I only need a safe way to arrange an introduction.
+history:
+  - date: 2026-09-09
+    event: 'Training brief received: New enquiry scheduling is separate from clinical records, and
+      visitors confuse the two.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 1800
+  stated_budget: 1260
+  decision_authority: sole

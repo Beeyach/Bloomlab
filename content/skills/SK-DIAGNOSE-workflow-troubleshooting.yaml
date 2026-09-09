@@ -2,8 +2,7 @@ id: SK-DIAGNOSE-workflow-troubleshooting
 title: Workflow troubleshooting
 territory: DIAGNOSE
 tier: field_ready
-summary: >-
-  Start from a symptom, read execution logs, and locate the failing trigger, filter, wait or
+summary: Start from a symptom, read execution logs, and locate the failing trigger, filter, wait or
   action before touching anything.
 prerequisites:
   - SK-AUTOMATE-workflow-foundations
@@ -17,4 +16,13 @@ mastery_requirements:
   independent_evidence: 3
   pressure_test: true
   fieldwork_required: false
-keywords: [execution log, skipped action, wrong branch, missing data, failed action]
+keywords:
+  - execution log
+  - skipped action
+  - wrong branch
+  - missing data
+  - failed action
+identities:
+  - Technical GHL Specialist
+evidence_areas:
+  - troubleshooting

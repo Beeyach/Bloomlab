@@ -304,8 +304,8 @@ function SkillDetail({
         </section>
 
         <p className={styles.detailMeta}>
-          Practising and recording evidence for this capability arrives with the exercise engine in
-          a later phase; today the map shows exactly where it stands.{' '}
+          Complete the next exercise to record evidence for this capability. Saved results keep
+          their assistance level and any remaining requirements visible.{' '}
           <Link to="/" className={styles.detailBack}>
             Back to what to do next
           </Link>

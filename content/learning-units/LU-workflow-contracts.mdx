@@ -1,0 +1,58 @@
+---
+id: LU-workflow-contracts
+title: Build for the second event as well as the first
+territory: AUTOMATE
+tier: field_ready
+skills:
+  - SK-AUTOMATE-workflow-foundations
+  - SK-AUTOMATE-reentry-and-duplicates
+  - SK-AUTOMATE-appointment-reminders
+  - SK-AUTOMATE-no-show-recovery
+topics:
+  - workflow.foundations
+  - workflow.triggers
+  - workflow.filters
+  - workflow.actions
+  - workflow.waits
+  - workflow.branching
+  - workflow.reentry
+  - workflow.timing
+  - workflow.communications
+  - workflow.pipeline_automation
+  - workflow.common_systems
+estimated_minutes: 25
+ghl_features:
+  - GHL-WF-WAIT
+  - GHL-WF-IF-ELSE
+  - GHL-WF-WORKFLOW-SETTINGS
+summary: For each workflow, name the event, its filters, the contact it concerns and the condition
+  that ends the work. A Form Submitted trigger filtered to the wrong form is a valid configuration
+  that never enrols the intended lead. A published workflow can be wrong without a red error. Test
+  one matching event and one non-matching event, then inspect the trigger and execution records.
+---
+
+## Define entry and exit before adding actions
+
+For each workflow, name the event, its filters, the contact it concerns and the condition that ends the work. A Form Submitted trigger filtered to the wrong form is a valid configuration that never enrols the intended lead. A published workflow can be wrong without a red error. Test one matching event and one non-matching event, then inspect the trigger and execution records.
+
+## Waits are promises about time
+
+A fixed wait means elapsed time after reaching the node. An appointment-relative wait means a relationship to the appointment. Those are not interchangeable. A reminder intended for the day before a booking cannot wait a day after someone books at short notice. Test an ordinary booking, a booking inside the reminder window and a booking moved to a new time. Inspect timezone and the scenario clock; never infer elapsed time from how long the browser tab was open.
+
+## Branches need a fallback
+
+For SMS, distinguish a missing phone, a usable phone and do-not-disturb. A fallback can create an internal task or use a permitted alternative channel; it must not fabricate permission or a phone number. Test the None branch as deliberately as the happy path. Decide whether a field is absent, empty or an unexpected value, and inspect the actual branch result. “The system should know” is not a condition.
+
+## Re-entry and overlapping work
+
+Disabling re-entry prevents one kind of repeated enrolment; it does not prove that another workflow cannot send the same reminder. Trace all senders for one appointment. Cancellation should end appointment-specific waits; it should not silently stop unrelated lead follow-up. A reschedule creates a new timing problem: inspect whether the old run exits and what the new run does. The fix is established by the log and messages, not by the name of a workflow.
+
+## Build common systems with an observable finish
+
+A confirmation acknowledges an event. A reminder prepares for an appointment. A no-show recovery asks for a new decision and stops when its conditions no longer apply. A pipeline action should reflect a real change, with a responsible owner able to act on it. For each system, write the entry event, data dependencies, timing rule, exception path and exit. Then build in the Workflow Lab, run the matching cases and compare actual output with that contract.
+
+Practitioner work adds more complex orchestration; Advanced examines concurrency and integration reliability; Specialist handles custom architectures. Field Ready still requires working triggers, filters, actions, waits, branches and re-entry decisions, not merely recognising their names.
+
+<Exercise id="EX-BUILD_IT-no-show-recovery" />
+<Exercise id="EX-FIX_IT-double-reminder" />
+<Exercise id="EX-REBUILD_BLIND-appointment-reminders" />

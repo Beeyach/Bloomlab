@@ -157,6 +157,7 @@ export interface CampaignDefinition {
       fieldwork_required: boolean;
     };
     projects: string[];
+    projects_required?: boolean;
   }[];
 }
 
@@ -174,6 +175,7 @@ export interface GateSkillStatus {
 }
 
 export interface GateEvaluation {
+  missing_projects?: string[];
   gate: string;
   number: number;
   name: string;

@@ -1,3 +1,4 @@
+import type { FieldReadyCoverage } from './schemas/fieldReady.ts';
 import type { ContentType, Territory } from './ids.ts';
 import type {
   Campaign,
@@ -21,6 +22,8 @@ import type {
 
 export const ISSUE_CODES = [
   // files
+  'FIELD_READY_COVERAGE',
+  'FIELD_READY_GHL_CURRENT',
   'INVALID_FORMAT',
   'PARSE_ERROR',
   'SCHEMA',
@@ -198,7 +201,11 @@ export interface ContentBundle {
   graph: SkillGraph;
   campaign_paths: CampaignPath[];
   indexes: ContentIndexes;
-  coverage: { content: ContentCoverageRow[]; ghl: GhlCoverageRow[] };
+  coverage: {
+    field_ready?: FieldReadyCoverage;
+    content: ContentCoverageRow[];
+    ghl: GhlCoverageRow[];
+  };
   freshness: FreshnessRow[];
   search: SearchEntry[];
   warnings: ContentIssue[];

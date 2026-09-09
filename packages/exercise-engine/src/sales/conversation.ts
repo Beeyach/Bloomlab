@@ -135,6 +135,7 @@ export interface ConversationProjection {
   next_step_agreed: boolean;
   topics: Record<string, boolean>;
   situations: Record<string, boolean>;
+  flags: Record<string, boolean>;
 }
 
 export function projectConversation(
@@ -155,6 +156,7 @@ export function projectConversation(
       next_step_agreed: false,
       topics: {},
       situations: {},
+      flags: {},
     };
   }
   const thread = resolveThread(conversation, turns);
@@ -183,6 +185,14 @@ export function projectConversation(
     next_step_agreed: thread.topics.includes('next_step'),
     // Every topic and situation the thread *could* reach is present, so a check on one the
     // learner never got to reads false rather than missing.
+    flags: Object.fromEntries(
+      [...new Set(conversation.nodes.flatMap((node) => node.flags ?? []))].map((flag) => [
+        flag,
+        conversation.nodes.some(
+          (node) => thread.visited.includes(node.id) && node.flags?.includes(flag),
+        ),
+      ]),
+    ),
     topics: Object.fromEntries(
       [...new Set(conversation.nodes.flatMap((node) => node.covers))].map((topic) => [
         topic,

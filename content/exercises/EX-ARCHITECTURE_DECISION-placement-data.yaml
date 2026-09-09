@@ -1,0 +1,68 @@
+id: EX-ARCHITECTURE_DECISION-placement-data
+type: ARCHITECTURE_DECISION
+title: Placement · fields and shared values
+mode: independent
+difficulty: 2
+estimated_minutes: 10
+skills:
+  - SK-ARCHITECT-tags-vs-custom-fields
+  - SK-ARCHITECT-custom-values
+client: CL-glowhaus-medspa
+instructions: >
+  Placement: work from what you already know. You may skip this assessment and learn the capability
+  instead. This assesses the beginner requirement; later pressure tests and fieldwork still apply.
+
+
+  Glowhaus's Meta lead form asks which treatment the lead is interested in: Signature Facial,
+
+  Membership, or Laser. Reminder texts should mention it, and Priya wants to see it on the
+
+  contact.
+
+
+  Decide where the fact lives — tag, contact custom field, custom value, or opportunity field —
+
+  and write two sentences defending the choice, including what would go wrong with the runner-up.
+allowed_features:
+  - GHL-CRM-TAGS
+  - GHL-CRM-CUSTOM-FIELDS
+  - GHL-CRM-CUSTOM-VALUES
+starting_state: {}
+expected_outcomes:
+  - id: a1
+    type: state
+    path: decision.choice
+    operator: equals
+    value: contact_custom_field
+    description: A single changing value per contact is a contact custom field.
+  - id: a2
+    type: state
+    path: decision.reasoning_mentions
+    operator: contains
+    value: merge_field
+    description: The reasoning notes that templates need to print the value.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 70
+decision_options:
+  - value: tag
+    label: Tag
+  - value: contact_custom_field
+    label: Contact custom field
+  - value: custom_value
+    label: Custom value
+  - value: opportunity_field
+    label: Opportunity field
+response_markers:
+  merge_field:
+    - merge field
+    - merge fields
+    - '{{'
+    - template
+    - templates
+hints: []
+fieldwork: null
+portfolio: null
+placement_area: fields_vs_values

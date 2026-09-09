@@ -1,0 +1,15 @@
+id: VC-stillwater-photo
+client: CL-stillwater-photo
+asset_delivery: text
+voice_id: EXAVITQu4vr4xnSDxMaL
+speech_rate: 1
+style: 0
+stability: 0.55
+allowed_emotion_range:
+  - measured
+language: en
+lines:
+  - id: operating-boundary
+    kind: scenario
+    text: A date is not a quote until I know how the photographs will be used.
+    emotion: measured

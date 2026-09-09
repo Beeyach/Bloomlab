@@ -1,0 +1,69 @@
+id: CL-ledger-season
+business_name: Ledger Season
+industry: accounting
+locations:
+  - name: Ledger Season main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Hana Patel
+    role: Practice partner
+    notes:
+      Accounting records and authority evidence remain in the secure accounting portal; only task
+      status belongs in marketing follow-up.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Business accounting onboarding
+    price: 350
+    billing: recurring
+    notes:
+      Accounting records and authority evidence remain in the secure accounting portal; only task
+      status belongs in marketing follow-up.
+lead_sources:
+  - Client referrals
+current_systems:
+  - Accounting portal
+  - document request emails
+metrics:
+  monthly_leads: 72
+problems:
+  - New clients book onboarding before authorisation and required records arrive.
+  - Accounting records and authority evidence remain in the secure accounting portal; only task
+    status belongs in marketing follow-up.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes:
+      Accounting records and authority evidence remain in the secure accounting portal; only task
+      status belongs in marketing follow-up.
+hidden_facts:
+  missing_authority: true
+voice:
+  character: VC-ledger-season
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - I need an input checklist, not another meeting with missing documents.
+history:
+  - date: 2026-09-09
+    event: 'Training brief received: New clients book onboarding before authorisation and required
+      records arrive.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 3000
+  stated_budget: 2100
+  decision_authority: sole

@@ -1,0 +1,70 @@
+id: CL-willow-veterinary
+business_name: Willow Veterinary
+industry: pet_service
+locations:
+  - name: Willow Veterinary main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Tess Morgan
+    role: Practice manager
+    notes:
+      Clinical pet records stay in the practice system; model owner-to-pet relationships and verify
+      supported marketing references.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: New pet consultation
+    price: 85
+    billing: one_time
+    notes:
+      Clinical pet records stay in the practice system; model owner-to-pet relationships and verify
+      supported marketing references.
+lead_sources:
+  - Local search
+current_systems:
+  - Veterinary practice system
+  - a marketing contact list
+metrics:
+  monthly_leads: 120
+problems:
+  - One owner may have several pets, and household phone numbers are reused.
+  - Clinical pet records stay in the practice system; model owner-to-pet relationships and verify
+    supported marketing references.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes:
+      Clinical pet records stay in the practice system; model owner-to-pet relationships and verify
+      supported marketing references.
+hidden_facts:
+  multi_pet_owner: true
+voice:
+  character: VC-willow-veterinary
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - A pet is not just another note on the owner. The records need to stay separate.
+history:
+  - date: 2026-09-09
+    event:
+      'Training brief received: One owner may have several pets, and household phone numbers are
+      reused.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 3200
+  stated_budget: 2240
+  decision_authority: sole

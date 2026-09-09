@@ -1,3 +1,5 @@
+import { SequencePlan } from './SequencePlan';
+import { ReviewChecklist } from './ReviewChecklist';
 import { NegotiationThread } from './NegotiationThread';
 import { useMemo, useState } from 'react';
 
@@ -73,6 +75,22 @@ export function WorkSurface({
         {treatment.workTitle}
       </h2>
 
+      {exercise.sequence_steps.length > 0 && (
+        <SequencePlan
+          steps={exercise.sequence_steps}
+          value={draft.sequence}
+          disabled={disabled}
+          onChange={(sequence) => update({ sequence })}
+        />
+      )}
+      {exercise.review_checks.length > 0 && (
+        <ReviewChecklist
+          checks={exercise.review_checks}
+          value={draft.review}
+          disabled={disabled}
+          onChange={(review) => update({ review })}
+        />
+      )}
       {exercise.decision_options.length > 0 && (
         <fieldset className={runner.options} disabled={disabled}>
           <legend className={runner.optionsLegend}>Where it lives</legend>

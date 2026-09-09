@@ -1,0 +1,67 @@
+id: CL-signalworks-b2b
+business_name: Signalworks IT
+industry: b2b_service
+locations:
+  - name: Signalworks IT main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Cal Turner
+    role: Service director
+    notes: Support escalation remains in the help desk; distinguish existing customer urgency from
+      new-account qualification.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Managed IT assessment
+    price: 300
+    billing: one_time
+    notes: Support escalation remains in the help desk; distinguish existing customer urgency from
+      new-account qualification.
+lead_sources:
+  - Partner introductions
+current_systems:
+  - Help desk platform
+  - sales spreadsheet
+metrics:
+  monthly_leads: 88
+problems:
+  - Support tickets enter the new-business form and urgent issues wait for sales.
+  - Support escalation remains in the help desk; distinguish existing customer urgency from
+    new-account qualification.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes: Support escalation remains in the help desk; distinguish existing customer urgency from
+      new-account qualification.
+hidden_facts:
+  support_boundary: true
+voice:
+  character: VC-signalworks-b2b
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - Our customers need support now, not a discovery call next Tuesday.
+history:
+  - date: 2026-09-09
+    event:
+      'Training brief received: Support tickets enter the new-business form and urgent issues wait
+      for sales.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 4600
+  stated_budget: 3220
+  decision_authority: sole

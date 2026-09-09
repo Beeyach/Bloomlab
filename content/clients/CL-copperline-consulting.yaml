@@ -1,0 +1,67 @@
+id: CL-copperline-consulting
+business_name: Copperline Operations
+industry: consultant
+locations:
+  - name: Copperline Operations main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Elena Park
+    role: Principal consultant
+    notes: Three-person leadership team must approve projects; avoid booking a full workshop from an
+      unqualified form.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Operational diagnostic
+    price: 950
+    billing: package
+    notes: Three-person leadership team must approve projects; avoid booking a full workshop from an
+      unqualified form.
+lead_sources:
+  - LinkedIn referrals
+current_systems:
+  - Notion intake
+  - a shared inbox
+metrics:
+  monthly_leads: 34
+problems:
+  - Corporate enquiries reach Elena without a clear decision maker or implementation owner.
+  - Three-person leadership team must approve projects; avoid booking a full workshop from an
+    unqualified form.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes: Three-person leadership team must approve projects; avoid booking a full workshop from an
+      unqualified form.
+hidden_facts:
+  qualify_authority: true
+voice:
+  character: VC-copperline-consulting
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - We need to know who can approve the change before we book three people.
+history:
+  - date: 2026-09-09
+    event:
+      'Training brief received: Corporate enquiries reach Elena without a clear decision maker or
+      implementation owner.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 2400
+  stated_budget: 1680
+  decision_authority: shared

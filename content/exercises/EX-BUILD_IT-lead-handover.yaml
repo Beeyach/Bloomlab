@@ -1,0 +1,56 @@
+id: EX-BUILD_IT-lead-handover
+type: BUILD_IT
+title: Give the next enquiry an owner
+mode: independent
+difficulty: 2
+estimated_minutes: 30
+skills:
+  - SK-BUILD-lead-capture-form
+  - SK-ARCHITECT-pipeline-design
+scenario: SC-glowhaus-crm
+instructions: Use the CRM Lab's fictional Glowhaus account. Aisha has referred herself for a
+  consultation and has no owner. Assign her contact to Dana. Jordan has confirmed interest in a
+  Signature Facial; use the existing deal and correct the changing interest rather than opening a
+  duplicate. Leave a note explaining who follows up next and why a form confirmation is not an
+  appointment confirmation. Inspect the pipeline and activity history before submitting.
+allowed_features:
+  - GHL-CRM-CONTACTS
+  - GHL-CRM-OWNERS
+  - GHL-CRM-CUSTOM-FIELDS
+  - GHL-CRM-NOTES
+  - GHL-CRM-OPPORTUNITIES
+  - GHL-CRM-PIPELINES
+starting_state:
+  notes: Nothing is broken. The account is exactly as the front desk left it.
+expected_outcomes:
+  - id: a1
+    type: state
+    path: contacts.aisha.owner_id
+    operator: equals
+    value: dana
+    description: Aisha has the named follow-up owner.
+  - id: a2
+    type: state
+    path: contacts.jordan.custom_fields.treatment_interest
+    operator: equals
+    value: Signature Facial
+    description: The captured interest is the current value.
+  - id: a3
+    type: event
+    event: note.added
+    count:
+      min: 1
+    description: The operator left the next action in the shared account history.
+critical_failures: []
+grading:
+  mode: deterministic
+  pass_threshold: 100
+hints: []
+fieldwork: null
+portfolio: null
+topics:
+  - lead.crm_capture
+  - lead.pipeline
+  - lead.next_action
+  - lead.follow_up
+  - lead.confirmation

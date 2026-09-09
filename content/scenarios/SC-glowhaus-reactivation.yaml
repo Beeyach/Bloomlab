@@ -1,0 +1,156 @@
+id: SC-glowhaus-reactivation
+title: Glowhaus — a bounded reactivation trial
+client: CL-glowhaus-medspa
+summary: Dana has permission to invite two dormant enquiries to resume a consultation. A booked
+  contact and an opted-out contact must receive no invitation. Build and test a small, owned
+  reactivation trial.
+initial_account_state:
+  users:
+    - id: dana
+      name: Dana Whitfield
+      role: user
+  contacts:
+    - id: maria
+      first_name: Maria
+      last_name: Delgado
+      email: maria.delgado@example.com
+      phone: '+15125550142'
+      tags:
+        - meta-lead
+      custom_fields:
+        treatment_interest: Signature Facial
+      timezone: America/Chicago
+      source: Meta lead ad
+    - id: jordan
+      first_name: Jordan
+      last_name: Pike
+      email: jordan.pike@example.com
+      tags:
+        - meta-lead
+      custom_fields:
+        treatment_interest: Membership
+      source: Meta lead ad
+    - id: lena
+      first_name: Lena
+      last_name: Ortiz
+      email: lena.ortiz@example.com
+      phone: '+15125550177'
+      tags:
+        - walk-in
+      dnd: true
+    - id: booked-client
+      first_name: Sam
+      last_name: Ives
+      email: sam.ives@example.com
+      phone: '+15125550199'
+      tags:
+        - booked
+      source: Existing booking
+  tags:
+    - meta-lead
+    - walk-in
+    - booked
+    - no-show
+    - rebooked
+    - reactivation-approved
+    - reactivation-sent
+  custom_fields:
+    - key: treatment_interest
+      label: Treatment interest
+      type: dropdown
+      options:
+        - Signature Facial
+        - Membership
+        - Laser
+    - key: consult_outcome
+      label: Consult outcome
+      type: dropdown
+      options:
+        - Booked
+        - Thinking about it
+        - Not a fit
+  custom_values:
+    - key: front_desk_phone
+      value: '+15125550100'
+    - key: booking_link
+      value: https://glowhausaustin.com/book
+  pipelines:
+    - id: consultations
+      name: Consultations
+      stages:
+        - New Lead
+        - Booked
+        - Showed
+        - Won
+        - Lost
+  opportunities:
+    - id: opp-maria
+      contact_id: maria
+      pipeline_id: consultations
+      stage: Booked
+      value: 410
+    - id: opp-jordan
+      contact_id: jordan
+      pipeline_id: consultations
+      stage: Booked
+      value: 149
+  calendars:
+    - id: consultation
+      name: Consultation
+      duration_minutes: 30
+      timezone: America/Chicago
+  appointments: []
+  forms:
+    - id: consult-request
+      name: Consultation Request
+      fields:
+        - first_name
+        - phone
+        - email
+        - treatment_interest
+  workflows: []
+simulation_time: 2026-09-03T09:00:00-05:00
+timezone: America/Chicago
+seed: 4021
+scheduled_events:
+  - at: 2026-09-03T09:01:00-05:00
+    type: TAG_ADDED
+    payload:
+      contact_id: maria
+      tag: reactivation-approved
+    description: 'Test maria: eligibility still matters even when the entry tag is applied.'
+  - at: 2026-09-03T09:02:00-05:00
+    type: TAG_ADDED
+    payload:
+      contact_id: jordan
+      tag: reactivation-approved
+    description: 'Test jordan: eligibility still matters even when the entry tag is applied.'
+  - at: 2026-09-03T09:03:00-05:00
+    type: TAG_ADDED
+    payload:
+      contact_id: lena
+      tag: reactivation-approved
+    description: 'Test lena: eligibility still matters even when the entry tag is applied.'
+  - at: 2026-09-03T09:04:00-05:00
+    type: TAG_ADDED
+    payload:
+      contact_id: booked-client
+      tag: reactivation-approved
+    description: 'Test booked-client: eligibility still matters even when the entry tag is applied.'
+injectable_events:
+  - id: repeat-maria
+    type: TAG_ADDED
+    payload:
+      contact_id: maria
+      tag: reactivation-approved
+    description: Repeat the entry signal; do not invite Maria twice.
+hidden_facts:
+  reception_follow_up_delay_hours: 30
+  no_show_rate_last_quarter: 0.42
+  second_location_planned: true
+failure_modes:
+  - missing_phone
+  - dnd
+  - cancelled_appointment
+  - late_booking
+  - duplicate_enrollment

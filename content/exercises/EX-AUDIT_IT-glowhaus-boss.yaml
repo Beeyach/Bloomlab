@@ -1,0 +1,75 @@
+id: EX-AUDIT_IT-glowhaus-boss
+type: AUDIT_IT
+title: Audit the consultation path
+mode: pressure
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SELL-evidence-based-audit
+scenario: SC-glowhaus-funnel
+instructions: Audit the authored Glowhaus evidence pack. Write at least three findings, separating
+  VERIFIED, LIKELY and UNKNOWN. Identify the first operating bottleneck and the verification needed
+  before implementation. A public observation does not reveal private workflow logic.
+allowed_features: []
+starting_state: {}
+sales:
+  min_findings: 3
+  evidence:
+    - id: ev-form
+      source: website
+      observation:
+        The consultation request page collects contact details but does not state when staff
+        will reply.
+      direct: true
+    - id: ev-test
+      source: test_enquiry
+      observation: One authorised Monday test enquiry received a reply Tuesday afternoon.
+      direct: true
+    - id: ev-calendar
+      source: website
+      observation:
+        The booking link opens a calendar without explaining who is responsible for a location
+        change.
+      direct: true
+    - id: ev-staff
+      source: phone_call
+      observation:
+        Priya estimates that 58 percent of booked consultations attend; she has not supplied
+        the underlying appointment report.
+      direct: false
+expected_outcomes:
+  - id: a1
+    type: state
+    path: audit.findings_count
+    operator: gte
+    value: 3
+    description: At least three findings.
+  - id: a2
+    type: state
+    path: audit.unsupported_claims
+    operator: equals
+    value: 0
+    description: Nothing claimed that the evidence cannot carry.
+  - id: a3
+    type: state
+    path: audit.verified
+    operator: gte
+    value: 1
+    tier: quality
+    description: At least one finding you observed yourself.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: AUDIT_EVIDENCE_RUBRIC_V1
+  pass_threshold: 70
+hints: []
+fieldwork: null
+portfolio: null
+topics:
+  - prospecting.evidence
+  - prospecting.audit_quality
+  - prospecting.research
+  - bloomwired.audits
+  - judgment.audit_evidence
+  - judgment.uncertainty
+  - judgment.missing_verification

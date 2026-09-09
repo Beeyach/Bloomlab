@@ -1,0 +1,15 @@
+id: VC-willow-veterinary
+client: CL-willow-veterinary
+asset_delivery: text
+voice_id: EXAVITQu4vr4xnSDxMaL
+speech_rate: 1
+style: 0
+stability: 0.55
+allowed_emotion_range:
+  - measured
+language: en
+lines:
+  - id: operating-boundary
+    kind: scenario
+    text: A pet is not just another note on the owner. The records need to stay separate.
+    emotion: measured

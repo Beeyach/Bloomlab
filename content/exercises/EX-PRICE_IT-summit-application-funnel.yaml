@@ -1,13 +1,3 @@
-# PRICE IT (spec §27, §80, §122; EXR-016, PRI-001, PRI-002).
-#
-# The scope, the hours behind it and the cost basis are authored here against SC-summit-discovery,
-# whose economics say the build is 22 hours at risk 2. The learner sees the scope, the client's
-# own requirements and what removing a line leaves Marcus with. They do not see the hours or the
-# hourly cost until they have submitted.
-#
-# There is no target price. The checks ask whether the quote clears what the work costs, carries
-# the risk this client brings, holds the margin the business works to, and charges for the scope
-# it promised. A $2,200 quote and a $3,200 quote both pass.
 id: EX-PRICE_IT-summit-application-funnel
 type: PRICE_IT
 title: Price Summit's application funnel
@@ -33,9 +23,6 @@ starting_state: {}
 pricing:
   currency: USD
   cost:
-    # What an hour of delivery costs this business — the rate Ary works to, authored per exercise
-    # because it is a policy rather than a fact about Marcus (D-161). 22 hours at $55 is $1,210,
-    # which is the floor this quote has to clear.
     hourly_cost: 55
     risk_allowance_percent_per_point: 5
   margin:
@@ -48,25 +35,32 @@ pricing:
   revision_hours: 2
   requirements:
     - id: fewer_unqualified
-      need: >-
-        I keep taking calls with people who were never going to buy. I want to know before the
-        call whether someone can actually afford this.
-      satisfied_by: [application_form, qualification_routing]
+      need:
+        I keep taking calls with people who were never going to buy. I want to know before the call
+        whether someone can actually afford this.
+      satisfied_by:
+        - application_form
+        - qualification_routing
     - id: faster_replies
-      need: >-
-        Someone applies on a Friday and hears nothing until Monday. By then they have booked
-        with someone else.
-      satisfied_by: [qualification_routing, applicant_follow_up]
+      need:
+        Someone applies on a Friday and hears nothing until Monday. By then they have booked with
+        someone else.
+      satisfied_by:
+        - qualification_routing
+        - applicant_follow_up
     - id: calls_actually_happen
       need: About a third of the calls that do get booked never happen.
-      satisfied_by: [discovery_calendar, no_show_recovery]
+      satisfied_by:
+        - discovery_calendar
+        - no_show_recovery
     - id: keep_my_questions
-      need: >-
-        I spent a year working out the questions I ask in Typeform. I do not want to start again.
-      satisfied_by: [typeform_migration]
+      need: I spent a year working out the questions I ask in Typeform. I do not want to start again.
+      satisfied_by:
+        - typeform_migration
     - id: change_it_myself
       need: I need to be able to change a question without booking a call with you.
-      satisfied_by: [handover]
+      satisfied_by:
+        - handover
   scope:
     - id: application_form
       name: Application form
@@ -74,62 +68,73 @@ pricing:
       hours: 4
       consequence: There is nothing for anyone to apply through, so nothing else in this deal runs.
       locked: true
-      dimensions: [deliverables, copy]
+      dimensions:
+        - deliverables
+        - copy
     - id: qualification_routing
       name: Qualification routing
-      description: >-
-        Sorts each application into book now, follow up, or decline, based on the answers.
+      description: Sorts each application into book now, follow up, or decline, based on the answers.
       hours: 5
-      consequence: >-
-        Every application looks the same again and Marcus reads each one himself before deciding.
-      requires: [application_form]
-      dimensions: [deliverables, workflow_complexity]
+      consequence: Every application looks the same again and Marcus reads each one himself before deciding.
+      requires:
+        - application_form
+      dimensions:
+        - deliverables
+        - workflow_complexity
     - id: discovery_calendar
       name: Discovery calendar
       description: A booking calendar with his real availability, buffers and confirmations.
       hours: 3
-      consequence: >-
-        Qualified applicants get an email asking them to reply with times, and Marcus books by hand.
-      dimensions: [deliverables, integration]
+      consequence: Qualified applicants get an email asking them to reply with times, and Marcus books by hand.
+      dimensions:
+        - deliverables
+        - integration
     - id: applicant_follow_up
       name: Follow-up for applicants who go quiet
       description: A short sequence for people who apply and then do not book.
       hours: 3
       consequence: An applicant who does not book on the day hears nothing further.
-      requires: [application_form]
-      dimensions: [deliverables, workflow_complexity]
+      requires:
+        - application_form
+      dimensions:
+        - deliverables
+        - workflow_complexity
     - id: no_show_recovery
       name: No-show recovery
       description: Reminders before the call and a rebooking path for anyone who misses it.
       hours: 2
-      consequence: >-
-        A missed call stays missed unless Marcus notices the empty slot and chases it himself.
-      requires: [discovery_calendar]
-      dimensions: [deliverables, workflow_complexity]
+      consequence: A missed call stays missed unless Marcus notices the empty slot and chases it himself.
+      requires:
+        - discovery_calendar
+      dimensions:
+        - deliverables
+        - workflow_complexity
     - id: typeform_migration
       name: Moving the Typeform questions
-      description: >-
-        Rebuilding his existing questions and bringing across the applications already submitted.
+      description: Rebuilding his existing questions and bringing across the applications already submitted.
       hours: 3
-      consequence: >-
-        Marcus retypes his questions into the new form and his past applications stay in Typeform.
-      dimensions: [migration]
+      consequence: Marcus retypes his questions into the new form and his past applications stay in Typeform.
+      dimensions:
+        - migration
     - id: handover
       name: Handover
-      description: >-
-        A walkthrough recording and a one-page map of what runs when, so he can change a question.
+      description: A walkthrough recording and a one-page map of what runs when, so he can change a question.
       hours: 2
-      consequence: >-
-        Marcus calls you every time a question needs changing, and this becomes support work.
-      dimensions: [support, assumptions]
-  control_dimensions: [revisions, exclusions, rush]
+      consequence: Marcus calls you every time a question needs changing, and this becomes support work.
+      dimensions:
+        - support
+        - assumptions
+  control_dimensions:
+    - revisions
+    - exclusions
+    - rush
   scope_training: false
 written_fields:
   - key: the_number
     label: Explain the number
-    help: >-
-      Three sentences Marcus would accept. What he is getting, what it costs, and why it is not
-      the cheapest quote he has.
+    help:
+      Three sentences Marcus would accept. What he is getting, what it costs, and why it is not the
+      cheapest quote he has.
     rows: 5
     audience: owner
     max_words: 120
@@ -174,8 +179,7 @@ expected_outcomes:
     path: price.rush_justified
     operator: equals
     value: true
-    description: >-
-      The rush fee matches the timeline: charged when the work is compressed, zero when it is not.
+    description: 'The rush fee matches the timeline: charged when the work is compressed, zero when it is not.'
     tier: required
   - id: a7
     type: state
@@ -196,8 +200,7 @@ expected_outcomes:
     path: price.scope.typeform_migration.included
     operator: equals
     value: true
-    description: >-
-      Migration is in the deal and paid for, rather than absorbed as a favour.
+    description: Migration is in the deal and paid for, rather than absorbed as a favour.
     tier: quality
 critical_failures:
   - id: c1
@@ -205,21 +208,28 @@ critical_failures:
     path: price.at_or_above_floor
     operator: equals
     value: true
-    description: >-
-      The total is at or above what delivering the scope costs. A quote below it loses money on
-      every hour of the build.
+    description:
+      The total is at or above what delivering the scope costs. A quote below it loses money
+      on every hour of the build.
 grading:
   mode: mixed
   rubric: PRICING_REASONING_RUBRIC_V1
   pass_threshold: 70
 hints:
   - level: nudge
-    text: >-
+    text:
       Read what each scope line says it leaves Marcus with before you take anything out. A cheaper
       deal that stops answering what he asked for is not cheaper, it is a different deal.
   - level: concept_reminder
-    text: >-
-      Price the whole build first, then decide whether anything comes out. Working the other way
+    text: Price the whole build first, then decide whether anything comes out. Working the other way
       round means the price decides the scope, and you will not be able to defend either.
 fieldwork: null
 portfolio: PF-application-qualification-system
+topics:
+  - pricing.scope
+  - pricing.fixed
+  - pricing.recurring
+  - pricing.deposit
+  - pricing.revisions
+  - pricing.exclusions
+  - pricing.risk

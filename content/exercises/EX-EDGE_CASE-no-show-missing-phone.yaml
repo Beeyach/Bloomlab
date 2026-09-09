@@ -1,8 +1,7 @@
-# EDGE CASE (spec §27): one variable changed — the no-show has no phone number.
 id: EX-EDGE_CASE-no-show-missing-phone
 type: EDGE_CASE
 title: The no-show with no phone number
-mode: independent
+mode: pressure
 difficulty: 3
 estimated_minutes: 15
 skills:
@@ -26,20 +25,27 @@ expected_outcomes:
   - id: a1
     type: event
     event: email.sent
-    count: { exactly: 1 }
-    where: { contact_id: jordan, purpose: rebooking }
+    count:
+      exactly: 1
+    where:
+      contact_id: jordan
+      purpose: rebooking
     description: Jordan receives the rebooking message by email instead.
   - id: a2
     type: event
     event: notification.sent
-    count: { min: 1 }
-    where: { contact_id: jordan }
+    count:
+      min: 1
+    where:
+      contact_id: jordan
     description: The front desk is still notified.
 critical_failures:
   - id: c1
     type: negative
     event: action.skipped
-    where: { contact_id: jordan, action: GHL-WF-SEND-SMS }
+    where:
+      contact_id: jordan
+      action: GHL-WF-SEND-SMS
     description: The workflow must not attempt an SMS to a contact without a phone.
 grading:
   mode: deterministic

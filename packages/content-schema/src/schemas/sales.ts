@@ -250,6 +250,8 @@ const conversationNode = z.strictObject({
   client_message: markdown,
   /** Discovery topics this exchange actually puts on the table (SAL-004). */
   covers: z.array(z.enum(DISCOVERY_TOPICS)).default([]),
+  /** Authored consequences of reaching this branch; replayed from saved learner turns. */
+  flags: z.array(token('Consequence flags')).default([]),
   /** The closing situation staged here (SAL-008). */
   situation: z.enum(CLOSING_SITUATIONS).optional(),
   /** True once the client has agreed with the diagnosis; a pitch before this is early (SAL-005). */

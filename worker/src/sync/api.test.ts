@@ -523,3 +523,72 @@ describe('PORT-001 private metadata sync', () => {
     expect((await push('portfolio_projects', missing)).body.outcomes[0]?.status).toBe('rejected');
   });
 });
+
+describe('Phase 24 client relationship snapshots', () => {
+  it('round-trips owned attempt references, rejects hidden/media fields and reports divergent edits', async () => {
+    const record: SyncRecord = {
+      id: `cp:CL-${n1}`,
+      learner_id: a.learner_id,
+      device_id: deviceA,
+      created_at: '2026-09-09T10:00:00.000Z',
+      updated_at: '2026-09-09T10:00:00.000Z',
+      revision: 1,
+      deleted_at: null,
+      schema_version: 1,
+      client_id: `CL-${n1}`,
+      relationship: 'discovery',
+      journal: [{ id: 'note1', at: '2026-09-09T10:00:00.000Z', text: 'Verify routing ownership.' }],
+      engagements: {
+        'PRJ-field-ready-capstone': {
+          content_version: '2026.09.21',
+          stage_attempts: { audit: { 'EX-AUDIT_IT-glowhaus-boss': 'saved-attempt' } },
+        },
+      },
+    };
+    const push = (value: unknown, token = a.session_token, base_revision = 0) =>
+      call<PushResponse>(
+        '/api/sync/push',
+        { operations: [{ seq: 1, entity: 'client_progress', base_revision, record: value }] },
+        token,
+      );
+    expect((await push(record)).body.outcomes[0]?.status).toBe('applied');
+    const changes = (await call<PullResponse>('/api/sync/pull', { cursor: 0 }, b.session_token))
+      .body.changes;
+    expect(changes[0]?.record).toMatchObject({
+      client_id: record.client_id,
+      engagements: record.engagements,
+    });
+    for (const extra of [
+      { hidden_state: { trust: 99 } },
+      { image_bytes: 'private' },
+      { outcome: 'Revenue doubled' },
+    ])
+      expect((await push({ ...record, ...extra })).body.outcomes[0]?.status).toBe('rejected');
+    const updated = { ...record, updated_at: '2026-09-09T11:00:00.000Z', relationship: 'proposal' };
+    expect((await push(updated, a.session_token, 1)).body.outcomes[0]?.status).toBe('applied');
+    expect(
+      (
+        await push(
+          {
+            ...record,
+            device_id: deviceB,
+            updated_at: '2026-09-09T12:00:00.000Z',
+            relationship: 'paused',
+          },
+          b.session_token,
+          1,
+        )
+      ).body.outcomes[0]?.status,
+    ).toBe('conflict');
+    const stranger = (
+      await call<LinkResponse>('/api/sync/link', {
+        secret: generateSyncKey(),
+        device: { device_id: crypto.randomUUID(), label: 'Other learner' },
+      })
+    ).body;
+    expect(
+      (await call<PullResponse>('/api/sync/pull', { cursor: 0 }, stranger.session_token)).body
+        .changes,
+    ).toEqual([]);
+  });
+});

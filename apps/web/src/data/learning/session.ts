@@ -1,3 +1,4 @@
+import { projectProgress, clientProgressId } from '../../clients/progression';
 import type { ContentBundle } from '@bloomlab/content-schema';
 import {
   buildSession,
@@ -27,18 +28,20 @@ export function sessionContentOf(bundle: ContentBundle): SessionContent {
     ),
     exercises_by_skill: bundle.indexes.exercises_by_skill,
     exercises: Object.fromEntries(
-      bundle.exercises.map((exercise) => [
-        exercise.id,
-        {
-          id: exercise.id,
-          type: exercise.type,
-          mode: exercise.mode,
-          estimated_minutes: exercise.estimated_minutes,
-          skills: exercise.skills,
-          fieldwork_required:
-            exercise.type === 'FIELDWORK' || exercise.fieldwork?.required === true,
-        },
-      ]),
+      bundle.exercises
+        .filter((exercise) => !exercise.placement_area)
+        .map((exercise) => [
+          exercise.id,
+          {
+            id: exercise.id,
+            type: exercise.type,
+            mode: exercise.mode,
+            estimated_minutes: exercise.estimated_minutes,
+            skills: exercise.skills,
+            fieldwork_required:
+              exercise.type === 'FIELDWORK' || exercise.fieldwork?.required === true,
+          },
+        ]),
     ),
   };
 }
@@ -82,6 +85,27 @@ export async function buildLearnerSession(
           )
       : [];
 
+  const [clients, attempts, records] = await Promise.all([
+    database.client_progress.toArray(),
+    database.exercise_attempts.toArray(),
+    database.skill_evidence.toArray(),
+  ]);
+  const projectCandidates = bundle.projects
+    .map((project) => ({
+      project,
+      record: clients.find(
+        (row) =>
+          row.id === clientProgressId(project.client) && row.learner_id === snapshot.learner_id,
+      ),
+    }))
+    .filter(({ project, record }) => Boolean(record?.engagements[project.id]))
+    .sort((a, b) => (b.record?.updated_at ?? '').localeCompare(a.record?.updated_at ?? ''));
+  const active = projectCandidates
+    .map(({ project, record }) => ({
+      project,
+      progress: projectProgress(project, record, attempts, records, snapshot.learner_id, bundle),
+    }))
+    .find(({ progress }) => !progress.complete);
   return buildSession({
     length,
     now: snapshot.now,
@@ -94,7 +118,9 @@ export async function buildLearnerSession(
     content,
     focus: options.focus ?? null,
     pending_fieldwork: [...new Set(pendingFieldwork)],
-    active_project: null,
+    active_project: active
+      ? { id: active.project.id, next_exercises: active.progress.next?.missing ?? [] }
+      : null,
     exclude: options.exclude ?? [],
   });
 }

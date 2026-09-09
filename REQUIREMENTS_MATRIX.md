@@ -23,60 +23,60 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | PRD-002 | Fully asynchronous progression. No calendar locks. Never show "Come back tomorrow" or date-locked curriculum. Learner continues immediately when competency gates pass. | P0 | 6 | PASSED | §7, §143 |
 | PRD-003 | Mastery-gated progression: advancement depends on competency gates and evidence, never on dates and never on quizzes alone. | P0 | 6 | PASSED | §11, §29, §143 |
 | PRD-004 | Substantially usable without runtime AI: curriculum, simulator, progression, exercises, deterministic grading, CRM/Workflow/Funnel Labs, pricing drills, portfolio and saved progress all work with AI Off. | P0 | all | NOT_STARTED | §106, §107, §143, TA§1 |
-| PRD-005 | Real skill transfer: learner can independently diagnose, architect, build, troubleshoot, explain, price, pitch, negotiate and deliver real funnel and GoHighLevel systems. | P0 | 24 | NOT_STARTED | §4, §143, §168 |
-| PRD-006 | Placement assessment (Gate 0) discovers what the learner can skip. Learner is never treated as a GHL novice. | P1 | 24 | NOT_STARTED | §2, §11 |
+| PRD-005 | Real skill transfer: learner can independently diagnose, architect, build, troubleshoot, explain, price, pitch, negotiate and deliver real funnel and GoHighLevel systems. | P0 | 24 | IMPLEMENTED_UNVERIFIED | §4, §143, §168 |
+| PRD-006 | Placement assessment (Gate 0) discovers what the learner can skip. Learner is never treated as a GHL novice. | P1 | 24 | PASSED | §2, §11 |
 | PRD-007 | "30-Day Field Ready" is a suggested pace (~90–120 h at 3–5 h/day), displayed as "FIELD READY CAMPAIGN — Suggested pace: ~30 days at 3–5 hours/day", never as day locks. Learner may finish faster or slower. | P1 | 7 | PASSED | §8 |
-| PRD-008 | Field Ready means capable-not-expert: diagnose common Bloomwired-sized problems, implement core systems, troubleshoot common failures, speak with prospects, write sales communication, scope and price common work, negotiate basic objections, complete selected work in real GHL, recognise when something exceeds competency. | P1 | 24 | NOT_STARTED | §9 |
+| PRD-008 | Field Ready means capable-not-expert: diagnose common Bloomwired-sized problems, implement core systems, troubleshoot common failures, speak with prospects, write sales communication, scope and price common work, negotiate basic objections, complete selected work in real GHL, recognise when something exceeds competency. | P1 | 24 | PASSED | §9 |
 | PRD-009 | Architecture avoids dead ends that would force a rewrite of the learning engine for later commercialisation, without building commercial infrastructure now. | P1 | all | NOT_STARTED | §3, TA§1 |
-| PRD-010 | Curriculum develops four identities at once: Funnel Strategist, GHL Systems Builder, Conversion & Sales Operator, Technical GHL Specialist (last comes later). Learner can start earning before completing. | P1 | 24 | NOT_STARTED | §5 |
-| PRD-011 | Long-term time ratio ≈ 20% instruction / 60% practical work / 20% retrieval, explanation, selling, review; advanced levels more practical. | P1 | 24 | NOT_STARTED | §6 |
+| PRD-010 | Curriculum develops four identities at once: Funnel Strategist, GHL Systems Builder, Conversion & Sales Operator, Technical GHL Specialist (last comes later). Learner can start earning before completing. | P1 | 24 | PASSED | §5 |
+| PRD-011 | Long-term time ratio ≈ 20% instruction / 60% practical work / 20% retrieval, explanation, selling, review; advanced levels more practical. | P1 | 24 | PASSED | §6 |
 | PRD-012 | App copy is short, smart, direct, professional, occasionally playful ("Run it.", "Something broke. Find out why.", "Deal lost. Good decision."). No childish gamification, no "Amazing job, superstar!". | P1 | 7 | PASSED | §158 |
 | PRD-013 | Progress language uses capabilities demonstrated and the states Passed / Needs another run / Demonstrated / Independent / Mastered / Field Ready. No XP, no star ratings. | P1 | 7 | PASSED | §159 |
 | PRD-014 | Rewards are new capabilities, simulator tools, clients, scenarios, Playground features, portfolio projects, skill mastery and territory access — never meaningless points. | P1 | 7 | PARTIAL | §160 |
 | PRD-015 | Signature moments heavily polished: Holo Skill Interaction, First Workflow Execution, Client Case Reveal, Failed Test reveal, Independent Pass recognition, Field Ready (restrained cinematic). | P2 | 26 | NOT_STARTED | §161 |
 | PRD-016 | Sound is optional and subtle (snap, connect, execution, selection, completion), always mutable, never constant. | P3 | 26 | NOT_STARTED | §162 |
-| PRD-017 | Training continually applies to Bloomwired: ICP, offer structure, positioning, pricing, audits, outreach, discovery, proposals, portfolio, client experience, reusable systems, care plans, recurring support. No generic agency-guru scripts as doctrine. | P1 | 24 | NOT_STARTED | §123 |
-| PRD-018 | Scenarios biased toward Bloomwired prospect industries (coaches, consultants, therapists, med spas, photographers, realtors, fitness, pet, home services, wedding vendors, local services) plus additional industries for transfer. | P1 | 24 | NOT_STARTED | §124, §37 |
+| PRD-017 | Training continually applies to Bloomwired: ICP, offer structure, positioning, pricing, audits, outreach, discovery, proposals, portfolio, client experience, reusable systems, care plans, recurring support. No generic agency-guru scripts as doctrine. | P1 | 24 | PASSED | §123 |
+| PRD-018 | Scenarios biased toward Bloomwired prospect industries (coaches, consultants, therapists, med spas, photographers, realtors, fitness, pet, home services, wedding vendors, local services) plus additional industries for transfer. | P1 | 24 | PASSED | §124, §37 |
 
 ## CUR — Curriculum
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
 | CUR-001 | One master skill graph. Campaigns are curated paths that reference skill IDs; skills are never duplicated inside campaigns. | P0 | 5 | PASSED | §10, §144 |
-| CUR-002 | `FIELD_READY` campaign expressed as competency Gates 0–12, not days. | P0 | 6 | PARTIAL | §11 |
-| CUR-003 | Gate 0 Placement assesses funnel reasoning, lead capture, workflow basics, fields vs values, pipeline basics, basic pricing, written prospect response, short spoken discovery; strong basics clear early requirements. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-004 | Gate 1 Funnel Thinking: customer journey, funnel purpose, traffic intent, offers, friction, CTA, conversion, funnel math, bottleneck thinking. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-005 | Gate 2 Lead Systems: lead capture, forms, confirmation, follow-up, CRM capture, pipeline, next action. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-006 | Gate 3 GHL Data Foundations: contacts, tags, custom fields, custom values, opportunities, pipelines, assignments, correct architecture decisions. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-007 | Gate 4 Workflow Foundations: triggers, filters, actions, waits, If/Else, re-entry, timing, communications, pipeline automation. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-008 | Gate 5 Booking and Qualification: forms, surveys, qualification, calendars, routing, reminders, cancellations, reschedules, no-shows. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-009 | Gate 6 Conversion and Copy: page hierarchy, message match, CTA placement, conversion copy, proof, qualification friction, mobile conversion design. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-010 | Gate 7 Diagnosis and QA: workflow troubleshooting, funnel troubleshooting, logs, edge cases, metrics, pre-launch QA, bottleneck diagnosis. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-011 | Gate 8 Prospecting and Audits: ICP, prospect selection, evidence, research, outreach, cold email, follow-up, audit quality. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-012 | Gate 9 Discovery and Selling: cold calls, discovery, Zoom-style calls, listening, questions, diagnosis, explaining systems, pitching outcomes. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-013 | Gate 10 Pricing and Negotiation: scope, fixed pricing, recurring pricing, deposits, revisions, exclusions, risk, negotiation, reducing scope, walking away. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-014 | Gate 11 Proposal and Delivery: proposal, acceptance, onboarding, dependencies, build order, client updates, QA, handoff. | P1 | 24 | NOT_STARTED | §11 |
-| CUR-015 | Gate 12 Field Ready Capstone: no instructional handholding; diagnose → design → price → negotiate → propose → build → test → explain, with part of implementation in real GHL. | P1 | 24 | NOT_STARTED | §11, §155 |
+| CUR-002 | `FIELD_READY` campaign expressed as competency Gates 0–12, not days. | P0 | 6 | PASSED | §11 |
+| CUR-003 | Gate 0 Placement assesses funnel reasoning, lead capture, workflow basics, fields vs values, pipeline basics, basic pricing, written prospect response, short spoken discovery; strong basics clear early requirements. | P1 | 24 | PASSED | §11 |
+| CUR-004 | Gate 1 Funnel Thinking: customer journey, funnel purpose, traffic intent, offers, friction, CTA, conversion, funnel math, bottleneck thinking. | P1 | 24 | PASSED | §11 |
+| CUR-005 | Gate 2 Lead Systems: lead capture, forms, confirmation, follow-up, CRM capture, pipeline, next action. | P1 | 24 | PASSED | §11 |
+| CUR-006 | Gate 3 GHL Data Foundations: contacts, tags, custom fields, custom values, opportunities, pipelines, assignments, correct architecture decisions. | P1 | 24 | PASSED | §11 |
+| CUR-007 | Gate 4 Workflow Foundations: triggers, filters, actions, waits, If/Else, re-entry, timing, communications, pipeline automation. | P1 | 24 | PASSED | §11 |
+| CUR-008 | Gate 5 Booking and Qualification: forms, surveys, qualification, calendars, routing, reminders, cancellations, reschedules, no-shows. | P1 | 24 | PASSED | §11 |
+| CUR-009 | Gate 6 Conversion and Copy: page hierarchy, message match, CTA placement, conversion copy, proof, qualification friction, mobile conversion design. | P1 | 24 | PASSED | §11 |
+| CUR-010 | Gate 7 Diagnosis and QA: workflow troubleshooting, funnel troubleshooting, logs, edge cases, metrics, pre-launch QA, bottleneck diagnosis. | P1 | 24 | PASSED | §11 |
+| CUR-011 | Gate 8 Prospecting and Audits: ICP, prospect selection, evidence, research, outreach, cold email, follow-up, audit quality. | P1 | 24 | PASSED | §11 |
+| CUR-012 | Gate 9 Discovery and Selling: cold calls, discovery, Zoom-style calls, listening, questions, diagnosis, explaining systems, pitching outcomes. | P1 | 24 | PASSED | §11 |
+| CUR-013 | Gate 10 Pricing and Negotiation: scope, fixed pricing, recurring pricing, deposits, revisions, exclusions, risk, negotiation, reducing scope, walking away. | P1 | 24 | PASSED | §11 |
+| CUR-014 | Gate 11 Proposal and Delivery: proposal, acceptance, onboarding, dependencies, build order, client updates, QA, handoff. | P1 | 24 | PASSED | §11 |
+| CUR-015 | Gate 12 Field Ready Capstone: no instructional handholding; diagnose → design → price → negotiate → propose → build → test → explain, with part of implementation in real GHL. | P1 | 24 | IMPLEMENTED_UNVERIFIED | §11, §155 |
 | CUR-016 | Permanent skill map has nine territories — STRATEGIZE, BUILD, AUTOMATE, ARCHITECT, DIAGNOSE, CONNECT, SELL, DELIVER, SCALE — plus JUDGMENT measured centrally across all. | P0 | 5 | PASSED | §12 |
-| CUR-017 | Judgment competencies measured: whether a funnel/automation/GHL/tag-or-field/custom code is needed, whether to contact a prospect, whether evidence supports an audit claim, whether to accept a project, realistic scope/price/complexity, admitting not knowing, what could break, what is missing. Reward "I don't know yet, but this is how I would verify it" over fabricated confidence. | P1 | 24 | NOT_STARTED | §13 |
-| CUR-018 | STRATEGIZE curriculum tiers: Field Ready (customer path … bottleneck reasoning; 11 core funnel families), Practitioner (webinar … course enrollment), Advanced (multi-funnel … advanced diagnosis), Specialist (complete business-system architecture). | P1 | 24 | NOT_STARTED | §14 |
-| CUR-019 | BUILD curriculum: conversion layout, copy, GHL Funnel Builder (current real features), GHL Websites, Forms, Surveys, Calendars, Payments (progressive). | P1 | 24 | NOT_STARTED | §15 |
-| CUR-020 | AUTOMATE curriculum: foundations, core triggers, core actions, wait logic, branching, re-entry, common systems, advanced (modular automation, naming, date logic, webhooks, idempotency, race conditions, large architecture). | P1 | 24 | NOT_STARTED | §16 |
-| CUR-021 | ARCHITECT curriculum: contacts, tags (correct/incorrect use), custom fields, custom values (major competency), pipelines, opportunities, smart lists, companies, custom objects (advanced), data modeling with realistic problems. | P1 | 24 | NOT_STARTED | §17 |
-| CUR-022 | DIAGNOSE curriculum: Bloomwired QA protocol (19 areas), workflow troubleshooting, funnel troubleshooting, deliverability, SMS/phone reliability, analytics (visitor→lead→booked→show→sale, UTM, attribution), experimentation. | P1 | 24 | NOT_STARTED | §18 |
+| CUR-017 | Judgment competencies measured: whether a funnel/automation/GHL/tag-or-field/custom code is needed, whether to contact a prospect, whether evidence supports an audit claim, whether to accept a project, realistic scope/price/complexity, admitting not knowing, what could break, what is missing. Reward "I don't know yet, but this is how I would verify it" over fabricated confidence. | P1 | 24 | PASSED | §13 |
+| CUR-018 | STRATEGIZE curriculum tiers: Field Ready (customer path … bottleneck reasoning; 11 core funnel families), Practitioner (webinar … course enrollment), Advanced (multi-funnel … advanced diagnosis), Specialist (complete business-system architecture). | P1 | 24 | PASSED | §14 |
+| CUR-019 | BUILD curriculum: conversion layout, copy, GHL Funnel Builder (current real features), GHL Websites, Forms, Surveys, Calendars, Payments (progressive). | P1 | 24 | PASSED | §15 |
+| CUR-020 | AUTOMATE curriculum: foundations, core triggers, core actions, wait logic, branching, re-entry, common systems, advanced (modular automation, naming, date logic, webhooks, idempotency, race conditions, large architecture). | P1 | 24 | PASSED | §16 |
+| CUR-021 | ARCHITECT curriculum: contacts, tags (correct/incorrect use), custom fields, custom values (major competency), pipelines, opportunities, smart lists, companies, custom objects (advanced), data modeling with realistic problems. | P1 | 24 | PASSED | §17 |
+| CUR-022 | DIAGNOSE curriculum: Bloomwired QA protocol (19 areas), workflow troubleshooting, funnel troubleshooting, deliverability, SMS/phone reliability, analytics (visitor→lead→booked→show→sale, UTM, attribution), experimentation. | P1 | 24 | PASSED | §18 |
 | CUR-023 | CONNECT curriculum: DNS, JSON, HTTP, webhooks, APIs (current GHL API practice, no obsolete patterns), Git/GitHub, Cloudflare Workers, Google Cloud, JavaScript for operator work; Marketplace/App extension specialist only. | P1 | 25 | NOT_STARTED | §19 |
-| CUR-024 | SELL curriculum: ICP, research, evidence-based audit, prospect qualification, cold email, social outreach, cold calls, discovery, listening, technical discovery, presentation, client language, pricing, scope, negotiation, closing. | P1 | 24 | NOT_STARTED | §20 |
-| CUR-025 | DELIVER curriculum: proposal, change requests, onboarding, build order dependencies, client communication, handoff, retention (later). | P1 | 24 | NOT_STARTED | §21 |
+| CUR-024 | SELL curriculum: ICP, research, evidence-based audit, prospect qualification, cold email, social outreach, cold calls, discovery, listening, technical discovery, presentation, client language, pricing, scope, negotiation, closing. | P1 | 24 | PASSED | §20 |
+| CUR-025 | DELIVER curriculum: proposal, change requests, onboarding, build order dependencies, client communication, handoff, retention (later). | P1 | 24 | PASSED | §21 |
 | CUR-026 | SCALE curriculum: templates, naming standards, deployment checklist, snapshots, vertical systems (Bloomwired Med Spa Core, Coach Lead Path, Home Services Follow-Up, Photographer Inquiry System), agency architecture; SaaS / white label / Marketplace specialist only. | P2 | 25 | NOT_STARTED | §22 |
 | CUR-027 | GHL AI curriculum taught only after deterministic understanding; covers when workflows beat AI, Conversation AI, Voice AI, workflow AI actions, agents, knowledge bases, tools, MCP/external tools, escalation, permissions, hallucination risk, cost, logs, irreversible actions. Product names verified from official GHL sources. | P2 | 25 | NOT_STARTED | §23 |
 | CUR-028 | Supporting GHL specialties present in the full graph (reputation, reviews, Social Planner, courses, memberships, communities, client portal, affiliates, ecommerce, blogs, SEO, IVR, prospecting tool, ad reporting, rentals, services, resources, contracts, estimates, invoices, payment links, subscriptions, advanced reporting); not all in Field Ready. | P2 | 25 | NOT_STARTED | §24 |
-| CUR-029 | Learner increasingly writes copy without automatically using AI. | P1 | 24 | NOT_STARTED | §15 |
-| CUR-030 | Starter projects: Lead Capture System, Consultation Booking, Application Funnel, Reactivation, Full Capstone (complete fictional Bloomwired client). | P1 | 24 | NOT_STARTED | §154 |
-| CUR-031 | Capstone exam: no normal hints; learner receives business, offers, staff, metrics, current systems, problems, hidden edge cases, client communications, budget constraints; must diagnose, architect, build, test, troubleshoot, price, negotiate, propose, explain; reasoning questions asked; major implementation in real GHL. | P1 | 24 | NOT_STARTED | §155 |
+| CUR-029 | Learner increasingly writes copy without automatically using AI. | P1 | 24 | PASSED | §15 |
+| CUR-030 | Starter projects: Lead Capture System, Consultation Booking, Application Funnel, Reactivation, Full Capstone (complete fictional Bloomwired client). | P1 | 24 | PASSED | §154 |
+| CUR-031 | Capstone exam: no normal hints; learner receives business, offers, staff, metrics, current systems, problems, hidden edge cases, client communications, budget constraints; must diagnose, architect, build, test, troubleshoot, price, negotiate, propose, explain; reasoning questions asked; major implementation in real GHL. | P1 | 24 | IMPLEMENTED_UNVERIFIED | §155 |
 | CUR-032 | Post-Field-Ready paths: Automation Specialist, Funnel & Conversion Specialist, Sales Operator, Technical GHL Specialist, Agency Systems, GHL AI Specialist, recommended Bloomwired Operator Path. | P2 | 25 | NOT_STARTED | §157 |
 | CUR-033 | Content coverage matrix (Skill × Learn / Guided / Practice / Fix / Independent / Pressure / Fieldwork / Sales Use) generated from content data, not maintained by hand. | P1 | 5 | PASSED | §137 |
-| CUR-034 | Minimum curriculum: one master graph, Field Ready path, practical work for every core skill, independent assessment, retrieval, pricing, negotiation, calls, written sales, proposals, prospecting, real GHL fieldwork. | P0 | 24 | NOT_STARTED | §144 |
-| CUR-035 | Field Ready content complete from placement through capstone before advanced curriculum; no hundreds of shallow lessons before the learning loop works. | P1 | 24 | NOT_STARTED | PHASE 24 |
+| CUR-034 | Minimum curriculum: one master graph, Field Ready path, practical work for every core skill, independent assessment, retrieval, pricing, negotiation, calls, written sales, proposals, prospecting, real GHL fieldwork. | P0 | 24 | PASSED | §144 |
+| CUR-035 | Field Ready content complete from placement through capstone before advanced curriculum; no hundreds of shallow lessons before the learning loop works. | P1 | 24 | PASSED | PHASE 24 |
 | CUR-036 | Academy behaves like an interactive editorial publication: strong typography, short sections, diagrams, inline simulations, interaction, expandable depth. Not "video + paragraph + next lesson". Phase 12: the `<Simulation>` embed runs the engine in memory and lists its execution records (`academy.test.tsx`). | P1 | 8 | PASSED | §76 |
 
 ## MAS — Mastery
@@ -92,7 +92,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | MAS-007 | Assistance meter tracks Independent / Light Assistance / Guided / Heavy Assistance quietly, without shaming; mastery requires sufficient independent evidence. | P1 | 6 | PASSED | §34 |
 | MAS-008 | Mastery engine is its own TypeScript package (`packages/mastery-engine`): inputs skill definition, evidence history, assistance, difficulty, recency, critical failures, fieldwork requirement; outputs state, confidence, missing_requirements, review_priority. No AI. | P0 | 6 | PASSED | §102, TA§68 |
 | MAS-009 | Review scheduler is evidence-based (last_demonstrated, failure_rate, mastery_level, importance, review_due), not an Anki clone. | P1 | 6 | PASSED | TA§69 |
-| MAS-010 | Field Ready pass requires sufficient evidence across funnel strategy, GHL implementation, automation, CRM architecture, troubleshooting, sales, pricing, negotiation, fieldwork, client explanation — never one overall percentage. | P0 | 24 | NOT_STARTED | §156 |
+| MAS-010 | Field Ready pass requires sufficient evidence across funnel strategy, GHL implementation, automation, CRM architecture, troubleshooting, sales, pricing, negotiation, fieldwork, client explanation — never one overall percentage. | P0 | 24 | PASSED | §156 |
 | MAS-011 | A heavily assisted pass is not independent mastery evidence. | P0 | 6 | PASSED | §28, §34 |
 
 ## EXR — Exercise Engine
@@ -119,7 +119,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-018 | EXPLAIN IT: technical explanation for different audiences (business owner, another GHL builder). | P1 | 16 | PASSED | §27 |
 | EXR-019 | REBUILD BLIND: no lesson, no step-by-step support; hints reduce independence evidence. Phase 12: a reminder system built through the command layer and graded from the two texts the engine sent 24 h and 2 h before the appointment (`exerciseRuntime.test.ts`). | P1 | 9 | PASSED | §27 |
 | EXR-020 | FIELDWORK: real GHL work; Bloomlab collects screenshots, configuration answers, explanation, test results, then questions reasoning. | P1 | 22 | IMPLEMENTED_UNVERIFIED | §27 |
-| EXR-021 | BOSS CLIENT: persistent multi-stage engagement (audit → discovery → architecture → pricing → negotiation → proposal → implementation → QA → launch → reporting → change request); earlier decisions affect later consequences. | P1 | 24 | NOT_STARTED | §27 |
+| EXR-021 | BOSS CLIENT: persistent multi-stage engagement (audit → discovery → architecture → pricing → negotiation → proposal → implementation → QA → launch → reporting → change request); earlier decisions affect later consequences. | P1 | 24 | PASSED | §27 |
 | EXR-022 | Hint system: Nudge, Concept Reminder, Worked Example; assistance tracked per attempt. | P1 | 9 | PASSED | §28 |
 | EXR-023 | Workflow scoring example (correctness 45%, edge cases 20%, architecture 15%, maintainability 10%, explanation 10%) with critical-failure override. Phase 12: weighted dimensions with critical override in `packages/exercise-engine` (D-113, `grade.test.ts`) and applied to the authored workflow exercises (`authoredGrading.test.ts`). | P1 | 12 | PASSED | §31 |
 | EXR-024 | No stub / no static replacement: a requirement that logs to console, shows fake success, is a static placeholder, says "coming soon", works only for a screenshot, or opens a nonfunctional modal stays PARTIAL. Interactive simulation is never replaced by a diagram, negotiation by an article, Funnel Autopsy by a quiz. Phase 13: no stub added; the Funnel Lab's every mode runs the engine, and the one scope boundary (checkout beyond a single payment) is named in the interface and the registry rather than faked (D-124). Phase 12: no stub added; every Lab surface runs the engine. | P0 | all | PARTIAL | §129, §130 |
@@ -226,11 +226,11 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | SAL-007 | Client language: explanation without unnecessary GHL jargon. | P1 | 16 | PASSED | §20 |
 | SAL-008 | Closing: asking for commitment, proposal follow-up, ghosting, decision delay, next-step control. | P1 | 16 | PASSED | §20 |
 | SAL-009 | Proposal structure: problem, recommendation, scope, price, timeline, assumptions, exclusions, acceptance. | P1 | 17 | PASSED | §21 |
-| SAL-010 | Change-request scope control. | P1 | 24 | NOT_STARTED | §21 |
-| SAL-011 | Onboarding: access, credentials, domains, calendars, users, branding, copy, payment, expectations. | P1 | 24 | NOT_STARTED | §21 |
-| SAL-012 | Build order taught as dependencies (data → pipeline → calendar → forms → workflows → funnel → tracking → QA), not random building. | P1 | 24 | NOT_STARTED | §21 |
+| SAL-010 | Change-request scope control. | P1 | 24 | PASSED | §21 |
+| SAL-011 | Onboarding: access, credentials, domains, calendars, users, branding, copy, payment, expectations. | P1 | 24 | PASSED | §21 |
+| SAL-012 | Build order taught as dependencies (data → pipeline → calendar → forms → workflows → funnel → tracking → QA), not random building. | P1 | 24 | PASSED | §21 |
 | SAL-013 | Client communication types: update, blocker, delay, approval, revision, technical explanation. | P1 | 16 | PASSED | §21 |
-| SAL-014 | Handoff: documentation, training, ownership, support. | P1 | 24 | NOT_STARTED | §21 |
+| SAL-014 | Handoff: documentation, training, ownership, support. | P1 | 24 | PASSED | §21 |
 | SAL-015 | Retention (later): reporting, maintenance, retainer, expansion, referral, account strategy. | P2 | 25 | NOT_STARTED | §21 |
 | SAL-016 | Scope training: deliverables, assumptions, exclusions, revisions, dependencies, location count, workflow complexity, migration, integration, rush, copy, design, support. | P1 | 17 | PASSED | §20 |
 
@@ -475,7 +475,7 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 | CNT-006 | Build-time compilation `source → validate → resolve → compile → optimized bundle`; the giant content folder is never parsed at runtime. | P0 | 5 | PASSED | §100, TA§55 |
 | CNT-007 | Content version recorded on every release; attempts preserve version metadata so old evidence stays historically valid. | P0 | 5 | PASSED | §101 |
 | CNT-008 | Client schema: id, business_name, industry, locations, team, offers, lead_sources, current_systems, metrics, problems, relationship_state, assets, hidden_facts, voice, history. | P0 | 5 | PASSED | §38 |
-| CNT-009 | Persistent fictional clients with persistent state across the §37 industries (med spa, coach, consultant, therapist, photographer, realtor, gym, pet service, HVAC, roofing, cleaning, remodeling, dentist, chiropractor, law firm, accounting, recruiting, course creator, wedding vendor, B2B service). | P1 | 24 | NOT_STARTED | §37 |
+| CNT-009 | Persistent fictional clients with persistent state across the §37 industries (med spa, coach, consultant, therapist, photographer, realtor, gym, pet service, HVAC, roofing, cleaning, remodeling, dentist, chiropractor, law firm, accounting, recruiting, course creator, wedding vendor, B2B service). | P1 | 24 | PASSED | §37 |
 | CNT-010 | Glossary content type and search integration. | P2 | 24 | NOT_STARTED | §98, TA§71 |
 | CNT-011 | Content tests run in CI (all IDs valid, no missing prerequisites, no unknown GHL features). | P0 | 5 | PASSED | TA§73 |
 

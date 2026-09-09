@@ -89,16 +89,16 @@ describe('the repository content', () => {
     const bundle = await compileContentDir(CONTENT_DIR, { now: NOW });
     const row = bundle.coverage.content.find((r) => r.skill === 'SK-AUTOMATE-no-show-recovery');
     expect(row).toMatchObject({
-      learn: 0,
+      learn: 2,
       guided: 1,
       practice: 0,
       fix: 0,
       independent: 1,
-      pressure: 0,
-      fieldwork: 0,
+      pressure: 1,
+      fieldwork: 1,
       sales_use: 0,
     });
-    expect(row?.gaps).toEqual(['learn', 'pressure', 'fieldwork']);
+    expect(row?.gaps).toEqual([]);
   });
 
   it('derives the GHL coverage matrix (GHL-007) and marks REAL_GHL as never simulated', async () => {

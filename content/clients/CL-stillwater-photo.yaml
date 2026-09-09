@@ -1,0 +1,67 @@
+id: CL-stillwater-photo
+business_name: Stillwater Studio
+industry: photographer
+locations:
+  - name: Stillwater Studio main office
+    city: Portland
+    region: OR
+    timezone: America/Los_Angeles
+team:
+  - name: Leo Alvarez
+    role: Photographer and owner
+    notes: Commercial licensing and travel change the quote; automatic fixed-price acceptance is
+      inappropriate.
+  - name: Client services team
+    role: Enquiry response
+    notes: Confirm the actual response owner and absence cover before implementation.
+offers:
+  - name: Brand photography session
+    price: 1800
+    billing: package
+    notes: Commercial licensing and travel change the quote; automatic fixed-price acceptance is
+      inappropriate.
+lead_sources:
+  - Instagram portfolio
+current_systems:
+  - Email briefs
+  - a manual availability sheet
+metrics:
+  monthly_leads: 42
+problems:
+  - Prospects request dates without stating usage rights, team size or location.
+  - Commercial licensing and travel change the quote; automatic fixed-price acceptance is
+    inappropriate.
+relationship_state:
+  stage: prospect
+  since: 2026-09-09
+  notes: Fictional training prospect; no real engagement or results claimed.
+assets:
+  - kind: document
+    name: Initial business brief
+    notes: Commercial licensing and travel change the quote; automatic fixed-price acceptance is
+      inappropriate.
+hidden_facts:
+  usage_rights: true
+voice:
+  character: VC-stillwater-photo
+  tone: Practical and specific about the stated operating constraint.
+  speaking_style: Asks for a concrete process and a named owner before discussing implementation.
+  sample_phrases:
+    - A date is not a quote until I know how the photographs will be used.
+history:
+  - date: 2026-09-09
+    event:
+      'Training brief received: Prospects request dates without stating usage rights, team size or
+      location.'
+hidden_state:
+  trust: 40
+  urgency: 55
+  price_sensitivity: 60
+  frustration: 45
+  technical_sophistication: 35
+  fear: 40
+  previous_bad_experience: 30
+  alternative_provider_strength: 45
+  actual_budget: 2600
+  stated_budget: 1820
+  decision_authority: sole

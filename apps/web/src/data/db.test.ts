@@ -10,6 +10,7 @@ describe('BloomlabDatabase', () => {
     expect(database.tables.map((table) => table.name).sort()).toEqual([
       'call_recordings',
       'campaign_progress',
+      'client_progress',
       'device',
       'evidence_assets',
       'exercise_attempts',

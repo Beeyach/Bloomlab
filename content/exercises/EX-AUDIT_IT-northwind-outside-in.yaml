@@ -1,9 +1,7 @@
-# AUDIT IT (spec §27, EXR-013, SAL-001): the learner writes the findings, and every one of them
-# is Verified, Likely or Unknown. Only the items marked `direct` here can carry a Verified.
 id: EX-AUDIT_IT-northwind-outside-in
 type: AUDIT_IT
 title: Audit Northwind from the outside
-mode: practice
+mode: pressure
 difficulty: 3
 estimated_minutes: 30
 skills:
@@ -26,46 +24,40 @@ sales:
   evidence:
     - id: ev-nw-enquiry
       source: test_enquiry
-      observation: >-
-        You submitted the Request Service form at 11:00 on Wednesday, from a real address, asking
-        about a failing condenser.
+      observation:
+        You submitted the Request Service form at 11:00 on Wednesday, from a real address,
+        asking about a failing condenser.
       direct: true
     - id: ev-nw-reply-22h
       source: email_reply
-      observation: >-
-        The reply came by email at 09:12 on Thursday morning, 22 hours after you submitted it.
+      observation: The reply came by email at 09:12 on Thursday morning, 22 hours after you submitted it.
       direct: true
     - id: ev-nw-no-text
       source: test_enquiry
-      observation: >-
-        Nothing else arrived: no text, no second email, no call to the number you gave.
+      observation: 'Nothing else arrived: no text, no second email, no call to the number you gave.'
       direct: true
     - id: ev-nw-form-fields
       source: website
-      observation: >-
-        The website form asks for name, phone, email, address and the problem, and says "we will
-        get back to you".
+      observation:
+        The website form asks for name, phone, email, address and the problem, and says "we
+        will get back to you".
       direct: true
     - id: ev-nw-ads-page
       source: landing_page
-      observation: >-
-        The Google Ads landing page has the same form and no phone number above the fold.
+      observation: The Google Ads landing page has the same form and no phone number above the fold.
       direct: true
     - id: ev-nw-hours
       source: google_business_profile
-      observation: >-
-        The profile lists hours as 7:00 to 17:00 weekdays and says "24/7 emergency service".
+      observation: The profile lists hours as 7:00 to 17:00 weekdays and says "24/7 emergency service".
       direct: true
     - id: ev-nw-reviews
       source: review
-      observation: >-
-        Three reviews in the last two months mention leaving a message and having to call again.
+      observation: Three reviews in the last two months mention leaving a message and having to call again.
       direct: false
     - id: ev-nw-competitor
       source: ad
-      observation: >-
-        Two competitors advertising on the same search show a click-to-call extension; Northwind's
-        ad does not.
+      observation: Two competitors advertising on the same search show a click-to-call extension;
+        Northwind's ad does not.
       direct: false
 expected_outcomes:
   - id: a1
@@ -92,8 +84,14 @@ grading:
   mode: mixed
   rubric: AUDIT_EVIDENCE_RUBRIC_V1
   pass_threshold: 70
-hints:
-  - level: nudge
-    text: The 22-hour reply is something you watched happen. How they handle a quote after a technician leaves is not, however sure you feel about it.
+hints: []
 fieldwork: null
 portfolio: null
+topics:
+  - prospecting.evidence
+  - prospecting.audit_quality
+  - prospecting.research
+  - bloomwired.audits
+  - judgment.audit_evidence
+  - judgment.uncertainty
+  - judgment.missing_verification

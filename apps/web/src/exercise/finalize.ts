@@ -266,7 +266,9 @@ async function finalizeOneAttempt(
             ? 'retrieval'
             : exercise.type === 'FIELDWORK'
               ? 'fieldwork'
-              : 'exercise',
+              : exercise.placement_area
+                ? 'placement'
+                : 'exercise',
         id: exercise.id,
       },
       exercise_id: exercise.id,

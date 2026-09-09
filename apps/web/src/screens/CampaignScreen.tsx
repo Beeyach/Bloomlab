@@ -66,17 +66,55 @@ function Gate({
             Assesses {plural(gate.total, 'capability', 'capabilities')} you may already have;
             {gate.cleared.length > 0
               ? ` ${plural(gate.cleared.length, 'is', 'are')} already demonstrated.`
-              : ' none demonstrated yet, so the campaign starts at Gate 1.'}
+              : ' take placement to show what you already know, or begin wherever your prerequisites allow.'}
           </p>
-        ) : gate.total === 0 ? (
+        ) : gate.total === 0 && !definition?.projects_required ? (
           <p className={styles.criteria}>
             The capabilities for this gate are authored in a later content phase.
           </p>
         ) : (
           <p className={styles.criteria}>
-            {gate.passed_count} of {gate.total} capabilities demonstrated · pass with{' '}
-            {definition ? criteriaWords(definition.pass_criteria) : 'independent demonstrations'}
+            {gate.total > 0
+              ? `${gate.passed_count} of ${gate.total} capabilities demonstrated · pass with `
+              : 'Complete the required project evidence. '}
+            {gate.total > 0
+              ? definition
+                ? criteriaWords(definition.pass_criteria)
+                : 'independent demonstrations'
+              : ''}
           </p>
+        )}
+        {definition?.placement && (
+          <ul className={styles.skills}>
+            {content.exercises
+              .filter((exercise) => exercise.placement_area)
+              .map((exercise) => (
+                <li key={exercise.id} className={styles.skill}>
+                  <Link className={styles.skillLink} to={`/exercise/${exercise.id}`}>
+                    {exercise.title}
+                  </Link>
+                  <span className={styles.skillNote}>{exercise.estimated_minutes} min</span>
+                </li>
+              ))}
+          </ul>
+        )}
+        {definition && definition.projects.length > 0 && (
+          <ul className={styles.skills}>
+            {definition.projects.map((id) => (
+              <li key={id} className={styles.skill}>
+                <Link className={styles.skillLink} to={`/projects/${id}`}>
+                  {content.projects.find((row) => row.id === id)?.title ?? 'Project'}
+                </Link>
+                <span className={styles.skillNote}>
+                  {definition.projects_required
+                    ? gate.missing_projects?.includes(id)
+                      ? 'Project evidence required'
+                      : 'Project evidence complete'
+                    : 'Practical project'}
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
         {gate.skills.length > 0 && (
           <ul className={styles.skills}>
@@ -124,7 +162,7 @@ export default function CampaignScreen() {
   }
 
   const passed = evaluation?.passed_gates.length ?? 0;
-  const gatesWithSkills = evaluation?.gates.filter((g) => g.total > 0 && g.status !== 'optional');
+  const gatesWithSkills = evaluation?.gates.filter((g) => g.status !== 'optional');
 
   return (
     <Stack as="section" gap={6} className={styles.screen} aria-labelledby="campaign-title">
@@ -134,6 +172,9 @@ export default function CampaignScreen() {
         </h1>
         <p className={styles.pace}>Campaign · {definition.pace_hint}</p>
         <p className={styles.lead}>{definition.summary}</p>
+        <Link className={styles.skillLink} to="/field-ready">
+          View Field Ready evidence and completion
+        </Link>
         {evaluation && gatesWithSkills && (
           <p className={styles.standing}>
             {evaluation.complete

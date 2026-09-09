@@ -1,12 +1,12 @@
-# WRITE IT (EXR-014): the reply when a cold email lands, and the recap that holds a call together.
 id: EX-WRITE_IT-northwind-interested-reply
 type: WRITE_IT
 title: He replied. Now what?
-mode: practice
+mode: pressure
 difficulty: 2
 estimated_minutes: 20
 skills:
   - SK-SELL-discovery-call
+  - SK-SELL-written-prospect-response
 client: CL-northwind-hvac
 format: interested_reply
 instructions: |
@@ -61,8 +61,10 @@ grading:
   mode: mixed
   rubric: WRITTEN_COMMUNICATION_RUBRIC_V2
   pass_threshold: 70
-hints:
-  - level: nudge
-    text: 'A price with no diagnosis behind it is a guess. Saying so is not dodging: it is the reason for the call.'
+hints: []
 fieldwork: null
 portfolio: null
+topics:
+  - prospecting.outreach
+  - prospecting.qualification
+time_category: retrieval

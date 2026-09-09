@@ -1,0 +1,15 @@
+id: VC-oakfold-remodeling
+client: CL-oakfold-remodeling
+asset_delivery: text
+voice_id: EXAVITQu4vr4xnSDxMaL
+speech_rate: 1
+style: 0
+stability: 0.55
+allowed_emotion_range:
+  - measured
+language: en
+lines:
+  - id: operating-boundary
+    kind: scenario
+    text: A consultation is useful only if the project could fit our next opening.
+    emotion: measured

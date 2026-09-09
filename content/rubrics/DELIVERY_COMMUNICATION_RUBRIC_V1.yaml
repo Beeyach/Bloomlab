@@ -1,0 +1,34 @@
+id: DELIVERY_COMMUNICATION_RUBRIC_V1
+version: 1
+title: Accountable delivery communication
+applies_to:
+  - WRITE_IT
+model_class: cheap
+output_schema: ai_grading_v1
+rewards_verified_uncertainty: true
+items:
+  - id: r1
+    tier: critical
+    criterion:
+      Makes no unsupported completion, access, test, acceptance or commercial promise. Names
+      unknowns and how to verify them.
+    weight: 5
+  - id: r2
+    tier: required
+    criterion:
+      Responds to every requested dependency with a concrete owner, action and verification or
+      acceptance condition.
+    weight: 4
+  - id: r3
+    tier: required
+    criterion: Protects the agreed scope, payment boundary and delivery dependencies without hiding
+      consequences from the client.
+    weight: 4
+  - id: r4
+    tier: required
+    criterion: Gives the reader a clear next step and uses language appropriate to their role.
+    weight: 3
+  - id: r5
+    tier: quality
+    criterion: Explains tradeoffs and recovery choices without blaming the client or inventing certainty.
+    weight: 2

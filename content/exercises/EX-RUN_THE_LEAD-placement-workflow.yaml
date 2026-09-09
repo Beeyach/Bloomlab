@@ -1,0 +1,56 @@
+id: EX-RUN_THE_LEAD-placement-workflow
+type: RUN_THE_LEAD
+title: Placement · predict the workflow
+mode: independent
+difficulty: 1
+estimated_minutes: 10
+skills:
+  - SK-AUTOMATE-workflow-foundations
+scenario: SC-glowhaus-no-show
+instructions: >
+  Placement: work from what you already know. You may skip this assessment and learn the capability
+  instead. This assesses the beginner requirement; later pressure tests and fieldwork still apply.
+
+
+  Maria books a consultation for tomorrow at 3 pm.
+
+
+  Before running anything, write down: which workflow enrolls her, what message she receives,
+
+  and which tag she has afterwards. Then run her through and compare your prediction with the
+
+  execution log.
+allowed_features:
+  - GHL-WF-CUSTOMER-BOOKED-APPOINTMENT
+  - GHL-WF-SEND-SMS
+  - GHL-WF-ADD-CONTACT-TAG
+starting_state:
+  contact_id: maria
+expected_outcomes:
+  - id: a1
+    type: event
+    event: sms.sent
+    count:
+      exactly: 1
+    where:
+      contact_id: maria
+    description: One confirmation text is sent.
+  - id: a2
+    type: sequence
+    before: sms.sent
+    after: tag.added
+    description: The text goes out before the booked tag is added, as the workflow is ordered.
+  - id: a3
+    type: state
+    path: prediction.tag
+    operator: equals
+    value: booked
+    description: The learner predicted the booked tag.
+critical_failures: []
+grading:
+  mode: deterministic
+  pass_threshold: 70
+hints: []
+fieldwork: null
+portfolio: null
+placement_area: workflow_basics

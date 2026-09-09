@@ -1,13 +1,3 @@
-# The proposal (SAL-009, EXR-014, EXR-010).
-#
-# Eight sections, and all eight are required: a proposal missing its assumptions or its
-# acceptance is the one that turns into an argument in week four. Each section is its own answer
-# with its own cap, because the failure mode of proposal writing is a long recommendation and a
-# one-line scope.
-#
-# This Phase 17 proposal drill is deliberately standalone. Persistent project continuity belongs
-# to the Boss Client later, so this exercise gives the priced scope it is asking the learner to
-# turn into a proposal rather than pretending it can read a previous PRICE IT attempt.
 id: EX-WRITE_IT-summit-proposal
 type: WRITE_IT
 title: Write the Summit proposal
@@ -42,18 +32,15 @@ sales:
   evidence:
     - id: ev-discovery-volume
       source: phone_call
-      observation: >-
-        Marcus takes about twelve discovery calls a month and says four of them are worth having.
+      observation: Marcus takes about twelve discovery calls a month and says four of them are worth having.
       direct: true
     - id: ev-typeform
       source: document
-      observation: >-
-        The Typeform he uses now asks nine questions, including budget and timeframe.
+      observation: The Typeform he uses now asks nine questions, including budget and timeframe.
       direct: true
     - id: ev-reply-delay
       source: test_enquiry
-      observation: >-
-        A test application submitted on Friday afternoon got its first reply on Monday at 10am.
+      observation: A test application submitted on Friday afternoon got its first reply on Monday at 10am.
       direct: true
     - id: ev-no-shows
       source: phone_call
@@ -86,8 +73,7 @@ written_fields:
     proposal_section: scope
   - key: price
     label: The price
-    help: >-
-      The project fee, the deposit, when the rest is due, and any monthly fee. Numbers, not ranges.
+    help: The project fee, the deposit, when the rest is due, and any monthly fee. Numbers, not ranges.
     rows: 4
     audience: owner
     max_words: 90
@@ -101,8 +87,7 @@ written_fields:
     proposal_section: timeline
   - key: assumptions
     label: What you are assuming
-    help: >-
-      The things you have taken as true to price it this way. Where you are wrong, the price moves.
+    help: The things you have taken as true to price it this way. Where you are wrong, the price moves.
     rows: 5
     audience: owner
     max_words: 120
@@ -116,8 +101,7 @@ written_fields:
     proposal_section: exclusions
   - key: acceptance
     label: How he accepts it
-    help: >-
-      The one thing you are asking him to do, and what happens next once he does it.
+    help: The one thing you are asking him to do, and what happens next once he does it.
     rows: 3
     audience: owner
     max_words: 70
@@ -150,8 +134,7 @@ expected_outcomes:
     path: message.fields.problem.citations
     operator: gte
     value: 1
-    description: >-
-      The problem section rests on something observed in discovery, not on a general claim.
+    description: The problem section rests on something observed in discovery, not on a general claim.
     tier: required
   - id: a5
     type: state
@@ -165,8 +148,7 @@ expected_outcomes:
     path: message.fields.assumptions.word_count
     operator: gte
     value: 25
-    description: >-
-      The assumptions section says something. One line here is where scope arguments start.
+    description: The assumptions section says something. One line here is where scope arguments start.
     tier: quality
 critical_failures: []
 grading:
@@ -174,8 +156,13 @@ grading:
   pass_threshold: 70
 hints:
   - level: nudge
-    text: >-
-      Write the assumptions and exclusions before the recommendation. They are the two sections
-      that decide whether the rest of it holds when the work starts.
+    text:
+      Write the assumptions and exclusions before the recommendation. They are the two sections that
+      decide whether the rest of it holds when the work starts.
 fieldwork: null
 portfolio: PF-application-qualification-system
+topics:
+  - delivery.proposal
+  - delivery.acceptance
+  - bloomwired.proposals
+time_category: retrieval

@@ -1,3 +1,4 @@
+import { BOSS_STAGES, CAPSTONE_INPUTS, CAPSTONE_ACTIONS } from './fieldReady.ts';
 import { z } from 'zod';
 
 import {
@@ -26,7 +27,20 @@ export const ProjectSchema = z
         z.strictObject({
           id: z.string().regex(/^s[0-9]+$|^[a-z][a-z0-9_-]*$/),
           name: z.string().min(3),
+          engagement_stage: z.enum(BOSS_STAGES).optional(),
+          actions: z.array(z.enum(CAPSTONE_ACTIONS)).default([]),
           exercises: z.array(exerciseRef).min(1),
+          conditional_exercises: z
+            .array(
+              z.strictObject({
+                from_stage: z.string().min(1),
+                from_exercise: exerciseRef,
+                choice: z.string().regex(/^[a-z][a-z0-9_]*$/),
+                exercises: z.array(exerciseRef).min(1),
+                consequence: markdown,
+              }),
+            )
+            .default([]),
           deliverable: z.string().min(5),
         }),
       )
@@ -35,6 +49,10 @@ export const ProjectSchema = z
     portfolio: portfolioRef.nullable(),
     /** Capstone: no normal hints; reasoning questions asked afterwards (§155). */
     capstone: z.boolean().default(false),
+    boss_client: z.boolean().default(false),
+    inputs: z
+      .array(z.strictObject({ category: z.enum(CAPSTONE_INPUTS), brief: markdown }))
+      .default([]),
     reasoning_questions: z.array(z.string().min(5)).default([]),
   })
   .superRefine((project, ctx) => {
@@ -46,9 +64,27 @@ export const ProjectSchema = z
     );
     requireUnique(
       ctx,
-      project.stages.flatMap((s) => s.exercises),
+      project.stages.flatMap((s) => [
+        ...s.exercises,
+        ...s.conditional_exercises.flatMap((rule) => rule.exercises),
+      ]),
       ['stages'],
       'exercise across stages',
+    );
+    project.stages.forEach((stage, index) =>
+      stage.conditional_exercises.forEach((rule) => {
+        const source = project.stages.findIndex((s) => s.id === rule.from_stage);
+        if (
+          source < 0 ||
+          source >= index ||
+          !project.stages[source]?.exercises.includes(rule.from_exercise)
+        )
+          ctx.addIssue({
+            code: 'custom',
+            path: ['stages', index, 'conditional_exercises'],
+            message: 'A consequence must reference an exercise in an earlier stage',
+          });
+      }),
     );
     if (project.capstone && project.reasoning_questions.length === 0) {
       ctx.addIssue({

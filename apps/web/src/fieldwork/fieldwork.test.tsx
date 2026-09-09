@@ -18,7 +18,7 @@ import { emptyFieldwork, completionMissing } from './proof';
 import { checkpointProof } from './checkpoint';
 import { selectEvidence, uploadEvidence, deleteEvidence } from './assets';
 import { Fieldwork } from './Fieldwork';
-const exercise = content.exercises.find((e) => e.type === 'FIELDWORK')!;
+const exercise = content.exercises.find((e) => e.id === 'EX-FIELDWORK-snapshot-no-show-system')!;
 const png = Uint8Array.from(
   atob(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN1kAAAAASUVORK5CYII=',

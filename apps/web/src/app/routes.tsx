@@ -13,6 +13,11 @@ export interface AppRoute {
 
 export const APP_ROUTES: readonly AppRoute[] = [
   {
+    id: 'field-ready',
+    path: '/field-ready',
+    Component: lazy(() => import('../clients/FieldReadyScreen')),
+  },
+  {
     id: 'home',
     path: '/',
     Component: lazy(() => import('../screens/CommandCenter')),
@@ -81,6 +86,17 @@ export const APP_ROUTES: readonly AppRoute[] = [
     id: 'conversations',
     path: '/conversations',
     Component: lazy(() => import('../conversations/ConversationsLab')),
+  },
+  { id: 'clients', path: '/clients', Component: lazy(() => import('../clients/ClientsScreen')) },
+  {
+    id: 'client',
+    path: '/clients/:clientId',
+    Component: lazy(() => import('../clients/ClientsScreen')),
+  },
+  {
+    id: 'project',
+    path: '/projects/:projectId',
+    Component: lazy(() => import('../clients/ClientsScreen')),
   },
   {
     id: 'portfolio',

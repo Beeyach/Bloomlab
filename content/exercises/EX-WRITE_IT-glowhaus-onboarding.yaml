@@ -1,0 +1,178 @@
+id: EX-WRITE_IT-glowhaus-onboarding
+type: WRITE_IT
+title: Before the build begins
+skills:
+  - SK-DELIVER-proposal-writing
+  - SK-DELIVER-client-explanation
+instructions: >-
+  Glowhaus has accepted a one-location consultation system, subject to a deposit and receipt of
+  inputs. Priya owns the account but her freelance designer controls the domain. Theo manages
+  calendars; Dana handles new enquiries. The second location is excluded. Launch is requested in ten
+  working days, and no copy has been approved.
+
+
+  Prepare the onboarding request using every section below. Record an owner, action and acceptance
+  check. Unknown information is a dependency to resolve, not a fact to invent. Use invitation and
+  secure transfer processes; never enter a real password, token or payment detail in Bloomlab.
+mode: independent
+difficulty: 3
+estimated_minutes: 35
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.access_answered
+    operator: equals
+    value: true
+    description: Answer the access brief.
+  - id: a2
+    type: state
+    path: written.credentials_answered
+    operator: equals
+    value: true
+    description: Answer the credentials brief.
+  - id: a3
+    type: state
+    path: written.domains_answered
+    operator: equals
+    value: true
+    description: Answer the domains brief.
+  - id: a4
+    type: state
+    path: written.calendars_answered
+    operator: equals
+    value: true
+    description: Answer the calendars brief.
+  - id: a5
+    type: state
+    path: written.users_answered
+    operator: equals
+    value: true
+    description: Answer the users brief.
+  - id: a6
+    type: state
+    path: written.branding_answered
+    operator: equals
+    value: true
+    description: Answer the branding brief.
+  - id: a7
+    type: state
+    path: written.copy_answered
+    operator: equals
+    value: true
+    description: Answer the copy brief.
+  - id: a8
+    type: state
+    path: written.payment_answered
+    operator: equals
+    value: true
+    description: Answer the payment brief.
+  - id: a9
+    type: state
+    path: written.expectations_answered
+    operator: equals
+    value: true
+    description: Answer the expectations brief.
+critical_failures:
+  - id: required_0
+    type: state
+    path: written.access_answered
+    operator: equals
+    value: true
+    description: The access dependency must be addressed.
+  - id: required_1
+    type: state
+    path: written.credentials_answered
+    operator: equals
+    value: true
+    description: The credentials dependency must be addressed.
+  - id: required_2
+    type: state
+    path: written.domains_answered
+    operator: equals
+    value: true
+    description: The domains dependency must be addressed.
+  - id: required_3
+    type: state
+    path: written.calendars_answered
+    operator: equals
+    value: true
+    description: The calendars dependency must be addressed.
+  - id: required_4
+    type: state
+    path: written.users_answered
+    operator: equals
+    value: true
+    description: The users dependency must be addressed.
+  - id: required_5
+    type: state
+    path: written.branding_answered
+    operator: equals
+    value: true
+    description: The branding dependency must be addressed.
+  - id: required_6
+    type: state
+    path: written.copy_answered
+    operator: equals
+    value: true
+    description: The copy dependency must be addressed.
+  - id: required_7
+    type: state
+    path: written.payment_answered
+    operator: equals
+    value: true
+    description: The payment dependency must be addressed.
+  - id: required_8
+    type: state
+    path: written.expectations_answered
+    operator: equals
+    value: true
+    description: The expectations dependency must be addressed.
+grading:
+  mode: mixed
+  rubric: DELIVERY_COMMUNICATION_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: access
+    label: Access
+    help: Which accounts, permission level, owner and access test will you request?
+    rows: 4
+  - key: credentials
+    label: Credentials
+    help: How will credentials or invitations be transferred without pasting secrets in this answer?
+    rows: 4
+  - key: domains
+    label: Domains
+    help: Who controls DNS, which domain is approved, and how will ownership and connection be checked?
+    rows: 4
+  - key: calendars
+    label: Calendars
+    help: Who approves staff availability, duration, buffers, locations and connected calendars?
+    rows: 4
+  - key: users
+    label: Users
+    help: Who needs which role, who handles leads, and who covers absence?
+    rows: 4
+  - key: branding
+    label: Branding
+    help: What approved brand assets and permission to use them are still needed?
+    rows: 4
+  - key: copy
+    label: Copy
+    help: Who writes, reviews and signs off page, form and message copy?
+    rows: 4
+  - key: payment
+    label: Payment
+    help: What deposit, billing approval and test-only payment boundary must be settled?
+    rows: 4
+  - key: expectations
+    label: Expectations
+    help:
+      What counts as acceptance, who decides, and how do response windows and missed inputs affect
+      dates?
+    rows: 4
+topics:
+  - delivery.onboarding
+  - delivery.acceptance
+time_category: retrieval

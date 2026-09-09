@@ -1,0 +1,126 @@
+id: EX-WHAT_WOULD_YOU_BUILD-qa-release
+type: WHAT_WOULD_YOU_BUILD
+title: Decide whether this build can launch
+skills:
+  - SK-DIAGNOSE-workflow-troubleshooting
+instructions: "Work from your own consultation build and its logs, plus manual inspection\
+  \ for native controls the simulator does not model. Complete the nineteen-area QA\
+  \ record. In each area give the case, expected behaviour, actual observation, evidence\
+  \ location and status: passed, failed or blocked. Do not write \u201Cpassed\u201D\
+  \ for an unperformed test. You may hold launch with a named resolution owner; that\
+  \ is a correct professional decision. Explain the release decision after the checklist."
+mode: pressure
+difficulty: 3
+estimated_minutes: 60
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: complete
+    type: state
+    path: review.complete
+    operator: equals
+    value: true
+    description: Every test records a status, observation and evidence basis.
+critical_failures:
+  - id: release_decision
+    type: state
+    path: review.safe_decision
+    operator: equals
+    value: true
+    description: Unperformed, blocked or failed tests cannot be released.
+grading:
+  mode: mixed
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: release
+    label: Release decision
+    help: Release or hold? Name every unresolved risk, who owns it and the rerun required.
+    rows: 4
+topics:
+  - qa.pages
+  - qa.forms
+  - qa.links
+  - qa.validation
+  - qa.field_mapping
+  - qa.workflow_entry
+  - qa.workflow_exit
+  - qa.sms
+  - qa.email
+  - qa.calendar
+  - qa.cancellation
+  - qa.reschedule
+  - qa.pipeline
+  - qa.payments
+  - qa.tracking
+  - qa.desktop
+  - qa.tablet
+  - qa.mobile
+  - qa.edge_cases
+  - diagnosis.qa
+  - diagnosis.logs
+  - diagnosis.edge_cases
+  - diagnosis.deliverability
+  - diagnosis.sms_reliability
+  - diagnosis.experimentation
+  - judgment.what_breaks
+  - judgment.uncertainty
+  - judgment.missing_verification
+review_checks:
+  - key: pages
+    prompt: Open every published training page and inspect the intended offer and destination.
+      Record expectation, observation, evidence and status.
+  - key: forms
+    prompt: Submit a new fictional record and repeat the enquiry with a changed answer.
+      Record expectation, observation, evidence and status.
+  - key: links
+    prompt: Follow each CTA, confirmation, cancellation and reschedule link to its intended
+      destination. Record expectation, observation, evidence and status.
+  - key: validation
+    prompt: Submit empty and invalid required values, then correct them and retry. Record
+      expectation, observation, evidence and status.
+  - key: field_mapping
+    prompt: Compare each submitted answer with its stored field and verify the repeated
+      value replaces it. Record expectation, observation, evidence and status.
+  - key: workflow_entry
+    prompt: Fire one matching event and one event that should not enrol. Inspect both
+      logs. Record expectation, observation, evidence and status.
+  - key: workflow_exit
+    prompt: Cancel or complete the relevant decision and check pending work stops appropriately.
+      Record expectation, observation, evidence and status.
+  - key: sms
+    prompt: Test a permitted fictional recipient, no phone and do-not-disturb without
+      contacting customers. Record expectation, observation, evidence and status.
+  - key: email
+    prompt: Inspect sender identity, recipient, merge values, consent and a missing-email
+      path. Record expectation, observation, evidence and status.
+  - key: calendar
+    prompt: Check host, location, duration, buffers, notice and an unavailable slot.
+      Record expectation, observation, evidence and status.
+  - key: cancellation
+    prompt: Cancel a test appointment and inspect capacity plus pending reminders. Record
+      expectation, observation, evidence and status.
+  - key: reschedule
+    prompt: Move a test booking and inspect the old run and new timing. Record expectation,
+      observation, evidence and status.
+  - key: pipeline
+    prompt: Compare stages and outcomes with the actual decision and verify the responsible
+      owner. Record expectation, observation, evidence and status.
+  - key: payments
+    prompt: Inspect product, amount and one-time/recurring terms in a safe test context;
+      do not create a real charge. Record expectation, observation, evidence and status.
+  - key: tracking
+    prompt: Identify the event and denominator used for each conversion; distinguish
+      a page visit from a lead. Record expectation, observation, evidence and status.
+  - key: desktop
+    prompt: Complete the visitor path with a keyboard at desktop width. Record expectation,
+      observation, evidence and status.
+  - key: tablet
+    prompt: Complete the same path with a tablet-sized viewport and inspect labels and
+      layout. Record expectation, observation, evidence and status.
+  - key: mobile
+    prompt: Complete the path at a narrow phone width, including validation and recovery.
+      Record expectation, observation, evidence and status.
+  - key: edge_cases
+    prompt: Test late booking, duplicate entry, missing data and a changed location;
+      record unresolved cases. Record expectation, observation, evidence and status.

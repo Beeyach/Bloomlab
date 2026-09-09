@@ -1,16 +1,3 @@
-# REP-002: reporting as diagnosis rather than a dashboard.
-#
-# The learner reads the real report — the same projection the Reporting Lab draws, on the same
-# run — and says which stage is costing Glowhaus the most, why the data supports it, and what
-# they would do first. Nothing in the interface names the bottleneck before they answer.
-#
-# The structured choice is what makes this gradable deterministically. The written half is graded
-# only on whether it cites the evidence the report actually holds, never on the quality of the
-# argument, which is rubric work and belongs to Phase 19 (D-070).
-#
-# A FIX IT rather than a new family: something is wrong with this business and the job is to find
-# out what, from symptoms. The system it is wrong in happens to be the whole funnel rather than
-# one workflow.
 id: EX-FIX_IT-glowhaus-reporting-bottleneck
 type: FIX_IT
 title: Where the money is going
@@ -37,8 +24,7 @@ instructions: |
   fix first, for this business, with this data.
 allowed_features: []
 starting_state:
-  notes: >-
-    The account carries three weeks of real history. Nothing needs building.
+  notes: The account carries three weeks of real history. Nothing needs building.
 decision_options:
   - value: traffic
     label: Traffic — not enough people are arriving
@@ -96,7 +82,7 @@ expected_outcomes:
     value: show
     tier: required
     dimension: correctness
-    description: >-
+    description:
       The stage that is costing the most is the one where five of nine due appointments were
       missed, after the funnel and the booking step both did their job.
   - id: a2
@@ -145,9 +131,8 @@ critical_failures:
     path: decision.choice
     operator: not_contains
     value: close
-    description: >-
-      Three of the four people who turned up bought something. Blaming the stage that is working
-      hardest is the diagnosis error this exercise exists to catch.
+    description: Three of the four people who turned up bought something. Blaming the stage that is
+      working hardest is the diagnosis error this exercise exists to catch.
 grading:
   mode: deterministic
   weights:
@@ -159,13 +144,20 @@ grading:
   pass_threshold: 70
 hints:
   - level: nudge
-    text: Work down the chain and ask what each stage did with what it was given. One of them was handed eleven people and returned four.
+    text:
+      Work down the chain and ask what each stage did with what it was given. One of them was handed
+      eleven people and returned four.
   - level: concept_reminder
-    text: The stage with the lowest percentage is not automatically the one to fix. Ask which stage is losing the most people who had already cost money to get.
+    text:
+      The stage with the lowest percentage is not automatically the one to fix. Ask which stage is
+      losing the most people who had already cost money to get.
   - level: worked_example
-    text: >-
-      Nine appointments came due and four people showed. Five people who had been advertised to,
+    text: Nine appointments came due and four people showed. Five people who had been advertised to,
       converted, contacted and booked did not turn up, and nothing in this account reminds anybody
       before a consultation. That is the stage to fix first.
 fieldwork: null
 portfolio: null
+topics:
+  - diagnosis.metrics
+  - diagnosis.bottleneck
+  - diagnosis.analytics

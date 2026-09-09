@@ -166,3 +166,8 @@ call:
   open_response:
     node: clarify
     question: What would that change in the process we are discussing?
+topics:
+  - selling.cold_calls
+  - selling.listening
+  - selling.questions
+time_category: retrieval

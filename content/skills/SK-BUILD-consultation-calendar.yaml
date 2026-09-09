@@ -2,8 +2,7 @@ id: SK-BUILD-consultation-calendar
 title: Consultation calendar
 territory: BUILD
 tier: field_ready
-summary: >-
-  Set up a booking calendar with the right duration, buffers, notice and time zone so that a
+summary: Set up a booking calendar with the right duration, buffers, notice and time zone so that a
   booking creates the appointment the automation expects.
 prerequisites:
   - SK-BUILD-lead-capture-form
@@ -16,4 +15,15 @@ mastery_requirements:
   independent_evidence: 2
   pressure_test: false
   fieldwork_required: true
-keywords: [calendar, availability, buffer, timezone, booking]
+keywords:
+  - calendar
+  - availability
+  - buffer
+  - timezone
+  - booking
+identities:
+  - GHL Systems Builder
+  - Funnel Strategist
+evidence_areas:
+  - ghl_implementation
+  - fieldwork

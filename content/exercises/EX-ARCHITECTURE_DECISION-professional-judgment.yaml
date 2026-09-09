@@ -1,0 +1,197 @@
+id: EX-ARCHITECTURE_DECISION-professional-judgment
+type: ARCHITECTURE_DECISION
+title: Fourteen decisions before you commit
+skills:
+  - SK-JUDGMENT-automation-appropriateness
+instructions: Respond to each brief with a decision, the evidence supporting it, the limit of your
+  knowledge and the next verification step. These are separate service-business situations, not
+  facts from one account. Do not invent native features, client approval or guaranteed outcomes. No
+  automatic drafting is offered.
+mode: pressure
+difficulty: 3
+estimated_minutes: 60
+client: CL-glowhaus-medspa
+expected_outcomes:
+  - id: a1
+    type: state
+    path: written.funnel_needed_answered
+    operator: equals
+    value: true
+    description: Answer the a cleaner has no enquiries brief.
+  - id: a2
+    type: state
+    path: written.automation_needed_answered
+    operator: equals
+    value: true
+    description: Answer the one unusual complaint brief.
+  - id: a3
+    type: state
+    path: written.ghl_appropriate_answered
+    operator: equals
+    value: true
+    description: Answer the clinical treatment records brief.
+  - id: a4
+    type: state
+    path: written.data_choice_answered
+    operator: equals
+    value: true
+    description: Answer the pet, owner and company brief.
+  - id: a5
+    type: state
+    path: written.custom_code_answered
+    operator: equals
+    value: true
+    description: Answer the a standard booking page brief.
+  - id: a6
+    type: state
+    path: written.contact_prospect_answered
+    operator: equals
+    value: true
+    description: Answer the no capacity to respond brief.
+  - id: a7
+    type: state
+    path: written.audit_evidence_answered
+    operator: equals
+    value: true
+    description: Answer the one delayed response brief.
+  - id: a8
+    type: state
+    path: written.accept_project_answered
+    operator: equals
+    value: true
+    description: Answer the an impossible promise brief.
+  - id: a9
+    type: state
+    path: written.scope_answered
+    operator: equals
+    value: true
+    description: Answer the two locations by friday brief.
+  - id: a10
+    type: state
+    path: written.price_answered
+    operator: equals
+    value: true
+    description: Answer the below estimated delivery cost brief.
+  - id: a11
+    type: state
+    path: written.complexity_answered
+    operator: equals
+    value: true
+    description: Answer the six branches for one difference brief.
+  - id: a12
+    type: state
+    path: written.uncertainty_answered
+    operator: equals
+    value: true
+    description: Answer the an undocumented native feature brief.
+  - id: a13
+    type: state
+    path: written.what_breaks_answered
+    operator: equals
+    value: true
+    description: Answer the missing phone at late booking brief.
+  - id: a14
+    type: state
+    path: written.missing_verification_answered
+    operator: equals
+    value: true
+    description: Answer the a confident launch request brief.
+critical_failures: []
+grading:
+  mode: mixed
+  rubric: SYSTEM_DESIGN_RUBRIC_V1
+  pass_threshold: 100
+hints: []
+written_fields:
+  - key: funnel_needed
+    label: A cleaner has no enquiries
+    help:
+      Traffic is twenty visitors a month, and the existing enquiry form works. Would you build a new
+      funnel, and what would you investigate first?
+    rows: 4
+  - key: automation_needed
+    label: One unusual complaint
+    help: The owner wants a workflow for a once-a-year dispute requiring personal judgment. Decide
+      whether automation adds value.
+    rows: 4
+  - key: ghl_appropriate
+    label: Clinical treatment records
+    help: A therapist wants sensitive treatment histories and complex clinical records in the same
+      marketing contact record. Decide the system boundary and what expertise is missing.
+    rows: 4
+  - key: data_choice
+    label: Pet, owner and company
+    help:
+      A veterinary clinic needs multiple pets per owner and corporate billing. Choose tags, typed
+      fields, account values, relationships or another system for each fact.
+    rows: 4
+  - key: custom_code
+    label: A standard booking page
+    help:
+      The client requests custom code before trying the supported booking controls. What evidence
+      would justify code and who maintains it?
+    rows: 4
+  - key: contact_prospect
+    label: No capacity to respond
+    help:
+      A roofer is fully booked, declines more enquiries and has a working intake. Should Bloomwired
+      contact them about lead capture now?
+    rows: 4
+  - key: audit_evidence
+    label: One delayed response
+    help:
+      One test enquiry waited a day. State what is verified, what is not, and the next authorised
+      test.
+    rows: 4
+  - key: accept_project
+    label: An impossible promise
+    help: The client requires guaranteed doubling of sales and refuses access to the current system.
+      Decide whether to accept and under what changed terms.
+    rows: 4
+  - key: scope
+    label: Two locations by Friday
+    help: The signed scope covers one location. Decide what is feasible before promising the second.
+    rows: 4
+  - key: price
+    label: Below estimated delivery cost
+    help: The proposed fee does not cover build and QA. Explain a revised scope, price or refusal
+      without inventing a universal market rate.
+    rows: 4
+  - key: complexity
+    label: Six branches for one difference
+    help: Only the message copy changes between two services. Explain whether the branching plan is
+      justified and what simpler design you would test.
+    rows: 4
+  - key: uncertainty
+    label: An undocumented native feature
+    help:
+      You have not verified whether the account supports the requested behaviour. Write the client
+      answer and the verification plan.
+    rows: 4
+  - key: what_breaks
+    label: Missing phone at late booking
+    help:
+      An appointment starts in fifteen minutes and has no phone number. Identify what could fail and
+      how you would test the fallback.
+    rows: 4
+  - key: missing_verification
+    label: A confident launch request
+    help: Desktop happy-path tests pass, but mobile and rescheduling were not tested. State what is
+      missing and the release decision.
+    rows: 4
+topics:
+  - judgment.funnel_needed
+  - judgment.automation_needed
+  - judgment.ghl_appropriate
+  - judgment.data_choice
+  - judgment.custom_code
+  - judgment.contact_prospect
+  - judgment.audit_evidence
+  - judgment.accept_project
+  - judgment.scope
+  - judgment.price
+  - judgment.complexity
+  - judgment.uncertainty
+  - judgment.what_breaks
+  - judgment.missing_verification
+time_category: retrieval

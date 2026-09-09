@@ -29,7 +29,7 @@ export const SYNC_ENTITY_KINDS = {
   sim_projects: 'snapshot',
   sim_snapshots: 'append',
   sim_events: 'append',
-  client_progress: 'simple',
+  client_progress: 'snapshot',
   // Portfolio
   portfolio_projects: 'snapshot',
   portfolio_assets: 'append',

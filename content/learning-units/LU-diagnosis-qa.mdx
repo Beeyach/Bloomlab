@@ -1,0 +1,89 @@
+---
+id: LU-diagnosis-qa
+title: Prove the system before launch
+territory: DIAGNOSE
+tier: field_ready
+skills:
+  - SK-DIAGNOSE-workflow-troubleshooting
+  - SK-AUTOMATE-reentry-and-duplicates
+topics:
+  - diagnosis.workflow
+  - diagnosis.funnel
+  - diagnosis.logs
+  - diagnosis.edge_cases
+  - diagnosis.metrics
+  - diagnosis.qa
+  - diagnosis.bottleneck
+  - diagnosis.deliverability
+  - diagnosis.sms_reliability
+  - diagnosis.analytics
+  - diagnosis.experimentation
+  - qa.pages
+  - qa.forms
+  - qa.links
+  - qa.validation
+  - qa.field_mapping
+  - qa.workflow_entry
+  - qa.workflow_exit
+  - qa.sms
+  - qa.email
+  - qa.calendar
+  - qa.cancellation
+  - qa.reschedule
+  - qa.pipeline
+  - qa.payments
+  - qa.tracking
+  - qa.desktop
+  - qa.tablet
+  - qa.mobile
+  - qa.edge_cases
+estimated_minutes: 28
+ghl_features: []
+summary: 'Write the symptom as something another person can reproduce: a lead received two
+  reminders, a visitor never reached booking, or an owner cannot see the next action. Name the
+  affected record, event and time window. A hypothesis such as “re-entry is enabled” is a proposed
+  cause, not the symptom. Inspect the execution log, stored fields, messages and funnel telemetry
+  before changi'
+---
+
+## Separate the observation from its cause
+
+Write the symptom as something another person can reproduce: a lead received two reminders, a visitor never reached booking, or an owner cannot see the next action. Name the affected record, event and time window. A hypothesis such as “re-entry is enabled” is a proposed cause, not the symptom. Inspect the execution log, stored fields, messages and funnel telemetry before changing configuration.
+
+Start from a baseline run, change one relevant thing, repeat the same case and compare the observable output. Also rerun the neighbouring case the fix might break. A missing phone and do-not-disturb can both produce no SMS, but they need different explanations. A provider acceptance does not prove inbox or handset delivery. Review sender setup, permissions and delivery information available in the real account; preserve unknown delivery outcomes instead of reporting success from a workflow action alone.
+
+## Diagnose the funnel as a sequence
+
+Use actual visits, completions, bookings and attended calls for the same cohort. Identify the stage losing people and keep the denominator visible. A small sample can suggest a test; it cannot prove a durable uplift. Form a bounded hypothesis, choose one intervention, define its comparison window and guardrails, then inspect both conversion and operational consequences. Changing traffic quality and page copy simultaneously makes causal interpretation harder.
+
+## Bloomwired pre-launch protocol
+
+For every area below, record the setup, expected behaviour, observed behaviour and evidence reference. A blocked test remains blocked. A failed required test must be corrected and rerun before launch. Where the simulator does not implement a native feature, name that boundary and perform the corresponding manual training-account inspection; do not claim the simulation tested it.
+
+- **pages:** Open every published training page and inspect the intended offer and destination.
+- **forms:** Submit a new fictional record and repeat the enquiry with a changed answer.
+- **links:** Follow each CTA, confirmation, cancellation and reschedule link to its intended destination.
+- **validation:** Submit empty and invalid required values, then correct them and retry.
+- **field mapping:** Compare each submitted answer with its stored field and verify the repeated value replaces it.
+- **workflow entry:** Fire one matching event and one event that should not enrol. Inspect both logs.
+- **workflow exit:** Cancel or complete the relevant decision and check pending work stops appropriately.
+- **sms:** Test a permitted fictional recipient, no phone and do-not-disturb without contacting customers.
+- **email:** Inspect sender identity, recipient, merge values, consent and a missing-email path.
+- **calendar:** Check host, location, duration, buffers, notice and an unavailable slot.
+- **cancellation:** Cancel a test appointment and inspect capacity plus pending reminders.
+- **reschedule:** Move a test booking and inspect the old run and new timing.
+- **pipeline:** Compare stages and outcomes with the actual decision and verify the responsible owner.
+- **payments:** Inspect product, amount and one-time/recurring terms in a safe test context; do not create a real charge.
+- **tracking:** Identify the event and denominator used for each conversion; distinguish a page visit from a lead.
+- **desktop:** Complete the visitor path with a keyboard at desktop width.
+- **tablet:** Complete the same path with a tablet-sized viewport and inspect labels and layout.
+- **mobile:** Complete the path at a narrow phone width, including validation and recovery.
+- **edge cases:** Test late booking, duplicate entry, missing data and a changed location; record unresolved cases.
+
+## A test record is useful after the build
+
+Keep a concise record of what was tested and what remains unknown. That record supports handoff and makes a later failure reproducible. It is not a fabricated customer outcome. If you cannot establish a required condition, hold launch and name the owner of the unresolved check. The pressure exercise asks you to produce this record from your own run, including a release decision.
+
+<Exercise id="EX-FIX_IT-double-reminder" />
+<Exercise id="EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic" />
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-qa-release" />

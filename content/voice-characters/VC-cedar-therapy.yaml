@@ -1,0 +1,15 @@
+id: VC-cedar-therapy
+client: CL-cedar-therapy
+asset_delivery: text
+voice_id: EXAVITQu4vr4xnSDxMaL
+speech_rate: 1
+style: 0
+stability: 0.55
+allowed_emotion_range:
+  - measured
+language: en
+lines:
+  - id: operating-boundary
+    kind: scenario
+    text: Keep treatment notes out of marketing. I only need a safe way to arrange an introduction.
+    emotion: measured

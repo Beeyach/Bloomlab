@@ -1,3 +1,4 @@
+import { content } from '../content/bundle';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 
@@ -10,6 +11,12 @@ import { dismissConflictPrompt, useDismissedConflict } from './conflictPrompt';
 
 /** A readable summary of a record: its text body when it has one, else its own fields. */
 function describe(record: SyncRecord): string {
+  if (
+    record.schema_version === 1 &&
+    typeof record.client_id === 'string' &&
+    Array.isArray(record.journal)
+  )
+    return `${content.clients.find((c) => c.id === record.client_id)?.business_name ?? 'Client'} · ${String(record.relationship)}\n${record.journal.map((entry) => String((entry as { text?: string }).text ?? '')).join('\n')}\nSaved project selections: ${Object.keys((record.engagements ?? {}) as object).length}`;
   if (record.schema_version === 1 && typeof record.reflection === 'string')
     return record.deleted_at
       ? 'Removed from Portfolio'

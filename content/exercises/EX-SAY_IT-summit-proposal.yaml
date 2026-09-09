@@ -144,3 +144,7 @@ call:
   open_response:
     node: clarify
     question: What would that change in the process we are discussing?
+topics:
+  - selling.presentation
+  - selling.closing
+time_category: retrieval

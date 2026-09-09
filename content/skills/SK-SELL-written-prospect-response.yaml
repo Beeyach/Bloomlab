@@ -1,0 +1,16 @@
+id: SK-SELL-written-prospect-response
+title: Written prospect response
+territory: SELL
+tier: field_ready
+summary: Reply to a prospect with an observed fact, an honest boundary and one useful next step.
+prerequisites: []
+identities:
+  - Conversion & Sales Operator
+evidence_areas:
+  - sales
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: true
+  fieldwork_required: false
+  sales_use: true
+keywords: []

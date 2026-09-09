@@ -136,6 +136,11 @@
     display: block;
     min-width: 12rem;
     max-width: calc(100vw - 2 * var(--bl-space-2));
+    max-height: calc(100dvh - var(--bl-size-rail-bar) - 3 * var(--bl-space-2));
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-padding-block: var(--bl-space-2);
     padding: var(--bl-space-2);
     border: 1px solid var(--bl-color-border);
     border-radius: var(--bl-radius-lg);
@@ -176,6 +181,12 @@
     bottom: 0;
     left: 0;
     width: var(--bl-size-rail);
+    /* The whole rail scrolls, including its bottom actions; the page keeps its own scroll. */
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-padding-block: var(--bl-space-2);
+    scrollbar-width: thin;
     flex-direction: column;
     align-items: stretch;
     padding: var(--bl-space-5) var(--bl-space-3);
@@ -184,6 +195,7 @@
 
   .brand {
     display: block;
+    flex-shrink: 0;
     margin: 0 0 var(--bl-space-6);
     font-family: var(--bl-font-display);
     font-size: 0.8125rem;
@@ -195,6 +207,7 @@
   }
 
   .list {
+    flex-shrink: 0;
     flex-direction: column;
     gap: var(--bl-space-3);
   }

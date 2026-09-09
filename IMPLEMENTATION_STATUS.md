@@ -2,9 +2,11 @@
 
 Concise roll-up in the spec §139 format. `REQUIREMENTS_MATRIX.md` is the source of truth for statuses; this file must agree with it. `node scripts/validate-requirements.mjs` enforces that agreement.
 
-Last updated: 2026-09-08
+Last updated: 2026-09-09
 
 ## CURRENT PHASE
+
+Phase 24 — Field Ready is implemented on `codex/phase-24-field-ready`, the third stacked draft against `codex/phase-23-portfolio`. Placement, Gates 1–12, twenty clients, five evidence-driven projects, eleven-stage Boss Client and the bounded completion view are implemented. Evidence and remaining acceptance are recorded in `docs/reviews/phase-24-field-ready.md`; exact-head CI/Preview identity belongs in the draft PR. Stop for independent audit. PR #24 and #25 remain parked/unmerged and their human-acceptance statuses are preserved.
 
 Phase 23 — Portfolio is implemented on `codex/phase-23-portfolio`, stacked on Phase 22. The draft PR targets `codex/phase-22-fieldwork`: durable ten-category metadata, evidence-derived archive/detail, private screenshot references, authored truth labels and a local versioned six-group export. Verification evidence is in `docs/reviews/phase-23-portfolio.md` and the draft PR. Stop for independent audit; no merge or Phase 22 human-acceptance promotion.
 
@@ -41,12 +43,31 @@ Phase 21 update-check recovery: a failed update/build check is visible even when
 ## VERSIONS
 
 - app: 0.1.0
-- content: 2026.09.20 (`content/content.yaml`, locked by `content/content.lock.yaml`)
+- content: 2026.09.21 (`content/content.yaml`, locked by `content/content.lock.yaml`)
 - simulator: 2026.09.11-r2 (`SIMULATOR_VERSION`, carried on every run and saved run and stamped on evidence)
-- mastery rules: 2026.09.03-r4 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
+- mastery rules: 2026.09.09-r5 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
 - exercise grader: 2026.09.18 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
 
 ## PASSED
+
+- PRD-006, CUR-003 — Phase 24 evidence: Eight authored placement areas; strong and weak profiles select different early work while independent/pressure requirements remain (placement tests, real numeric browser submission/reload).
+- PRD-008 — Phase 24 evidence: Nine bounded capabilities and conditional certificate; empty and completed UI tests and five-width browser states.
+- PRD-010 — Phase 24 evidence: Every master-graph skill has identity metadata, including existing future-tier nodes; missing-identity compiler regression.
+- PRD-011 — Phase 24 evidence: Compiler derives 470/1392/522 minutes: 19.71/58.39/21.90 percent, passing both the configured percentage-point tolerance and the narrower relative-ten-percent test.
+- PRD-017, PRD-018 — Phase 24 evidence: Bloomwired ICP/offer/pricing/audit/outreach/proposal units and practical citations; 11 of 11 referenced campaign scenarios use qualifying client industries.
+- CUR-002 — Phase 24 evidence: Gates 0–12 resolve on evidence; Gate 12 requires all five projects. Empty project evidence cannot pass (mastery campaign and controlled completion tests).
+- CUR-004, CUR-005, CUR-006, CUR-007, CUR-008, CUR-009, CUR-010 — Phase 24 evidence: Gates 1–7 topic-by-topic learn/practical citations, actual CRM lead handover and calendar lifecycle command tests, Workflow/Funnel regression engines and nineteen-area QA grading tests.
+- CUR-011, CUR-012, CUR-013, CUR-014 — Phase 24 evidence: Gates 8–11 topic coverage uses real PROSPECT/AUDIT/WRITE/SAY/EXPLAIN/PRICE/NEGOTIATE engines plus proposal/delivery exercises; sales, pricing, negotiation and delivery regressions.
+- CUR-017 — Phase 24 evidence: Fourteen separately authored judgment responses and verified-uncertainty rubric coverage; compiler and delivery/content tests.
+- CUR-018, CUR-019, CUR-020, CUR-021, CUR-022, CUR-024, CUR-025 — Phase 24 evidence: Complete required topic citations, eleven funnel-family briefs, current GHL references, veterinary modeling, nineteen QA tests, all selling/delivery vehicles; compiler mutation/coverage tests. Future tiers are metadata only.
+- CUR-029 — Phase 24 evidence: Independent conversion-copy exercise has learner-written fields and no automatic drafting or hint controls; browser assertions and capstone/compiler boundaries. Optional critique does not draft the answer.
+- CUR-030, CUR-034, CUR-035 — Phase 24 evidence: All five projects complete through controlled canonical evidence; real Application/Reactivation command-layer builds; no missing core practical; Gates 1–12 walkthrough and session-routing regressions. This is technical completion, not personal GHL acceptance.
+- SAL-010 — Phase 24 evidence: Replayed scope-change choices penalize unpaid work; hold/re-scope/re-price branches and critical-failure tests.
+- SAL-011 — Phase 24 evidence: All nine onboarding sections required; individually missing each section fails deterministic grading.
+- SAL-012 — Phase 24 evidence: Data → pipeline → calendar → forms → workflows → funnel → tracking → QA partial-order validation; invalid order, unknown dependency and cycle tests.
+- SAL-014 — Phase 24 evidence: Documentation, training, ownership and support all required; each omission produces a failed result.
+- MAS-010 — Phase 24 evidence: Ten areas independently require owned canonical unassisted evidence; missing negotiation/fieldwork cannot be replaced by a high average, placement or assisted records.
+- EXR-021, CNT-009 — Phase 24 evidence: Twenty distinct industries and durable local journal/relationship state, eleven Boss stages, actual two-location choice adds later QA, downstream invalidation and chronology/owner/version checks; IndexedDB migration/reopen, D1 payload and linked-device conflict/isolation tests; browser selection/reload/offline checks.
 
 - PORT-001 — evidence: schema-v1 ten-category normalized records, stable append contributions, canonical persistence/outbox, migration/reopen, two-device sync/conflicts and source-derived availability. The real archive/detail routes show all ten categories at 1440/1024/768/390/320; missing builds/proof and deleted/unavailable private images remain explicit (`portfolio.test.tsx`, `review:portfolio`, Phase 23 review).
 - PORT-002 — evidence: both current templates enforce authored Simulation Project/Demonstration Build labels and ten categories; list/detail render those labels. Strict state/content schemas reject outcome fields, boundary tests check prohibited claims, and the browser sees both labels (`portfolio/boundary.test.ts`, `portfolio.test.tsx`).
@@ -306,6 +327,8 @@ Phase 21 accepted interface/provider paths:
 
 ## IMPLEMENTED_UNVERIFIED
 
+- PRD-005, CUR-015, CUR-031 — The controlled full path and capstone contract pass automated/browser checks, including a required manual-GHL proof step and eight independent reasoning answers. Ary must still complete the actual placement-to-capstone route and real GHL implementation, then have transfer reasoning independently reviewed. No fixture is personal acceptance.
+
 - FLD-001, EXR-020 — Full manual proof flow implemented, with controlled browser and private-storage verification. Ary must still perform the actual training-subaccount task and verify persisted capability evidence; fixtures do not establish real-GHL acceptance.
 
 - CALL-002, CALL-005, CALL-006, EXR-015, VOI-006, VOI-007, SEC-005 — Human evidence now includes iPhone Safari capture and a completed Mac Chrome proposal with local save, Google transcripts, correction, saved history and TTS fallback. Full touch/keyboard, recovery, retained replay/deletion and privacy acceptance is not established by those observations; no blanket promotion. Controlled and prerecorded diagnostics remain separately labeled.
@@ -331,7 +354,6 @@ Phase 21 accepted interface/provider paths:
 - NEG-003 — Phase 19 now routes unstructured prose through the cheap classifier, with ≥0.8 confidence required for an authored strategy and deterministic fallback otherwise. Explicit actions remain authoritative. One real preview hold classification at confidence 0.95 verifies the path and authored consequences; broad language quality is not established, so status stays PARTIAL.
 - DATA-001 — Phase 12: moving a workflow node is a draft edit and saving is one event on the existing path; the offline workflow save was not probed separately. the whole chain `UI → local state → IndexedDB → sync queue → server` runs end to end and is verified across two browser contexts on the local and deployed preview (`npm run review:sync`): a note written on device A lands in Dexie and the outbox before any network call, syncs to D1, and appears on device B. Remaining acceptance interactions — moving a workflow node and completing a deterministic exercise offline — belong to Phases 12 and 9. Phase 8: finishing a unit writes exposure evidence and its outbox rows locally with no network call; the Academy probe finishes a second unit with the page and service worker offline, keeps it across an offline reload, and the queued operations sync once online (unit test with the fake server: the other device converges on LEARNING). Phase 9: finalizing an exercise writes the attempt, its evidence and the outbox rows locally with no network call; the exercise probe submits with the page and service worker offline, keeps the result across an offline reload, and the queue drains when the connection returns.
 - SYNC-007 — Phase 12: a node drag is a draft edit and a save is one `WORKFLOW_UPDATED` event (D-107, probe `drag-move`: 90 frames, one edit, zero events), which is the "not every drag coordinate" evidence; the status is left for the next cross-cutting audit. every synced record carries `id, learner_id, updated_at, revision, device_id, deleted_at` (plus `created_at`), the outbox coalesces repeated pending changes per record so a keystroke stream becomes one operation, the Worker rejects writes for another learner, and soft deletes travel as tombstones. Remaining: "not every drag coordinate" is proven only once workflow nodes exist (Phase 12).
-- CUR-002 — `CAMP-FIELD_READY` defines gates 0–12 as competency gates (placement plus twelve progression gates) and the engine resolves them on evidence only; gates 6 (Conversion and Copy) and 12 (Capstone) have no authored skills yet, so their §11 competencies are not mapped to skills until Phase 24.
 - INF-001 — React/TypeScript/Vite, Workers/Static Assets, Dexie, separate D1/R2 environments, Claude and live ElevenLabs generation are implemented. Google Speech-to-Text remains a Phase 21 dependency, so the full locked stack stays PARTIAL.
 - INF-004 — Local emulation, preview and production configurations have distinct Worker names, environment vars, D1 databases and R2 buckets. Live preview media is verified and exact bytes are promoted to the private production bucket. Production R2 binding/migration/index/playback verification awaits the independent post-merge deployment, so status remains PARTIAL.
 - INF-005 — `.github/workflows/ci.yml` runs typecheck, lint, format check, unit tests, docs validation, content validation (`content:check`, since Phase 5) and build on pull requests and `main`; the preview deploy job (PR #1, run 33659265707) and the production deploy job (run 33658838902) both ran only after the checks passed; since Phase 4 each deploy job applies D1 migrations (dev on PRs, prod on `main`) before deploying, and the Worker tests run inside workerd. Remaining: the simulator regression step (Phase 10).
@@ -365,9 +387,9 @@ None
 
 ## NEXT
 
-Stop with the draft stacked Phase 23 PR against `codex/phase-22-fieldwork` after exact-head CI and Preview review, for independent audit. Do not merge either PR. Phase 22 independently retains the real-GHL human checklist in `docs/operations/fieldwork.md`; do not promote its human statuses or implement GHL API verification. Once Phase 22 is accepted and merged later, rebase/retarget Phase 23 to main, repeat exact-head verification and independently audit before merge.
+Stop with the Phase 24 draft against `codex/phase-23-portfolio` after exact-head CI and Preview verification, for independent audit. Do not merge PR #24, #25 or Phase 24. Preserve the parked Phase 22 acceptance checklist in `docs/operations/fieldwork.md`. Later human acceptance includes the actual training-subaccount Snapshot task and the Phase 24 placement-to-capstone/manual-GHL/reasoning run (`docs/operations/field-ready.md`). No GHL API verification.
 
-The proposal feedback blocker is remediated and the saved human call recovered without re-recording. Continue independent review and only the outstanding human phone-touch, desktop-keyboard, retention/recovery and privacy checks using `docs/operations/call-room.md` and `docs/reviews/phase-21-feedback-reliability.md`. Do not ask for another four-turn proposal to reproduce the resolved feedback failure. Do not reinstall or expose the working Google credential. PR #23 is merged; its historical review evidence and seven unverified rows remain unchanged. Production secrets/gates and independent acceptance remain prerequisites for production readiness; Phase 24 continuity remains future work.
+The proposal feedback blocker is remediated and the saved human call recovered without re-recording. Continue independent review and only the outstanding human phone-touch, desktop-keyboard, retention/recovery and privacy checks using `docs/operations/call-room.md` and `docs/reviews/phase-21-feedback-reliability.md`. Do not ask for another four-turn proposal to reproduce the resolved feedback failure. Do not reinstall or expose the working Google credential. PR #23 is merged; its historical review evidence and seven unverified rows remain unchanged. Production secrets/gates and independent acceptance remain prerequisites for production readiness; Phase 24 does not replace any of that human acceptance.
 
 ## PHASE CHECKLIST (§163)
 
@@ -395,10 +417,10 @@ The proposal feedback blocker is remediated and the saved human call recovered w
 - [ ] Phase 21 — Call Room: dynamic TTS, corrected proposal grading and saved human feedback recovery accepted; broader human acceptance pending
 - [ ] Phase 22 — Fieldwork: implementation ready; independent audit and real-GHL human acceptance pending
 - [ ] Phase 23 — Portfolio: implementation ready; stacked draft PR and independent audit gate
-- [ ] Phase 24 — Field Ready Content: placement through capstone
+- [ ] Phase 24 — Field Ready: implementation ready; stacked draft, independent audit and personal/manual-GHL acceptance pending
 - [ ] Phase 25 — Advanced Curriculum
 - [ ] Phase 26 — Polish: responsive, accessibility, performance, design audit, simulator audit, GHL audit, content audit, adversarial test, gap audit
 
 ## ROLL-UP
 
-313 requirements registered · 198 PASSED · 8 IN_PROGRESS · 23 PARTIAL · 9 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 73 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 236 PASSED · 8 IN_PROGRESS · 22 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 33 NOT_STARTED. Run the validator for the live count by status and priority.

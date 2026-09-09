@@ -135,3 +135,31 @@ describe('prerequisites and gates (spec §7, §11; PRD-002, PRD-003, CUR-002)', 
     expect(result.next_required).toEqual([]);
   });
 });
+
+it('a required project-only gate cannot pass from skill scores or an empty completion set', () => {
+  const projectGate = {
+    id: 'GATE-12',
+    number: 12,
+    name: 'Capstone',
+    placement: false,
+    skills: [],
+    assesses: [],
+    projects: ['capstone'],
+    projects_required: true,
+    pass_criteria: {
+      independent_evidence_per_skill: 1,
+      pressure_test_required: false,
+      fieldwork_required: false,
+    },
+  };
+  const campaign = { id: 'project-path', requires_campaigns: [], gates: [projectGate] };
+  const evaluated = evaluateSkills(SKILLS, [], NOW);
+  expect(evaluateCampaign(campaign, skills, evaluated).complete).toBe(false);
+  expect(evaluateCampaign(campaign, skills, evaluated).gates[0]?.missing_projects).toEqual([
+    'capstone',
+  ]);
+  expect(evaluateCampaign(campaign, skills, evaluated, new Set(['unrelated'])).complete).toBe(
+    false,
+  );
+  expect(evaluateCampaign(campaign, skills, evaluated, new Set(['capstone'])).complete).toBe(true);
+});

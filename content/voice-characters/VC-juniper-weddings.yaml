@@ -1,0 +1,15 @@
+id: VC-juniper-weddings
+client: CL-juniper-weddings
+asset_delivery: text
+voice_id: EXAVITQu4vr4xnSDxMaL
+speech_rate: 1
+style: 0
+stability: 0.55
+allowed_emotion_range:
+  - measured
+language: en
+lines:
+  - id: operating-boundary
+    kind: scenario
+    text: We can discuss a date, but it is not reserved until the agreement and deposit.
+    emotion: measured

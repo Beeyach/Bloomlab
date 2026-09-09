@@ -2,8 +2,7 @@ id: SK-ARCHITECT-custom-values
 title: Custom values
 territory: ARCHITECT
 tier: field_ready
-summary: >-
-  Use account-level custom values for anything a snapshot or a second location would need to
+summary: Use account-level custom values for anything a snapshot or a second location would need to
   change in one place, and know when a custom value is the wrong tool.
 prerequisites:
   - SK-ARCHITECT-tags-vs-custom-fields
@@ -15,4 +14,12 @@ mastery_requirements:
   independent_evidence: 2
   pressure_test: false
   fieldwork_required: false
-keywords: [custom value, merge field, portability, configuration]
+keywords:
+  - custom value
+  - merge field
+  - portability
+  - configuration
+identities:
+  - Technical GHL Specialist
+evidence_areas:
+  - crm_architecture

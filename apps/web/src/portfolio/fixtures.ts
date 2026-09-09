@@ -15,7 +15,9 @@ export async function savedWork(
   } = {},
 ) {
   const exercise = content.exercises.find(
-    (e) => e.type === (options.fieldwork ? 'FIELDWORK' : 'BUILD_IT'),
+    (e) =>
+      e.id ===
+      (options.fieldwork ? 'EX-FIELDWORK-snapshot-no-show-system' : 'EX-BUILD_IT-no-show-recovery'),
   )!;
   const id = crypto.randomUUID();
   const response = emptyResponse();
