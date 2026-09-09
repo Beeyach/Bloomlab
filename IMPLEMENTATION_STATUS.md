@@ -45,12 +45,14 @@ Phase 21 update-check recovery: a failed update/build check is visible even when
 ## VERSIONS
 
 - app: 0.1.0
-- content: 2026.09.24 (`content/content.yaml`, locked by `content/content.lock.yaml`)
+- content: 2026.09.25 (`content/content.yaml`, locked by `content/content.lock.yaml`)
 - simulator: 2026.09.23-r1 (`SIMULATOR_VERSION`, carried on every run and saved run and stamped on evidence)
 - mastery rules: 2026.09.09-r5 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
 - exercise grader: 2026.09.22 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
 
 ## PASSED
+
+- CUR-027, CUR-028 — Phase 25 E: six deterministic-first AI and eight supporting-specialty unit/practical pairs, covering twelve AI and all 23 specialty topics. Focused 9 tests / 3 files, 140 five-width browser cases and fourteen AI-Off fail/retry/persistence flows pass. Official current product names and conceptual limitations are recorded; no native AI or external execution is claimed. Checkpoints A–E complete; F and final exact-head verification remain.
 
 - CUR-026, SAL-015 — Phase 25 D: nine unit/practical pairs with four distinct vertical Demonstration Builds, SCALE release/account discipline and evidence-based retention. Compiler/AI-Off grading mutation checks and all 90 five-width browser cases, nine fail/retry/persist flows, touch/focus/reduced motion pass; no real snapshot or client outcomes claimed.
 
@@ -430,4 +432,4 @@ The proposal feedback blocker is remediated and the saved human call recovered w
 
 ## ROLL-UP
 
-313 requirements registered · 243 PASSED · 8 IN_PROGRESS · 22 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 26 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 245 PASSED · 8 IN_PROGRESS · 22 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 24 NOT_STARTED. Run the validator for the live count by status and priority.

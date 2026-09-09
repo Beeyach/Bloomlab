@@ -1,0 +1,54 @@
+id: EX-WHAT_WOULD_YOU_BUILD-specialty-phone
+type: WHAT_WOULD_YOU_BUILD
+title: Trace IVR and phone-routing failures — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-AUTOMATE-ivr-phone
+client: CL-glowhaus-medspa
+advanced_topics:
+  - specialty.ivr_phone
+allowed_features:
+  - GHL-PHONE-IVR
+instructions: Model keypad routing, timeout and fallback behavior separately
+  from conversational Voice AI. Work from the fictional policy and trace in the
+  named fields. Submit JSON, not prose. Types and array order are checked;
+  property order is ignored. No model, external tool, message, account change,
+  purchase or public publication executes. Bloomlab AI Off is sufficient. A pass
+  proves the supplied contract, not live product competence.
+written_fields:
+  - key: route
+    label: Choose the supplied keypad route
+    help: 'Menu: 1 bookings, 2 existing-job support; caller presses 2. Return
+      destination=existing_job_support, use_ai_to_guess=false.'
+    rows: 6
+  - key: fallback
+    label: Bound invalid input
+    help: One retry already failed. Policy says capture callback. Return
+      next=callback_capture, repeat_forever=false,
+      human_answered_verified=false.
+    rows: 6
+fixture_checks:
+  - key: route
+    field: route
+    expected_json: '{"destination":"existing_job_support","use_ai_to_guess":false}'
+  - key: fallback
+    field: fallback
+    expected_json: '{"next":"callback_capture","repeat_forever":false,"human_answered_verified":false}'
+expected_outcomes:
+  - id: route
+    type: state
+    path: fixture.route
+    operator: equals
+    value: true
+    description: Choose the supplied keypad route satisfies the supplied contract.
+  - id: fallback
+    type: state
+    path: fixture.fallback
+    operator: equals
+    value: true
+    description: Bound invalid input satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

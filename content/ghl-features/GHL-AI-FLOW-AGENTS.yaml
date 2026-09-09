@@ -1,0 +1,24 @@
+id: GHL-AI-FLOW-AGENTS
+official_name: Flow Agents in Agent Studio
+area: AI
+feature_type: product
+implementation_type: native_ghl
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000006058
+skills:
+  - SK-AUTOMATE-managed-agents
+known_limitations:
+  - Conceptual instruction and objective local policy/trace fixtures only. No
+    live product execution, external account, paid provider, publishing, calling
+    or autonomous action is simulated.
+  - Current comparison uses Managed Agents (formerly Super Agents); some
+    official pages retain SuperAgents wording. Flow Agents maintain existing
+    visual agents; verify current account rollout before new creation.
+approximation_note: Local contract reasoning only, not a full Lab or real-GHL acceptance.
+verification_note: Current official HighLevel documentation read on 2026-09-09.
+  Current comparison uses Managed Agents (formerly Super Agents); some official
+  pages retain SuperAgents wording. Flow Agents maintain existing visual agents;
+  verify current account rollout before new creation.
+supported_configs: {}

@@ -2,6 +2,9 @@
 
 ## Phase 25 — advanced curriculum checkpoints
 
+- GHL AI instruction is deterministic-first and uses no runtime model. Product/trace fixtures do not execute Conversation AI, Voice AI, Workflow AI actions, Managed Agents or MCP tools. Current official pages contain mixed Managed Agents/SuperAgents naming; the curriculum uses the newer comparison and explicitly qualifies legacy Flow Agents and product-specific MCP/log availability. No live agent accuracy, voice quality or permission enforcement is certified.
+- All 23 supporting specialties have full-graph learning/practical citations, grouped into eight related units. Reputation/Social Planner, learning access, ecommerce/affiliates, blogs/SEO, IVR, prospecting/reporting, Rentals and commercial documents are conceptual local contract work (C), not standalone native Labs. Existing class/resource and billing simulations retain their narrower B records. No account connection, publishing, scraping, call, ranking guarantee or client-outcome claim.
+
 - SCALE and retention use authored plans and objective fixture repairs. The four named vertical systems are explicit Demonstration Build blueprints with distinct manifests, exclusions and QA failures; no importable native snapshot, deployed client, commercial outcome or testimonial is claimed. Existing Snapshot portability fieldwork is still required separately. SaaS/white-label/Marketplace operations are specialist-only conceptual work, not provisioning or billing simulations.
 
 - Advanced CRM supports company names/contact links, typed object fields/records, labelled contact associations and a narrow created/updated condition-to-internal-notification rule. It is not the complete HighLevel object workflow builder; no outbound object communication, object-to-object associations, unique fields or bulk operations. Smart Lists support one AND/OR group over current account data, not nested groups or every native filter.

@@ -1,0 +1,46 @@
+---
+id: LU-ai-operations
+title: Audit AI cost, logs and incorrect actions
+territory: DIAGNOSE
+tier: specialist
+skills:
+  - SK-DIAGNOSE-ai-operations
+ghl_features:
+  - GHL-AI-LOGS
+  - GHL-AI-ACTIVITY
+advanced_topics:
+  - ai.cost_logs
+  - ai.hallucination
+estimated_minutes: 15
+summary: Reconcile proposed actions with tool results, protect diagnostic data
+  and budget a bounded AI rollout.
+---
+
+# Audit AI cost, logs and incorrect actions
+
+## Read the action trail
+
+Begin with the triggering event, agent version, location and target record. Compare the input, retrieved evidence, selected tool, tool result and resulting account state. A fluent final answer can hide an incorrect action or an invented success. Diagnose the first divergence rather than rewriting the entire prompt after every incident.
+
+HighLevel documents Agent Logs for supported Agent Studio and Voice AI experiences, with broader product coverage evolving. The Managed Agent Activity Feed provides run timelines, steps, tools and results for supported Managed Agents. Workflow AI actions also have their workflow Execution Logs. Verify the correct surface; do not assume one universal log covers every product.
+
+## Budget the whole path
+
+Count expected executions, retries, tools, model usage and any communications charges. Set a budget owner and a stop threshold before a pilot. Use current account pricing, not a permanent rate copied into training. In the fictional arithmetic below, three hundred runs at two cents each cost six dollars before any additional charges. A ten-dollar ceiling is a planning limit, not a product price.
+
+Contain incidents by disabling the risky capability or entry point with approval, retaining the necessary trace and restoring a known configuration. Do not delete the evidence to make a dashboard green. Keep private payloads and credentials out of exported diagnostic samples.
+
+## Test for failure, not just fluency
+
+Maintain a small regression set: known answer, missing source, contradictory source, prompt injection, wrong account, denied permission, tool timeout and duplicate event. Compare deterministic state assertions first, then judge response quality. An optional model cannot rescue a failed permission check.
+
+The practical reconciles a fictional trace and computes a bounded cost projection. No live model is invoked and no spend occurs. Passing it does not prove a production agent's accuracy, regulatory suitability or safe operation across unseen cases.
+
+## Official sources
+
+- [Agent Logs](https://help.gohighlevel.com/support/solutions/articles/155000007657-agent-logs-overview)
+- [Managed Agent Activity Feed](https://help.gohighlevel.com/support/solutions/articles/155000008415-managed-agent-activity-feed-monitor-debug-ai-agents)
+
+Checked 9 September 2026. Feature records state the local boundary and current naming/rollout qualifications. Recheck before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-ai-operations" />

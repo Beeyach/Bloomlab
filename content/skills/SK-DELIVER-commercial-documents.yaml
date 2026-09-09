@@ -1,0 +1,33 @@
+id: SK-DELIVER-commercial-documents
+title: Separate agreements, estimates and billing states
+territory: DELIVER
+tier: advanced
+summary: Trace commercial acceptance, invoice payment and recurring obligations
+  without collapsing them into a single success state.
+prerequisites:
+  - SK-BUILD-payment-lifecycle
+  - SK-DELIVER-proposal-writing
+ghl_features:
+  - GHL-PAY-CONTRACTS
+  - GHL-PAY-ESTIMATES
+  - GHL-PAY-INVOICES
+  - GHL-PAY-LINKS
+  - GHL-PAY-SUBSCRIPTIONS
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - specialty-documents
+  - post-Field-Ready
+  - contracts
+  - estimates
+  - invoices
+  - payment_links
+  - subscriptions

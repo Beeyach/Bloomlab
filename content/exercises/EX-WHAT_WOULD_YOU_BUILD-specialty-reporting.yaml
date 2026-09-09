@@ -1,0 +1,60 @@
+id: EX-WHAT_WOULD_YOU_BUILD-specialty-reporting
+type: WHAT_WOULD_YOU_BUILD
+title: Read prospecting and reporting without invented certainty — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-DIAGNOSE-advanced-reporting
+client: CL-glowhaus-medspa
+advanced_topics:
+  - specialty.prospecting
+  - specialty.ad_reporting
+  - specialty.advanced_reporting
+allowed_features:
+  - GHL-MKT-PROSPECTING
+  - GHL-REP-ADS
+  - GHL-REP-CUSTOM-REPORTS
+instructions: Distinguish prospect audit signals, ad-platform metrics and custom
+  report definitions before making an account recommendation. Work from the
+  fictional policy and trace in the named fields. Submit JSON, not prose. Types
+  and array order are checked; property order is ignored. No model, external
+  tool, message, account change, purchase or public publication executes.
+  Bloomlab AI Off is sufficient. A pass proves the supplied contract, not live
+  product competence.
+written_fields:
+  - key: metrics
+    label: Avoid double counting
+    help: Ad platform reports 50 conversion events; CRM has 40 unique leads for the
+      same campaign. Return unique_leads=40, sum_to_90=false,
+      reconcile_definitions=true.
+    rows: 6
+  - key: claim
+    label: Bound the prospect finding
+    help: A public booking link returns an error; revenue is unknown. Return
+      verified=broken_booking_link, lost_revenue=null,
+      timezone_alignment_required=true, automatic_outreach_authorized=false.
+    rows: 6
+fixture_checks:
+  - key: metrics
+    field: metrics
+    expected_json: '{"unique_leads":40,"sum_to_90":false,"reconcile_definitions":true}'
+  - key: claim
+    field: claim
+    expected_json: '{"verified":"broken_booking_link","lost_revenue":null,"timezone_alignment_required":true,"automatic_outreach_authorized":false}'
+expected_outcomes:
+  - id: metrics
+    type: state
+    path: fixture.metrics
+    operator: equals
+    value: true
+    description: Avoid double counting satisfies the supplied contract.
+  - id: claim
+    type: state
+    path: fixture.claim
+    operator: equals
+    value: true
+    description: Bound the prospect finding satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

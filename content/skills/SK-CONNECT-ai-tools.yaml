@@ -1,0 +1,29 @@
+id: SK-CONNECT-ai-tools
+title: Restrict tools, MCP and irreversible actions
+territory: CONNECT
+tier: specialist
+summary: Choose minimal external capabilities and enforce approval, account
+  scope and retry boundaries outside model output.
+prerequisites:
+  - SK-AUTOMATE-managed-agents
+  - SK-CONNECT-http
+  - SK-CONNECT-ghl-api
+ghl_features:
+  - GHL-AI-SKILLS
+  - GHL-AI-MCP
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - ai-tools
+  - post-Field-Ready
+  - tools
+  - permissions
+  - irreversible

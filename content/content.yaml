@@ -1,7 +1,42 @@
-content_version: 2026.09.24
+content_version: 2026.09.25
 schema_version: 1
-notes: Phase 25 checkpoint D — SCALE, retention and four vertical training systems.
+notes: Phase 25 checkpoint E — deterministic-first GHL AI and supporting specialties.
 advanced_coverage:
+  - ai.deterministic_first
+  - ai.conversation
+  - ai.voice
+  - ai.escalation
+  - ai.workflow_actions
+  - ai.agents
+  - ai.knowledge
+  - ai.tools
+  - ai.permissions
+  - ai.irreversible
+  - ai.cost_logs
+  - ai.hallucination
+  - specialty.reputation
+  - specialty.reviews
+  - specialty.social_planner
+  - specialty.courses
+  - specialty.memberships
+  - specialty.communities
+  - specialty.client_portal
+  - specialty.ecommerce
+  - specialty.affiliates
+  - specialty.blogs
+  - specialty.seo
+  - specialty.ivr_phone
+  - specialty.prospecting
+  - specialty.ad_reporting
+  - specialty.advanced_reporting
+  - specialty.rentals
+  - specialty.services
+  - specialty.resources
+  - specialty.contracts
+  - specialty.estimates
+  - specialty.invoices
+  - specialty.payment_links
+  - specialty.subscriptions
   - scale.templates
   - scale.portability
   - scale.agency

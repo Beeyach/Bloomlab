@@ -1,0 +1,44 @@
+---
+id: LU-ai-judgment
+title: Choose deterministic automation before AI
+territory: JUDGMENT
+tier: practitioner
+skills:
+  - SK-JUDGMENT-ai-boundaries
+ghl_features:
+  - GHL-WF-IF-ELSE
+  - GHL-AI-DECISION-MAKER
+advanced_topics:
+  - ai.deterministic_first
+estimated_minutes: 15
+summary: Explain the deterministic journey first, then justify only the
+  uncertainty that actually needs AI.
+---
+
+# Choose deterministic automation before AI
+
+## Begin with a traceable system
+
+Before configuring an AI feature, explain the trigger, input fields, decision, action, exit and failure path of the ordinary workflow. If “appointment is cancelled” decides whether a reminder should run, use the appointment state and a deterministic condition. A model should not reinterpret an authoritative status because the message sounds enthusiastic.
+
+Use AI where the input genuinely needs interpretation: summarising a long inquiry or proposing a category for ambiguous free text. Keep that interpretation separate from the permission to act. A proposed category is not a booking, refund authorisation or consent record. Prefer explicit choices and rules when they already solve the business problem.
+
+## Compare the failure costs
+
+A deterministic rule can be wrong because it encodes the wrong business policy or reads stale data. AI adds variability, incorrect interpretation and invented information. Neither becomes safe merely by being automated. Define what a false positive and false negative would cost, which can be recovered, and where a human must decide.
+
+HighLevel's AI Decision Maker is a premium workflow routing action driven by instructions and context. That does not make it preferable to an ordinary If/Else for a fixed numeric threshold. Verify supported inputs, fallback and execution cost before choosing it. Do not repeat marketing claims that AI eliminates error.
+
+## A bounded decision contract
+
+Write allowed outputs and their downstream validators first. Missing data should route to a named review state rather than the most convenient sales branch. Treat message text and retrieved content as evidence, not new operating instructions.
+
+The local practical compares two supplied cases and repairs an unsafe permission boundary. It invokes no model and works with Bloomlab AI Off. A correct answer demonstrates the specified judgment contract; it does not certify arbitrary prompts or the reliability of a live agent. Later AI skills depend on this node and the deterministic workflow foundation.
+
+## Official sources
+
+- [AI Decision Maker](https://help.gohighlevel.com/support/solutions/articles/155000005649-workflow-action-ai-decision-maker)
+
+Checked 9 September 2026. Feature records state the local boundary and current naming/rollout qualifications. Recheck before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-ai-judgment" />

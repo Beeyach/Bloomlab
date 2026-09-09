@@ -1,0 +1,58 @@
+id: EX-WHAT_WOULD_YOU_BUILD-specialty-reputation-social
+type: WHAT_WOULD_YOU_BUILD
+title: Operate reviews and Social Planner responsibly — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-DELIVER-reputation-social
+client: CL-glowhaus-medspa
+advanced_topics:
+  - specialty.reputation
+  - specialty.reviews
+  - specialty.social_planner
+allowed_features:
+  - GHL-REP-REVIEWS
+  - GHL-MKT-SOCIAL-PLANNER
+instructions: Separate a review request from a published review, and a scheduled
+  post from confirmed publication. Work from the fictional policy and trace in
+  the named fields. Submit JSON, not prose. Types and array order are checked;
+  property order is ignored. No model, external tool, message, account change,
+  purchase or public publication executes. Bloomlab AI Off is sufficient. A pass
+  proves the supplied contract, not live product competence.
+written_fields:
+  - key: review
+    label: Classify the evidence
+    help: Request sent and link clicked; no posted review observed. Return
+      request_sent=true, link_clicked=true, review_verified=false,
+      fabricate_review=false.
+    rows: 6
+  - key: post
+    label: Recover an expired social connection
+    help: Scheduled post failed authentication. Return published_confirmed=false,
+      next=owner_reconnect_and_check, blind_duplicate=false,
+      timezone_review=true.
+    rows: 6
+fixture_checks:
+  - key: review
+    field: review
+    expected_json: '{"request_sent":true,"link_clicked":true,"review_verified":false,"fabricate_review":false}'
+  - key: post
+    field: post
+    expected_json: '{"published_confirmed":false,"next":"owner_reconnect_and_check","blind_duplicate":false,"timezone_review":true}'
+expected_outcomes:
+  - id: review
+    type: state
+    path: fixture.review
+    operator: equals
+    value: true
+    description: Classify the evidence satisfies the supplied contract.
+  - id: post
+    type: state
+    path: fixture.post
+    operator: equals
+    value: true
+    description: Recover an expired social connection satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

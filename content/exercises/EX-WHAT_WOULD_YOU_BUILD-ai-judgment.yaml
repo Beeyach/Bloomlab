@@ -1,0 +1,56 @@
+id: EX-WHAT_WOULD_YOU_BUILD-ai-judgment
+type: WHAT_WOULD_YOU_BUILD
+title: Choose deterministic automation before AI — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-JUDGMENT-ai-boundaries
+client: CL-glowhaus-medspa
+advanced_topics:
+  - ai.deterministic_first
+allowed_features:
+  - GHL-WF-IF-ELSE
+  - GHL-AI-DECISION-MAKER
+instructions: Explain the deterministic journey first, then justify only the
+  uncertainty that actually needs AI. Work from the fictional policy and trace
+  in the named fields. Submit JSON, not prose. Types and array order are
+  checked; property order is ignored. No model, external tool, message, account
+  change, purchase or public publication executes. Bloomlab AI Off is
+  sufficient. A pass proves the supplied contract, not live product competence.
+written_fields:
+  - key: choice
+    label: Choose the smaller mechanism
+    help: Return cancelled_reminder=deterministic_rule,
+      ambiguous_inquiry_summary=ai_draft_with_review,
+      authoritative_status_overridden=false.
+    rows: 6
+  - key: authority
+    label: Separate interpretation from authority
+    help: A model proposes a refund without approval. Return
+      model_proposal_is_permission=false, refund_execute=false,
+      next=human_review, runtime_ai_required=false.
+    rows: 6
+fixture_checks:
+  - key: choice
+    field: choice
+    expected_json: '{"cancelled_reminder":"deterministic_rule","ambiguous_inquiry_summary":"ai_draft_with_review","authoritative_status_overridden":false}'
+  - key: authority
+    field: authority
+    expected_json: '{"model_proposal_is_permission":false,"refund_execute":false,"next":"human_review","runtime_ai_required":false}'
+expected_outcomes:
+  - id: choice
+    type: state
+    path: fixture.choice
+    operator: equals
+    value: true
+    description: Choose the smaller mechanism satisfies the supplied contract.
+  - id: authority
+    type: state
+    path: fixture.authority
+    operator: equals
+    value: true
+    description: Separate interpretation from authority satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

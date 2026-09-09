@@ -435,6 +435,8 @@ Implementation and controlled verification: `docs/reviews/phase-24-field-ready.m
 
 ## Phase 25 — Advanced curriculum
 
+- **CUR-027, CUR-028** Advanced content tests derive twelve AI and 23 specialty topic contracts, require tiered graph references, current registry evidence and instruction/practical coverage, and reject removal of deterministic AI prerequisites. The shared grader rejects empty/corrupted fixture answers with AI Off. The curriculum probe selects `ai.,specialty.` to review all fourteen units/runners at five widths and fourteen fail/retry/draft/result-reload flows, keyboard visible focus, touch and reduced motion. These are local policy/trace exercises, not live native AI/specialty execution.
+
 - **CUR-026, SAL-015** Advanced content tests derive nine SCALE/retention unit/practical pairs, four exact named vertical systems, specialist tier and preserved snapshot fieldwork. `advancedFixtures.test.ts` checks empty, correct and individually corrupted contracts through the real AI-Off grader. The curriculum probe selects `scale.,retention.` for all units/runners at the five required widths and fail/retry/draft/result-reload flows. Retention computes cohort rates without causal claims and distinguishes retainer inclusions, expansion and permission-based referrals.
 
 - **CRM-002, CRM-005** `advanced-crm.test.ts` verifies shared company references, typed schemas, atomic refusal, labelled contact associations, generated object notifications/replay and dynamic typed AND/OR membership. `advanced-labs-probe.mjs` creates, edits, reloads and grades actual account state, including membership changes.

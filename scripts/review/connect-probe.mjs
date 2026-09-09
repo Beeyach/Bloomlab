@@ -19,9 +19,19 @@ const units = content.learning_units.filter((unit) => selected(unit.advanced_top
 const exercises = content.exercises.filter((exercise) => selected(exercise.advanced_topics));
 const { waitFor, click, typeInto, hasButton } = probeHelpers({ base: BASE });
 mkdirSync(OUT, { recursive: true });
-const results = { base: BASE, head: HEAD ?? null, widths: [], practicals: [], identity: null };
+const results = {
+  base: BASE,
+  head: HEAD ?? null,
+  widths: [],
+  practicals: [],
+  identity: null,
+  diagnostics: [],
+};
 const browser = await session();
 const { page } = browser;
+await page.send('Log.enable');
+void page.once('Runtime.exceptionThrown').then((entry) => results.diagnostics.push(entry));
+void page.once('Log.entryAdded').then((entry) => results.diagnostics.push(entry));
 const measure = () =>
   page.evaluate(
     `(() => ({ width: innerWidth, scrollWidth: document.documentElement.scrollWidth, title: document.querySelector('main h1')?.textContent, fields: [...document.querySelectorAll('textarea')].map(el => ({ label: el.closest('label')?.textContent.trim(), width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height })) }))()`,
@@ -59,7 +69,10 @@ try {
     await screenshot(page, `${OUT}/academy-${width}.png`, undefined, false);
     for (const exercise of exercises) {
       await openPage(page, `${BASE}/exercise/${exercise.id}`);
-      assert(await waitFor(page, 'document.querySelectorAll("textarea").length >= 2'));
+      assert(
+        await waitFor(page, 'document.querySelectorAll("textarea").length >= 2'),
+        `${exercise.id} did not open at ${width}`,
+      );
       const layout = await measure();
       assert(layout.scrollWidth <= width + 1, `${exercise.id} overflows at ${width}`);
       assert(layout.fields.every((field) => field.label && field.height >= 44));
@@ -161,6 +174,9 @@ try {
   }
   results.passed = true;
 } catch (error) {
+  results.failure = await page.evaluate(
+    `({url:location.href,text:document.body.innerText.slice(0,5000),scripts:[...document.scripts].map(script=>script.src),resources:performance.getEntriesByType('resource').slice(-20).map(row=>({name:row.name,status:row.responseStatus}))})`,
+  );
   await screenshot(page, `${OUT}/failure.png`, undefined, false);
   throw error;
 } finally {

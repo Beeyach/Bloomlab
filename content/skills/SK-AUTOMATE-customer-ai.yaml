@@ -1,0 +1,27 @@
+id: SK-AUTOMATE-customer-ai
+title: Bound Conversation AI and Voice AI
+territory: AUTOMATE
+tier: advanced
+summary: Separate customer messaging and voice channels, define human handover
+  and test failed transfers safely.
+prerequisites:
+  - SK-JUDGMENT-ai-boundaries
+ghl_features:
+  - GHL-AI-CONVERSATION
+  - GHL-AI-VOICE
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - ai-customer
+  - post-Field-Ready
+  - conversation
+  - voice
+  - escalation

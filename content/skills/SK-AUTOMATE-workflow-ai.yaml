@@ -1,0 +1,27 @@
+id: SK-AUTOMATE-workflow-ai
+title: Validate outputs from Workflow AI actions
+territory: AUTOMATE
+tier: advanced
+summary: Distinguish routing, extraction and tool-using AI actions while
+  preserving deterministic downstream validation.
+prerequisites:
+  - SK-JUDGMENT-ai-boundaries
+  - SK-CONNECT-json
+ghl_features:
+  - GHL-AI-DECISION-MAKER
+  - GHL-AI-EXTRACT-DATA
+  - GHL-AI-WORKFLOW-AGENT
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - ai-workflows
+  - post-Field-Ready
+  - workflow_actions

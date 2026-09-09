@@ -1,0 +1,29 @@
+id: SK-AUTOMATE-managed-agents
+title: Ground a Managed Agent in approved knowledge
+territory: AUTOMATE
+tier: specialist
+summary: Use current agent names, keep knowledge distinct from authority and
+  handle missing or contradictory sources.
+prerequisites:
+  - SK-JUDGMENT-ai-boundaries
+  - SK-AUTOMATE-workflow-ai
+ghl_features:
+  - GHL-AI-MANAGED
+  - GHL-AI-FLOW-AGENTS
+  - GHL-AI-ASK
+  - GHL-AI-KNOWLEDGE
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - ai-agents
+  - post-Field-Ready
+  - agents
+  - knowledge

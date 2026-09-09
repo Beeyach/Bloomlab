@@ -1,0 +1,47 @@
+---
+id: LU-ai-workflows
+title: Validate outputs from Workflow AI actions
+territory: AUTOMATE
+tier: advanced
+skills:
+  - SK-AUTOMATE-workflow-ai
+ghl_features:
+  - GHL-AI-DECISION-MAKER
+  - GHL-AI-EXTRACT-DATA
+  - GHL-AI-WORKFLOW-AGENT
+advanced_topics:
+  - ai.workflow_actions
+estimated_minutes: 15
+summary: Distinguish routing, extraction and tool-using AI actions while
+  preserving deterministic downstream validation.
+---
+
+# Validate outputs from Workflow AI actions
+
+## Three different jobs inside a workflow
+
+AI Decision Maker routes according to instructions and supplied context. AI Extract Data turns unstructured text into structured fields. AI Agent can choose and execute selected tools under an instruction. These are current HighLevel Workflow AI names, not one universal “AI step”. Check each action's output contract and premium execution charges before use.
+
+For a fixed number comparison, keep If/Else. For extraction, define the field names, types, allowed values and missing-value policy. For a tool-using agent, narrow the tool list and each destination. More tools do not automatically make a workflow more capable in the business sense; they increase the possible consequences of a mistake.
+
+## Structured output still needs validation
+
+An answer formatted as JSON can contain invented values. Parse it, validate types and allowed values, then compare important claims with authoritative account state. A requested appointment date is not an available slot. An extracted “paid” phrase in a message is not a successful payment event.
+
+Separate the model proposal from the durable action. Route invalid output and missing input to an explicit fallback. Decide how timeouts are handled, whether retry is safe and how to prevent duplicate side effects if a tool succeeded before the surrounding request failed.
+
+## Observe each execution
+
+The AI Agent action's Execution Logs expose the trace, tool inputs/outputs and usage. Inspect those alongside the contact's resulting state. A final response saying “done” is not equivalent to a successful underlying operation. Do not log credentials or unnecessary conversation content into your own diagnostics.
+
+The local practical repairs a supplied extraction and reviews a failed tool attempt. It never runs HighLevel's AI actions, and no premium execution is purchased. The deterministic grader checks the supplied contract; it cannot establish a model's live accuracy or replace real destination testing.
+
+## Official sources
+
+- [AI Decision Maker](https://help.gohighlevel.com/support/solutions/articles/155000005649-workflow-action-ai-decision-maker)
+- [AI Extract Data](https://help.gohighlevel.com/support/solutions/articles/155000007992)
+- [AI Agent](https://help.gohighlevel.com/support/solutions/articles/155000007600-workflow-action-ai-agent)
+
+Checked 9 September 2026. Feature records state the local boundary and current naming/rollout qualifications. Recheck before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-ai-workflows" />

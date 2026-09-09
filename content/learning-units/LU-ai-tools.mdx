@@ -1,0 +1,47 @@
+---
+id: LU-ai-tools
+title: Restrict tools, MCP and irreversible actions
+territory: CONNECT
+tier: specialist
+skills:
+  - SK-CONNECT-ai-tools
+ghl_features:
+  - GHL-AI-SKILLS
+  - GHL-AI-MCP
+advanced_topics:
+  - ai.tools
+  - ai.permissions
+  - ai.irreversible
+estimated_minutes: 15
+summary: Choose minimal external capabilities and enforce approval, account
+  scope and retry boundaries outside model output.
+---
+
+# Restrict tools, MCP and irreversible actions
+
+## A capability is more than a prompt
+
+HighLevel's Skills Platform describes shared abilities for AI products, including CRM and external operations. MCP connectors expose selected tools from connected services. The current connector article documents Managed Agents and Ask AI availability while naming Voice AI and Conversation AI support as future work. Do not infer identical connector support from a broad Skills Platform description; check the specific product and account.
+
+A connection authenticates to a service. Tool selection limits which operations the agent can request. Authorisation must still cover the correct account, records and purpose. A read-only lookup does not justify enabling delete, refund, send-message or bulk-export capabilities. Never put real connector credentials in a lesson answer, prompt, browser variable or snapshot.
+
+## Treat external content as untrusted
+
+Tool responses, documents and messages can contain instructions, including malicious ones. They supply data, not a new policy. Validate structured inputs and outputs against an allowlist. Keep customer-provided URLs from turning a backend into an arbitrary network proxy, and avoid exposing secrets or unrelated records in errors.
+
+Before an irreversible action, require a concrete target, reviewed change and the authorised person's approval. This is Bloomwired's operating policy, not a claim that every native connector automatically supplies the same confirmation gate. If the chosen product cannot enforce the necessary boundary, withhold the capability and route the work to a person.
+
+## Retry with evidence
+
+A timeout can occur after an external action succeeded. Check the durable result or idempotency identity before trying again. Bound retries and execution cost; stop on repeated uncertainty. Record operation metadata without copying credentials or unnecessary private payloads.
+
+The practical constructs a minimal tool list and handles an uncertain refund. It connects no MCP server, uses no real token and performs no external action. Its pass demonstrates a supplied permission contract, not live connector security.
+
+## Official sources
+
+- [Skills Platform for AI Agents](https://help.gohighlevel.com/support/solutions/articles/155000008315)
+- [MCP Connectors for Managed Agents](https://help.gohighlevel.com/support/solutions/articles/155000008304-mcp-connectors)
+
+Checked 9 September 2026. Feature records state the local boundary and current naming/rollout qualifications. Recheck before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-ai-tools" />

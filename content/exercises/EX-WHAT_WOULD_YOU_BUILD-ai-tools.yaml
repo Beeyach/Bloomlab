@@ -1,0 +1,59 @@
+id: EX-WHAT_WOULD_YOU_BUILD-ai-tools
+type: WHAT_WOULD_YOU_BUILD
+title: Restrict tools, MCP and irreversible actions — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-CONNECT-ai-tools
+client: CL-glowhaus-medspa
+advanced_topics:
+  - ai.tools
+  - ai.permissions
+  - ai.irreversible
+allowed_features:
+  - GHL-AI-SKILLS
+  - GHL-AI-MCP
+instructions: Choose minimal external capabilities and enforce approval, account
+  scope and retry boundaries outside model output. Work from the fictional
+  policy and trace in the named fields. Submit JSON, not prose. Types and array
+  order are checked; property order is ignored. No model, external tool,
+  message, account change, purchase or public publication executes. Bloomlab AI
+  Off is sufficient. A pass proves the supplied contract, not live product
+  competence.
+written_fields:
+  - key: tools
+    label: Grant only the requested capability
+    help: The job reads a booking. Available tools are read_booking, delete_contact,
+      refund_payment. Return allow=[read_booking],
+      account_scope=training-location, secrets_in_prompt=false.
+    rows: 6
+  - key: refund
+    label: Handle an uncertain irreversible action
+    help: A refund request timed out after transmission. Return blind_retry=false,
+      inspect_durable_result=true, require_authorized_approval=true,
+      model_text_is_authorization=false.
+    rows: 6
+fixture_checks:
+  - key: tools
+    field: tools
+    expected_json: '{"allow":["read_booking"],"account_scope":"training-location","secrets_in_prompt":false}'
+  - key: refund
+    field: refund
+    expected_json: '{"blind_retry":false,"inspect_durable_result":true,"require_authorized_approval":true,"model_text_is_authorization":false}'
+expected_outcomes:
+  - id: tools
+    type: state
+    path: fixture.tools
+    operator: equals
+    value: true
+    description: Grant only the requested capability satisfies the supplied contract.
+  - id: refund
+    type: state
+    path: fixture.refund
+    operator: equals
+    value: true
+    description: Handle an uncertain irreversible action satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

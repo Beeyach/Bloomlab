@@ -1,0 +1,27 @@
+id: SK-DELIVER-reputation-social
+title: Operate reviews and Social Planner responsibly
+territory: DELIVER
+tier: practitioner
+summary: Separate a review request from a published review, and a scheduled post
+  from confirmed publication.
+prerequisites:
+  - SK-DELIVER-client-explanation
+ghl_features:
+  - GHL-REP-REVIEWS
+  - GHL-MKT-SOCIAL-PLANNER
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - specialty-reputation-social
+  - post-Field-Ready
+  - reputation
+  - reviews
+  - social_planner

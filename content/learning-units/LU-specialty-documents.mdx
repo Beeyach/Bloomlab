@@ -1,0 +1,52 @@
+---
+id: LU-specialty-documents
+title: Separate agreements, estimates and billing states
+territory: DELIVER
+tier: advanced
+skills:
+  - SK-DELIVER-commercial-documents
+ghl_features:
+  - GHL-PAY-CONTRACTS
+  - GHL-PAY-ESTIMATES
+  - GHL-PAY-INVOICES
+  - GHL-PAY-LINKS
+  - GHL-PAY-SUBSCRIPTIONS
+advanced_topics:
+  - specialty.contracts
+  - specialty.estimates
+  - specialty.invoices
+  - specialty.payment_links
+  - specialty.subscriptions
+estimated_minutes: 15
+summary: Trace commercial acceptance, invoice payment and recurring obligations
+  without collapsing them into a single success state.
+---
+
+# Separate agreements, estimates and billing states
+
+## Different documents answer different questions
+
+Documents & Contracts manages agreements and their document lifecycle. Estimates communicate a proposed commercial amount before final billing. An invoice requests payment from a particular customer. A payment link offers a checkout route, and a subscription represents recurring billing obligations. None of those names is interchangeable with “the client paid”.
+
+HighLevel's Estimates documentation supports acceptance/rejection and conversion to an invoice. Documents & Contracts has its own sent, viewed and completion evidence. A viewed document is not necessarily signed; an accepted estimate is not a settled invoice. Verify which event the workflow actually consumes.
+
+## Review before sending
+
+Select the correct customer, version, scope, amount, currency and billing schedule. Check the approval owner and whether the operation creates a draft or sends immediately. Under this training policy, a new commercial document requires owner review before sending; that policy is not a claim that every native feature imposes the same gate.
+
+Contract enforceability and tax treatment are outside this lesson. Have the business obtain qualified review for its actual terms and jurisdiction. Do not infer legal acceptance merely from a synthetic state field or a platform button label.
+
+## Changes have downstream consequences
+
+A payment failure, refund, cancellation or scope amendment can require different follow-up. Refunding one charge does not automatically terminate every recurring agreement. Keep the subscription status and the individual transaction status separate, and record who may make each change.
+
+Rehearse a viewed-but-unsigned agreement, accepted-but-unpaid estimate, failed invoice, refunded recurring charge and an inactive payment link. The Payments Lab supplies a narrow synthetic lifecycle; this specialty adds the document and commercial-boundary reasoning. The practical creates no legally operative document, sends no invoice and moves no money. It checks only the supplied evidence and approval contract.
+
+## Official sources
+
+- [Documents & Contracts](https://help.gohighlevel.com/support/solutions/articles/155000000594)
+- [Estimates](https://help.gohighlevel.com/support/solutions/articles/155000003675-how-to-create-and-send-estimates-using-in-highlevel)
+
+Checked 9 September 2026. Feature records state the local boundary and current naming/rollout qualifications. Recheck before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-specialty-documents" />

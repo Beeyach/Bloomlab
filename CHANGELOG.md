@@ -9,6 +9,11 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 25 GHL AI and supporting specialties
+
+- Six deterministic-first GHL AI units/practicals cover current product roles, customer messaging/voice, workflow actions, knowledge, tools/permissions and operational risk. The compiler rejects AI skills that lose their deterministic prerequisites.
+- Eight grouped units/practicals represent all 23 supporting specialties in the master graph, with 31 current official feature records and truthful conceptual fidelity. AI Off completes every new practical; no runtime model or live external action is introduced.
+
 ### Added — Phase 25 SCALE and retention checkpoint
 
 - Nine units/practicals cover template release discipline, snapshot portability, agency boundaries, specialist distribution, evidence-based retention and four distinct Bloomwired vertical Demonstration Builds.

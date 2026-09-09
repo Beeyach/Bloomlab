@@ -1,0 +1,29 @@
+id: SK-DIAGNOSE-advanced-reporting
+title: Read prospecting and reporting without invented certainty
+territory: DIAGNOSE
+tier: advanced
+summary: Distinguish prospect audit signals, ad-platform metrics and custom
+  report definitions before making an account recommendation.
+prerequisites:
+  - SK-SELL-evidence-based-audit
+  - SK-STRATEGIZE-funnel-math
+ghl_features:
+  - GHL-MKT-PROSPECTING
+  - GHL-REP-ADS
+  - GHL-REP-CUSTOM-REPORTS
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - specialty-reporting
+  - post-Field-Ready
+  - prospecting
+  - ad_reporting
+  - advanced_reporting

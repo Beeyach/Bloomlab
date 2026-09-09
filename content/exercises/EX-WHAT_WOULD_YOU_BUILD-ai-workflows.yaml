@@ -1,0 +1,57 @@
+id: EX-WHAT_WOULD_YOU_BUILD-ai-workflows
+type: WHAT_WOULD_YOU_BUILD
+title: Validate outputs from Workflow AI actions — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-AUTOMATE-workflow-ai
+client: CL-glowhaus-medspa
+advanced_topics:
+  - ai.workflow_actions
+allowed_features:
+  - GHL-AI-DECISION-MAKER
+  - GHL-AI-EXTRACT-DATA
+  - GHL-AI-WORKFLOW-AGENT
+instructions: Distinguish routing, extraction and tool-using AI actions while
+  preserving deterministic downstream validation. Work from the fictional policy
+  and trace in the named fields. Submit JSON, not prose. Types and array order
+  are checked; property order is ignored. No model, external tool, message,
+  account change, purchase or public publication executes. Bloomlab AI Off is
+  sufficient. A pass proves the supplied contract, not live product competence.
+written_fields:
+  - key: extract
+    label: Validate an extracted field
+    help: Source says guest count is unknown; extractor returned string "many".
+      Schema requires integer or null. Return guest_count=null,
+      valid_to_book=false, next=human_review.
+    rows: 6
+  - key: trace
+    label: Separate claimed and confirmed success
+    help: Agent says booked, tool result says timeout and booking state is unknown.
+      Return booking_confirmed=false, blind_retry=false,
+      inspect_account_state=true, allowed_tools=[read_booking].
+    rows: 6
+fixture_checks:
+  - key: extract
+    field: extract
+    expected_json: '{"guest_count":null,"valid_to_book":false,"next":"human_review"}'
+  - key: trace
+    field: trace
+    expected_json: '{"booking_confirmed":false,"blind_retry":false,"inspect_account_state":true,"allowed_tools":["read_booking"]}'
+expected_outcomes:
+  - id: extract
+    type: state
+    path: fixture.extract
+    operator: equals
+    value: true
+    description: Validate an extracted field satisfies the supplied contract.
+  - id: trace
+    type: state
+    path: fixture.trace
+    operator: equals
+    value: true
+    description: Separate claimed and confirmed success satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

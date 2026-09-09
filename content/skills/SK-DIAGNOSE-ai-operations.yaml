@@ -1,0 +1,27 @@
+id: SK-DIAGNOSE-ai-operations
+title: Audit AI cost, logs and incorrect actions
+territory: DIAGNOSE
+tier: specialist
+summary: Reconcile proposed actions with tool results, protect diagnostic data
+  and budget a bounded AI rollout.
+prerequisites:
+  - SK-CONNECT-ai-tools
+  - SK-DIAGNOSE-workflow-troubleshooting
+ghl_features:
+  - GHL-AI-LOGS
+  - GHL-AI-ACTIVITY
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - ai-operations
+  - post-Field-Ready
+  - cost_logs
+  - hallucination

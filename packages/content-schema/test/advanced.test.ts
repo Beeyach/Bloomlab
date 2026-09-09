@@ -14,6 +14,76 @@ beforeAll(async () => {
   };
 });
 describe('CUR-023 content-derived coverage', () => {
+  it('represents every supporting specialty with tiered graph, instruction, practical and current registry evidence', () => {
+    const topics = [
+      'reputation',
+      'reviews',
+      'social_planner',
+      'courses',
+      'memberships',
+      'communities',
+      'client_portal',
+      'affiliates',
+      'ecommerce',
+      'blogs',
+      'seo',
+      'ivr_phone',
+      'prospecting',
+      'ad_reporting',
+      'rentals',
+      'services',
+      'resources',
+      'contracts',
+      'estimates',
+      'invoices',
+      'payment_links',
+      'subscriptions',
+      'advanced_reporting',
+    ];
+    const rows = advancedCoverage(content).filter((row) => row.topic.startsWith('specialty.'));
+    expect(rows.map((row) => row.topic).sort()).toEqual(
+      topics.map((topic) => `specialty.${topic}`).sort(),
+    );
+    const fieldReady = new Set(
+      content.campaigns
+        .find((campaign) => campaign.id === 'CAMP-FIELD_READY')!
+        .gates.flatMap((gate) => gate.skills),
+    );
+    for (const row of rows) {
+      expect(row.units.length, row.topic).toBeGreaterThan(0);
+      expect(row.exercises.length, row.topic).toBeGreaterThan(0);
+      const unit = content.learning_units.find((unit) => unit.id === row.units[0])!;
+      expect(unit.word_count).toBeGreaterThan(200);
+      for (const id of unit.skills) {
+        const skill = content.skills.find((skill) => skill.id === id)!;
+        expect(skill.tier).not.toBe('field_ready');
+        expect(fieldReady.has(id)).toBe(false);
+        expect(skill.ghl_features.length).toBeGreaterThan(0);
+      }
+    }
+  });
+  it('requires deterministic-first prerequisites for every AI unit and rejects removing that boundary', () => {
+    const rows = advancedCoverage(content).filter((row) => row.topic.startsWith('ai.'));
+    expect(rows).toHaveLength(12);
+    for (const row of rows) {
+      expect(row.units.length, row.topic).toBeGreaterThan(0);
+      expect(row.exercises.length, row.topic).toBeGreaterThan(0);
+      expect(
+        content.learning_units.find((unit) => unit.id === row.units[0])!.word_count,
+      ).toBeGreaterThan(200);
+    }
+    const broken = structuredClone(content);
+    broken.skills.find((skill) => skill.id === 'SK-JUDGMENT-ai-boundaries')!.prerequisites = [];
+    const issues = new IssueList();
+    validateAdvanced(broken, ADVANCED_TOPICS, issues);
+    expect(issues.errors.some((issue) => issue.code === 'ADVANCED_AI_ORDER')).toBe(true);
+    expect(
+      content.ghl_features.find((feature) => feature.id === 'GHL-AI-MANAGED')!.official_name,
+    ).toBe('Managed Agents');
+    expect(
+      content.ghl_features.find((feature) => feature.id === 'GHL-AI-MCP')!.simulation_fidelity,
+    ).toBe('C');
+  });
   it('covers SCALE and retention with four explicit vertical demonstrations and preserved fieldwork', () => {
     const rows = advancedCoverage(content).filter(
       (row) => row.topic.startsWith('scale.') || row.topic.startsWith('retention.'),

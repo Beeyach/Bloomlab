@@ -1,0 +1,24 @@
+id: GHL-AI-MCP
+official_name: MCP Connectors for Managed Agents
+area: AI
+feature_type: product
+implementation_type: native_ghl
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000008304-mcp-connectors
+skills:
+  - SK-CONNECT-ai-tools
+known_limitations:
+  - Conceptual instruction and objective local policy/trace fixtures only. No
+    live product execution, external account, paid provider, publishing, calling
+    or autonomous action is simulated.
+  - Connector article scopes current availability to Managed Agents and Ask AI,
+    with Voice/Conversation AI described as future support. Do not infer
+    universal connector availability from Skills Platform.
+approximation_note: Local contract reasoning only, not a full Lab or real-GHL acceptance.
+verification_note: Current official HighLevel documentation read on 2026-09-09.
+  Connector article scopes current availability to Managed Agents and Ask AI,
+  with Voice/Conversation AI described as future support. Do not infer universal
+  connector availability from Skills Platform.
+supported_configs: {}

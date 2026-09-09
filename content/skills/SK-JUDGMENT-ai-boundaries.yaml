@@ -1,0 +1,26 @@
+id: SK-JUDGMENT-ai-boundaries
+title: Choose deterministic automation before AI
+territory: JUDGMENT
+tier: practitioner
+summary: Explain the deterministic journey first, then justify only the
+  uncertainty that actually needs AI.
+prerequisites:
+  - SK-AUTOMATE-workflow-foundations
+  - SK-JUDGMENT-automation-appropriateness
+ghl_features:
+  - GHL-WF-IF-ELSE
+  - GHL-AI-DECISION-MAKER
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - ai-judgment
+  - post-Field-Ready
+  - deterministic_first

@@ -148,3 +148,33 @@ focus, touch retry and reduced motion at 480 px height. Artifact:
 authored curriculum/practical contracts, not live client or real-GHL acceptance.
 Checkpoint C exact-head CI **34342382869** passed on
 `5385480f3e58bc920b03212fb6742958ec3031d7`; final remote identity will be reverified after F.
+
+## Checkpoint E — GHL AI and supporting specialties
+
+Six units/practicals cover twelve AI topics: deterministic-first judgment, Conversation AI,
+Voice AI, escalation, Workflow AI actions, agents, knowledge, tools, permissions, irreversible
+actions, cost/logs and hallucination risk. Every AI graph node depends on the deterministic
+workflow foundation and AI-boundary judgment; removing that chain fails compilation. Runtime
+AI is not required. Fourteen new units/practicals total include eight related specialty groups,
+with explicit learn/practical citations for all 23 named supporting specialties.
+
+Thirty-one official registry records distinguish conceptual C work from existing B Labs.
+The current product comparison uses **Managed Agents (formerly Super Agents)**; Flow Agents
+are the existing visual-agent maintenance path, and older pages retain SuperAgents wording.
+MCP and logging availability is scoped to the particular official product article, not assumed
+universal from Skills Platform. Knowledge sources and model output never grant authority in the
+training policy. No native agent, connector, phone, publisher, crawler or payment provider runs.
+
+Focused content/grading checks: **9 tests / 3 files passed**, including all new empty/correct/
+individually corrupted contracts, deterministic-prerequisite mutation, exact 23 specialty topics,
+non-Field-Ready tiers and current product/fidelity records. Content `2026.09.25`; no migration
+or provider spend. Final curated paths and exact-head remote verification remain pending.
+
+Typecheck, lint (existing hook warning only), formatting and Production provider/secret scan pass.
+Built Chromium, AI Off: **140 width cases** and all fourteen empty-fail/correct-retry/draft/result
+reload flows pass, with visible keyboard focus, touch retry and reduced motion at short height.
+Artifact: `.review/phase-25-ai-specialties/verified/connect-probe.json`. The first run encountered
+a blank document during navigation; the committed probe now captures URL/resource/browser-error
+diagnostics, and a fresh full rerun passed. Chromium emulation is not physical-device acceptance.
+CUR-027/028 are PASSED for their curriculum/graph contracts. Checkpoint D exact-head CI
+**34343170304** passed on `177b3434cd1351a9a861e23fd71ee5a2d99a7f4a`.

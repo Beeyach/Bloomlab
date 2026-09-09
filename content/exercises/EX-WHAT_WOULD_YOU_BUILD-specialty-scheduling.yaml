@@ -1,0 +1,59 @@
+id: EX-WHAT_WOULD_YOU_BUILD-specialty-scheduling
+type: WHAT_WOULD_YOU_BUILD
+title: Choose rentals, services and resource capacity — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-ARCHITECT-scheduling-specialties
+client: CL-glowhaus-medspa
+advanced_topics:
+  - specialty.rentals
+  - specialty.services
+  - specialty.resources
+allowed_features:
+  - GHL-CAL-RENTALS
+  - GHL-CAL-SERVICES
+  - GHL-CAL-RESOURCES
+instructions: Distinguish multi-day rental inventory from staff services and
+  equivalent physical resources. Work from the fictional policy and trace in the
+  named fields. Submit JSON, not prose. Types and array order are checked;
+  property order is ignored. No model, external tool, message, account change,
+  purchase or public publication executes. Bloomlab AI Off is sufficient. A pass
+  proves the supplied contract, not live product competence.
+written_fields:
+  - key: model
+    label: Choose the booking model
+    help: A camera is rented Friday through Monday; a therapist offers 60-minute
+      sessions. Return camera=Rentals, therapist=Services,
+      multi_day_rentals_in_lab=false.
+    rows: 6
+  - key: capacity
+    label: Resolve one room at the same time
+    help: Two staff are free but one room has capacity 1 and an overlapping booking.
+      Return additional_bookings=0, free_staff_overrides_room=false,
+      cancellation_rechecks_capacity=true.
+    rows: 6
+fixture_checks:
+  - key: model
+    field: model
+    expected_json: '{"camera":"Rentals","therapist":"Services","multi_day_rentals_in_lab":false}'
+  - key: capacity
+    field: capacity
+    expected_json: '{"additional_bookings":0,"free_staff_overrides_room":false,"cancellation_rechecks_capacity":true}'
+expected_outcomes:
+  - id: model
+    type: state
+    path: fixture.model
+    operator: equals
+    value: true
+    description: Choose the booking model satisfies the supplied contract.
+  - id: capacity
+    type: state
+    path: fixture.capacity
+    operator: equals
+    value: true
+    description: Resolve one room at the same time satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

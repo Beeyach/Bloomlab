@@ -18,6 +18,31 @@ export function validateAdvanced(
   enforced: readonly string[],
   issues: IssueList,
 ) {
+  const dependsOn = (id: string, target: string, seen = new Set<string>()): boolean => {
+    if (id === target) return true;
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return (
+      content.skills
+        .find((skill) => skill.id === id)
+        ?.prerequisites.some((parent) => dependsOn(parent, target, seen)) ?? false
+    );
+  };
+  for (const unit of content.learning_units.filter((unit) =>
+    unit.advanced_topics.some((topic) => topic.startsWith('ai.')),
+  )) {
+    for (const skill of unit.skills) {
+      if (
+        !dependsOn(skill, 'SK-AUTOMATE-workflow-foundations') ||
+        !dependsOn(skill, 'SK-JUDGMENT-ai-boundaries')
+      )
+        issues.error(
+          'ADVANCED_AI_ORDER',
+          content.paths[unit.id] ?? null,
+          `${unit.id}: AI instruction requires deterministic workflow and AI-boundary prerequisites`,
+        );
+    }
+  }
   for (const row of advancedCoverage(content)) {
     if (!enforced.includes(row.topic)) continue;
     if (!row.units.length || !row.exercises.length)
