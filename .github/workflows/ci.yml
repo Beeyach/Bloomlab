@@ -40,6 +40,7 @@ jobs:
       # Content validation (CNT-011): every ID resolves, no missing prerequisite or unknown GHL
       # feature, and content.lock.yaml matches the sources (content_version was bumped).
       - run: npm run content:check
+      - run: npm run content:freshness
       - run: npm run voice:check
       - run: npm run build
         env:

@@ -195,3 +195,32 @@ Checks before D:
 
 All statuses remain at baseline pending final reconciliation. Chromium is controlled evidence,
 not a physical-device or personal-transfer certification. Provider spend remains $0.
+
+## Checkpoint D — deterministic registry maintenance
+
+`npm run content:freshness -- --as-of YYYY-MM-DD` produces dated JSON/Markdown maintenance reports
+from the compiled, lock-validated registry. The default threshold is **more than 90 whole UTC
+days**, shared with compiler freshness. Optional positive whole-day thresholds are explicit.
+Current-but-stale, needs_review, deprecated, removed and future verification dates are distinct;
+none changes the authored status. Stable age/ID ordering and the reference date make reruns
+reproducible. Each item retains source URL, fidelity, date, approximation, every limitation and
+verification context. The command performs no network work and never rewrites a source record.
+
+The command is part of complete local CI and GitHub Checks. Review findings remain advisory
+warnings under existing policy; invalid dates/schemas/options and broken content locks fail.
+`CONTENT_ARCHITECTURE.md` documents the maintainer's manual official-source review responsibility.
+No broad registry re-research, date reset, content promotion or content-version change occurred.
+
+Checks before E: **62 tests / 4 files passed** (maintenance, compiler/content, schemas and webhook
+freshness), all workspace typechecks and scoped lint. Regressions cover recent/stale current rows,
+the exact 90/91-day boundary, needs_review/deprecated/removed, retained metadata, deterministic
+ordering, malformed/future dates, configurable thresholds and zero network calls. The command's
+invalid-date probe (`2026-02-30`) correctly exits 1 without rewriting reports or source.
+
+As of **2026-09-09**, the source registry contains **89 current / 0 needs_review / 0 deprecated /
+0 removed**, with **0 advisory review items** under the 90-day rule. This reports existing authored
+metadata, not a new verification of 89 features. Two runs generated identical SHA-256 bytes:
+JSON `9e3b9c3a0438ce4c460b39cdbbf153f4fe3f1c834ca9cfee913f617aeda5bcf3`, Markdown
+`09248526f74795186aa61b627bfd671c658cc944a771d7554094b0308409aea8` at
+`.content/freshness-review.{json,md}`. Content hash remains the baseline value. Statuses and all
+parked human requirements are unchanged; provider spend remains $0.

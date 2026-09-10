@@ -144,3 +144,18 @@ The file name is the record's `id` (D-035). Patterns are enforced by `packages/c
 - **Versioning**: `content/content.yaml` + generated `content/content.lock.yaml`; `npm run content:build | check | lock` (`scripts/content.mjs`); CI runs `content:check`. The bundle carries `content_version`, `content_hash`, `schema_version`.
 - **Reports**: `.content/coverage-content.md`, `.content/coverage-ghl.md`, `.content/freshness.md`, `.content/bundle.json`, `.content/summary.txt` (git-ignored, regenerated on every build). The `/system` screen shows the same numbers from the bundle.
 - **Warnings (non-fatal)**: `ORPHAN_SKILL`, `SKILL_NO_UNIT`, `SKILL_NO_PRACTICE`, `GATE_WITHOUT_SKILLS`, `GATE_WITHOUT_PROJECT`, `UNIT_NO_EMBEDS`, `FEATURE_NEEDS_REVIEW_USED`, `DEPRECATED_FEATURE_USED`, `FEATURE_STALE`.
+
+## 9. Registry maintenance (Phase 26, GHL-008)
+
+Run `npm run content:freshness -- --as-of YYYY-MM-DD` for reproducible JSON/Markdown reports at
+`.content/freshness-review.{json,md}`. Omit `--as-of` to use today's UTC date; optionally set
+`--stale-days N` (positive whole days). CI uses the default **more than 90 whole UTC days**.
+Current-but-stale, needs_review, deprecated, removed and future verification dates remain distinct;
+the source status is preserved. Each review item retains its official source, verification date,
+fidelity, approximation, limitations and verification context. Recent current records are counted,
+not listed as needing review. Deterministic sort: age descending, then feature ID.
+
+The command validates content and its lock, never calls a provider or rewrites source records.
+Review findings are advisory warnings under existing authoring policy. Invalid schemas/dates,
+unsupported options or a broken lock fail. A maintainer must inspect the official source and make
+an evidence-backed content/version/lock change; generating a report never verifies a feature.
