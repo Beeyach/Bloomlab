@@ -9,6 +9,29 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Changed — Field-Ready v1 code/audit closeout
+
+- Added a whole-product AI-Off harness and learner-owned v9 local migration/inventory; every
+  deterministic learning/Lab/save path is exercised without Worker AI, and every persisted record
+  is scoped to its learner without adding commercial account infrastructure.
+- Enforced immutable RUN THE LEAD predictions before Lab execution and replayed actual observed
+  events with mismatch evidence. Exhaustive open-architecture, pricing and negotiation fixtures
+  expanded, while broad semantic-quality rows remain PARTIAL.
+- Added private R2 scenario attachments and checksum-verified staged `.blb` binary recovery with D1
+  metadata only, plus controlled Call/Workflow/AI/sync failure-isolation probes. Preview-only
+  migration 0008; no production action or provider spend.
+- Added an AST/YAML/MDX HighLevel terminology registry audit. Corrected the previously conflated
+  standard Webhook and distinct Custom Webhook records from current official sources without
+  claiming live GHL parity.
+- Replaced hand-picked screen lists with a router/content-derived inventory: 43 learner screens,
+  all 17 exercise families, 215 five-width layout cells and explicit state/input/reduced-motion
+  evidence. Added real phone assertions for Skill Map territory selection and Inbox composition.
+  Human hierarchy/density/material/long-session review stays open; DES-009 is regression-only.
+- Reconciled ten objectively complete P0/P1 rows. Preserved all twelve IMPLEMENTED_UNVERIFIED rows,
+  all semantic/human/device/provider/real-GHL boundaries, and the independent-audit/no-merge gate.
+  Draft PR #32 targets `codex/navigation-shell-redesign`; exact-head Preview evidence is attached to
+  the PR rather than self-referenced inside the source commit.
+
 ### Changed — Field-Ready v1 independent-audit remediation
 
 - Added actual active-client Home state and local Workflow draft checkpoint/reload recovery.

@@ -47,10 +47,13 @@ jobs:
           include-hidden-files: true
           if-no-files-found: warn
       - run: npm run validate:docs
+      - run: npm run validate:field-ready-status
       - run: npm run security:source
       # Content validation (CNT-011): every ID resolves, no missing prerequisite or unknown GHL
       # feature, and content.lock.yaml matches the sources (content_version was bumped).
       - run: npm run content:check
+      - run: npm run content:terminology
+      - run: npm run review:screen-inventory
       - run: npm run content:freshness
       - run: npm run voice:check
       - run: npm run build
@@ -92,16 +95,39 @@ jobs:
           CLOUDFLARE_ENV: preview
       # Schema first, code second: the preview Worker never runs against an older schema.
       # Migrations reach bloomlab-dev here, and bloomlab-prod only on the production job (DATA-010).
-      - run: npx wrangler d1 migrations apply bloomlab-dev --remote --env preview
+      - run: |
+          mkdir -p ../.review/field-ready
+          npx wrangler d1 migrations apply bloomlab-dev --remote --env preview 2>&1 | tee ../.review/field-ready/migrations.log
         working-directory: worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - run: npx wrangler deploy
+      - run: |
+          mkdir -p ../../.review/field-ready
+          npx wrangler deploy 2>&1 | tee ../../.review/field-ready/deploy.log
         working-directory: apps/web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Exact-head deployed Preview closeout
+        run: npm run review:field-ready-preview
+        env:
+          BASE: https://bloomlab-preview.cool-sunset-2169.workers.dev
+          REVIEW_HEAD: ${{ env.BLOOMLAB_BUILD_ID }}
+          REVIEW_OUT: .review/field-ready
+          REVIEW_SCROLLBARS: '1'
+          CHROME_FLAGS: --use-fake-ui-for-media-stream --use-fake-device-for-media-stream
+          FIELDWORK_LIVE: '0'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: field-ready-preview-${{ env.BLOOMLAB_BUILD_ID }}
+          path: |
+            .review/field-ready
+            .content/ghl-terminology.json
+            .content/ghl-terminology.md
+          include-hidden-files: true
+          if-no-files-found: error
 
   deploy:
     name: Production deploy

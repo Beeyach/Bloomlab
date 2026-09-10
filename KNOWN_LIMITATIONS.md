@@ -1,41 +1,36 @@
 # KNOWN LIMITATIONS
 
-## Current remediation boundary (2026-09-10)
+## Current Field-Ready code/audit closeout boundary (2026-09-10)
 
-`docs/reviews/field-ready-v1-remediation.md` records the current independent-audit remediation,
-not a Field-Ready Complete certification. The exact human/real-GHL rows remain unchanged.
-R9 fixes actual in-runner event playback, the late-booking `after:` comparison, later-level
-no-choice architecture evidence and learner-authored scope price reductions. R5 retains unsaved
-Workflow drafts locally; R8 excludes unvisited Labs from stable precache and retains visited
-hashed assets for offline reload. R10's deployed sync failures reopened R5: migration 0007 and the
-matching writer now scope all 13 server sync primary keys to `(learner_id, id)`. Existing rows,
-payload bytes and cursor history are preserved; transactional failure/retry is tested. This prevents
-future same-ID collisions but cannot reconstruct earlier overwritten payloads. Preview CI applies
-the schema before code; the old writer cannot run against it during that brief interval or via a
-Worker-only rollback. Production migration/deployment remains skipped. Provider spend stays $0.
+`docs/reviews/field-ready-v1-code-closeout.md` records checkpoints C1–C8. The closeout resolves
+the provable AI-Off, learner-ownership, immutable-prediction, private binary recovery,
+failure-isolation, HighLevel terminology, screen-matrix, named mobile recomposition and keyboard
+core-flow gaps. It is not a Field-Ready Complete or human design/learning certification.
 
-Verification caveat: intermediate head `61a54d2` had one CI phone Field Ready readiness timeout
-after 67 successful axe scans; the artifact did not capture the failing DOM. Same-head local
-production checks, 40 repeated phone navigations and CI attempt 2 passed unchanged assertions.
-The cause remains unexplained and the failed artifact is retained; this is not manual accessibility
-acceptance. The general sync probe's separate exact-one-queue assumption was disproved by a valid
-two-operation outbox and replaced with a direct saved-note/payload check plus negative regressions.
+Still open among targeted rows:
 
-Still open: immutable prediction-before-Lab enforcement (EXR-006); R2 recovery-backup/scenario
-attachment coverage (DATA-006); broad semantic quality (EXR-008/PRI-002/NEG-003); whole-product
-AI-Off/engine-record/naming reconciliation; per-screen state/design/mobile/manual evidence and
-the exact cross-environment failure matrix. These are not silently relabelled as human-only gaps.
-SEC-003's real read-only cloud configuration gate passed on CI 34457590942 and is required on
-the final source head again. See the review's
-complete remaining P0/P1 ledger and final PR attestation before interpreting any status.
+- EXR-008, PRI-002 and NEG-003 need broad semantic/reasoning/language-quality evidence. Multiple
+  authored deterministic passes and provider routing do not establish that quality.
+- DES-006, DES-008 and DES-017 retain subjective whole-product hierarchy, density, material and
+  long-session review. The rendered §70 checks, density measurements and screenshots are evidence,
+  not an automated visual judgment.
+- RSP-002 and RSP-003 retain deliberate-composition/capability-equivalence human review across the
+  whole product. RSP-004's six named recompositions are separately objective and complete.
+- Physical Safari, screen readers and broader assistive-technology acceptance are not inferred from
+  Chromium keyboard input or axe. A11Y-001 is limited to its objective keyboard core-flow criterion.
+
+The exact twelve IMPLEMENTED_UNVERIFIED human/real-GHL rows remain unchanged: PRD-005, CUR-015,
+CUR-031, FLD-001, EXR-020, CALL-002, CALL-005, CALL-006, EXR-015, VOI-006, VOI-007 and SEC-005.
+DES-009 remains IN_PROGRESS as inherited regression coverage only; this closeout neither redesigns
+nor reopens it. Preview uses synthetic learners/media and controlled provider failures. It applies
+migration 0008 to `bloomlab-dev` only, spends $0 with providers, performs no live GHL work and skips
+production. Exact final-head CI and Preview identity are external PR/artifact evidence because a
+commit cannot contain its own SHA.
 
 Unallocated legacy quotes change scope without automatic price subtraction; the interface says so.
-Playback snapshots and unfinished workflow drafts are local workspace data, not synced/exported
-media. Historical or other-device attempts may have no playback and explicitly retain their grade.
-Unvisited Labs require an online first visit; this is not blanket offline availability. Physical
-Safari/device, assistive-technology, long-session comfort and real-GHL acceptance are not established
-by Chromium fixtures. `npm ci` also reports five high dependency advisories; no forced upgrade or
-new dependency-audit claim is made in this scoped remediation.
+Playback snapshots and unfinished workflow drafts are local workspace data, not synced. Unvisited
+Labs require an online first visit; this is not blanket offline availability. Historical failed
+attempts in the remediation report remain retained and are not converted into passes.
 
 All phase-labelled narratives after the generated registry section are historical closure records.
 Their pre-remediation statuses/missing-feature descriptions are superseded only where the current
