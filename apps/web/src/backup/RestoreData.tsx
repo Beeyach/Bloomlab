@@ -55,7 +55,7 @@ export function RestoreData() {
       const count = await confirmRestore(preview);
       setPreview(null);
       setMessage(
-        `Restored ${count} missing records on this device. Existing records were kept. Progress was recalculated; changes are queued for normal sync. Private media was not restored.`,
+        `Restored ${count} missing records on this device. Existing records were kept. Progress was recalculated; changes are queued for normal sync. Restore private media separately below.`,
       );
       requestAnimationFrame(() => input.current?.focus());
     } catch (e) {
@@ -77,9 +77,9 @@ export function RestoreData() {
         Key first.
       </p>
       <p>
-        Progress is recalculated from evidence. Private images, raw audio, connection keys and
-        unfinished drafts are not restored. Old simulator saves must still match the available
-        simulator and content.
+        Progress is recalculated from evidence. This JSON restore does not include private media,
+        connection keys or unfinished drafts; private files use the separate archive below. Old
+        simulator saves must still match the available simulator and content.
       </p>
       <Field
         label="Choose Bloomlab backup"

@@ -23,6 +23,7 @@ import {
   type IncidentCase,
 } from './incidents';
 import styles from './incident.module.css';
+import { ScenarioAttachments } from './ScenarioAttachments';
 
 /**
  * The Incident Room (SIM-011, DES-013).
@@ -280,6 +281,7 @@ function CaseFile({ row }: { row: IncidentCase }) {
         </div>
       </div>
 
+      <ScenarioAttachments scenarioId={scenario.id} />
       <LabLinks state={state} scenarioId={scenario.id} />
     </Stack>
   );
