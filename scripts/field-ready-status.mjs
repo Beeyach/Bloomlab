@@ -37,12 +37,12 @@ for (const [id, status] of [
   ['NEG-003', 'PARTIAL'],
   ['DES-006', 'IN_PROGRESS'],
   ['DES-008', 'IN_PROGRESS'],
-  ['DES-009', 'IN_PROGRESS'],
   ['DES-017', 'IN_PROGRESS'],
   ['RSP-002', 'IN_PROGRESS'],
   ['RSP-003', 'IN_PROGRESS'],
 ])
   expect(id, status);
+expect('DES-009', 'IN_PROGRESS');
 
 const parked = [
   'PRD-005',
@@ -71,5 +71,5 @@ const openP0P1 = rows.filter(
 );
 assert.equal(openP0P1.length, 21);
 console.log(
-  `Field-Ready status guard: 10 promoted; 9 target rows retained; 12 human/real-GHL rows unchanged; DES-009 IN_PROGRESS; ${openP0P1.length} P0/P1 rows open.`,
+  `Field-Ready status guard: 10 promoted; 8 target rows retained; 12 human/real-GHL rows unchanged; DES-009 IN_PROGRESS; ${openP0P1.length} P0/P1 rows open.`,
 );

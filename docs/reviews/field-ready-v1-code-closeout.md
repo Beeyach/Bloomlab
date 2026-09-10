@@ -113,8 +113,9 @@ work or DES-009 status change occurred.
 ### C8 — reconciliation and immutable verification
 
 Ten objective rows are promoted: PRD-004, PRD-009, EXR-006, DATA-006, INF-011, GHL-005, GHL-010,
-DES-018, RSP-004 and A11Y-001. Nine targets remain non-PASSED with the exact boundaries in the table
-above. All P2/P3/deferred rows are outside scope.
+DES-018, RSP-004 and A11Y-001. Eight targets remain non-PASSED with the exact boundaries in the
+table above; inherited regression row DES-009 separately remains IN_PROGRESS. All P2/P3/deferred
+rows are outside scope.
 
 The final GitHub Actions path uses Node 22 on the immutable PR source SHA. Checks include typecheck,
 lint, format, all unit/integration/Worker tests, adversarial cases, control-doc/source-secret,
