@@ -37,7 +37,7 @@
 
 .error {
   margin: 0;
-  color: var(--bl-color-error);
+  color: var(--bl-color-text);
   font-size: var(--bl-font-size-sm);
   font-weight: var(--bl-font-weight-medium);
 }

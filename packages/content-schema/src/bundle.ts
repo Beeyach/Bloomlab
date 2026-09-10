@@ -175,7 +175,7 @@ export interface FreshnessRow {
   status: string;
   last_verified: string;
   days_since_verified: number;
-  reason: 'needs_review' | 'stale' | 'deprecated';
+  reason: 'needs_review' | 'stale' | 'deprecated' | 'removed' | 'future_verification';
 }
 
 export interface SearchEntry {

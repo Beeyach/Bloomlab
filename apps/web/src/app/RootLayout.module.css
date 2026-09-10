@@ -16,6 +16,10 @@
 }
 
 .status {
+  display: flex;
+  align-items: center;
+  gap: var(--bl-space-1);
+  max-width: calc(100% - var(--bl-space-6));
   position: absolute;
   top: var(--bl-space-3);
   right: var(--bl-space-3);

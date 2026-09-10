@@ -86,6 +86,24 @@ export function HoloMaterial({
   const reducedMotion = usePrefersReducedMotion();
   const physics = interactive && !reducedMotion;
 
+  // A live accessibility preference change must cancel an in-flight frame, not merely reject
+  // the next pointer event. Static/offscreen material keeps its light but never retains a tilt.
+  const resetPose = useCallback(() => {
+    if (frame.current !== null) cancelAnimationFrame(frame.current);
+    frame.current = null;
+    lastTime.current = null;
+    settling.current = false;
+    target.current = { ...NEUTRAL };
+    current.current = { ...NEUTRAL };
+    if (ref.current) {
+      delete ref.current.dataset.tracking;
+      applyPose(ref.current, NEUTRAL);
+    }
+  }, []);
+  useEffect(() => {
+    if (!physics && ref.current?.dataset.tracking) resetPose();
+  }, [physics, resetPose]);
+
   const setRef = useCallback(
     (element: HTMLElement | null) => {
       ref.current = element;
@@ -174,11 +192,11 @@ export function HoloMaterial({
     if (!element || typeof IntersectionObserver === 'undefined') return;
     const observer = new IntersectionObserver(([entry]) => {
       visible.current = entry?.isIntersecting ?? true;
-      if (!visible.current) release();
+      if (!visible.current) resetPose();
     });
     observer.observe(element);
     return () => observer.disconnect();
-  }, [release]);
+  }, [resetPose]);
 
   useEffect(
     () => () => {

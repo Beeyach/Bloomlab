@@ -42,6 +42,8 @@ export {
   hashSources,
 };
 export { renderContentCoverage, renderFreshness, renderGhlCoverage, renderSummary };
+export { registryMaintenance, renderRegistryMaintenance } from './compile/maintenance.ts';
+export { STALE_AFTER_DAYS } from './compile/coverage.ts';
 
 /** Reads every file under `rootDir` into memory (paths relative, POSIX separators). */
 export async function readContentDir(rootDir: string): Promise<ContentSources> {

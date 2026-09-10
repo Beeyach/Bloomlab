@@ -136,6 +136,10 @@ function TimelineInner({
       index: reduced ? rows.length - 1 : 0,
     });
   }
+  // Changing the preference while a trace is moving must settle it too, without a reload.
+  if (reduced && playback.playing) {
+    setPlayback({ forRun: watchedId, playing: false, index: rows.length - 1 });
+  }
 
   useEffect(() => {
     if (!playing) return;

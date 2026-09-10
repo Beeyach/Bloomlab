@@ -1,5 +1,52 @@
 # KNOWN LIMITATIONS
 
+## Phase 26 — automated hardening is not final human acceptance
+
+- Draft PR #28 is stacked on audited Phase 25, never main. The implementation agent does not
+  certify INF-015 or produce AUDIT_REPORT.md. The Field-Ready Complete gate is not claimed while
+  the remaining P0/P1 rows and mandatory human acceptance are open. All twelve human-unverified
+  rows remain unchanged, as do PRI-001/002 and NEG-003. No stacked PR is merged.
+- Restore accepts the current versioned metadata export, for the same learner only. Link a new
+  device with the original sync key first. It adds missing records, keeps all existing IDs and
+  tombstones, revalidates before an atomic commit and recalculates progress from evidence. It does
+  not import secrets, raw images/audio or unfinished drafts. Private-media metadata is not a blob
+  backup or a claim of successful upload. Old redacted/incompatible simulator histories fail
+  safely rather than being fabricated. Recovery backups/attachments in R2 remain DATA-006 gaps.
+- Search indexes compiled curriculum and actual local owned history only. Unavailable/other-device
+  work is not invented; sync first for newer remote history. Queries stay in URL fragments/local
+  memory, but a saved bookmark and exported learner prose are still private on the user's device.
+- Freshness maintenance is a reproducible **90-day UTC** review queue, not a new fact-check of
+  every feature. All 89 records are within that window on 2026-09-09; original source dates and
+  verification caveats remain. Known post-deprecation webhook guidance stays Ed25519-only and the
+  curriculum's local-fixture boundary is unchanged. GHL-005/009/010 await whole-product audit.
+- All 36 route/detail/runner states were reviewed at five widths. Some state-matrix cells remain
+  shared-boundary or unit-only, with explicit open keyboard/touch/held-loading coverage. The real
+  axe gate's 75 scans do not establish full screen-reader/physical-device WCAG acceptance; gradient
+  contrast incompletes remain visible. The twelve human gates and global A11Y-001 stay parked/open.
+- Academy does not execute Workflow route code, but Workbox's existing all-asset offline precache
+  downloads Workflow JS/CSS in the background. PERF-001's “only likely next” condition remains
+  PARTIAL. Chrome DevTools MCP was unavailable; its trace audit was paused, with repository CDP,
+  resource/cache and bundle evidence used as fallback. No Lighthouse/CWV/reference-device or
+  long-session comfort certificate is claimed. Existing container timing limitations still apply.
+- Recognition is presentational only: historical results stay static, assisted work is not an
+  independent pass and Field Ready remains evaluator-gated. Fixture certificates are not Ary's
+  achievements. Sound is local, explicitly optional/default off and may be unavailable when browser
+  audio/storage is denied; learning does not depend on it.
+- The existing client directory is not yet collectible case-cover composition (DES-012). Five
+  projects/two templates do not meet PORT-003's twenty-project progression. Home's active-client
+  clause, remaining exercise/judgment breadth, cross-cutting design/privacy/infrastructure audit,
+  production configuration and required real-GHL/manual reasoning acceptance are not closed by
+  polish. See the Phase 26 ledger and screen matrix for exact retained statuses.
+- Four recovery-copy contrast bugs were fixed with normal text roles; the same failure wording,
+  retry and ownership behavior remain. Fifteen adversarial cases use controlled provider failures,
+  not live quality acceptance. Provider spend **$0**; no new D1/IndexedDB migration, public media,
+  production data use or backend service. Current versions/content counts are unchanged from the
+  audited Phase 25 base; historical phase descriptions below describe their original checkpoint.
+- A fresh lockfile install reports five high-severity development-tool dependency advisories.
+  `npm audit --omit=dev` reports zero production dependency vulnerabilities. No forced/breaking
+  toolchain upgrade was performed as an unrelated closeout change; the development advisories
+  remain visible for a separately scoped dependency review.
+
 ## Phase 25 — advanced curriculum checkpoints
 
 - The seven post-Field-Ready paths curate existing skill IDs and reuse the same evidence. Selecting a path is a bookmark, not an earned identity, a new store or a replacement for Field Ready's required projects/manual proof. Path gates ask for explicit independent training demonstrations; full skill mastery can still require more diverse evidence or real-GHL fieldwork. These routes have unit/practical coverage, not separate advanced client projects; the compiler's advisory no-project warnings remain visible. Existing Advanced Automation is retained for historical references.

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Bloomlab \u2014 mastery-based funnel and GoHighLevel training simulator",
+  "description": "Bloomlab — mastery-based funnel and GoHighLevel training simulator",
   "engines": {
     "node": ">=22.22.0"
   },
@@ -23,7 +23,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "validate:docs": "node scripts/validate-requirements.mjs",
-    "ci": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run validate:docs && npm run content:check && npm run voice:check && npm run build",
+    "ci": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run test:adversarial && npm run validate:docs && npm run content:check && npm run content:freshness && npm run voice:check && npm run build && npm run test:a11y",
+    "test:a11y": "node scripts/review/a11y-probe.mjs",
+    "test:adversarial": "node scripts/adversarial.mjs",
     "review:capture": "node scripts/review/capture.mjs",
     "review:holo": "node scripts/review/holo-probe.mjs",
     "review:offline": "node scripts/review/offline-probe.mjs",
@@ -36,6 +38,7 @@
     "content:build": "node scripts/content.mjs build",
     "content:check": "node scripts/content.mjs check",
     "content:lock": "node scripts/content.mjs lock",
+    "content:freshness": "node scripts/registry-freshness.mjs",
     "review:learning": "node scripts/review/learning-probe.mjs",
     "review:keyboard": "node scripts/review/keyboard-probe.mjs",
     "review:touch": "node scripts/review/touch-probe.mjs",
@@ -61,6 +64,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.0",
     "@types/node": "^26.4.1",
+    "axe-core": "4.13.0",
     "eslint": "^10.9.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.6",

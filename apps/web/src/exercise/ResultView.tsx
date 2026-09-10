@@ -26,6 +26,7 @@ import {
   TIER_WORDS,
 } from './runnerCopy';
 import styles from './ExerciseRunner.module.css';
+import { SignatureMoment } from '../moments/SignatureMoment';
 
 /** One check, with what was expected beside what actually happened (EXR-002). */
 function CheckRow({ result }: { result: AssertionResult }) {
@@ -128,11 +129,14 @@ export function ResultView({
   skillId,
   snapshot,
   onTryAgain,
+  fresh = false,
 }: {
   attempt: ExerciseAttemptRecord;
   skillId: string | null;
   snapshot: LearnerSnapshot | undefined;
-  onTryAgain: () => void;
+  onTryAgain?: () => void;
+  /** Only the current successful save can recognise an outcome; saved history stays static. */
+  fresh?: boolean;
 }) {
   const report = attempt.grade ?? null;
   const failedCritical = report
@@ -158,28 +162,34 @@ export function ResultView({
       className={styles.result}
       data-outcome={report?.outcome}
     >
-      <div className={cx(styles.resultHead, independent && styles.independent)}>
-        <h2 id="result-title" className={styles.resultTitle}>
-          {report ? OUTCOME_WORDS[report.outcome] : 'Recorded'}
-        </h2>
-        {report && (
-          <p className={styles.resultMeta}>
-            {report.score !== null && (
-              <span className={styles.score}>
-                {report.score}% · pass mark {report.pass_threshold}%
+      <SignatureMoment
+        key={attempt.id}
+        kind={independent ? 'independent-pass' : 'failed-test'}
+        active={fresh && (independent || report?.outcome === 'failed')}
+      >
+        <div className={cx(styles.resultHead, independent && styles.independent)}>
+          <h2 id="result-title" className={styles.resultTitle}>
+            {report ? OUTCOME_WORDS[report.outcome] : 'Recorded'}
+          </h2>
+          {report && (
+            <p className={styles.resultMeta}>
+              {report.score !== null && (
+                <span className={styles.score}>
+                  {report.score}% · pass mark {report.pass_threshold}%
+                </span>
+              )}
+              <span>
+                {attempt.exercise_type === 'FIELDWORK'
+                  ? 'Manual proof completeness. GHL configuration and reasoning quality were not independently verified.'
+                  : reasonSentence(report)}
               </span>
-            )}
-            <span>
-              {attempt.exercise_type === 'FIELDWORK'
-                ? 'Manual proof completeness. GHL configuration and reasoning quality were not independently verified.'
-                : reasonSentence(report)}
-            </span>
-          </p>
-        )}
-        {independent && (
-          <StatusPill label="Independent — no assistance used" tone="success" glyph="check" />
-        )}
-      </div>
+            </p>
+          )}
+          {independent && (
+            <StatusPill label="Independent — no assistance used" tone="success" glyph="check" />
+          )}
+        </div>
+      </SignatureMoment>
 
       {failedCritical.length > 0 && (
         <Surface padding="md" className={styles.critical} role="alert">
@@ -286,9 +296,11 @@ export function ResultView({
       {skillId && snapshot && <NextStep skillId={skillId} snapshot={snapshot} />}
 
       <div className={styles.resultActions}>
-        <Button variant="secondary" onClick={onTryAgain}>
-          Try again
-        </Button>
+        {onTryAgain && (
+          <Button variant="secondary" onClick={onTryAgain}>
+            Try again
+          </Button>
+        )}
         <span className={styles.help}>
           This attempt stays in your history whatever the next one does.
         </span>

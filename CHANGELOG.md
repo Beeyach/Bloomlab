@@ -9,6 +9,32 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Added — Phase 26 recovery, search and maintenance
+
+- Strict bounded version/schema/ownership validation and explicit preview/confirm/cancel for local
+  Restore Backup. Atomic add-missing merge keeps existing records and tombstones, safely replays
+  compatible simulator history, recalculates progress and queues local changes without false sync.
+- Private client-side search across skills, GHL features, lessons, glossary, clients and actual
+  local attempts, with ranked results, fragment bookmarks, keyboard focus and offline recovery.
+- Deterministic dated GHL freshness JSON/Markdown with a 90-day threshold and truthful status,
+  source/date/fidelity/limitation metadata; no automatic research or provider call.
+
+### Changed — Phase 26 restrained interaction and recurring hardening
+
+- Polished the six existing signature moments with immediate readable results, quiet skippable
+  independent/Field Ready recognition, live reduced-motion settlement and neutral offscreen Holo.
+  Added five short optional default-off local sound cues with persistent mute and failure isolation.
+- Added actual pinned axe-core CI across major routes and failed Sync linking, an unnamed-button
+  negative control, and a committed six-area accessibility/state review. Fixed locked Skill Map,
+  Incident and four recovery-copy contrast defects; Escape from phone More restores trigger focus.
+- Added fresh-result adversarial CI covering all fifteen authoritative cases, with a missing-email
+  fixture and registry-integrity checks. Expanded five-width/short-height browser evidence and
+  strengthened native pricing-label and exercise/offline assertions. Academy's route execution is
+  lazy, but the existing broad offline precache remains an explicit PERF-001 limitation.
+- Twelve directly evidenced requirements promoted; all other statuses, twelve human-acceptance
+  gates, PRI-001/002 and NEG-003 preserved. INF-015 remains independent-audit only. No provider spend,
+  migrations, content/version changes, production deployment or merge; draft PR #28 targets Phase 25.
+
 ### Fixed — CUR-023 webhook freshness audit
 
 - Current Marketplace webhook guidance now requires X-GHL-Signature with Ed25519 only after 1 September 2026. Removed stale transition guidance from the lesson and API registry notes; legacy RSA is historical/deprecated context only. Added a corpus-wide curriculum regression and negative stale-copy cases. The local-fixture practical and all requirement statuses are unchanged.

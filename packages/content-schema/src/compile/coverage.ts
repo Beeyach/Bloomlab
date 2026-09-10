@@ -2,6 +2,7 @@ import type { ContentCoverageRow, FreshnessRow, GhlCoverageRow } from '../bundle
 import { SALES_EXERCISE_TYPES } from '../schemas/index.ts';
 import { isSimulatorExercise } from './resolve.ts';
 import type { ParsedContent } from './validate.ts';
+import { isoDate } from '../schemas/common.ts';
 
 /** Registry records older than this are listed for review (spec §151, GHL-008). */
 export const STALE_AFTER_DAYS = 90;
@@ -86,24 +87,35 @@ export function buildGhlCoverage(parsed: ParsedContent): GhlCoverageRow[] {
   });
 }
 
-/** Registry records that need a look: needs_review, deprecated, or not verified recently. */
+/** No status is upgraded here. Removed and future-dated records remain explicitly reviewable. */
 export function buildFreshness(
-  parsed: ParsedContent,
+  parsed: Pick<ParsedContent, 'ghl_features'>,
   now: Date,
   staleAfterDays = STALE_AFTER_DAYS,
 ): FreshnessRow[] {
+  if (
+    !Number.isFinite(now.getTime()) ||
+    !Number.isSafeInteger(staleAfterDays) ||
+    staleAfterDays < 1
+  )
+    throw new Error('Freshness needs a valid reference date and positive whole-day threshold');
+  const asOf = new Date(`${now.toISOString().slice(0, 10)}T00:00:00Z`);
   const rows: FreshnessRow[] = [];
   for (const feature of parsed.ghl_features) {
-    if (feature.status === 'removed') continue;
-    const days = daysBetween(feature.last_verified, now);
+    isoDate.parse(feature.last_verified);
+    const days = daysBetween(feature.last_verified, asOf);
     const reason =
-      feature.status === 'needs_review'
-        ? 'needs_review'
-        : feature.status === 'deprecated'
-          ? 'deprecated'
-          : days > staleAfterDays
-            ? 'stale'
-            : null;
+      feature.status === 'removed'
+        ? 'removed'
+        : feature.status === 'needs_review'
+          ? 'needs_review'
+          : feature.status === 'deprecated'
+            ? 'deprecated'
+            : days < 0
+              ? 'future_verification'
+              : days > staleAfterDays
+                ? 'stale'
+                : null;
     if (!reason) continue;
     rows.push({
       feature: feature.id,
@@ -115,6 +127,8 @@ export function buildFreshness(
     });
   }
   return rows.sort(
-    (a, b) => b.days_since_verified - a.days_since_verified || a.feature.localeCompare(b.feature),
+    (a, b) =>
+      b.days_since_verified - a.days_since_verified ||
+      (a.feature < b.feature ? -1 : a.feature > b.feature ? 1 : 0),
   );
 }

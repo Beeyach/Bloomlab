@@ -118,6 +118,7 @@ export function probeHelpers({ base }) {
         }
         await s.page.send('Network.emulateNetworkConditions', conditions(on));
         await sleep(300);
+        return workers.count;
       },
     };
   }

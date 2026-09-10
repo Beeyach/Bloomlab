@@ -29,6 +29,7 @@ import { MODE_WORDS, treatmentFor } from './runnerCopy';
 import { WorkSurface } from './work/WorkSurface';
 import styles from './ExerciseRunner.module.css';
 import { useAttemptHistory } from './useAttemptHistory';
+import { playSound } from '../moments/sound';
 
 /** What the exercise needs that nothing can supply yet, in the learner's words (EXR-024). */
 function RuntimeRequired({ exercise }: { exercise: Exercise }) {
@@ -105,6 +106,7 @@ export default function ExerciseRunner() {
   const snapshot = useLearnerSnapshot();
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
+  const [freshResult, setFreshResult] = useState<string | null>(null);
 
   const finished = history?.[0] ?? null;
   const gradable = exercise ? canGradeNow(exercise) : false;
@@ -145,7 +147,11 @@ export default function ExerciseRunner() {
     setBusy(true);
     setFailure(null);
     try {
-      await finalizeAttempt(exercise, attempt, db);
+      const saved = await finalizeAttempt(exercise, attempt, db);
+      if (saved.recorded) {
+        setFreshResult(saved.attempt.id);
+        if (saved.report.outcome === 'passed') void playSound('completion');
+      }
     } catch (error) {
       // The learner's work is untouched: the draft is only cleared once the attempt is recorded.
       setFailure(
@@ -193,6 +199,7 @@ export default function ExerciseRunner() {
         >
           {!attempt && finished && (
             <ResultView
+              fresh={freshResult === finished.id}
               attempt={finished}
               skillId={skillId}
               snapshot={snapshot}
@@ -259,6 +266,7 @@ export default function ExerciseRunner() {
             >
               {!attempt && finished && (
                 <ResultView
+                  fresh={freshResult === finished.id}
                   attempt={finished}
                   skillId={skillId}
                   snapshot={snapshot}
@@ -324,6 +332,7 @@ export default function ExerciseRunner() {
           )}
           {exercise.type !== 'FIELDWORK' && !attempt && finished && (
             <ResultView
+              fresh={freshResult === finished.id}
               attempt={finished}
               skillId={skillId}
               snapshot={snapshot}

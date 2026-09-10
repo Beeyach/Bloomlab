@@ -3,6 +3,7 @@
 // submit, the result, retry — plus reduced motion and an offline submission that survives a
 // reload and queues for sync. Writes exercise-probe.json to .review/.
 //   BASE=http://localhost:4173 node scripts/review/exercise-probe.mjs
+import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -181,9 +182,14 @@ try {
     ),
   };
 
-  // ---------- a build says what it needs and offers no submit ----------
+  // ---------- the implemented Workflow build exposes its real runtime ----------
   await openPage(page, `${BASE}${BUILD}`);
-  await waitFor(page, "document.querySelector('[class*=runtimeTitle]')");
+  assert(
+    await waitFor(
+      page,
+      "[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Run it')",
+    ),
+  );
   report.runtimeDependency = {
     title: await text(page, '[class*=runtimeTitle]'),
     text: await text(page, '[class*=runtimeText]'),
@@ -219,14 +225,14 @@ try {
   // ---------- offline: a deterministic submission finalizes without the network ----------
   await setViewport(page, 1280, 900, { mobile: false });
   await openPage(page, `${BASE}${DECISION}`);
-  for (
-    let i = 0;
-    i < 150 && !(await page.evaluate('Boolean(navigator.serviceWorker.controller)'));
-    i++
-  ) {
-    await sleep(100);
-  }
+  // Preview's first full precache install can outlast the runner interactions. This is a
+  // cached offline-reload test, so fail explicitly if installation never finishes.
+  assert(
+    await waitFor(page, 'navigator.serviceWorker.controller?.state === "activated"', 400),
+    'the service worker must activate and control the runner within 60 seconds before going offline',
+  );
   const workers = await serviceWorkerSessions(browser, new URL(BASE).origin);
+  assert(workers.count > 0, 'the service worker is also network-disabled');
   await workers.send('Network.enable');
   await workers.send('Network.emulateNetworkConditions', conditions(true));
   await page.send('Network.emulateNetworkConditions', conditions(true));
@@ -285,6 +291,36 @@ try {
     width: 1280,
     height: 900,
   });
+  assert.equal(report.touch.hOverflow, false);
+  assert(report.touch.optionHeight >= 44 && report.touch.submitButton.h >= 44);
+  assert(report.touch.textareaFontSize >= 16);
+  assert.equal(report.touch.evidenceOnOpen, 0);
+  assert.equal(report.touch.chosen, 'tag');
+  assert.deepEqual(report.touch.draftAfterHint.hints, ['nudge']);
+  assert.equal(report.touch.result, 'Needs another run');
+  assert.equal(report.touch.attempts, 1);
+  assert.equal(report.reload.attempts, 1);
+  assert.equal(report.reload.evidence, report.touch.evidence);
+  assert.equal(report.retry.differentAttempt, true);
+  assert.equal(report.retry.emptyDraft, true);
+  assert.equal(report.pressure.hintButtons, 0);
+  assert.equal(report.pressure.lessonLinks, 0);
+  assert.equal(report.runtimeDependency.title, null);
+  assert.equal(report.runtimeDependency.submitButtons, 1);
+  assert.equal(report.reducedMotion.motionToken, '0s');
+  assert.equal(report.offline.navigatorOnLine, false);
+  assert.equal(report.offline.serviceWorkerControlled, true);
+  assert.equal(report.offline.result, 'Needs another run');
+  assert.equal(report.offline.attempts, 2);
+  assert.equal(report.offline.attemptsAfterReload, 2);
+  assert.equal(report.offline.afterOfflineReload, report.offline.result);
+  assert(report.offline.queued > 0);
+  assert.match(report.offline.apiFetch, /^failed:/);
+  report.status = 'PASSED';
+} catch (error) {
+  report.status = 'FAILED';
+  report.error = String(error);
+  throw error;
 } finally {
   writeFileSync(`${OUT}/exercise-probe.json`, JSON.stringify(report, null, 2));
   console.log(JSON.stringify(report, null, 2));

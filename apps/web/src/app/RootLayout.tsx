@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Outlet } from 'react-router';
+import { Outlet, useNavigate } from 'react-router';
 import { BUILD_ID } from '@bloomlab/shared';
 
 import {
@@ -15,6 +15,7 @@ import { ConflictChooser } from './ConflictChooser';
 import styles from './RootLayout.module.css';
 import { SyncStatusIndicator } from './SyncStatusIndicator';
 import { UpdateNotice } from '../pwa/UpdateNotice';
+import { SoundToggle } from '../moments/SoundToggle';
 
 /**
  * The app frame: skip link, the compact rail (spec §73, DES-009), the main region.
@@ -23,6 +24,25 @@ import { UpdateNotice } from '../pwa/UpdateNotice';
  * progress from evidence on start and after every sync that brought something in.
  */
 export function RootLayout() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const search = (event: KeyboardEvent) => {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.repeat &&
+        event.key.toLowerCase() === 'k'
+      ) {
+        event.preventDefault();
+        const field = document.querySelector<HTMLInputElement>('[data-global-search]');
+        if (field) field.focus();
+        else navigate('/search');
+      }
+    };
+    document.addEventListener('keydown', search);
+    return () => document.removeEventListener('keydown', search);
+  }, [navigate]);
   useEffect(() => {
     void ensureDevice()
       .then(() => requestPersistentStorage())
@@ -42,7 +62,10 @@ export function RootLayout() {
         Skip to content
       </a>
       <AppRail />
-      <SyncStatusIndicator className={styles.status} />
+      <div className={styles.status}>
+        <SoundToggle />
+        <SyncStatusIndicator />
+      </div>
       <main id="main" className={styles.main} tabIndex={-1}>
         <UpdateNotice />
         <Outlet />

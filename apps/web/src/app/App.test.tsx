@@ -2,7 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { getFeatureFlags } from '@bloomlab/shared';
+import { BUILD_ID, getFeatureFlags } from '@bloomlab/shared';
 
 import { App } from './App';
 
@@ -35,6 +35,9 @@ afterEach(() => {
 describe('App routing', () => {
   it('renders the Command Center at / inside the rail', async () => {
     renderAt('/', productionFlags);
+    // Published browser identity is on the shell, not the document's html element.
+    expect(document.querySelectorAll('[data-build-id]')).toHaveLength(1);
+    expect(document.querySelector('[data-build-id]')).toHaveAttribute('data-build-id', BUILD_ID);
     expect(
       await screen.findByRole('heading', { level: 1, name: 'What should I do next?' }),
     ).toBeInTheDocument();
@@ -168,8 +171,10 @@ describe('the phone navigation keeps every area named and reachable (DES-009, RS
     // The bar itself never repeats them: they are the secondary items, shown in the list only.
     expect(within(list).queryByRole('link', { name: 'Home' })).toBeNull();
     // Escape closes it; navigating from it closes it too.
+    within(list).getByRole('link', { name: 'CRM' }).focus();
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(menu).toHaveAttribute('hidden');
+    expect(more).toHaveFocus();
     fireEvent.click(more);
     fireEvent.click(within(list).getByRole('link', { name: 'Playground' }));
     expect(

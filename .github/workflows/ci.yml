@@ -36,14 +36,33 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm test
+      - run: npm run test:adversarial
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: adversarial-${{ env.BLOOMLAB_BUILD_ID }}
+          path: .review/adversarial/adversarial.*
+          include-hidden-files: true
+          if-no-files-found: warn
       - run: npm run validate:docs
       # Content validation (CNT-011): every ID resolves, no missing prerequisite or unknown GHL
       # feature, and content.lock.yaml matches the sources (content_version was bumped).
       - run: npm run content:check
+      - run: npm run content:freshness
       - run: npm run voice:check
       - run: npm run build
         env:
           CLOUDFLARE_ENV: production
+      # Ubuntu's real Chrome + pinned axe-core. All default rules; serious/critical fail.
+      - run: google-chrome --version
+      - run: npm run test:a11y
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-${{ env.BLOOMLAB_BUILD_ID }}
+          path: .review/accessibility/a11y-probe.json
+          include-hidden-files: true
+          if-no-files-found: warn
 
   preview:
     name: Preview deploy

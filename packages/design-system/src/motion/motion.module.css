@@ -76,6 +76,25 @@
   z-index: 2;
 }
 
+/* Recognition never fades/scales the result, blocks input or conceals a critical failure. */
+.recognition {
+  padding-top: 44px;
+}
+
+.recognition .rewardStage {
+  animation-name: acknowledge;
+}
+
+@keyframes acknowledge {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  35% {
+    box-shadow: 0 0 0 2px var(--bl-color-lavender);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .spatialEnter,
   .rewardStage {

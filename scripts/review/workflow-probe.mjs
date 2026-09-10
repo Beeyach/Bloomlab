@@ -311,6 +311,11 @@ try {
     media: 'screen',
     features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
   });
+  const liveSettled = await waitFor(
+    page,
+    `(() => { const rows = [...document.querySelectorAll('[data-testid="timeline"] ol li')]; return !document.querySelector('[data-testid="timeline"][data-playing]') && rows.at(-1)?.dataset.current === 'true'; })()`,
+  );
+  section('live-reduced-motion', { settledWithoutReload: liveSettled });
   // Reloaded under the emulated preference, so the hook and the stylesheet both see it.
   await openPage(page, LAB);
   await waitFor(page, READY);

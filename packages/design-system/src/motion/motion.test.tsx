@@ -10,6 +10,35 @@ afterEach(() => {
 });
 
 describe('RewardReveal', () => {
+  it('settles a running recognition when reduced motion changes live', () => {
+    let reduced = false;
+    let changed = () => {};
+    vi.stubGlobal('matchMedia', () => ({
+      get matches() {
+        return reduced;
+      },
+      addEventListener: (_: string, callback: () => void) => {
+        changed = callback;
+      },
+      removeEventListener: vi.fn(),
+    }));
+    const onDone = vi.fn();
+    render(
+      <RewardReveal recognition onDone={onDone}>
+        Real result
+      </RewardReveal>,
+    );
+    expect(screen.getByRole('button', { name: 'Skip' })).toBeInTheDocument();
+    screen.getByRole('button', { name: 'Skip' }).focus();
+    act(() => {
+      reduced = true;
+      changed();
+    });
+    expect(screen.queryByRole('button', { name: 'Skip' })).toBeNull();
+    expect(screen.getByText('Real result')).toBeVisible();
+    expect(document.activeElement).toHaveTextContent('Real result');
+    expect(onDone).toHaveBeenCalledTimes(1);
+  });
   it('finishes on its own within the 1.5–3 s band and can be skipped early (MOT-002)', async () => {
     vi.useFakeTimers();
     const onDone = vi.fn();

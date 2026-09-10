@@ -136,7 +136,7 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **PRD-013** Progress uses capabilities counts and the six state words; no XP, points or stars anywhere.
 - **PRD-014** Unlocks grant capabilities, tools, clients, scenarios, Playground features or territory access; no points ledger exists.
 - **DES-008** Density review: Academy low-medium, Workflow Lab medium-high, CRM high, Call Room very low, Pricing Arena medium, Skill Map high-visual/low-text.
-- **DES-009** Left rail measures 68–80 px on desktop with the seven areas; no expanded sidebar exists.
+- **DES-009** Left rail measures 104 px on desktop/tablet (master §73/D-117, superseding the old 68–80 px line), with the same page-offset token and all current destinations. It scrolls vertically independently at short heights; no expanded sidebar or horizontal overflow. Phones retain four-plus-More and visible keyboard focus.
 - **DES-010** Home shows Continue with campaign/gate/topic/progress, plus active client, due retrieval, recent mastery, Build My Session; no vanity metrics.
 - **DES-011** Skill Map renders ten territory objects with HoloMaterial. Every skill state is clearly distinguishable through its material plus a state badge, text or icon; progression into Independent, Pressure-tested and Mastered changes and escalates the material (§75); NEEDS_REFRESH stays visually distinct while preserving the earned rung's material; no status relies on colour alone (A11Y-005). Corrected from "each of the eight skill states renders a distinct material" (D-061).
 - **INF-011** Throwing inside Call Room, Workflow Lab and the AI client each leaves the other environments functional (tests); local data survives a simulated sync failure.
@@ -449,8 +449,12 @@ Implementation and controlled verification: `docs/reviews/phase-24-field-ready.m
 
 ## Phase 26 — Polish
 
-- **A11Y-010** Automated a11y job in CI; manual review log for the six areas.
-- **INF-016** Each of the fourteen adversarial cases has a recorded test result.
+- **A11Y-010** `npm run test:a11y` runs pinned axe-core in built Chromium across 36 route states, phone More and an intercepted failed Sync-link state (75 default scans). No rule exclusions; serious/critical findings fail CI and a real unnamed-button negative control must be detected. Six-area controlled review and short-height rail evidence: `docs/reviews/phase-26-accessibility.md`. Gradient incompletes/physical acceptance stay explicit.
+- **DATA-009** Restore regressions reject unsupported/malformed/malicious/foreign backups before writes, preserve existing and deleted records, require explicit confirmation, reject stale previews, roll back rows/outbox together, recompute progress and reopen offline without duplicates. The browser probe exercises file preview/cancel, 480 px confirmations and real queued local recovery at all five widths.
+- **INF-017, CNT-010** Search tests/probe cover all six required domains, real owned attempt history, ranking/aliases, no matches, unavailable history and retry, glossary/registry detail, focus return, local fragment bookmarks and offline reopen. No query leaves the browser.
+- **GHL-008** `npm run content:freshness -- --as-of YYYY-MM-DD` produces reproducible dated maintenance JSON/Markdown; threshold, current/stale/needs_review/deprecated/removed and malformed/future-date cases are tested. The command retains source/fidelity/limitations and never performs runtime verification or marks a record current.
+- **PRD-015, HOL-005, PRD-016** Moments/sound tests and browser probes cover all six named moments, real pointer/touch/settle behavior, live reduced-motion/offscreen reset, immediate readable results, skippable recognition/focus, historical/assisted boundaries and optional default-off audio failure/mute. Controlled Field Ready fixtures do not promote human acceptance.
+- **INF-016** Each of the fifteen adversarial cases in master §142 has a recorded test result. Missing phone and missing email are separate cases; the older count of fourteen was a prose error. `npm run test:adversarial` executes the exact regressions in `scripts/adversarial-cases.mjs` and derives each observed PASS/FAIL from fresh Vitest output; a missing, skipped, ambiguous or failed case fails the harness. Controlled provider failures spend $0.
 
 ---
 

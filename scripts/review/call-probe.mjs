@@ -52,11 +52,39 @@ async function press(key, code = key, value) {
   });
 }
 async function tapSelector(selector) {
-  const point = await page.evaluate(
-    `(()=>{const e=document.querySelector(${JSON.stringify(selector)});e.scrollIntoView({block:'center'});const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`,
+  assert(
+    await waitFor(page, `document.querySelector(${JSON.stringify(selector)})?.disabled === false`),
+    'Retention control must be enabled before touching it',
   );
-  await page.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point] });
+  // The associated label is the actual 44 px touch target. After a viewport change, let
+  // scroll anchoring settle before measuring it; never assume a tap changed retention.
+  await page.evaluate(
+    `document.querySelector(${JSON.stringify(selector)}).labels[0].scrollIntoView({block:'center'})`,
+  );
+  await sleep(250);
+  const point = await page.evaluate(
+    `(()=>{const e=document.querySelector(${JSON.stringify(selector)}),label=e.labels[0];const r=label.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;return {x,y,height:r.height,hit:label.contains(document.elementFromPoint(x,y)),before:e.checked};})()`,
+  );
+  assert(point.hit && point.height >= 44, 'Touch reaches the real retention label');
+  await page.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [{ x: point.x, y: point.y }],
+  });
   await page.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  assert(
+    await waitFor(
+      page,
+      `document.querySelector(${JSON.stringify(selector)})?.checked === ${!point.before} && document.querySelector(${JSON.stringify(selector)})?.disabled === false`,
+    ),
+    'Native touch toggles retention and its save completes',
+  );
+  assert(
+    await page.evaluate(
+      `window.__callProbe.rows('workspace').then(rows=>rows.find(r=>r.key==='exercise.attempt.${cold.id}').value.response.call.retain_audio === ${!point.before})`,
+    ),
+    'The requested retention state is persisted before recording',
+  );
+  report.checks.push(`Native retention-label touch persisted ${!point.before}`);
 }
 async function activate(label, method = 'touch') {
   assert(

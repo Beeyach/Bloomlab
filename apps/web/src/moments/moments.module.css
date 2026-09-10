@@ -1,0 +1,22 @@
+.arrival {
+  animation: arrive var(--bl-motion-slow) var(--bl-motion-ease-settle) both;
+}
+
+.sound {
+  min-height: 44px;
+  min-width: 44px;
+  flex-shrink: 0;
+}
+
+/* A small spatial settle, not an opacity reveal: the case/failure is readable on frame one. */
+@keyframes arrive {
+  from {
+    transform: translateY(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrival {
+    animation: none;
+  }
+}

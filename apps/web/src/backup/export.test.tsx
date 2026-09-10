@@ -140,6 +140,16 @@ describe('DATA-008 versioned local export', () => {
     expect(safeBackupValue({ url: 'https://host.invalid/?token=secret' })).toEqual({
       url: '[private value omitted]',
     });
+    expect(
+      safeBackupValue({
+        pre_buffer_minutes: 15,
+        post_buffer_minutes: 30,
+        buffer: [1, 2],
+        audio_buffer: [3],
+        pre_buffer_minutes_bytes: [4],
+      }),
+    ).toEqual({ pre_buffer_minutes: 15, post_buffer_minutes: 30 });
+    expect(safeBackupValue({ pre_buffer_minutes: { bytes: [1] } })).toEqual({});
   });
   it('downloads a locally created JSON file and shows success without any provider request', async () => {
     const create = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:local-export');
