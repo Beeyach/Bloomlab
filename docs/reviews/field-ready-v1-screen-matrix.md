@@ -1,7 +1,7 @@
 # Field-Ready v1 remediation — screen/state evidence
 
-All inherited entries below identify the Phase 26 evidence, not a new manual certification.
-The final remediation sweep must rerun L (36 routes × five widths). B denotes a named actual
+L is rerun on the stable remediation Preview-mode build: 36 routes × five widths, 180 layouts,
+zero recorded failures. It is layout evidence, not a new manual certification. B denotes a named actual
 browser probe; T denotes unit/integration checks. Shared T, Load open and Open remain incomplete
 cells, not PASSED. All physical Safari, assistive-technology and long-session boundaries remain.
 The new Home probe covers active/empty client work, whole-screen held storage/error/retry,
@@ -9,18 +9,18 @@ keyboard and touch at all five widths and 480 px. Child-local read recovery also
 
 | Screen family | Desktop | Tablet | Mobile | Empty | Loading | Error | Keyboard | Touch |
 |---|---|---|---|---|---|---|---|---|
-| Command Center | B remediation-home | B remediation-home | B remediation-home | B remediation-home; T phase7 | B held storage; T ActiveClient | B storage retry; T ActiveClient | B new client link; core session flow pending R4 | B client destination; full session touch remains open |
+| Command Center | B remediation-home | B remediation-home | B remediation-home | B remediation-home; T phase7 | B held storage; T ActiveClient | B storage retry; T ActiveClient | B remediation-keyboard session; new client link | B client destination; full session touch remains open |
 | Campaign/path selection | L | L | L | T advancedPaths | T advancedPaths | T advancedPaths | B advanced-paths | B advanced-paths |
 | Skill Map/detail | L | L | L | T phase7 | Load open | shared T | B advanced-paths; E native trace | B moments; advanced-paths |
 | Academy/fresh CONNECT lesson | L | L | L | No exposure: B academy | Load open | shared T | B academy; connect | B academy; connect |
-| Decision/build/fix/run exercises | L | L | L | B exercise/new draft | Load open | B failed result; T evaluation | B connect; workflow | B exercise; connect |
-| Pricing | L | L | L | B pricing | Load open | B pricing validation | B pricing | B pricing |
+| Decision/build/fix/run exercises | L; B remediation-exercise replay/open writing | L; B remediation-exercise | L; B remediation-exercise | B exercise/new draft; T no observed replay | Load open | B failed result; T evaluation | B remediation-keyboard submit; B replay controls | B remediation-exercise controls; exercise; connect |
+| Pricing | L; B remediation-exercise | L; B remediation-exercise | L; B remediation-exercise | B pricing | Load open | T invalid scope allocation; B pricing validation | B pricing | B remediation-exercise scope/quote/reload; pricing |
 | Negotiation | L | L | L | B negotiation | Load open | B negotiation fallback | B negotiation | B negotiation |
 | Call Room | L | L | L | B call | B call held requests | B call microphone/STT/feedback/restart | B call | B call |
 | Prospect/audit/written work | L | L | L | B sales | Load open | B sales refused result | B sales | B sales |
 | Fieldwork proof | L | L | L | B fieldwork | B fieldwork held upload | B fieldwork upload retry | B fieldwork | B fieldwork |
 | CRM/companies/objects/Smart Lists | L | L | L | B crm-review; advanced-labs | Load open | B CRM refused operation; shared T | B crm-review; advanced-labs | B crm-review; advanced-labs |
-| Workflow | L | L | L | B workflow | Load open | B workflow refusal; T crash-safe run | B workflow arrows/undo | B workflow step editor |
+| Workflow | L; B remediation-draft | L; B remediation-draft | L; B remediation-draft | B workflow | T draft read gate; Load open | T failed checkpoint read/write retry; B workflow refusal | B workflow arrows/undo; R4 Lab path | B workflow step editor; offline unsaved-step reload |
 | Funnel | L | L | L | B funnel autopsy empty | Load open | B funnel refusal | B funnel reorder | B funnel sheets |
 | Calendar | L | L | L | B calendar; advanced-labs | Load open | B calendar availability/refusal | B calendar | B calendar |
 | Reporting | L | L | L | B reporting denominator empty | Load open | shared T | B reporting | B reporting |

@@ -13,7 +13,7 @@ Phase 26 statements below describe its pre-audit checkpoint, not a current missi
 Only audit group A P0/P1 fixes/reconciliation are in scope. All twelve group-B statuses stay
 unchanged; no Field-Ready Complete claim or merge. Evidence: `docs/reviews/field-ready-v1-remediation.md`.
 
-Current reconciliation supersedes historical phase summaries below: 19 directly evidenced rows
+Current reconciliation supersedes historical phase summaries below: 20 directly evidenced rows
 are promoted including the four R1 audit/negative-constraint rows. Remaining code/audit and
 human gaps are separately listed in the remediation review. Exact-head CI/Preview verification
 must be recorded in the remediation PR before independent re-audit; older phase SHAs are not proof.
@@ -73,6 +73,8 @@ Phase 21 update-check recovery: a failed update/build check is visible even when
 - exercise grader: 2026.09.22 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
 
 ## PASSED
+
+- SEC-003 — Remediation R6/R10: authenticated private-media ownership/refusal tests plus actual read-only cloud configuration gate on CI 34457590942 prove both dev/prod media buckets have r2.dev disabled and no custom domains. No learner objects were listed or read. Exact final-head gate is required again before independent re-audit; evidence is in the remediation review and final PR attestation.
 
 - PRD-001 — Remediation R1/R2: route/component/settings/schema inventory contains no Bloomlab billing, classroom, team, public-profile, marketplace or social-feed infrastructure. Payments/subscriptions are fictional GHL training data, not product commerce. Evidence: docs/reviews/field-ready-v1-remediation.md.
 - PRD-014 — Remediation R3/R10: mastery/campaign gates and Playground unlock tests grant capabilities from actual evidence. The phase7 guard and schema inventory have no points ledger; human fieldwork gates remain parked. Evidence: docs/reviews/field-ready-v1-remediation.md.
@@ -474,4 +476,4 @@ The proposal feedback blocker is remediated and the saved human call recovered w
 
 ## ROLL-UP
 
-313 requirements registered · 277 PASSED · 7 IN_PROGRESS · 8 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 7 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 278 PASSED · 7 IN_PROGRESS · 8 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 6 NOT_STARTED. Run the validator for the live count by status and priority.

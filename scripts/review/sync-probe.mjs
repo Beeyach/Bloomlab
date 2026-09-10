@@ -9,6 +9,7 @@ import { resolve } from 'node:path';
 
 import { screenshot, setViewport, sleep } from './cdp.mjs';
 import { probeHelpers } from './probe-lib.mjs';
+import { probeExitCode } from './probe-result.mjs';
 
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review');
 const BASE = process.env.BASE ?? 'http://localhost:4173';
@@ -227,3 +228,4 @@ try {
   await A.close();
   await B.close();
 }
+process.exitCode = probeExitCode(report);

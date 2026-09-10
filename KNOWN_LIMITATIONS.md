@@ -13,7 +13,8 @@ Still open: immutable prediction-before-Lab enforcement (EXR-006); R2 recovery-b
 attachment coverage (DATA-006); broad semantic quality (EXR-008/PRI-002/NEG-003); whole-product
 AI-Off/engine-record/naming reconciliation; per-screen state/design/mobile/manual evidence and
 the exact cross-environment failure matrix. These are not silently relabelled as human-only gaps.
-SEC-003 cloud bucket privacy remains pending the exact-head read-only CI gate. See the review's
+SEC-003's real read-only cloud configuration gate passed on CI 34457590942 and is required on
+the final source head again. See the review's
 complete remaining P0/P1 ledger and final PR attestation before interpreting any status.
 
 Unallocated legacy quotes change scope without automatic price subtraction; the interface says so.

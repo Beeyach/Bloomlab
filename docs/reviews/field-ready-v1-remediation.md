@@ -229,7 +229,7 @@ the final attestation below; this paragraph alone is not exact-head deployment e
 
 ### Exact acceptance reconciliation
 
-19 promotions (all group A except the expressly authorized documentary INF-015):
+20 promotions (all group A except the expressly authorized documentary INF-015):
 
 | Rows | Current repository evidence |
 | --- | --- |
@@ -238,14 +238,14 @@ the final attestation below; this paragraph alone is not exact-head deployment e
 | DATA-001, SYNC-007 | R5 local draft persistence and twelve sync envelopes; offline note/exercise/drag/reload and conflict evidence. |
 | INF-001, INF-004, INF-006, INF-007, INF-008 | R1/R6 current stack, parsed environment separation and prohibited-infrastructure regressions; old pre-Phase21 missing-provider wording no longer applies. |
 | INF-015 | Unchanged independent AUDIT_REPORT at the exact audit base covers all ten categories and explicitly decides PASS. |
-| SEC-001, SEC-002 | R6 source/built-browser scans, canaries, Worker binding/schema inspection and local/preview resource-separation guards. |
+| SEC-001, SEC-002, SEC-003 | R6 source/built-browser scans, canaries, Worker binding/schema inspection, local/preview separation and actual private bucket configuration gate on CI 34457590942. |
 | GHL-009 | R7 exact generated limitations for all 67 B/C records, with drift regression. |
 | PERF-001 | R8 manifest/static-import regression; zero Workflow requests/cache entries in Academy; visited-Lab offline recovery. |
 | EXR-007, EXR-009, PRI-001 | R9 actual late-booking pass/fail, later open architecture, learner-authored visible scope/price consequences; direct and browser regressions. |
 
-The 313-row roll-up is 277 PASSED, 7 IN_PROGRESS, 8 PARTIAL, 12 IMPLEMENTED_UNVERIFIED,
-2 DEFERRED and 7 NOT_STARTED. Priorities and acceptance wording are unchanged. This is not
-Field-Ready Complete: 31 P0/P1 rows remain open before any cloud-privacy reconciliation.
+The 313-row roll-up is 278 PASSED, 7 IN_PROGRESS, 8 PARTIAL, 12 IMPLEMENTED_UNVERIFIED,
+2 DEFERRED and 6 NOT_STARTED. Priorities and acceptance wording are unchanged. This is not
+Field-Ready Complete: 30 P0/P1 rows remain open.
 
 ### Complete remaining P0/P1 ledger
 
@@ -262,7 +262,6 @@ These are current gaps, not future promises or manufactured human-only blockers:
 | GHL-005, GHL-010 | Registry-native named surfaces and new Conversations record are corrected. Literal feature-like UI strings still exist outside the registry; the strict entire-UI official-name resolution criterion is not claimed from a handful of labels. |
 | DES-006, DES-008, DES-017, DES-018, RSP-002, RSP-003, RSP-004 | Automated composition and interaction sweeps are substantial, not full per-screen Empty/Loading/Error/Keyboard/Touch or manual hierarchy/material/density/long-session evidence. Unfilled cells are explicit in the remediation screen matrix; layout alone is not major-screen completion. |
 | A11Y-001 | Actual keyboard core-flow and axe checks pass; full manual/physical/assistive acceptance remains open as instructed. |
-| SEC-003 | Authenticated private media routes pass; cloud public-domain configuration must additionally pass the exact-head read-only CI gate. No local token was available and no cloud privacy pass is inferred. |
 | PRD-005, CUR-015, CUR-031, FLD-001, EXR-020, CALL-002, CALL-005, CALL-006, EXR-015, VOI-006, VOI-007, SEC-005 | All twelve remain exactly IMPLEMENTED_UNVERIFIED. Real skill transfer, real GHL work, human microphone/device/browser and privacy acceptance are not code-generated evidence. |
 
 P2/P3/deferred work is unchanged. In particular no PORT-003, INF-018, FLD-003 or SEC-006 expansion.
@@ -276,3 +275,30 @@ The first checkpoint probe includes 30 additional axe scans (three changed surfa
 × two motion modes), with no serious/critical exclusions. Raw artifacts remain under
 `.review/remediation/stable`; no private fixture blobs, tokens or media are committed.
 Final suite result and immutable PR/CI/Preview attestation are recorded after completion.
+
+Observed stable local outcomes: 29 probes genuinely passed in the original sweep. Fieldwork
+failed twice at the desktop-to-phone retry because the driver measured a touch target before
+the recomposed layout settled. The driver now waits two animation frames after scroll/focus,
+remeasures, requires a hit-testable 44px target and passes all five widths, including native touch.
+No fieldwork app behavior or human acceptance changed. The failed artifacts remain under
+stable/fieldwork and fieldwork-rerun; corrected evidence is under fieldwork-settled.
+
+The three real-server sync probes were **not** passing locally: no local sync pepper is configured,
+so the server correctly refuses linking with 503. The old general sync driver caught its error
+and exited zero despite writing “ok: false”; its apparent suite PASS is explicitly rejected here.
+`probe-result.mjs` plus a direct regression now force a nonzero exit for caught errors, false or
+missing verdicts. Deployed Preview sync/clients-sync/portfolio-sync remain required against the
+configured dev service, not a fabricated local credential or production data.
+
+First immutable implementation head: `3c6e73269deec606b424c0ed675a5452c5c7a95c`, draft
+[PR #30](https://github.com/Beeyach/Bloomlab/pull/30) against the exact audit branch.
+[CI 34457590942](https://github.com/Beeyach/Bloomlab/actions/runs/34457590942) passed Checks
+(2090 tests / 157 files, adversarial and axe) and Preview; Production skipped. Read-only SEC-003
+checks confirmed both media buckets have r2.dev disabled and no custom domains, without reading
+learner objects. Preview version `98cede28-b729-4c44-be10-93713f0dd7c6` was deployed. This is
+intermediate evidence: the final documentation/probe-hardening head must repeat complete CI,
+privacy gating and exact Worker/browser identity before stopping for independent re-audit.
+
+Final immutable SHA, CI URL/counts, Preview version and complete deployed browser outcomes will
+be attached to PR #30 after the last commit. That avoids embedding a self-referential commit hash
+in this file. A successful later run does not erase the failed local runs above. No merge.

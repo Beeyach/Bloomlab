@@ -458,7 +458,7 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 |---|---|---|---|---|---|
 | SEC-001 | Secrets (ANTHROPIC_API_KEY, ELEVENLABS_API_KEY, GOOGLE_CLOUD_CREDENTIAL, SYNC_KEY_PEPPER, future GHL credentials) live only in platform secret storage; never in the browser bundle, Vite client variables, commits, curriculum files, or D1. | P0 | all | PASSED | §105, §152, TA§62 |
 | SEC-002 | Production data is never used casually for development. | P0 | all | PASSED | §152 |
-| SEC-003 | Learner screenshots and fieldwork media are never published. | P0 | all | NOT_STARTED | §152 |
+| SEC-003 | Learner screenshots and fieldwork media are never published. | P0 | all | PASSED | §152 |
 | SEC-004 | Raw sync secret is never stored server-side (see SYNC-003). | P0 | 4 | PASSED | §152 |
 | SEC-005 | Private recordings are never silently sent to unrelated services. | P0 | 21 | IMPLEMENTED_UNVERIFIED | §152 |
 | SEC-006 | Recording consent/privacy product-legal pass before any commercial launch. | P3 | — | DEFERRED | TA§49 |

@@ -35,11 +35,19 @@ async function activate(label, mobile) {
   await wait(
     `[...document.querySelectorAll('button')].some(b=>b.textContent.trim()===${JSON.stringify(label)}&&!b.disabled)`,
   );
+  // A desktop → phone recomposition can still be settling after the viewport override.
+  // Scroll/focus first, then measure the final target, not a pre-layout touch coordinate.
+  await page.evaluate(
+    `(() => { const b=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===${JSON.stringify(label)}); b.scrollIntoView({block:'center'}); b.focus(); return new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))); })()`,
+  );
   const point = await page.evaluate(
-    `(()=>{const b=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===${JSON.stringify(label)});b.scrollIntoView({block:'center'});b.focus();const r=b.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2,height:r.height};})()`,
+    `(()=>{const b=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===${JSON.stringify(label)});const r=b.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;return {x,y,height:r.height,hit:b.contains(document.elementFromPoint(x,y)),scale:visualViewport.scale};})()`,
   );
   if (mobile) {
-    assert(point.height >= 40, 'Touch target');
+    assert(
+      point.height >= 44 && point.hit,
+      `Visible 44px touch target: ${label} ${JSON.stringify(point)}`,
+    );
     await page.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
       touchPoints: [{ x: point.x, y: point.y }],
