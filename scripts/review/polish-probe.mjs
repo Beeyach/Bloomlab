@@ -33,7 +33,10 @@ try {
       );
       await sleep(100);
       if (report.head)
-        assert.equal(await page.evaluate('document.documentElement.dataset.buildId'), report.head);
+        assert.equal(
+          await page.evaluate("document.querySelector('[data-build-id]')?.dataset.buildId"),
+          report.head,
+        );
       const measured = await page.evaluate(`(() => {
         const visible = e => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden';
         const name = e => (e.getAttribute('aria-label') || e.textContent || e.name || e.tagName).trim().slice(0,65);

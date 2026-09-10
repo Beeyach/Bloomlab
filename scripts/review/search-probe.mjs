@@ -173,7 +173,9 @@ try {
   assert(await waitFor(page, '!!document.querySelector("[data-outcome=passed]")'));
   if (HEAD) {
     const health = await (await fetch(`${BASE}/api/health`)).json();
-    const identity = await page.evaluate('document.documentElement.dataset.buildId');
+    const identity = await page.evaluate(
+      "document.querySelector('[data-build-id]')?.dataset.buildId",
+    );
     assert.equal(health.build_id, HEAD);
     assert.equal(identity, HEAD);
     results.identity = { worker: health.build_id, browser: identity };

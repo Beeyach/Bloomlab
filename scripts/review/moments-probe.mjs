@@ -182,7 +182,10 @@ try {
   if (report.head) {
     report.health = await (await fetch(base + '/api/health')).json();
     assert.equal(report.health.build_id, report.head);
-    assert.equal(await page.evaluate('document.documentElement.dataset.buildId'), report.head);
+    assert.equal(
+      await page.evaluate("document.querySelector('[data-build-id]')?.dataset.buildId"),
+      report.head,
+    );
   }
   report.status = 'PASSED';
   console.log(

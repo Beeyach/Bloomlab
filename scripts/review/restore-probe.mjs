@@ -65,7 +65,9 @@ try {
   };
   if (HEAD) {
     const health = await (await fetch(`${BASE}/api/health`)).json();
-    const browserHead = await page.evaluate('document.documentElement.dataset.buildId');
+    const browserHead = await page.evaluate(
+      "document.querySelector('[data-build-id]')?.dataset.buildId",
+    );
     assert.equal(health.build_id, HEAD);
     assert.equal(browserHead, HEAD);
     results.identity = { worker: health.build_id, browser: browserHead };

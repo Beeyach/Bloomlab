@@ -33,7 +33,7 @@ try {
       executed,
       assets,
       workflowPrecached: cached.filter((p) => /WorkflowLab|simulator.worker/.test(p)),
-      browser: await page.evaluate('document.documentElement.dataset.buildId'),
+      browser: await page.evaluate("document.querySelector('[data-build-id]')?.dataset.buildId"),
     };
     report.screens.push(row);
     if (report.head) assert.equal(row.browser, report.head);

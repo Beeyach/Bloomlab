@@ -99,7 +99,10 @@ try {
         name + ' crashed',
       );
       if (report.head)
-        assert.equal(await page.evaluate('document.documentElement.dataset.buildId'), report.head);
+        assert.equal(
+          await page.evaluate("document.querySelector('[data-build-id]')?.dataset.buildId"),
+          report.head,
+        );
       await scan(name, width);
     }
     // A real failure state, with the request intercepted before it can create/link a learner.

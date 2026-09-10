@@ -436,3 +436,11 @@ dependency audit reports **zero vulnerabilities**. No forced unrelated toolchain
 audit suppression. The separately built Preview/provider-secret scan and H browser checks above
 also pass. Final deployed probes repeat the required widths/new paths against the final SHA, not
 the historical checkpoint heads. Their immutable record belongs to PR #28 as described above.
+
+The first exact-head local production-mode probe caught a **probe selector defect**: six new
+Phase 26 scripts read the build ID from `<html>` instead of the existing shell `[data-build-id]`.
+Worker identity was correct; the browser value was absent, so assertions correctly failed rather
+than accepting an earlier build. Corrected all six selectors to the published shell attribute and
+added that identity contract to the existing App regression. No app identity, assertion equality,
+requirement status or learner behavior was relaxed. The final head and CI attestation follow this
+correction, not the superseded candidate `437051b`.
