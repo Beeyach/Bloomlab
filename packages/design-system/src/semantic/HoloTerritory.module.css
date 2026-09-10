@@ -63,6 +63,8 @@
 
 .head {
   display: flex;
+  /* Narrow content beside the expanded sidebar must retain the non-colour selection cue. */
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--bl-space-3);

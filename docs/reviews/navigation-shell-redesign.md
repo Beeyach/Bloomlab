@@ -178,3 +178,34 @@ until independent audit and the learner’s original-device scrolling confirmati
 promoted on the strength of the contradicted historical attestation. Every other requirement
 row, all twelve human/real-GHL IMPLEMENTED_UNVERIFIED rows, and AUDIT_REPORT.md are unchanged.
 Stop for independent ChatGPT audit; do not merge PR #24–#30 or this PR.
+
+### N8 visual contradiction — reopen the bounded N7 composition check
+
+First immutable head `29529fc0f5ca215012745b076762a320e4afe9c9` passed clean local and
+[GitHub CI 34489625276](https://github.com/Beeyach/Bloomlab/actions/runs/34489625276), attempt 1:
+2112 tests / 161 files, 15 adversarial cases, 75 axe scans and all checks. Preview version
+`4b1e59cb-0091-414d-a64b-82d61427b9a1` served that exact head. Its deployed dedicated probe
+passed all 38 cases; 16 additional all-width 480 px sidebar/More axe scans also passed with
+an unnamed-button negative control. The initial broad rail launch failed before interaction
+at a Node TCP connection timeout; fresh health and the unchanged same-head rail rerun passed
+all 15 cases. The first failed log remains, not overwritten or counted as a pass.
+
+Actual deployed capture inspection then disproved complete content visibility at 768 expanded:
+Skill Map's selected “Showing” cue extended to x551.94 beyond its card's right edge x486.5.
+The existing card header forbade wrapping. This is content loss even though outer-page overflow,
+all navigation interactions and axe passed. The broad sweep was stopped; this head is
+**intermediate evidence only**, not the final audit result. The new direct
+`selectedCueNotClipped` regression fails on that deployed head. All ten territory names are also
+checked against their card bounds in each desktop/tablet navigation case.
+
+Allow the existing territory header to wrap its selection cue inside the card. A browser-only
+proposed-style reproduction moves the cue to x284–357.11 and preserves all ten full names;
+the capture was inspected. Source CSS now applies that same bounded correction without changing
+the material or selection meaning. Evidence: `.review/navigation/cue-reproduction` and
+`cue-regression-old`. Complete exact-head CI and all deployed probes must repeat on the new head.
+
+The compiled correction passes the focused ten-case navigation run (both 768 × 600 states,
+six Workflow compositions and both phones), plus eight all-width/state cue-and-name bounds
+checks with inspected captures. Desktop and phone captures retain a readable selection cue;
+no title text is clipped. The dedicated probe now asserts these content bounds in all desktop
+cases and both phone cases. Artifacts: `.review/navigation/{cue-fixed-local-4189,cue-fixed-visual}`.

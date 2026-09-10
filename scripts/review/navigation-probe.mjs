@@ -54,7 +54,14 @@ const state = () =>
     names:links.map(a=>a.getAttribute('aria-label')),hrefs:links.map(a=>a.getAttribute('href')),
     labels:links.map(a=>{const l=a.querySelector('[class*="label"]');return {visible:l.getClientRects().length>0,fits:a.scrollWidth<=a.clientWidth};}),
     icons:links.every(a=>!!a.querySelector('svg')),behavior:getComputedStyle(s).scrollBehavior,
-    build:frame.dataset.buildId};
+    build:frame.dataset.buildId,
+    territoryNamesFit: [...document.querySelectorAll('[data-territory]')].every(c => {
+      const b=c.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(c.querySelector('[class*="name"]'));
+      const r=range.getBoundingClientRect();return r.left>=b.left&&r.right<=b.right;
+    }),
+    selectionCueFits: (()=>{const c=document.querySelector('[data-territory][aria-pressed="true"]'),hint=c?.querySelector('[class*="showing"]');if(!hint)return false;
+      const b=c.getBoundingClientRect(),r=hint.getBoundingClientRect();return r.left>=b.left&&r.right<=b.right&&r.top>=b.top&&r.bottom<=b.bottom;
+    })()};
 })()`);
 const reset = async () => {
   await openPage(page, BASE + '/skills');
@@ -125,6 +132,8 @@ try {
             !initial.horizontal && initial.contentWidth <= initial.width,
           );
           check('nativeMotion', initial.behavior === 'auto');
+          check('territoryNamesNotClipped', initial.territoryNamesFit);
+          check('selectedCueNotClipped', initial.selectionCueFits);
           check(
             'singleBoundedOwner',
             initial.regionTop > 0 &&
@@ -383,6 +392,9 @@ try {
         `(()=>{const n=document.querySelector('nav'),a=[...n.querySelectorAll('a,button')].filter(a=>a.getClientRects().length);return a.length===5&&a.map(a=>a.textContent.trim()).join('|')==='Home|Campaign|Skill Map|Workflow|More'})()`,
       ),
     );
+    const phoneContent = await state();
+    check('phoneTerritoryNamesNotClipped', phoneContent.territoryNamesFit);
+    check('phoneSelectedCueNotClipped', phoneContent.selectionCueFits);
     await pointer('[data-testid="rail-more"]');
     await key('Tab');
     await key('Escape');

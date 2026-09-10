@@ -642,5 +642,123 @@
     "polishScreenWidthCases": 180,
     "polishStatus": "PASSED",
     "scope": "Controlled working-build evidence; final exact-head evidence belongs in the PR attestation"
+  },
+  "firstImmutableAttempt": {
+    "head": "29529fc0f5ca215012745b076762a320e4afe9c9",
+    "ci": "https://github.com/Beeyach/Bloomlab/actions/runs/34489625276",
+    "ciStatus": "PASSED",
+    "workerVersion": "4b1e59cb-0091-414d-a64b-82d61427b9a1",
+    "navigationCasesPassed": 38,
+    "extraAxeScansPassed": 16,
+    "broadSuite": "Stopped after actual capture exposed clipped selected territory cue. Initial rail launch TCP timeout retained; unchanged same-head rerun passed. Not final evidence.",
+    "cueReproduction": {
+      "head": "29529fc0f5ca215012745b076762a320e4afe9c9",
+      "before": {
+        "card": {
+          "left": 264,
+          "right": 486.5
+        },
+        "cue": {
+          "left": 478.828125,
+          "right": 551.9375
+        },
+        "cueFits": false,
+        "names": [
+          {
+            "name": "Strategize",
+            "fits": true
+          },
+          {
+            "name": "Build",
+            "fits": true
+          },
+          {
+            "name": "Automate",
+            "fits": true
+          },
+          {
+            "name": "Architect",
+            "fits": true
+          },
+          {
+            "name": "Judgment",
+            "fits": true
+          },
+          {
+            "name": "Diagnose",
+            "fits": true
+          },
+          {
+            "name": "Connect",
+            "fits": true
+          },
+          {
+            "name": "Sell",
+            "fits": true
+          },
+          {
+            "name": "Deliver",
+            "fits": true
+          },
+          {
+            "name": "Scale",
+            "fits": true
+          }
+        ]
+      },
+      "after": {
+        "card": {
+          "left": 264,
+          "right": 486.5
+        },
+        "cue": {
+          "left": 284,
+          "right": 357.109375
+        },
+        "cueFits": true,
+        "names": [
+          {
+            "name": "Strategize",
+            "fits": true
+          },
+          {
+            "name": "Build",
+            "fits": true
+          },
+          {
+            "name": "Automate",
+            "fits": true
+          },
+          {
+            "name": "Architect",
+            "fits": true
+          },
+          {
+            "name": "Judgment",
+            "fits": true
+          },
+          {
+            "name": "Diagnose",
+            "fits": true
+          },
+          {
+            "name": "Connect",
+            "fits": true
+          },
+          {
+            "name": "Sell",
+            "fits": true
+          },
+          {
+            "name": "Deliver",
+            "fits": true
+          },
+          {
+            "name": "Scale",
+            "fits": true
+          }
+        ]
+      }
+    }
   }
 }
