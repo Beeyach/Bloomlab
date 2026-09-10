@@ -225,14 +225,14 @@ try {
   // ---------- offline: a deterministic submission finalizes without the network ----------
   await setViewport(page, 1280, 900, { mobile: false });
   await openPage(page, `${BASE}${DECISION}`);
-  for (
-    let i = 0;
-    i < 150 && !(await page.evaluate('Boolean(navigator.serviceWorker.controller)'));
-    i++
-  ) {
-    await sleep(100);
-  }
+  // Preview's first full precache install can outlast the runner interactions. This is a
+  // cached offline-reload test, so fail explicitly if installation never finishes.
+  assert(
+    await waitFor(page, 'navigator.serviceWorker.controller?.state === "activated"', 400),
+    'the service worker must activate and control the runner within 60 seconds before going offline',
+  );
   const workers = await serviceWorkerSessions(browser, new URL(BASE).origin);
+  assert(workers.count > 0, 'the service worker is also network-disabled');
   await workers.send('Network.enable');
   await workers.send('Network.emulateNetworkConditions', conditions(true));
   await page.send('Network.emulateNetworkConditions', conditions(true));

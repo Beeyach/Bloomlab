@@ -444,3 +444,16 @@ than accepting an earlier build. Corrected all six selectors to the published sh
 added that identity contract to the existing App regression. No app identity, assertion equality,
 requirement status or learner behavior was relaxed. The final head and CI attestation follow this
 correction, not the superseded candidate `437051b`.
+
+The deployed `e3c9fdac` candidate then exposed a **first-install readiness defect in two offline
+probes**, not a cached-app reload failure: Search disconnected while the service worker was still
+installing; the older Exercise probe's 15-second allowance also expired before installation.
+A fresh Preview diagnostic observed the precache grow to 159 entries over about 40 seconds, then
+activate/control the page and successfully reload Search offline. Both probes now require actual
+activation/control with a bounded 60-second allowance **before** disconnecting, and require a
+service-worker network-emulation target. Search additionally records the cached shell and asserts
+that the NetworkOnly health request fails offline. No service-worker/cache policy, learner behavior,
+offline reload assertion or status was relaxed. Corrected Search (25 width states, real attempt,
+keyboard/touch/reduced motion, offline bookmark reload) and Exercise (offline submission/reload,
+unchanged evidence counts and queued writes) both pass against that deployed candidate. The final
+committed head's complete CI and deployed reruns supersede the failed candidate probe runs.

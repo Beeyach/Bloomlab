@@ -150,7 +150,28 @@ try {
     features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
   });
   await setViewport(page, 390, 480);
-  await browser.setOffline(true);
+  // A cached-bookmark test requires the first precache install to finish. Remote Preview can
+  // still be installing after the fast fragment-only search sweep; do not cut off that install.
+  assert(
+    await waitFor(page, 'navigator.serviceWorker.controller?.state === "activated"', 480),
+    'the service worker must activate and control Search within 60 seconds before going offline',
+  );
+  results.offlineCache = await page.evaluate(`(async () => {
+    const names = await caches.keys();
+    const entries = (await Promise.all(names.map(async name =>
+      (await (await caches.open(name)).keys()).map(request => new URL(request.url).pathname)
+    ))).flat();
+    return { controlled: !!navigator.serviceWorker.controller, shellCached: entries.includes('/index.html'), entries: entries.length };
+  })()`);
+  assert(results.offlineCache.controlled && results.offlineCache.shellCached);
+  results.offlineWorkers = await browser.setOffline(true);
+  assert(results.offlineWorkers > 0, 'the service worker is also network-disabled');
+  assert.equal(await page.evaluate('navigator.onLine'), false);
+  assert.equal(
+    await page.evaluate("fetch('/api/health').then(() => false, () => true)"),
+    true,
+    'the NetworkOnly health request cannot escape the offline boundary',
+  );
   await typeInto(page, '[data-global-search]', 'workflow');
   assert(await waitFor(page, 'document.querySelectorAll("[data-search-kind=skills]").length > 0'));
   await page.evaluate(
