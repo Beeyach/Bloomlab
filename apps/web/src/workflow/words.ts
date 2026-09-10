@@ -74,7 +74,7 @@ export function configSummary(node: WorkflowNode, account: AccountState): string
       return text(c.recipient)
         ? `${account.users[text(c.recipient)]?.name ?? text(c.recipient)} · ${text(c.channel) || 'in-app'}`
         : 'No recipient yet';
-    case 'GHL-WF-WEBHOOK':
+    case 'GHL-WF-CUSTOM-WEBHOOK':
       return text(c.url) || 'No URL yet';
     case 'GHL-WF-WAIT':
       return waitSummary(c);

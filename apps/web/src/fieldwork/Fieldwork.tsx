@@ -4,7 +4,6 @@ import { Link } from 'react-router';
 import { Button } from '@bloomlab/design-system';
 import { reasoningItems, type Exercise } from '@bloomlab/content-schema';
 import type { FieldworkResponse } from '@bloomlab/shared';
-import { db } from '../data/db';
 import { editFieldwork, type ActiveAttempt, type AttemptContext } from '../exercise/attempt';
 import { Markdown } from '../exercise/markdown';
 import { checkpointProof } from './checkpoint';

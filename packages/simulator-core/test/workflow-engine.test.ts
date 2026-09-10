@@ -600,7 +600,7 @@ describe('actions beyond text and tags run for real (WFL-005)', () => {
       {
         id: 'h1',
         type: 'action',
-        ghl_feature_id: 'GHL-WF-WEBHOOK',
+        ghl_feature_id: 'GHL-WF-CUSTOM-WEBHOOK',
         config: {
           url: 'https://example.test/hook',
           custom_data: { interest: '{{contact.custom_fields.treatment_interest}}' },

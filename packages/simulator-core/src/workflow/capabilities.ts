@@ -799,14 +799,14 @@ const ACTION_CAPABILITIES: ActionCapability[] = [
   },
   {
     kind: 'action',
-    feature: 'GHL-WF-WEBHOOK',
+    feature: 'GHL-WF-CUSTOM-WEBHOOK',
     nodeType: 'action',
     validate: (config) => {
       const problems: string[] = [];
       const url = text(config, 'url');
       if (!url || !/^https?:\/\/\S+$/.test(url)) problems.push('Webhook needs an http(s) URL');
       const method = text(config, 'method');
-      if (method && !['POST', 'GET', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase())) {
+      if (method && !['POST', 'GET', 'PUT', 'DELETE'].includes(method.toUpperCase())) {
         problems.push(`${method} is not a webhook method`);
       }
       const headers = config.headers;

@@ -1,0 +1,41 @@
+# Verified 2026-09-10 against the current official "Workflow Action - Custom webhook" reference.
+id: GHL-WF-CUSTOM-WEBHOOK
+official_name: Custom Webhook
+area: Workflows
+feature_type: action
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-10
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000003305/
+known_limitations:
+  - No request leaves Bloomlab; the scenario supplies the response for an exact synthetic endpoint.
+  - The native authorization modes, credential storage, query-parameter editor, content-type behavior and response capture are not reproduced as complete HighLevel controls.
+  - Bloomlab records header names but never records secret header values in its execution history.
+skills:
+  - SK-CONNECT-webhook-payloads
+supported_configs:
+  config_fields:
+    - name: url
+      type: string
+      required: true
+    - name: method
+      type: select
+      required: true
+      options: [POST, GET, PUT, DELETE]
+    - name: headers
+      type: json
+      required: false
+      description: Synthetic key-value header rows. Secret values are used for the one run and omitted from history.
+    - name: custom_data
+      type: json
+      required: false
+      description: Key-value pairs; values may use merge fields.
+approximation_note: >-
+  Training approximation. The simulator renders a bounded request, sends nothing, and receives the
+  deterministic response authored for that synthetic endpoint. It demonstrates method, custom
+  data, authentication failure and service outage without claiming live-provider behavior.
+verification_note: >-
+  Read the official HighLevel support reference on 2026-09-10. It names Custom Webhook as a
+  distinct workflow action with GET, POST, PUT and DELETE methods, authorization, headers, query
+  parameters and JSON/form request bodies. This record deliberately remains fidelity B.
