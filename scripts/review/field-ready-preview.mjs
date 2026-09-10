@@ -7,7 +7,7 @@ import { spawn } from 'node:child_process';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { openPage, session } from './cdp.mjs';
+import { openPage, session, sleep } from './cdp.mjs';
 import { probeHelpers } from './probe-lib.mjs';
 
 const base = process.env.BASE;
@@ -69,27 +69,56 @@ const report = {
 };
 
 async function identity(label) {
-  const health = await (
-    await fetch(`${base}/api/health`, { cache: 'no-store', signal: AbortSignal.timeout(10_000) })
-  ).json();
+  let health;
+  let healthAttempts = 0;
+  for (; healthAttempts < 60; healthAttempts++) {
+    try {
+      const response = await fetch(
+        `${base}/api/health?field_ready=${encodeURIComponent(`${head}-${label}-${healthAttempts}`)}`,
+        {
+          cache: 'no-store',
+          headers: { 'cache-control': 'no-cache' },
+          signal: AbortSignal.timeout(10_000),
+        },
+      );
+      if (response.ok) health = await response.json();
+      if (health?.environment === 'preview' && health?.build_id === head) break;
+    } catch {
+      // A just-published Worker can briefly be unavailable at one edge; exact equality below
+      // remains mandatory after this bounded convergence window.
+    }
+    await sleep(500);
+  }
+  assert(health, `${label} Worker health did not become available`);
   assert.equal(health.environment, 'preview');
   assert.equal(health.build_id, head);
   const browser = await session();
   try {
-    await openPage(browser.page, base);
-    const { waitFor } = probeHelpers({ base });
-    assert(
-      await waitFor(
-        browser.page,
-        `document.querySelector('[data-build-id]')?.dataset.buildId === ${JSON.stringify(head)}`,
-      ),
-      `${label} browser does not identify the exact head`,
-    );
-    const browserHead = await browser.page.evaluate(
-      `document.querySelector('[data-build-id]')?.dataset.buildId`,
-    );
+    await browser.page.send('Network.enable');
+    await browser.page.send('Network.setCacheDisabled', { cacheDisabled: true });
+    let browserHead;
+    let browserAttempts = 0;
+    for (; browserAttempts < 12; browserAttempts++) {
+      await openPage(browser.page, `${base}/?field_ready=${head}-${label}-${browserAttempts}`);
+      const { waitFor } = probeHelpers({ base });
+      await waitFor(browser.page, `!!document.querySelector('[data-build-id]')`, 20);
+      browserHead = await browser.page.evaluate(
+        `document.querySelector('[data-build-id]')?.dataset.buildId`,
+      );
+      if (browserHead === head) break;
+      await browser.page.evaluate(`Promise.all([
+        navigator.serviceWorker?.getRegistrations().then((rows) => Promise.all(rows.map((row) => row.unregister()))),
+        caches?.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+      ])`);
+      await sleep(500);
+    }
     assert.equal(browserHead, head);
-    report.identities[label] = { browser: browserHead, worker: health.build_id };
+    report.identities[label] = {
+      browser: browserHead,
+      worker: health.build_id,
+      health_attempts: healthAttempts + 1,
+      browser_attempts: browserAttempts + 1,
+    };
   } finally {
     await browser.close();
   }

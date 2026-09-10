@@ -144,6 +144,16 @@ checks and disposable synthetic learner/media data. Provider spend is $0.
 
 ## Failed attempts retained
 
+- The first closeout exact-head Node 22 run exposed an auto-resubscribed draft-read error, recovery
+  transport in the wrong source boundary and render-timing focus assertion. Those three failures
+  were reproduced and fixed; the original run is not evidence.
+- The next exact-head run exposed queued Call Room checkpoint work crossing test boundaries and a
+  reused one-shot `Response`. The test now drains queued work before clearing IndexedDB and creates
+  a fresh response per request; the failing run is not evidence.
+- The first post-deploy identity request reached the preceding Preview Worker during edge
+  propagation even though Wrangler had published the new version; subsequent live health reads
+  converged to the deployed SHA. The attestation now waits within a bounded window for exact Worker
+  and browser equality rather than accepting either stale identity.
 - Local browser launch was attempted but the available Chrome binary lacks required shared
   libraries. It is not counted as browser/a11y evidence; the GitHub Ubuntu Chrome run is canonical.
 - `vitest --project simulator-core` named a project that is not configured. The corrected direct
