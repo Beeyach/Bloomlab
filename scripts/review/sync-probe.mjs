@@ -10,6 +10,7 @@ import { resolve } from 'node:path';
 import { screenshot, setViewport, sleep } from './cdp.mjs';
 import { probeHelpers } from './probe-lib.mjs';
 import { probeExitCode } from './probe-result.mjs';
+import { noteOutboxEvidence } from './note-outbox-evidence.mjs';
 
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review');
 const BASE = process.env.BASE ?? 'http://localhost:4173';
@@ -64,13 +65,28 @@ try {
   await A.setOffline(true);
   await click(A.page, 'Add test note');
   const savedLocally = await waitFor(A.page, bodyHas('notes 1'), 16);
-  const aQueuedBefore = await A.page.evaluate(bodyHas('sync_queue 1'));
+  // Read the atomic persistence boundary, not a separately rendered diagnostics count.
+  // Initial campaign state can also be pending; require this note's exact queued payload.
+  const localOutbox = await A.page.evaluate(`new Promise((resolve, reject) => {
+    const request = indexedDB.open('bloomlab');
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const tx = db.transaction(['notes', 'sync_queue']);
+      const notes = tx.objectStore('notes').getAll();
+      const queue = tx.objectStore('sync_queue').getAll();
+      tx.oncomplete = () => { db.close(); resolve((${noteOutboxEvidence.toString()})(notes.result, queue.result)); };
+      tx.onabort = tx.onerror = () => { db.close(); reject(tx.error); };
+    };
+  })`);
+  const aQueuedBefore = localOutbox.queuedBeforeSync;
   await A.setOffline(false);
   await syncNow(A.page);
   const aNote = await newestNote(A.page);
   step('A wrote a note: local write first, then the queue drained', {
     savedLocally,
     queuedBeforeSync: aQueuedBefore,
+    localOutbox,
     aNote,
     aIndicator: await indicator(A.page),
   });

@@ -387,3 +387,38 @@ privacy gating and exact Worker/browser identity before stopping for independent
 Final immutable SHA, CI URL/counts, Preview version and complete deployed browser outcomes will
 be attached to PR #30 after the last commit. That avoids embedding a self-referential commit hash
 in this file. A successful later run does not erase the failed local runs above. No merge.
+
+### Resumed intermediate deployment and outbox observation correction
+
+Head `61a54d2ac4a39ea9bd8c1524d62f52c00b99df8c` passed the complete local Node 22 chain
+(2106 tests / 159 files, 15 adversarial cases, 75 axe scans with negative control) and a separate
+production-mode build/accessibility run. Local Worker/browser IDs matched that exact head.
+[CI 34477274168](https://github.com/Beeyach/Bloomlab/actions/runs/34477274168) attempt 1 passed
+the test/validation/build stages but failed phone Field Ready readiness after 67 axe scans without
+serious/critical violations. Its artifact lacks a failed-route DOM snapshot, so the cause is not
+established. The same-head local production run and 40 Portfolio → Field Ready phone navigations
+passed the unchanged readiness assertion. CI attempt 2 then passed all Checks and Preview;
+Production skipped. No assertion, timeout or axe rule was weakened. The first failure remains
+in `.review/remediation/ci-34477274168-failed`, and A11Y-001 is not promoted.
+
+That Preview run confirmed both buckets' r2.dev access disabled and no custom domains without
+reading learner objects, applied migration 0007 to `bloomlab-dev` only, and deployed version
+`8d747069-8348-48c1-914e-3a38d3dcc74a`. Both deployed same-ID client and portfolio ownership
+probes passed, including ignoring forged ownership, independent updates and tombstones. Home and
+keyboard also passed before the broader sweep was stopped at the remaining general-sync driver
+defect. This is intermediate evidence, not a completed final-head 33-probe sweep.
+
+General sync completed linked-device recovery, conflict choice, convergence, deletion and revoke,
+but its immediate `sync_queue 1` text check rejected a valid queue containing **two** operations.
+The corrected driver reads notes and outbox in one read-only IndexedDB transaction while offline,
+requiring the saved note's matching ID, revision and body in its queued upsert. Unrelated queued
+entities no longer mask that evidence. A negative-control regression rejects missing, unrelated,
+stale, wrong-ID/revision, deleted-note and delete-operation cases. Focused probe/store verification:
+19 tests / 2 files pass. The deployed focused rerun passes with `queueCount: 2`, matching saved
+note/outbox evidence, both-device conflict/convergence/deletion and revocation; no app or server
+behavior was changed to satisfy the probe. Raw failed sweep and corrected probe artifacts remain
+in `.review/remediation/final-preview` and `.review/remediation/outbox-observation-preview-61a54d2`.
+
+The one additional regression and driver/document changes require a new immutable CI/Preview
+attestation. Its complete sweep uses a fresh `.review/remediation/final-preview-<head>` directory,
+preserving the stopped/failed run. Final verified outcomes belong in PR #30 before re-audit.

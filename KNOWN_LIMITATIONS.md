@@ -14,6 +14,13 @@ future same-ID collisions but cannot reconstruct earlier overwritten payloads. P
 the schema before code; the old writer cannot run against it during that brief interval or via a
 Worker-only rollback. Production migration/deployment remains skipped. Provider spend stays $0.
 
+Verification caveat: intermediate head `61a54d2` had one CI phone Field Ready readiness timeout
+after 67 successful axe scans; the artifact did not capture the failing DOM. Same-head local
+production checks, 40 repeated phone navigations and CI attempt 2 passed unchanged assertions.
+The cause remains unexplained and the failed artifact is retained; this is not manual accessibility
+acceptance. The general sync probe's separate exact-one-queue assumption was disproved by a valid
+two-operation outbox and replaced with a direct saved-note/payload check plus negative regressions.
+
 Still open: immutable prediction-before-Lab enforcement (EXR-006); R2 recovery-backup/scenario
 attachment coverage (DATA-006); broad semantic quality (EXR-008/PRI-002/NEG-003); whole-product
 AI-Off/engine-record/naming reconciliation; per-screen state/design/mobile/manual evidence and

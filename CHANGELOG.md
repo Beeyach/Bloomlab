@@ -16,6 +16,8 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
   while replacing global IDs with learner-scoped primary keys across 13 sync tables. Added
   collision/update/tombstone, byte-preservation and migration rollback/retry regressions; deployed
   sync probes now reuse curriculum IDs across learners and check each owner's data independently.
+- General sync review now checks the saved note's persisted outbox payload while offline rather
+  than assuming the diagnostics queue contains exactly one operation; negative cases remain failing.
 - Fixed late-booking temporal grading and added in-runner actual-event playback with reduced motion;
   prediction-before-Lab enforcement remains an explicit gap. Proved later open architecture writing.
 - Added learner-authored removable fee portions so scope changes can alter quote/payment without
