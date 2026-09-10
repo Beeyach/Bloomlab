@@ -75,10 +75,47 @@ try {
     await browser.go('/skills');
     assert(await waitFor(page, '!!document.querySelector("main h1")'));
     const map = await page.evaluate(
-      '({title:document.querySelector("main h1").textContent,width:innerWidth,scrollWidth:document.documentElement.scrollWidth})',
+      `(() => {
+        const map = document.querySelector('[aria-label="Territories"]');
+        const territories = [...map.querySelectorAll('[data-territory]')];
+        return {
+          title: document.querySelector('main h1').textContent,
+          width: innerWidth,
+          scrollWidth: document.documentElement.scrollWidth,
+          columns: getComputedStyle(map).gridTemplateColumns.split(' ').length,
+          territoryOrder: territories.map((item) => item.dataset.territory),
+          targets: territories.map((item) => Math.min(item.getBoundingClientRect().width, item.getBoundingClientRect().height)),
+          panel: document.querySelector('[data-testid="territory-panel"]')?.textContent,
+        };
+      })()`,
     );
     assert(map.title.includes('Skill'));
     assert(map.scrollWidth <= width + 1);
+    assert.equal(map.columns, width >= 1024 ? 3 : width >= 768 ? 2 : 1);
+    assert.equal(map.territoryOrder.length, 10);
+    assert.equal(map.territoryOrder[4], 'JUDGMENT');
+    assert(map.targets.every((target) => target >= 44));
+    assert(map.panel?.includes('Judgment'));
+    if (width < 768) {
+      const point = await page.evaluate(`(() => {
+        const item = document.querySelector('[data-territory="BUILD"]');
+        item.scrollIntoView({ block: 'center' });
+        const rect = item.getBoundingClientRect();
+        return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+      })()`);
+      await page.send('Input.dispatchTouchEvent', {
+        type: 'touchStart',
+        touchPoints: [point],
+      });
+      await page.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      assert(
+        await waitFor(
+          page,
+          `new URL(location.href).searchParams.get('territory') === 'BUILD' && document.querySelector('[data-testid="territory-panel"]')?.textContent.includes('Build')`,
+        ),
+      );
+      map.phoneTerritoryTouch = true;
+    }
     report.layouts.push({ id: 'skill-map', ...map });
     console.log(`Paths/map ${width}px passed`);
   }

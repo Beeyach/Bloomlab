@@ -25,7 +25,7 @@
     "validate:docs": "node scripts/validate-requirements.mjs",
     "security:source": "node scripts/check-source-secrets.mjs",
     "security:cloud": "node scripts/check-cloud-privacy.mjs",
-    "ci": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run test:adversarial && npm run validate:docs && npm run security:source && npm run content:check && npm run content:terminology && npm run content:freshness && npm run voice:check && npm run build && npm run test:a11y",
+    "ci": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run test:adversarial && npm run validate:docs && npm run security:source && npm run content:check && npm run content:terminology && npm run review:screen-inventory && npm run content:freshness && npm run voice:check && npm run build && npm run test:a11y",
     "test:a11y": "node scripts/review/a11y-probe.mjs",
     "test:adversarial": "node scripts/adversarial.mjs",
     "review:capture": "node scripts/review/capture.mjs",
@@ -67,7 +67,9 @@
     "review:sidebar-resize": "node scripts/review/sidebar-resize-probe.mjs",
     "review:ai-off": "node scripts/review/ai-off-suite.mjs",
     "review:binary-recovery": "node scripts/review/binary-recovery-probe.mjs",
-    "review:failure-isolation": "node scripts/review/failure-isolation-probe.mjs"
+    "review:failure-isolation": "node scripts/review/failure-isolation-probe.mjs",
+    "review:screen-inventory": "node scripts/review/screen-inventory.mjs",
+    "review:screen-states": "node scripts/review/screen-state-matrix.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

@@ -5,6 +5,7 @@
 // with frame timing while the engine works in the worker. Writes workflow-probe.json and
 // workflow-*.png to .review/ (override with REVIEW_OUT).
 //   BASE=http://localhost:4173 node scripts/review/workflow-probe.mjs
+import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -559,6 +560,35 @@ try {
       noHorizontalOverflow: overflow,
     });
     await screenshot(page, resolve(OUT, `workflow-${width}.png`), null, false);
+
+    // Inbox is a single natural conversation flow on phones: list first, selected thread and
+    // composer below it. Both remain present and usable; the desktop two-pane layout is not
+    // squeezed into the viewport (RSP-004).
+    await openPage(
+      page,
+      `${BASE}/conversations?scenario=SC-glowhaus-double-reminder&contact=maria`,
+    );
+    assert(
+      await waitFor(page, `Boolean(${q('[data-testid="thread"]')})`, { timeout: 8000 }),
+      `Inbox thread did not open at ${width}`,
+    );
+    const inbox = await page.evaluate(`(() => {
+      const workspace = document.querySelector('[class*=workspace][data-thread]');
+      const list = workspace.firstElementChild.getBoundingClientRect();
+      const thread = workspace.lastElementChild.getBoundingClientRect();
+      const reply = document.querySelector('#inbox-body');
+      const send = document.querySelector('[data-testid="send-message"]');
+      return {
+        columns: getComputedStyle(workspace).gridTemplateColumns.split(' ').length,
+        listBeforeThread: list.bottom <= thread.top,
+        thread: Boolean(document.querySelector('[data-testid="thread"]')),
+        composer: Boolean(reply && send),
+        targets44: [reply, send].every((item) => item.getBoundingClientRect().height >= 44),
+        noHorizontalOverflow: document.documentElement.scrollWidth <= innerWidth + 1,
+      };
+    })()`);
+    section(`conversations-${width}`, inbox);
+    await screenshot(page, resolve(OUT, `conversations-${width}.png`), null, false);
   }
 } finally {
   await close();

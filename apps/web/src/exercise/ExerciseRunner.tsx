@@ -2,7 +2,7 @@ import { Fieldwork } from '../fieldwork/Fieldwork';
 import { lazy, Suspense } from 'react';
 import { useFeatureFlags } from '../app/featureFlagsContext';
 const CallRoom = lazy(() => import('../call/CallRoom'));
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 
 import { Button, Stack, Surface, cx } from '@bloomlab/design-system';
@@ -96,10 +96,16 @@ export default function ExerciseRunner() {
   const exercise = content.exercises.find((candidate) => candidate.id === exerciseId) ?? null;
   // A retrieval is honoured only when it names a capability the exercise teaches; the context
   // then keeps this run's draft and result apart from an ordinary run of the same exercise.
-  const context = resolveRunContext(exercise ?? { skills: [] }, {
-    run: search.get('run'),
-    skill: search.get('skill'),
-  });
+  const requestedRun = search.get('run');
+  const requestedSkill = search.get('skill');
+  const context = useMemo(
+    () =>
+      resolveRunContext(exercise ?? { skills: [] }, {
+        run: requestedRun,
+        skill: requestedSkill,
+      }),
+    [exercise, requestedRun, requestedSkill],
+  );
   const run = context.run;
   const skillId = context.skill_id;
 
@@ -126,7 +132,7 @@ export default function ExerciseRunner() {
     if (attempt === null && history.length === 0) {
       void startAttempt(exercise, context);
     }
-  }, [exercise, attempt, history, context.run, context.skill_id, flags.voice_calls]);
+  }, [exercise, attempt, history, context, flags.voice_calls]);
 
   if (!exercise) {
     return (
