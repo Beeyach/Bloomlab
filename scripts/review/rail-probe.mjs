@@ -335,10 +335,14 @@ try {
       checks.everyAreaReachable = DESTINATIONS.every((to) => reachable.has(to));
       checks.noOverflowWithMenuOpen = opened.scrollWidth <= opened.innerWidth;
       await screenshot(page, resolve(OUT, `rail-${width}-more.png`), null, false);
+      await page.evaluate(`document.querySelector('[data-testid="rail-more-menu"] a').focus()`);
       await pressEscape(page);
       await sleep(200);
       const closed = await measure(page);
       checks.escapeClosesMore = closed.menu === null;
+      checks.escapeReturnsFocus = await page.evaluate(
+        `document.activeElement === document.querySelector('[data-testid="rail-more"]')`,
+      );
       m.opened = { menuItems: menuItems.map((item) => item.label), reachable: [...reachable] };
     }
     const passed = Object.values(checks).every((value) => value !== false);

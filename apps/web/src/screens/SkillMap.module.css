@@ -152,9 +152,8 @@
   width: 100%;
 }
 
-.card[data-locked='true'] {
-  opacity: 0.85;
-}
+/* Locked skills remain readable/inspectable; the prerequisite wording conveys availability.
+   Whole-card opacity reduced small-text contrast below AA (Phase 26 axe regression). */
 
 .availability {
   display: flex;

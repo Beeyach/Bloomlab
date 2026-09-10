@@ -168,8 +168,10 @@ describe('the phone navigation keeps every area named and reachable (DES-009, RS
     // The bar itself never repeats them: they are the secondary items, shown in the list only.
     expect(within(list).queryByRole('link', { name: 'Home' })).toBeNull();
     // Escape closes it; navigating from it closes it too.
+    within(list).getByRole('link', { name: 'CRM' }).focus();
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(menu).toHaveAttribute('hidden');
+    expect(more).toHaveFocus();
     fireEvent.click(more);
     fireEvent.click(within(list).getByRole('link', { name: 'Playground' }));
     expect(

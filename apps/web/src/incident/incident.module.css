@@ -200,7 +200,7 @@
 
 .caseClient {
   margin: 0;
-  color: var(--bl-color-text-faint);
+  color: var(--bl-color-text-soft);
   font-size: var(--bl-font-size-xs);
 }
 

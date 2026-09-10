@@ -224,3 +224,26 @@ JSON `9e3b9c3a0438ce4c460b39cdbbf153f4fe3f1c834ca9cfee913f617aeda5bcf3`, Markdow
 `09248526f74795186aa61b627bfd671c658cc944a771d7554094b0308409aea8` at
 `.content/freshness-review.{json,md}`. Content hash remains the baseline value. Statuses and all
 parked human requirements are unchanged; provider spend remains $0.
+
+## Checkpoint E — accessibility gate and interaction review
+
+Pinned axe-core 4.13.0 now runs against the built app in complete local CI and GitHub Checks.
+All default rules are enabled across 26 major route states at 1440/390 plus phone More-open;
+serious/critical violations fail. All 53 scans pass with zero violations, and an injected unnamed
+button is correctly detected as a blocking negative control. Full results, including unresolved
+gradient contrast checks, are uploaded as an exact-build artifact. No excluded elements/rules.
+
+The gate found and fixed two actual contrast defects: opacity on inspectable locked Skill Map
+cards, and faint small client labels in Incidents. Keyboard review found More's Escape focus
+return missing; it now focuses the trigger, with app-unit and actual browser regressions.
+No navigation redesign or rail-width change.
+
+The committed [six-area controlled review](phase-26-accessibility.md) records keyboard, focus
+flow, touch, reduced motion, holographic contrast and drag alternatives. Supporting checks:
+44 tests / 6 files, all workspace typechecks, scoped lint, Preview build/secret scan, all 15
+Workflow probe sections, five normal rail widths and ten deliberately short 480 px cases pass.
+Native keyboard traces and Holo pointer/touch/settle/reduced captures were reviewed. The Workflow
+320 px and Holo peak/reduced screenshots were inspected. This is Chromium evidence, not physical
+device or full assistive-technology certification; A11Y-001 is not promoted from this subset.
+
+Checkpoint F follows only after these checks. Status reconciliation remains at I. No provider spend.

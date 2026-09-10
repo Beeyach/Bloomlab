@@ -100,6 +100,7 @@ export function AppRail() {
   const location = useLocation();
   const menuId = useId();
   const nav = useRef<HTMLElement>(null);
+  const moreButton = useRef<HTMLButtonElement>(null);
   // The More list is open for one page only: navigating anywhere reads as closed, with no effect
   // needed to close it.
   const [openFor, setOpenFor] = useState<string | null>(null);
@@ -119,7 +120,10 @@ export function AppRail() {
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpenFor(null);
+      if (event.key === 'Escape') {
+        setOpenFor(null);
+        moreButton.current?.focus();
+      }
     };
     const onPress = (event: PointerEvent) => {
       if (nav.current && !nav.current.contains(event.target as Node)) setOpenFor(null);
@@ -148,6 +152,7 @@ export function AppRail() {
         ))}
         <li className={styles.moreItem}>
           <button
+            ref={moreButton}
             type="button"
             className={cx(styles.item, moreActive && styles.active)}
             aria-expanded={open}
