@@ -406,7 +406,7 @@ Phase 21 accepted interface/provider paths:
 
 ## IN PROGRESS
 
-- DES-009 — D-202 supersedes the fixed-104 px D-117/Phase 26 attestation after contradictory learner scrolling evidence. The two-state 232/76 px sidebar, shared active offset, local device preference and independently scrolling destinations require fresh exact-head evidence in `docs/reviews/navigation-shell-redesign.md`; the twelve human/real-GHL rows remain unchanged.
+- DES-009 — D-202 supersedes the fixed-104 px D-117/Phase 26 attestation after contradictory learner scrolling evidence. The learner now confirms original-device scrolling PASS but reports visual composition FAIL. DES-009 remains IN_PROGRESS: the two-state 232/76 px sidebar requires actual icon/label geometry checks, independent audit and learner visual confirmation. Fresh Chromium currently renders the requested composition; the learner-specific visual cause remains open in `docs/reviews/navigation-shell-redesign.md`. The twelve human/real-GHL rows remain unchanged.
 
 - DES-006 — cross-cutting: Phase 2 gallery reviewed against the §70 list (no gradient heroes, gradient text, glassmorphism, blobs, icon-per-heading, card-everything, fake stats, emoji nav, trophies, huge shadows, confetti); re-checked every phase.
 - DES-008 — density mechanism (`data-density`, `--bl-density-row`) implemented in ToolPanel and rows; Phase 7 assigns the Skill Map its high-visual / low-text density (typographic territory objects, one line of scope, one count) and the Command Center a low-medium content density; the Academy, labs, Call Room and Pricing Arena take theirs with their phases.

@@ -3,6 +3,70 @@
 Branch `codex/navigation-shell-redesign`, base `codex/field-ready-v1-remediation` at
 `1e6a9fdee20089805037e0b290961a92d96d0661`. No stacked PR may be merged.
 
+## Current human acceptance — visual follow-up
+
+The learner's latest report is authoritative:
+
+- **Human scroll acceptance: PASS** on the original device/browser. Preserve the scrolling fix.
+- **Prior visual composition: FAIL.** Expanded must be `[icon] Label`, never stacked; collapsed
+  must be `[icon]` with no rendered destination words.
+- **Corrected expanded/collapsed visual acceptance: PENDING learner confirmation.** DES-009
+  stays IN_PROGRESS. The twelve human/real-GHL acceptance rows remain unchanged.
+
+The historical sections below describe evidence available before this new human result.
+Their original-device scrolling caveat is now resolved by the human PASS; their automated
+visual attestation does not override the subsequent human FAIL.
+
+### Deployed reproduction and remaining uncertainty
+
+Before changing application code, inspected Preview head
+`e9ad959675c633940c5e3981ffb737bd4c67e0b8` at 1440/1024/768, expanded and collapsed.
+Fresh Chromium 153 captures already show horizontal icon-left/label-right rows when expanded
+and icons only when collapsed. Every destination measures 44 px high; icon/label centerlines
+coincide (0 px difference), and collapsed icons are centered in their interaction targets.
+All six captures were manually inspected. This **does not reproduce or dismiss the human FAIL**.
+
+Inspected actual computed styles and matching delivered CSS-module selectors, rather than only
+source declarations. The base mobile `.item` column rule loses to the later desktop `.item`
+row rule at the same specificity. The more-specific `[data-sidebar=collapsed] .label` rule
+sets `display:none`; labels have zero rendered boxes. `data-sidebar`, 232/76 px rail widths,
+layout/visual viewport widths and active desktop media queries all agree. No overriding
+selector or intermediate stacked composition was found in this environment.
+
+The delivered Vite 8 stylesheet rewrites min/max-width queries to range syntax. Its actual
+`(width >= 768px)` query matches at all three review widths; this is an observed build detail,
+not a proven explanation of the learner's browser. Vite documents its CSS target/minifier
+behavior in [build options](https://v8.vite.dev/config/build-options). No compatibility-target
+change or duplicate CSS override is justified by the current evidence.
+
+Checked initial service-worker installation, a subsequent controlled reload and a copy of the
+retained pre-redesign baseline browser profile. All rendered the current browser build and
+current hashed stylesheet; the controlled reload retained the same correct composition.
+No stale installed shell was reproduced. Browser/device, installed-PWA versus tab, and tested
+URL/build were requested from the learner because the real-device discrepancy remains
+unexplained. **No application CSS or scrolling behavior was changed on a conjectured cause.**
+
+Raw computed selector/media/viewport/state/PWA evidence and six screenshots are retained at
+`.review/navigation-composition/{baseline,computed,pwa}`. A compact baseline summary is in
+`navigation-composition-evidence.json`. Fresh final-head results belong in PR #31's attestation.
+
+### Geometry regression
+
+The navigation probe now measures every destination's real row, SVG and label rectangles.
+Expanded checks require a visible label to the right of the entire icon, a gap no larger than
+16 px, centerlines within 2 px, and 44–48 px rows. Collapsed checks require zero label boxes,
+visible icons centered within 1 px, and interaction targets at least 44 px. These assertions
+extend every desktop/tablet width, height, state and motion case while preserving genuine
+wheel, native scrollbar drag, keyboard/focus, tablet touch, page independence, persistence
+and phone four-plus-More checks. Browser-only negative controls deliberately stack expanded
+rows or reveal collapsed labels; neither changes shipping CSS. Both controls fail at the
+new geometry assertions (`Home: visible label beside icon` and `Home: no rendered label
+boxes`). The unmodified deployed layout passes the focused 14-case navigation run (six
+desktop/tablet state cases, six Workflow compositions and both phone cases).
+
+The new automated geometry evidence is not learner visual acceptance. Independent ChatGPT
+audit and learner confirmation remain required; the learner-specific cause is still open.
+
 ## N1 — contradictory real-use evidence and starting-head reproduction
 
 The learner reports that the deployed sidebar cannot actually scroll to lower destinations.

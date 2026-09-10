@@ -53,6 +53,13 @@ const state = () =>
     horizontal:document.documentElement.scrollWidth>innerWidth,last:last.getAttribute('href'),lastVisible:b.top>=r.top&&b.bottom<=r.bottom,
     names:links.map(a=>a.getAttribute('aria-label')),hrefs:links.map(a=>a.getAttribute('href')),
     labels:links.map(a=>{const l=a.querySelector('[class*="label"]');return {visible:l.getClientRects().length>0,fits:a.scrollWidth<=a.clientWidth};}),
+    composition:links.map(a=>{
+      const geometry=el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return {
+        left:r.left,right:r.right,width:r.width,height:r.height,cx:r.left+r.width/2,cy:r.top+r.height/2,
+        boxes:el.getClientRects().length,visible:cs.visibility==='visible'&&Number(cs.opacity)>0&&r.width>0&&r.height>0
+      };};
+      return {name:a.getAttribute('aria-label'),row:geometry(a),icon:geometry(a.querySelector('svg')),label:geometry(a.querySelector('[class*="label"]'))};
+    }),
     icons:links.every(a=>!!a.querySelector('svg')),behavior:getComputedStyle(s).scrollBehavior,
     build:frame.dataset.buildId,
     territoryNamesFit: [...document.querySelectorAll('[data-territory]')].every(c => {
@@ -108,6 +115,16 @@ try {
           await reset();
           if ((await state()).mode !== mode) await pointer('[data-testid="rail-toggle"]');
           await reset();
+          // Browser-only negative controls: preserve real DOM boxes, change the composition.
+          // A declaration-only or label-presence check cannot catch the stacked expanded case.
+          if (process.env.NAV_COMPOSITION_NEGATIVE === 'stacked' && mode === 'expanded')
+            await page.evaluate(
+              `document.querySelectorAll('[data-testid="rail-destinations"] a').forEach(a=>a.style.flexDirection='column')`,
+            );
+          if (process.env.NAV_COMPOSITION_NEGATIVE === 'visible-label' && mode === 'collapsed')
+            await page.evaluate(
+              `document.querySelectorAll('[data-testid="rail-destinations"] a [class*="label"]').forEach(l=>l.style.display='block')`,
+            );
           let initial = await state();
           row.initial = initial;
           check('persistedModeAfterReload', initial.mode === mode);
@@ -123,6 +140,33 @@ try {
             'namesAndIcons',
             initial.names.length >= 15 && initial.names.every(Boolean) && initial.icons,
           );
+          for (const { name, row: target, icon, label } of initial.composition) {
+            check(
+              `${name}: visible icon and 44px target`,
+              icon.visible && target.width >= 44 && target.height >= 44,
+            );
+            if (mode === 'expanded') {
+              check(
+                `${name}: visible label beside icon`,
+                label.visible &&
+                  label.boxes > 0 &&
+                  icon.cx < label.left &&
+                  icon.right <= label.left &&
+                  label.left - icon.right <= 16,
+              );
+              check(`${name}: shared vertical centerline`, Math.abs(icon.cy - label.cy) <= 2);
+              check(`${name}: compact horizontal row`, target.height <= 48);
+            } else {
+              check(
+                `${name}: no rendered label boxes`,
+                label.boxes === 0 && label.width === 0 && label.height === 0,
+              );
+              check(
+                `${name}: centered icon`,
+                Math.abs(icon.cx - target.cx) <= 1 && Math.abs(icon.cy - target.cy) <= 1,
+              );
+            }
+          }
           check(
             'labelComposition',
             initial.labels.every((l) => l.fits && l.visible === (mode === 'expanded')),
