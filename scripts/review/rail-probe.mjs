@@ -25,6 +25,7 @@ const DESTINATIONS = [
   '/',
   '/campaign',
   '/skills',
+  '/search',
   '/crm',
   '/workflow',
   '/funnel',

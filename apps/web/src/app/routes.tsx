@@ -12,6 +12,7 @@ export interface AppRoute {
 }
 
 export const APP_ROUTES: readonly AppRoute[] = [
+  { id: 'search', path: '/search', Component: lazy(() => import('../search/SearchScreen')) },
   {
     id: 'field-ready',
     path: '/field-ready',

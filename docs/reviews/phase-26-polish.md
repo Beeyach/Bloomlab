@@ -159,3 +159,39 @@ Checkpoint checks before C:
 
 Requirement statuses remain at baseline until final evidence reconciliation. No provider spend,
 parked human-status change, earlier-PR mutation or merge.
+
+## Checkpoint C — local global search and glossary
+
+One route-local search projects the compiled content index and actual owned, non-deleted attempts.
+It includes skills, GHL features, Academy lessons, glossary, clients, practice exercises and saved
+attempts, with exact-title/prefix/word/alias ranking, multiword matching, category browsing, clear
+destinations, no-match/loading/history-error recovery and immutable attempt details. The glossary
+uses existing definitions, aliases and related skill/feature links; no filler curriculum was added.
+GHL detail retains status, fidelity, verification date/context, source and every recorded limitation.
+The audited webhook Ed25519-only context remains intact. Saved attempt links identify the selected
+historical record, not the current runner draft or an invented result.
+
+D-201 keeps queries/filters/bookmarks in URL fragments: they remain local on reload rather than
+travel in Worker request URLs. Search is reachable from the existing rail/More composition and
+Ctrl/⌘ K; no rail redesign, width change or loss of a primary phone destination. No new persistence,
+backend, search service, analytics event, provider requirement or migration.
+
+Checks before D:
+
+- **43 tests / 3 files passed** (search, app/shell, design rules), web typecheck and scoped lint.
+  Tests derive coverage from the bundle, check rank/aliases/empty/categories, foreign/deleted
+  history exclusion, immutable selected history, glossary/registry links, error/retry and shortcut.
+- Preview build/provider-secret scan passes. Built AI-Off browser probe passes **25 surface/width
+  cases** (empty/search results/glossary/feature/saved history at 1440/1024/768/390/320), all clients,
+  no-match, keyboard and visible focus, 480 px touch/reduced motion, offline search and offline
+  bookmarked glossary reload. A real CONNECT webhook practical creates the searched saved attempt.
+  Artifact: `.review/phase-26-search/local/search-probe.json`; desktop/320 results inspected.
+- The rail probe passes five normal widths and ten 480 px normal/reduced cases with visible
+  scrollbars, independent wheel/touch/page scrolling, all links and bottom actions reachable.
+  Artifact: `.review/phase-26-search/rail/rail-probe.json`.
+- The browser helper formerly waited forever for a full-load event after fragment navigation.
+  It now recognizes same-document navigation, retains route-specific waits, and bounds full-load
+  waits. The search probe covers the fragment path repeatedly. No app behavior was weakened.
+
+All statuses remain at baseline pending final reconciliation. Chromium is controlled evidence,
+not a physical-device or personal-transfer certification. Provider spend remains $0.

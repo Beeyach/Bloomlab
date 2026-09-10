@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Outlet } from 'react-router';
+import { Outlet, useNavigate } from 'react-router';
 import { BUILD_ID } from '@bloomlab/shared';
 
 import {
@@ -23,6 +23,25 @@ import { UpdateNotice } from '../pwa/UpdateNotice';
  * progress from evidence on start and after every sync that brought something in.
  */
 export function RootLayout() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const search = (event: KeyboardEvent) => {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        !event.altKey &&
+        !event.shiftKey &&
+        !event.repeat &&
+        event.key.toLowerCase() === 'k'
+      ) {
+        event.preventDefault();
+        const field = document.querySelector<HTMLInputElement>('[data-global-search]');
+        if (field) field.focus();
+        else navigate('/search');
+      }
+    };
+    document.addEventListener('keydown', search);
+    return () => document.removeEventListener('keydown', search);
+  }, [navigate]);
   useEffect(() => {
     void ensureDevice()
       .then(() => requestPersistentStorage())

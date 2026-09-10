@@ -125,8 +125,23 @@ export function connect(url) {
 /** Navigates and waits for the lazy route chunk and the fonts. */
 export async function openPage(page, url) {
   const loaded = page.once('Page.loadEventFired');
-  await page.send('Page.navigate', { url });
-  await loaded;
+  const navigation = await page.send('Page.navigate', { url });
+  if (navigation.errorText) throw new Error('Navigation failed: ' + navigation.errorText);
+  // Fragment navigation stays in the current document and deliberately has no load event.
+  // The search probe exercises this path; route-specific content still has its own ready check.
+  if (navigation.loaderId) {
+    let timer;
+    try {
+      await Promise.race([
+        loaded,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => reject(new Error('Page load timed out')), 30_000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
   for (let i = 0; i < 60; i++) {
     if (await page.evaluate("!!document.querySelector('main h1, main h2, h1')")) break;
     await sleep(100);

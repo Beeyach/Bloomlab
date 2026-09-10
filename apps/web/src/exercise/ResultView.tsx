@@ -132,7 +132,7 @@ export function ResultView({
   attempt: ExerciseAttemptRecord;
   skillId: string | null;
   snapshot: LearnerSnapshot | undefined;
-  onTryAgain: () => void;
+  onTryAgain?: () => void;
 }) {
   const report = attempt.grade ?? null;
   const failedCritical = report
@@ -286,9 +286,11 @@ export function ResultView({
       {skillId && snapshot && <NextStep skillId={skillId} snapshot={snapshot} />}
 
       <div className={styles.resultActions}>
-        <Button variant="secondary" onClick={onTryAgain}>
-          Try again
-        </Button>
+        {onTryAgain && (
+          <Button variant="secondary" onClick={onTryAgain}>
+            Try again
+          </Button>
+        )}
         <span className={styles.help}>
           This attempt stays in your history whatever the next one does.
         </span>
