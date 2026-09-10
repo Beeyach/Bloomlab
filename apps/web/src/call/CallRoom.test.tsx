@@ -9,6 +9,7 @@ import { db } from '../data/db';
 import { ensureDevice } from '../data/device';
 import {
   emptyCallResponse,
+  flushAttemptWrites,
   loadAttempt,
   NORMAL_RUN,
   saveCall,
@@ -50,6 +51,9 @@ function initial(exercise: Exercise, attemptId: string): CallSnapshot {
   };
 }
 beforeEach(async () => {
+  // A component unmounted after its recovery guard can still be finishing an already-enqueued
+  // checkpoint. Settle that queue before clearing the shared fake IndexedDB for the next case.
+  await flushAttemptWrites(cold.id, NORMAL_RUN).catch(() => undefined);
   await Promise.all(db.tables.map((table) => table.clear()));
   const device = await ensureDevice();
   await db.device.update(device.device_id, { session_token: 'test-token' });
@@ -466,7 +470,10 @@ describe('CALL-001/004/006 call work area', () => {
       notes: 'Historical notes',
       snapshot: { ...initial(cold, crypto.randomUUID()), complete: true },
     };
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(Response.json({ enabled: true })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(async () => Response.json({ enabled: true })),
+    );
     render(
       <CallRoom
         exercise={cold}
