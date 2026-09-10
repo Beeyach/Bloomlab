@@ -5,6 +5,10 @@ fourteen was corrected; missing phone and missing email remain separate. Run
 `npm run test:adversarial` to execute the exact committed regression titles and regenerate fresh
 JSON/Markdown under `.review/adversarial`. A missing/skipped/ambiguous/failed assertion fails the
 harness; no static success is used. Complete local CI and GitHub Checks both run this harness.
+Checkpoint H corrected the new email fixture ID to the existing `MSG-004` registry format and
+retained the registry's three integrity assertions in the filtered harness. The rerun passes
+**31 assertions / 11 files**, including all fifteen cases; the full simulator subset passes
+100 tests / 4 files. The fixture-ID assertion was not weakened.
 Provider calls are controlled transports against local test storage; spend $0. No production
 learner data or migrations. These observed results do not replace physical/human acceptance,
 real provider quality evaluation or independent INF-015 audit.
@@ -45,7 +49,7 @@ real provider quality evaluation or independent INF-015 audit.
 
 - Setup: Create a contact with a phone but no email, then send email.
 - Expected: No conversation/message or sent-count increment; explicit missing_email.
-- Observed: PASS; MSG-EMAIL-MISSING executes real simulator behaviour → passed
+- Observed: PASS; MSG-004 executes real simulator behaviour → passed
 - Regression: `packages/simulator-core/test/regression.test.ts`
 - Limit: Controlled fixture; not physical-device or live-provider certification.
 
@@ -128,4 +132,3 @@ real provider quality evaluation or independent INF-015 audit.
 - Observed: PASS; rejects duplicate entity ids → passed; rejects a dangling contact reference → passed; rejects an impossible timestamp → passed; rejects an invalid timezone → passed; throws with every problem listed, rather than skipping the bad ones → passed
 - Regression: `packages/simulator-core/test/workflow.test.ts`
 - Limit: Controlled fixture; not physical-device or live-provider certification.
-

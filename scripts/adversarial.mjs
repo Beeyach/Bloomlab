@@ -13,6 +13,12 @@ mkdirSync(out, { recursive: true });
 const path = resolve(out, 'vitest-' + Date.now() + '-' + process.pid + '.json');
 const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const names = [...new Set(ADVERSARIAL_CASES.flatMap((row) => row.tests))];
+// Filtering must retain the registry's integrity checks as well as individual fixture behavior.
+names.push(
+  'gives every fixture a unique, stable id',
+  'names an owner for every reserved fixture, and asserts nothing for it',
+  'gives every implemented fixture something to run and something to check',
+);
 const child = spawn(
   process.execPath,
   [

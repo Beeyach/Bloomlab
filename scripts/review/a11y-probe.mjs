@@ -102,6 +102,30 @@ try {
         assert.equal(await page.evaluate('document.documentElement.dataset.buildId'), report.head);
       await scan(name, width);
     }
+    // A real failure state, with the request intercepted before it can create/link a learner.
+    // The generated local key is never sent, recorded or included in the report.
+    await openPage(page, base + '/sync');
+    assert(
+      await waitFor(
+        page,
+        `[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Create a sync key')`,
+      ),
+    );
+    await page.evaluate(
+      `(() => { const original = window.fetch.bind(window); window.fetch = (input, init) => new URL(typeof input === 'string' ? input : input.url, location.href).pathname.startsWith('/api/sync/') ? Promise.resolve(Response.json({error:'Controlled connection failure'}, {status:503})) : original(input, init); })()`,
+    );
+    await click(page, 'Create a sync key');
+    await click(page, 'input[type=checkbox]');
+    await click(page, 'Link this device');
+    assert(
+      await waitFor(
+        page,
+        `document.querySelector('main [role=alert]')?.textContent.includes('Controlled connection failure')`,
+      ),
+    );
+    await scan('sync-link-error', width);
+    // Drop the document-scoped transport fixture and unsubmitted key before continuing.
+    await openPage(page, base + '/search');
     if (width < 768) {
       await click(page, '[data-testid="rail-more"]');
       await scan('phone-more-open', width);

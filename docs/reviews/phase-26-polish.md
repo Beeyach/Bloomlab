@@ -306,7 +306,7 @@ The committed [fifteen-case record](phase-26-adversarial.md) includes every setu
 result, reference and limitation: offline exercise, simulation refresh, duplicate events, missing
 phone, missing email, cancellation during wait, timezone change, AI timeout, budget exhaustion,
 ElevenLabs failure, transcription failure, sync conflict, second device, extreme values and malformed
-scenario. Missing email previously lacked its own named regression; `MSG-EMAIL-MISSING` now proves
+scenario. Missing email previously lacked its own named regression; `MSG-004` now proves
 an explicit skip with no message or sent-count increment. The existing implementation behaved safely;
 no unrelated simulator rewrite was needed. The older acceptance count of fourteen is corrected to
 fifteen without combining phone/email or weakening the master.
@@ -315,3 +315,62 @@ All workspace typechecks and scoped ESLint pass. Artifacts:
 `.review/adversarial/adversarial.{json,md}` plus its uniquely named fresh Vitest report.
 No real provider was called, no generated success was substituted, no migrations or parked-status
 changes occurred; spend $0. This is adversarial implementation evidence, not INF-015 independent audit.
+
+## Checkpoint H — responsive/design/performance sweep
+
+The maintained [screen/state matrix](phase-26-screen-matrix.md) maps 36 route/detail/runner states
+to Desktop, Tablet, Mobile, Empty, Loading, Error, Keyboard and Touch evidence. All **180 layout
+cases** pass at 1440/1024/768/390/320: no page horizontal overflow, sub-44 px phone controls,
+sub-16 px phone fields, user-facing monospace or small uppercase eyebrow. The scan measures native
+checkbox/radio labels as real activation targets. Pricing's probe now activates its associated
+labels with native mouse/touch events and verifies the value changes; all sixteen pricing sections
+pass. No navigation redesign, hidden mobile feature or width-token change was made.
+
+The initial-state axe matrix expanded from 26 to 36 routes, with **73 scans passing, zero
+violations**, including phone More. Five normal rail widths and ten deliberately short 480 px
+normal/reduced cases pass. A rerun of the sixteen older family probes passes Academy, exercise,
+CRM, Funnel, Calendar, Reporting, Incident, sales, pricing, negotiation, Call Room, Fieldwork,
+Portfolio, Clients, advanced Labs and advanced paths. Actual state assertions include failed
+grading, refusal, missing evidence, save/read retry, controlled microphone/STT/feedback failure,
+restart recovery and offline persistence. The older exercise probe now explicitly asserts these
+invariants and checks the implemented Workflow runtime instead of silently reporting the old
+Phase 9 placeholder as absent. The strengthened rerun passes. No assertion was weakened.
+
+Restore, Search, all 30 signature-moment cases and the full 90-case CONNECT probe pass again.
+Advanced Labs contribute 85 layouts and actual account-backed grading; paths contribute 45 layouts
+over the shared graph. All use AI Off or explicitly controlled provider fixtures. Browser artifacts
+are under `.review/phase-26-sweep/{layout,states,verified,native-pricing}`; the sequential
+`phase-26-suite.mjs` preserves each child's raw log/result and fails on any child failure.
+
+Visual review included Home 1440, Workflow 1024, CRM/Clients 768, Call Room/Search 390 and
+Academy/Pricing 320, then Call Room loading and Portfolio export-failure captures. The latter exposed
+an existing **3.53:1 error-text contrast bug**. Sync, session builder, Academy and runner recovery
+copy now use the existing normal text role, as Field already does. All four new source regressions
+failed before the correction; **98 tests / 5 files** pass afterward. The real intercepted
+failed-link state produced axe's serious `color-contrast` failure before the fix and is added at
+both CI widths, bringing the recurring gate to **75 scans**. The fixture prevents the generated
+local key from leaving the browser and never records it. A server-startup race in the first rerun
+was a connection refusal, not a product success; the suite now waits for bounded readiness.
+The corrected build passes all **75 scans with zero violations** and the negative control, plus
+all five Portfolio/export-recovery widths (`.review/phase-26-sweep/error-verified`).
+
+All workspace typechecks, lint and the Preview build/provider-secret scan pass. The full simulator
+subset exposed the new email fixture's invalid ID format: corrected it to `MSG-004`, retained the
+three registry-integrity assertions in the filtered harness, then passed **100 tests / 4 files**
+and **31 adversarial assertions / 11 files**, all fifteen cases. No registry rule was loosened.
+
+Execution/network evidence: Academy does not execute the Workflow route; opening Workflow executes
+its separate chunk. The existing Workbox policy nevertheless precaches Workflow JS/CSS in the
+background, so PERF-001's “only likely next” condition remains unmet. Chrome DevTools MCP was not
+configured; the web-performance skill's trace workflow was paused and setup requested. Repository
+Chromium/CDP coverage, resource/cache inspection and source/build analysis were used instead. No
+Lighthouse/CWV/MCP trace or reference-device benchmark is claimed.
+
+Requirement-level disposition for I: DES-009's 104 px labelled rail and RSP-001's five required
+widths have direct current evidence. DES-006/008/017/018 and RSP-002/003/004 retain their existing
+cross-cutting statuses: state coverage has explicit open or unit-only cells, physical/long-session
+comfort is not certified, and automation alone is not a blanket design acceptance. DES-010's
+active-client clause remains open; DES-011 stays PASSED. DES-012's real directory still lacks
+collectible covers; PORT-003 still has five rather than twenty projects. EXR-024 remains PARTIAL
+with known exercise/judgment/content boundaries, not silently treated as full product completion.
+No new out-of-v1 deferral, provider spend, migration or parked human-status change.

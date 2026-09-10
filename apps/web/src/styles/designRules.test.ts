@@ -70,6 +70,21 @@ function rules(css: string): { selector: string; body: string; line: number }[] 
  */
 const NAV_RAIL = 'apps/web/src/app/AppRail.module.css';
 
+describe('recovery text uses a normal-text contrast role (A11Y-004)', () => {
+  it.each([
+    ['apps/web/src/screens/SyncScreen.module.css', '.error'],
+    ['apps/web/src/screens/CommandCenter.module.css', '.problem'],
+    ['apps/web/src/academy/AcademyUnit.module.css', '.problem'],
+    ['apps/web/src/exercise/ExerciseRunner.module.css', '.problem'],
+  ])('%s keeps %s legible on its light surface', (path, selector) => {
+    const rule = rules(read(join(ROOT, path))).find((rule) => rule.selector === selector);
+    expect(rule).toBeDefined();
+    // The semantic error accent clears the border/glyph threshold, not 4.5:1 body text.
+    // Existing contrast tests prove the text role on every light surface.
+    expect(rule?.body).toMatch(/(?:^|;)\s*color:\s*var\(--bl-color-text\)/);
+  });
+});
+
 describe('no eyebrows in user-facing UI (DES-021)', () => {
   it('has no rule that is both tiny and uppercase', () => {
     const offenders: string[] = [];

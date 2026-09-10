@@ -37,17 +37,40 @@ const click = (page, testid) =>
     `(() => { const el = ${at(testid)}; if (!el) return false; el.scrollIntoView({ block: 'center' }); el.click(); return true; })()`,
   );
 
-/** Clicks the include/exclude box of a scope line by its visible name. */
-const toggleScope = (page, name) =>
-  page.evaluate(`(() => {
+/** Activate the real associated label, including native touch on phones. */
+const toggleScope = async (page, name) => {
+  const target = await page.evaluate(`(() => {
     const label = [...document.querySelectorAll('label')].find((el) => el.textContent.startsWith(${JSON.stringify(name)}));
     const box = label && document.getElementById(label.getAttribute('for'));
     if (!box) return false;
-    box.scrollIntoView({ block: 'center' });
     if (box.disabled) return 'locked';
-    box.click();
-    return true;
+    label.scrollIntoView({ block: 'center' });
+    const r = label.getBoundingClientRect(), x = r.left + r.width/2, y = r.top + r.height/2;
+    return { x, y, width: r.width, height: r.height, hit: label.contains(document.elementFromPoint(x,y)), touch: matchMedia('(pointer:coarse)').matches, id: box.id, before: box.checked };
   })()`);
+  if (!target || target === 'locked') return target;
+  if (!target.hit || (target.touch && (target.width < 44 || target.height < 44))) return false;
+  if (target.touch) {
+    await page.send('Input.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints: [{ x: target.x, y: target.y }],
+    });
+    await page.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  } else {
+    for (const type of ['mousePressed', 'mouseReleased'])
+      await page.send('Input.dispatchMouseEvent', {
+        type,
+        x: target.x,
+        y: target.y,
+        button: 'left',
+        clickCount: 1,
+      });
+  }
+  await sleep(100);
+  return page.evaluate(
+    `document.getElementById(${JSON.stringify(target.id)}).checked !== ${target.before}`,
+  );
+};
 
 /** Types into a React-controlled field the way a keyboard does, then lets React see it. */
 const type = (page, testid, value) =>

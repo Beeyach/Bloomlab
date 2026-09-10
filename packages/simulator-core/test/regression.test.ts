@@ -28,7 +28,7 @@ const only = (state: SimulatorState, kind: string) =>
 
 const FIXTURES: RegressionFixture[] = [
   {
-    id: 'MSG-EMAIL-MISSING',
+    id: 'MSG-004',
     behaviour:
       'An email to a contact without an email address is explicitly skipped, never reported as sent.',
     covers: 'INF-016, SIM-010',

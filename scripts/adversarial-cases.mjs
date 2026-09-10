@@ -49,7 +49,7 @@ export const ADVERSARIAL_CASES = [
     'ADV-05',
     'missing email',
     'packages/simulator-core/test/regression.test.ts',
-    ['MSG-EMAIL-MISSING executes real simulator behaviour'],
+    ['MSG-004 executes real simulator behaviour'],
     'Create a contact with a phone but no email, then send email.',
     'No conversation/message or sent-count increment; explicit missing_email.',
   ),

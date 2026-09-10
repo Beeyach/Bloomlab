@@ -59,3 +59,19 @@ Phone More retains its own bounded scrolling and restores focus on Escape.
   `/tmp/bloomlab-phase26-a11y-keyboard.log`. Workflow 320 and Holo peak/reduced screenshots inspected.
 
 No parked human status, private data boundary or earlier PR changed. Provider spend: $0.
+
+## Checkpoint H expansion
+
+The route matrix now covers 36 states. Its 73 initial/More scans passed, then actual recovery
+screenshots exposed low-contrast Sync failure copy. Added a document-scoped failed-link transport
+fixture at both CI widths: no request creates a learner or sends its generated local key. Axe
+reported a serious color-contrast violation before the correction. The same decorative error
+token was used for body copy in session builder, Academy and runner failures; four new source
+regressions failed on those uses. All four now use the existing normal text role, without changing
+error wording, retry, focus or learning behavior. The full **75-scan** gate passes afterward with
+zero violations and its unnamed-button negative control detected. Gradient incompletes remain.
+
+The corrected Preview build also passes the five-width Portfolio/export recovery probe. The
+98-test focused suite, all workspace types/lint and browser secret scan pass. H's broader
+screen/state matrix and native pricing-label touch regression are recorded in
+`phase-26-screen-matrix.md`; local artifacts are `.review/phase-26-sweep/error-verified`.
