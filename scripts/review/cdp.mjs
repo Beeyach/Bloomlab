@@ -186,7 +186,71 @@ export async function session() {
   await Promise.all([page.ready, browser.ready]);
   await page.send('Page.enable');
   await page.send('Runtime.enable');
+  if (process.env.REVIEW_AI_OFF === '1') {
+    // Field-Ready C1 runs the real product with both sides of the AI boundary unavailable:
+    // `ai.mode` is held at Off in the product's own IndexedDB workspace and browser requests to
+    // Worker AI routes are refused before transport. The interval matters because several real
+    // probes deliberately clear IndexedDB while testing reset/recovery behavior.
+    await page.send('Page.addScriptToEvaluateOnNewDocument', {
+      source: `(() => {
+        const key = '__bloomlab_ai_off_attempts';
+        const originalFetch = globalThis.fetch.bind(globalThis);
+        globalThis.fetch = (input, init) => {
+          const url = String(input instanceof Request ? input.url : input);
+          if (/\\/api\\/ai\\//.test(url)) {
+            const attempts = JSON.parse(sessionStorage.getItem(key) || '[]');
+            attempts.push({ url: new URL(url, location.href).pathname, method: init?.method || (input instanceof Request ? input.method : 'GET') });
+            sessionStorage.setItem(key, JSON.stringify(attempts));
+            return Promise.reject(new TypeError('AI Worker routes are disabled for Field-Ready acceptance'));
+          }
+          return originalFetch(input, init);
+        };
+        const holdOff = () => {
+          const request = indexedDB.open('bloomlab');
+          request.onsuccess = () => {
+            const database = request.result;
+            if (!database.objectStoreNames.contains('workspace')) {
+              database.close();
+              return;
+            }
+            const transaction = database.transaction('workspace', 'readwrite');
+            transaction.objectStore('workspace').put({
+              key: 'ai.mode',
+              value: 'Off',
+              updated_at: new Date().toISOString(),
+            });
+            transaction.oncomplete = () => database.close();
+            transaction.onerror = () => database.close();
+          };
+        };
+        setTimeout(holdOff, 250);
+        setInterval(holdOff, 1000);
+      })();`,
+    });
+  }
   const close = async () => {
+    if (process.env.REVIEW_AI_OFF === '1') {
+      const evidence = await page
+        .evaluate(
+          `new Promise((resolve) => {
+          const attempts = JSON.parse(sessionStorage.getItem('__bloomlab_ai_off_attempts') || '[]');
+          const request = indexedDB.open('bloomlab');
+          request.onerror = () => resolve({ mode: null, attempted_ai_routes: attempts, error: 'database unavailable' });
+          request.onsuccess = () => {
+            const database = request.result;
+            if (!database.objectStoreNames.contains('workspace')) {
+              database.close(); resolve({ mode: null, attempted_ai_routes: attempts }); return;
+            }
+            const tx = database.transaction('workspace', 'readonly');
+            const read = tx.objectStore('workspace').get('ai.mode');
+            read.onsuccess = () => { database.close(); resolve({ mode: read.result?.value ?? null, attempted_ai_routes: attempts }); };
+            read.onerror = () => { database.close(); resolve({ mode: null, attempted_ai_routes: attempts, error: 'workspace read failed' }); };
+          };
+        })`,
+        )
+        .catch((error) => ({ mode: null, attempted_ai_routes: [], error: error.message }));
+      console.log(`AI_OFF_BOUNDARY ${JSON.stringify(evidence)}`);
+    }
     try {
       await browser.send('Browser.close');
     } catch {
