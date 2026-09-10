@@ -20,6 +20,8 @@ export interface PricingResponse {
   /** Scope lines the learner has taken out. Everything the exercise authors is in by default. */
   excluded: string[];
   project: number | null;
+  /** Optional learner-authored portions of the full-scope fee, never hidden delivery economics. */
+  scope_fees?: Record<string, number | null>;
   rush_fee: number | null;
   recurring: number | null;
   deposit: DepositInput | null;

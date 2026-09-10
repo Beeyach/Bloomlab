@@ -9,6 +9,22 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Changed — Field-Ready v1 independent-audit remediation
+
+- Added actual active-client Home state and local Workflow draft checkpoint/reload recovery.
+- Fixed late-booking temporal grading and added in-runner actual-event playback with reduced motion;
+  prediction-before-Lab enforcement remains an explicit gap. Proved later open architecture writing.
+- Added learner-authored removable fee portions so scope changes can alter quote/payment without
+  revealing hidden economics; broad pricing/negotiation semantic acceptance remains open.
+- Added registry-native naming and exact B/C limitation projection, source credential regressions,
+  read-only cloud privacy CI gating, and stable-only precaching with visited-route offline recovery.
+- Reconciled only objectively supported audit rows, including authorized INF-015; kept all twelve
+  human/real-GHL statuses parked. Added five-width short-height, keyboard/touch, offline and new-surface
+  regressions; exact-head Checks/Preview use the source SHA. No merge, migration or provider spend.
+
+Evidence and remaining gaps: `docs/reviews/field-ready-v1-remediation.md`. Historical Phase 26
+precache and Phase 17 scope-price limitations below describe their original closure checkpoints.
+
 ### Added — Phase 26 recovery, search and maintenance
 
 - Strict bounded version/schema/ownership validation and explicit preview/confirm/cancel for local

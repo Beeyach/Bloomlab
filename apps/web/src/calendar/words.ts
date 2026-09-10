@@ -5,6 +5,7 @@ import type {
   CalendarType,
   LocationKind,
 } from '@bloomlab/simulator-core';
+import { NATIVE_LABELS } from '../content/featureNames';
 
 /**
  * What the Calendar Lab calls things (GHL-010).
@@ -16,7 +17,7 @@ import type {
  */
 
 export const CALENDAR_TYPE_LABELS: Record<CalendarType, string> = {
-  class: 'Class Booking',
+  class: NATIVE_LABELS.classBooking,
   personal: 'Personal Booking',
   round_robin: 'Round Robin',
   service: 'Service Calendar',

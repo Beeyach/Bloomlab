@@ -19,7 +19,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| PRD-001 | Personal-first: built for one learner (Ary). No billing, subscriptions, instructor dashboards, student management, teams, public profiles, marketplace, classroom management, or social feed unless explicitly requested. | P0 | all | NOT_STARTED | §2, §3, §143 |
+| PRD-001 | Personal-first: built for one learner (Ary). No billing, subscriptions, instructor dashboards, student management, teams, public profiles, marketplace, classroom management, or social feed unless explicitly requested. | P0 | all | PASSED | §2, §3, §143 |
 | PRD-002 | Fully asynchronous progression. No calendar locks. Never show "Come back tomorrow" or date-locked curriculum. Learner continues immediately when competency gates pass. | P0 | 6 | PASSED | §7, §143 |
 | PRD-003 | Mastery-gated progression: advancement depends on competency gates and evidence, never on dates and never on quizzes alone. | P0 | 6 | PASSED | §11, §29, §143 |
 | PRD-004 | Substantially usable without runtime AI: curriculum, simulator, progression, exercises, deterministic grading, CRM/Workflow/Funnel Labs, pricing drills, portfolio and saved progress all work with AI Off. | P0 | all | NOT_STARTED | §106, §107, §143, TA§1 |
@@ -32,7 +32,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | PRD-011 | Long-term time ratio ≈ 20% instruction / 60% practical work / 20% retrieval, explanation, selling, review; advanced levels more practical. | P1 | 24 | PASSED | §6 |
 | PRD-012 | App copy is short, smart, direct, professional, occasionally playful ("Run it.", "Something broke. Find out why.", "Deal lost. Good decision."). No childish gamification, no "Amazing job, superstar!". | P1 | 7 | PASSED | §158 |
 | PRD-013 | Progress language uses capabilities demonstrated and the states Passed / Needs another run / Demonstrated / Independent / Mastered / Field Ready. No XP, no star ratings. | P1 | 7 | PASSED | §159 |
-| PRD-014 | Rewards are new capabilities, simulator tools, clients, scenarios, Playground features, portfolio projects, skill mastery and territory access — never meaningless points. | P1 | 7 | PARTIAL | §160 |
+| PRD-014 | Rewards are new capabilities, simulator tools, clients, scenarios, Playground features, portfolio projects, skill mastery and territory access — never meaningless points. | P1 | 7 | PASSED | §160 |
 | PRD-015 | Signature moments heavily polished: Holo Skill Interaction, First Workflow Execution, Client Case Reveal, Failed Test reveal, Independent Pass recognition, Field Ready (restrained cinematic). | P2 | 26 | PASSED | §161 |
 | PRD-016 | Sound is optional and subtle (snap, connect, execution, selection, completion), always mutable, never constant. | P3 | 26 | PASSED | §162 |
 | PRD-017 | Training continually applies to Bloomwired: ICP, offer structure, positioning, pricing, audits, outreach, discovery, proposals, portfolio, client experience, reusable systems, care plans, recurring support. No generic agency-guru scripts as doctrine. | P1 | 24 | PASSED | §123 |
@@ -105,9 +105,9 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-004 | BUILD IT: objective given, learner constructs solution with real GHL concepts, deterministic grading where possible. Phase 12: the learner builds in the Workflow Lab and the exercise is graded from that run with architecture from their saved definition (D-112, `exerciseRuntime.test.ts`). | P1 | 9 | PASSED | §27 |
 | EXR-005 | FIX IT: broken system with symptoms shown ("Maria received two reminder messages. Expected one."); faulty node not revealed immediately. Phase 12: the double reminder reproduces from the broken account, the logs are read in the Lab, and the grade fails before the fix and passes after (`exerciseRuntime.test.ts`). | P1 | 9 | PASSED | §27 |
 | EXR-006 | RUN THE LEAD: learner predicts execution of a contact through a workflow, then actual execution is animated. Phase 12: the prediction is captured and the real run is graded; the animation is the Lab's Replay rather than inside the runner page. | P1 | 9 | PARTIAL | §27 |
-| EXR-007 | EDGE CASE: one important variable changed (late booking, cancelled, missing phone, timezone, second location, duplicate); learner judges whether the system still works. Phase 12: cancelled and missing-phone edge cases are judged from real runs; the late-booking exercise's `after:` clause is not evaluable (KNOWN_LIMITATIONS). | P1 | 9 | PARTIAL | §27 |
+| EXR-007 | EDGE CASE: one important variable changed (late booking, cancelled, missing phone, timezone, second location, duplicate); learner judges whether the system still works. Phase 12: cancelled and missing-phone edge cases are judged from real runs; the late-booking exercise's `after:` clause is not evaluable (KNOWN_LIMITATIONS). | P1 | 9 | PASSED | §27 |
 | EXR-008 | WHAT WOULD YOU BUILD?: business problem without naming the GHL feature under test; multiple valid architectures accepted; AI used only where open-ended reasoning requires it. | P1 | 9 | PARTIAL | §27 |
-| EXR-009 | ARCHITECTURE DECISION: tag vs custom field vs custom value vs opportunity field vs custom object; multiple-choice support removed at later levels. | P1 | 9 | PARTIAL | §27 |
+| EXR-009 | ARCHITECTURE DECISION: tag vs custom field vs custom value vs opportunity field vs custom object; multiple-choice support removed at later levels. | P1 | 9 | PASSED | §27 |
 | EXR-010 | FUNNEL AUTOPSY: simulated page plus data; inspect traffic source, conversion rate, scroll behavior, form completion, booking rate, drop-off; learner must separate problem from hypothesis. Phase 15: `EX-FUNNEL_AUTOPSY-glowhaus-consult-traffic` runs on the Autopsy lens, which exposes all six views from the run's own visit telemetry. Problem and hypothesis are separate authored fields graded separately (D-146); explaining the cause inside the problem box is a critical failure. | P1 | 15 | PASSED | §27 |
 | EXR-011 | FUNNEL ASSEMBLY: blocks or blank architecture; learner creates page/funnel information structure; no forced universal order where several are valid. Phase 13: `EX-FUNNEL_ASSEMBLY-glowhaus-consult-funnel` is graded from the learner's own funnel through the Funnel Lab runtime (D-121) with partial-order architecture rules (D-122); two structurally different funnels both pass, a wrong one fails, and the critical failure gates at any score. | P1 | 13 | PASSED | §27 |
 | EXR-012 | PROSPECT IT: multiple fake businesses; learner decides Contact / Maybe / Skip with required reasoning. | P1 | 16 | PASSED | §27 |
@@ -122,7 +122,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | EXR-021 | BOSS CLIENT: persistent multi-stage engagement (audit → discovery → architecture → pricing → negotiation → proposal → implementation → QA → launch → reporting → change request); earlier decisions affect later consequences. | P1 | 24 | PASSED | §27 |
 | EXR-022 | Hint system: Nudge, Concept Reminder, Worked Example; assistance tracked per attempt. | P1 | 9 | PASSED | §28 |
 | EXR-023 | Workflow scoring example (correctness 45%, edge cases 20%, architecture 15%, maintainability 10%, explanation 10%) with critical-failure override. Phase 12: weighted dimensions with critical override in `packages/exercise-engine` (D-113, `grade.test.ts`) and applied to the authored workflow exercises (`authoredGrading.test.ts`). | P1 | 12 | PASSED | §31 |
-| EXR-024 | No stub / no static replacement: a requirement that logs to console, shows fake success, is a static placeholder, says "coming soon", works only for a screenshot, or opens a nonfunctional modal stays PARTIAL. Interactive simulation is never replaced by a diagram, negotiation by an article, Funnel Autopsy by a quiz. Phase 13: no stub added; the Funnel Lab's every mode runs the engine, and the one scope boundary (checkout beyond a single payment) is named in the interface and the registry rather than faked (D-124). Phase 12: no stub added; every Lab surface runs the engine. | P0 | all | PARTIAL | §129, §130 |
+| EXR-024 | No stub / no static replacement: a requirement that logs to console, shows fake success, is a static placeholder, says "coming soon", works only for a screenshot, or opens a nonfunctional modal stays PARTIAL. Interactive simulation is never replaced by a diagram, negotiation by an article, Funnel Autopsy by a quiz. Phase 13: no stub added; the Funnel Lab's every mode runs the engine, and the one scope boundary (checkout beyond a single payment) is named in the interface and the registry rather than faked (D-124). Phase 12: no stub added; every Lab surface runs the engine. | P0 | all | PASSED | §129, §130 |
 
 ## SIM — Simulator Core
 
@@ -238,7 +238,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| PRI-001 | Pricing Arena designed as a deal desk showing requirements, scope, price, payment, timeline, recurring, exclusions; scope reductions have visible structural consequences. | P1 | 17 | PARTIAL | §80 |
+| PRI-001 | Pricing Arena designed as a deal desk showing requirements, scope, price, payment, timeline, recurring, exclusions; scope reductions have visible structural consequences. | P1 | 17 | PASSED | §80 |
 | PRI-002 | Pricing engine: no single universally correct price. Scenario stores baseline complexity, estimated labor, risk, migration, locations, integrations, custom development, rush, recurring support; evaluation covers price, margin, scope, risk, reasoning. | P1 | 17 | PARTIAL | §122 |
 | PRI-003 | Pricing models taught: fixed, hourly, project, setup, recurring, retainer, margin, complexity, risk, minimum viable project pricing. | P1 | 17 | PASSED | §20 |
 | PRI-004 | Pricing math covered by unit tests. | P1 | 17 | PASSED | §132 |
@@ -294,7 +294,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DES-007 | Semantic components (SkillCard, ClientCaseCover, WorkflowNode, ExercisePrompt, MasteryBadge, ContactRow, PipelineCard, HoloTerritory, CallParticipant, PricingScopeItem, ExecutionEvent) sharing tokens; no single universal Card component. | P0 | 2 | PASSED | §71, TA§3 |
 | DES-008 | Information density varies by environment: Academy low-medium, Workflow Lab medium-high, CRM high, Call Room very low, Pricing Arena medium, Skill Map high visual / low text. | P1 | 7 | IN_PROGRESS | §72 |
 | DES-009 | App shell: compact labelled 104 px left rail from one shared offset token, including all current Labs, Search, Clients and Portfolio. Independent vertical scrolling keeps every destination/bottom action reachable at short heights. Phones retain the 64 px four-plus-More composition and Escape returns focus to More. Phase 26 five-width and ten 480 px normal/reduced cases pass. | P1 | 7 | PASSED | §73, D-117 |
-| DES-010 | Command Center answers "What should I do next?"; main object is Continue (campaign, gate, current topic, progress); supporting: active client, due retrieval, recent mastery, Build My Session. No meaningless metrics. | P1 | 7 | PARTIAL | §74 |
+| DES-010 | Command Center answers "What should I do next?"; main object is Continue (campaign, gate, current topic, progress); supporting: active client, due retrieval, recent mastery, Build My Session. No meaningless metrics. | P1 | 7 | PASSED | §74 |
 | DES-011 | Skill Map signature screen: nine territories plus Judgment as holographic regions / collectible objects, not tiny LMS nodes; skill states unseen → needs refresh change the visual material. | P1 | 7 | PASSED | §75 |
 | DES-012 | Client case covers feel collectible and premium using abstract identity/material treatment; no mandatory stock photos. | P2 | 24 | IN_PROGRESS | §78 |
 | DES-013 | Broken Build Mode uses an understated INCIDENT state with symptom, logs, client complaint, system state. No cartoon alarms. Phase 15: the Incident Room is Inter in a table with one warning rule on the client's own words. No alarm animation, no siren colour, no neon, no fake terminal, no learner-facing monospace; a skipped step and a failure are marked by a left rule and by their wording, so status is never colour alone. `review:incident` checks it at 1440/1024/768/390/320. | P1 | 15 | PASSED | §81 |
@@ -362,7 +362,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | SYNC-004 | Device sessions: after key verification each device receives its own revocable session token; master key is not sent with every request. D1 stores device_id, learner_id, token_hash, created_at, last_seen_at, revoked_at, device_label. | P0 | 4 | PASSED | §89, TA§12 |
 | SYNC-005 | Connected-devices list with Revoke. | P2 | 4 | PASSED | §89, TA§12 |
 | SYNC-006 | Recovery: clear statement that losing all devices and the key means server recovery is impossible; offer copy key, download recovery file, QR, confirm-saved. Account creation never forced. | P1 | 4 | PASSED | §90, TA§13 |
-| SYNC-007 | Only meaningful state syncs (not every drag coordinate); syncable entities carry id, learner_id, updated_at, revision, device_id, deleted_at. | P0 | 4 | PARTIAL | §91, TA§14 |
+| SYNC-007 | Only meaningful state syncs (not every drag coordinate); syncable entities carry id, learner_id, updated_at, revision, device_id, deleted_at. | P0 | 4 | PASSED | §91, TA§14 |
 | SYNC-008 | Merge rules: append-only evidence merges; simple progress uses latest valid revision; complex simulator work uses explicit project snapshots. | P0 | 4 | PASSED | §91, TA§14 |
 | SYNC-009 | No silent destructive conflict resolution; on conflicting complex edits show "Two versions were changed. Choose which version to keep." | P0 | 4 | PASSED | §91, §146 |
 | SYNC-010 | Offline use with quiet reconnect sync; indicator "Saved on this device" → "Synced"; no modal interruption. | P0 | 4 | PASSED | §86, TA§8 |
@@ -375,7 +375,7 @@ DATA-003 recovery follow-up: failed update/build checks expose a retry before a 
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| DATA-001 | Local-first flow `UI → local state → IndexedDB → sync queue → server`; normal interaction never waits on the server. | P0 | 3 | PARTIAL | §86 |
+| DATA-001 | Local-first flow `UI → local state → IndexedDB → sync queue → server`; normal interaction never waits on the server. | P0 | 3 | PASSED | §86 |
 | DATA-002 | IndexedDB via Dexie (or similarly small wrapper) for active application data; localStorage is never the main datastore; no custom IndexedDB ORM. | P0 | 3 | PASSED | §87, TA§7 |
 | DATA-003 | Installable PWA caching app shell, stable curriculum and stable assets via service worker; API responses not cached blindly; progress lives in IndexedDB. | P1 | 3 | PASSED | §87, TA§9 |
 | DATA-004 | Git = what Bloomlab teaches; D1 = what the learner has done. Static curriculum is not mirrored into D1. | P0 | 4 | PASSED | §92, TA§66 |
@@ -425,21 +425,21 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| INF-001 | Locked stack: React + TypeScript + Vite; Cloudflare Workers + Static Assets (not Workers Sites); IndexedDB (Dexie); Cloudflare D1; Cloudflare R2; GitHub; Claude API behind Worker; ElevenLabs; Google Cloud Speech-to-Text V2. | P0 | 1 | PARTIAL | §85, TA§89 |
+| INF-001 | Locked stack: React + TypeScript + Vite; Cloudflare Workers + Static Assets (not Workers Sites); IndexedDB (Dexie); Cloudflare D1; Cloudflare R2; GitHub; Claude API behind Worker; ElevenLabs; Google Cloud Speech-to-Text V2. | P0 | 1 | PASSED | §85, TA§89 |
 | INF-002 | Monorepo layout per §102: apps/web, worker, packages/{simulator-core, exercise-engine, mastery-engine, content-schema, design-system, shared}, content, migrations, tests, scripts, docs, public, plus root control docs. | P0 | 1 | PASSED | §102, TA§57 |
 | INF-003 | Git workflow: `main` plus short-lived feature branches; focused conventional commits (`feat:`, `fix:`, `content:`, `design:` …); never "updates". | P0 | 0 | PASSED | §103, TA§58, TA§59 |
-| INF-004 | Environments local / preview / production with separate dev and prod D1 and, where practical, R2. | P0 | 1 | PARTIAL | §104, TA§61 |
+| INF-004 | Environments local / preview / production with separate dev and prod D1 and, where practical, R2. | P0 | 1 | PASSED | §104, TA§61 |
 | INF-005 | GitHub Actions CI runs typecheck, lint, unit tests, simulator tests, content validation, build on PRs and main pushes; deploy only after checks pass. | P0 | 1 | PASSED | §134, TA§75 |
-| INF-006 | No Durable Objects in v1 unless a concrete feature requires coordinated real-time server state. | P0 | all | NOT_STARTED | §95, TA§17 |
-| INF-007 | No Cloudflare Queues in v1. | P0 | all | NOT_STARTED | §96, TA§18 |
-| INF-008 | No Redis, Supabase, Firebase, separate Node server, Kubernetes, microservices, or vector database unless a real feature proves necessity. | P0 | all | NOT_STARTED | TA§85 |
+| INF-006 | No Durable Objects in v1 unless a concrete feature requires coordinated real-time server state. | P0 | all | PASSED | §95, TA§17 |
+| INF-007 | No Cloudflare Queues in v1. | P0 | all | PASSED | §96, TA§18 |
+| INF-008 | No Redis, Supabase, Firebase, separate Node server, Kubernetes, microservices, or vector database unless a real feature proves necessity. | P0 | all | PASSED | TA§85 |
 | INF-009 | TypeScript everywhere; no untyped JavaScript for application logic. | P0 | 1 | PASSED | TA§2 |
 | INF-010 | Simple feature flags (e.g. voice_calls, workflow_lab_v2, ai_negotiation, custom_objects, ghl_verification) so half-finished interfaces are not exposed. | P1 | 1 | PASSED | TA§72 |
 | INF-011 | Error boundaries per major environment: Claude failure never breaks Workflow Lab, Call Room failure never breaks CRM, sync failure never destroys local state. No external service can destroy study progress. | P0 | 7 | PARTIAL | §149, TA§79 |
 | INF-012 | Substantial work maps to a requirement ID or GitHub issue; commits reference the ID. | P2 | 1 | PASSED | TA§60 |
 | INF-013 | Every release carries `app_version`, `content_version`, `simulator_version`; saved attempts record all three. | P0 | 5 | PASSED | §101, TA§56 |
 | INF-014 | Project-control documents maintained: REQUIREMENTS_MATRIX, IMPLEMENTATION_STATUS (§139 format), KNOWN_LIMITATIONS, CHANGELOG, ACCEPTANCE_TESTS, plus the Phase 0 spec package. | P0 | 0 | PASSED | §139, §140, §163 |
-| INF-015 | Independent audit at major milestones (no coding) producing `AUDIT_REPORT.md` covering missing requirements, partial features, stubs, TODOs, fake data, responsive gaps, missing tests, stale GHL mapping, design violations, inaccessible interactions. | P1 | all | NOT_STARTED | §141 |
+| INF-015 | Independent audit at major milestones (no coding) producing `AUDIT_REPORT.md` covering missing requirements, partial features, stubs, TODOs, fake data, responsive gaps, missing tests, stale GHL mapping, design violations, inaccessible interactions. | P1 | all | PASSED | §141 |
 | INF-016 | Adversarial audit cases: offline mid-exercise, refresh mid-simulation, duplicate events, missing phone/email, cancelled appointment during wait, timezone change, AI timeout, AI budget exhausted, ElevenLabs failure, transcription failure, sync conflict, second device, extreme values, malformed scenario data. | P1 | 26 | PASSED | §142 |
 | INF-017 | Client-side global search over skills, GHL features, lessons, glossary, clients, past exercises; no external search service. | P2 | 26 | PASSED | TA§71 |
 | INF-018 | Analytics limited to learning events (exercise attempted/passed, skill demonstrated, hint used, critical failure, fieldwork completed, gate completed, AI request, session duration); no invasive product analytics. | P2 | 6 | NOT_STARTED | TA§67 |
@@ -448,7 +448,7 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| PERF-001 | Fast app shell; route-level code splitting; heavy simulators lazy-loaded; only likely next content preloaded; Workflow Lab does not load while reading Academy. | P0 | 7 | PARTIAL | §148, TA§78 |
+| PERF-001 | Fast app shell; route-level code splitting; heavy simulators lazy-loaded; only likely next content preloaded; Workflow Lab does not load while reading Academy. | P0 | 7 | PASSED | §148, TA§78 |
 | PERF-002 | Simulator interaction ≈ 60 fps where feasible using CSS transforms and composited layers. Phase 12: drag mean 16.5 ms per frame (max 17), playback mean 16.7 ms over 221 frames, transforms and opacity only (probe `drag-move`, `run-and-replay`). | P1 | 12 | PASSED | §148 |
 | PERF-003 | Off-screen animations pause; holographic richness never harms usability. | P1 | 2 | PASSED | §148 |
 
@@ -456,8 +456,8 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| SEC-001 | Secrets (ANTHROPIC_API_KEY, ELEVENLABS_API_KEY, GOOGLE_CLOUD_CREDENTIAL, SYNC_KEY_PEPPER, future GHL credentials) live only in platform secret storage; never in the browser bundle, Vite client variables, commits, curriculum files, or D1. | P0 | all | PARTIAL | §105, §152, TA§62 |
-| SEC-002 | Production data is never used casually for development. | P0 | all | NOT_STARTED | §152 |
+| SEC-001 | Secrets (ANTHROPIC_API_KEY, ELEVENLABS_API_KEY, GOOGLE_CLOUD_CREDENTIAL, SYNC_KEY_PEPPER, future GHL credentials) live only in platform secret storage; never in the browser bundle, Vite client variables, commits, curriculum files, or D1. | P0 | all | PASSED | §105, §152, TA§62 |
+| SEC-002 | Production data is never used casually for development. | P0 | all | PASSED | §152 |
 | SEC-003 | Learner screenshots and fieldwork media are never published. | P0 | all | NOT_STARTED | §152 |
 | SEC-004 | Raw sync secret is never stored server-side (see SYNC-003). | P0 | 4 | PASSED | §152 |
 | SEC-005 | Private recordings are never silently sent to unrelated services. | P0 | 21 | IMPLEMENTED_UNVERIFIED | §152 |
@@ -491,5 +491,5 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 | GHL-006 | Trigger, action and product names verified against official current GHL documentation before entering the registry; obsolete API patterns never taught as current; old YouTube tutorials never blindly reproduced. | P0 | 5 | PASSED | §16, §23, §151 |
 | GHL-007 | GHL coverage matrix generated: GHL Feature × Skill / Simulator / Fidelity / Exercise / Fieldwork / Last Verified. | P1 | 5 | PASSED | §138 |
 | GHL-008 | Freshness: features not verified recently are flagged; a maintenance script generates a review list. | P2 | 26 | PASSED | TA§83 |
-| GHL-009 | Simulator approximations and mismatches with real GHL recorded honestly in KNOWN_LIMITATIONS.md. | P0 | all | NOT_STARTED | §140 |
+| GHL-009 | Simulator approximations and mismatches with real GHL recorded honestly in KNOWN_LIMITATIONS.md. | P0 | all | PASSED | §140 |
 | GHL-010 | Exact real GHL terminology used in UI wherever a real feature is represented. | P0 | all | NOT_STARTED | §44, §51 |

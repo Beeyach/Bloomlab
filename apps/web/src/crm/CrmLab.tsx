@@ -1,5 +1,6 @@
 import { useMemo, useState, useSyncExternalStore } from 'react';
 import { useSearchParams } from 'react-router';
+import { NATIVE_LABELS } from '../content/featureNames';
 
 import {
   Button,
@@ -64,12 +65,12 @@ const savedAt = (iso: string): string => {
 
 type Area = 'contacts' | 'pipeline' | 'setup' | 'companies' | 'objects' | 'lists';
 const AREAS: { id: Area; label: string }[] = [
-  { id: 'contacts', label: 'Contacts' },
+  { id: 'contacts', label: NATIVE_LABELS.contacts },
   { id: 'pipeline', label: 'Pipeline' },
   { id: 'setup', label: 'Setup' },
-  { id: 'companies', label: 'Companies' },
-  { id: 'objects', label: 'Custom objects' },
-  { id: 'lists', label: 'Smart lists' },
+  { id: 'companies', label: NATIVE_LABELS.companies },
+  { id: 'objects', label: NATIVE_LABELS.objects },
+  { id: 'lists', label: NATIVE_LABELS.lists },
 ];
 
 export default function CrmLab() {

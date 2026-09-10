@@ -1,0 +1,17 @@
+id: GHL-CONV-CONVERSATIONS
+official_name: Conversations
+area: Conversations
+feature_type: capability
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-10
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000006610-getting-started-with-the-conversations-tab
+known_limitations:
+  - Bloomlab reads synthetic SMS/email threads from the shared simulated account; injected replies and staff messages never reach a live inbox.
+  - Native multi-channel inboxes, permissions, internal collaboration, attachments, filtering and rich email composition are not simulated.
+skills:
+  - SK-AUTOMATE-workflow-foundations
+supported_configs: {}
+approximation_note: Training approximation — synthetic SMS/email threads and workflow replies only; no live delivery or complete HighLevel inbox.
+verification_note: Read the official Conversations guide on 2026-09-10 for the module name and native inbox/composer scope. No live account or device acceptance was performed.

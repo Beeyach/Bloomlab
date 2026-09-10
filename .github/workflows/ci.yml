@@ -17,7 +17,7 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# A PR checkout may use a synthetic merge commit. Report the immutable source head instead.
+# Check and deploy the immutable source head, not a synthetic PR merge commit.
 env:
   BLOOMLAB_BUILD_ID: ${{ github.event.pull_request.head.sha || github.sha }}
 
@@ -27,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
@@ -45,6 +47,7 @@ jobs:
           include-hidden-files: true
           if-no-files-found: warn
       - run: npm run validate:docs
+      - run: npm run security:source
       # Content validation (CNT-011): every ID resolves, no missing prerequisite or unknown GHL
       # feature, and content.lock.yaml matches the sources (content_version was bumped).
       - run: npm run content:check
@@ -72,11 +75,18 @@ jobs:
     environment: preview
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      # Read configuration only. Fail before deployment if either private-media bucket is public.
+      - run: npm run security:cloud
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - run: npm run build:preview -w @bloomlab/web
         env:
           CLOUDFLARE_ENV: preview

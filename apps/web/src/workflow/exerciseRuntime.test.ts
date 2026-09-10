@@ -327,6 +327,58 @@ describe('the authored BUILD IT, graded from a real run (EXR-004, EXR-023)', () 
   });
 });
 
+describe('R9 late-booking boundary from actual simulator execution', () => {
+  it.each([false, true])(
+    'grades the actual after-start clause with a delayed text: %s',
+    async (late) => {
+      const fixture = structuredClone(scenario);
+      fixture.initial_account_state.contacts!.find((row) => row.id === 'jordan')!.phone =
+        '+15125550101';
+      fixture.initial_account_state.appointments =
+        fixture.initial_account_state.appointments!.filter((row) => row.contact_id !== 'jordan');
+      let run = await startRun(fixture, database);
+      if (late) {
+        const workflow = structuredClone(run.state.account.workflows['wf-booking-confirmation']!);
+        const first = workflow.nodes[0]!;
+        workflow.nodes.unshift({
+          id: 'late-wait',
+          type: 'wait',
+          ghl_feature_id: 'GHL-WF-WAIT',
+          label: null,
+          position: { x: 0, y: 0 },
+          config: { wait_type: 'period', hours: 1 },
+        });
+        workflow.edges.push({ from: 'late-wait', to: first.id, branch: null });
+        run = ok(await saveWorkflow(run, fixture, workflow, direct())).run;
+      }
+      run = ok(
+        await bookAppointment(
+          run,
+          fixture,
+          'jordan',
+          'consultation',
+          '2026-09-03T09:40:00-05:00',
+          direct(),
+        ),
+      ).run;
+      run = ok(await advanceTimeTo(run, fixture, '2026-09-03T10:01:00-05:00', direct())).run;
+      const exercise = content.exercises.find(
+        (row) => row.id === 'EX-EDGE_CASE-late-booking-reminder',
+      )!;
+      const context = gradingContextFrom(run.state, { subjectContactId: 'jordan' });
+      expect(context.references['appointment.start']).toBe('2026-09-03T09:40:00-05:00');
+      expect(context.events.filter((row) => row.type === 'sms.sent')).toHaveLength(1);
+      const report = gradeExercise({ exercise, context });
+      expect(report.tiers.critical[0]).toMatchObject({
+        id: 'c1',
+        passed: !late,
+      });
+      expect(report.tiers.critical[0]?.unevaluated).not.toBe(true);
+      expect(report.outcome).toBe(late ? 'failed' : 'passed');
+    },
+  );
+});
+
 describe('FIX IT, graded from the broken account (EXR-005)', () => {
   const broken = (content.scenarios as unknown as SimulatorScenario[]).find(
     (row) => row.id === 'SC-glowhaus-double-reminder',

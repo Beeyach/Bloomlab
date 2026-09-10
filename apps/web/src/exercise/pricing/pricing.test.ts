@@ -78,6 +78,32 @@ const answer = (change: Partial<PricingResponse> = {}): PricingResponse => ({
   ...change,
 });
 
+describe('R9 learner-authored scope prices', () => {
+  it('subtracts only excluded portions once and recomputes payment, never recurring', () => {
+    const response = answer({
+      excluded: ['calendar', 'calendar'],
+      scope_fees: { calendar: 300.5, migration: 500 },
+    });
+    expect(quoteOf(response)).toMatchObject({
+      project: 1699,
+      total: 1699,
+      due_now: 850,
+      on_delivery: 849,
+      recurring: 100,
+    });
+    expect(quoteOf({ ...response, excluded: [] }).total).toBe(2000);
+    expect(quoteOf({ ...response, excluded: ['calendar', 'migration'] }).total).toBe(1199);
+  });
+  it('preserves historical quotes and leaves excessive or invalid reductions unset', () => {
+    expect(quoteOf(answer({ excluded: ['calendar'] })).total).toBe(2000);
+    for (const fee of [-1, NaN, Infinity, 2001]) {
+      expect(
+        quoteOf(answer({ excluded: ['calendar'], scope_fees: { calendar: fee } })).total,
+      ).toBeNull();
+    }
+  });
+});
+
 describe('money rounds once, to whole dollars', () => {
   it('rounds half away from zero', () => {
     expect(dollars(1210.5)).toBe(1211);

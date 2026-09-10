@@ -33,8 +33,16 @@ export interface Quote {
 export function quoteOf(response: PricingResponse): Quote {
   // Each figure the learner typed is rounded to whole dollars once, here, and every number
   // downstream is built from the rounded ones. Nothing rounds a second time.
+  const reductions = [...new Set(response.excluded)].map((id) => response.scope_fees?.[id] ?? 0);
+  const reduction = reductions.reduce((sum, fee) => sum + dollars(fee), 0);
   const project =
-    response.project === null || response.project < 0 ? null : dollars(response.project);
+    response.project === null ||
+    !Number.isFinite(response.project) ||
+    response.project < 0 ||
+    reductions.some((fee) => !Number.isFinite(fee) || fee < 0) ||
+    reduction > dollars(response.project)
+      ? null
+      : dollars(response.project) - reduction;
   const rush =
     response.rush_fee === null || response.rush_fee < 0 ? null : dollars(response.rush_fee);
   const total = project === null ? null : project + (rush ?? 0);

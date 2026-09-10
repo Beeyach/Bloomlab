@@ -1,12 +1,15 @@
 import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
 
 import { bloomlabContent } from '@bloomlab/content-schema/vite';
 import { cloudflare } from '@cloudflare/vite-plugin';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { stablePrecacheFiles } from './src/pwa/precachePolicy.ts';
 
 export default defineConfig({
+  build: { manifest: true },
   define: {
     __BLOOMLAB_BUILD_ID__: JSON.stringify(process.env.BLOOMLAB_BUILD_ID ?? 'local'),
   },
@@ -47,6 +50,20 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         globIgnores: ['**/wrangler.json', '**/*.map', '**/.assetsignore'],
+        manifestTransforms: [
+          async (entries) => {
+            const manifest = JSON.parse(
+              readFileSync(new URL('./dist/client/.vite/manifest.json', import.meta.url), 'utf8'),
+            );
+            const stable = stablePrecacheFiles(manifest);
+            return {
+              manifest: entries.filter(
+                (entry) => !/\.(?:js|css)$/.test(entry.url) || stable.has(entry.url),
+              ),
+              warnings: [],
+            };
+          },
+        ],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
         cleanupOutdatedCaches: true,
@@ -63,6 +80,21 @@ export default defineConfig({
             options: {
               cacheName: 'bloomlab-content',
               expiration: { maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            // Demand-loaded route assets remain available on the next offline visit. Hashed
+            // URLs cannot change underneath a cache hit; /api and private media are excluded.
+            urlPattern: ({ url, sameOrigin }) =>
+              sameOrigin && /^\/assets\/.*\.(?:js|css)$/.test(url.pathname),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'bloomlab-routes',
+              // Vite's local asset server varies on Origin; script/link/fetch requests differ.
+              // These same-origin hashed public bytes are identical, never API/private data.
+              matchOptions: { ignoreVary: true },
+              cacheableResponse: { statuses: [200] },
+              expiration: { maxEntries: 250, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
         ],

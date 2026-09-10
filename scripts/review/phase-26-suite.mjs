@@ -31,6 +31,14 @@ const allowed = [
   'fieldwork',
   'portfolio',
   'clients',
+  'offline',
+  'sync',
+  'clients-sync',
+  'portfolio-sync',
+  'remediation-home',
+  'remediation-keyboard',
+  'remediation-draft',
+  'remediation-exercise',
 ];
 const selected = process.argv.slice(2);
 assert(selected.length > 0, 'Name the probes to run; see the explicit allowlist.');

@@ -56,8 +56,9 @@ written_fields:
   - key: facts
     label: Fields and shared settings
     help:
-      Choose tags, typed fields and custom values for concrete facts. Explain the failure caused by
-      storing several pets in one changing value.
+      Weigh tags, contact custom fields, shared custom values, opportunity fields and custom objects.
+      Choose where concrete facts belong and justify the alternatives you reject. Explain the failure
+      caused by storing several pets in one changing value.
     rows: 4
   - key: operations
     label: Pipeline, ownership and segmentation

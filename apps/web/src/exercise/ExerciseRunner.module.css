@@ -561,3 +561,18 @@
   position: static;
   max-width: 48rem;
 }
+.replay {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.replay li {
+  padding: var(--bl-space-2);
+}
+.replay li[aria-current='step'] {
+  border-left: 3px solid var(--bl-color-ink);
+}
+.replayControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-2);
+}

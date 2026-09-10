@@ -1,4 +1,4 @@
-content_version: 2026.09.27
+content_version: 2026.09.28
 schema_version: 1
 notes: Phase 25 CUR-023 audit correction — post-deprecation Ed25519-only webhook guidance.
 advanced_paths_enforced: true
