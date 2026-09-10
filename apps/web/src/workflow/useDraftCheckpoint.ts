@@ -1,5 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { db, type BloomlabDatabase } from '../data/db';
 import { loadWorkspace, saveWorkspace } from '../data/workspace';
 import type { DraftHistory } from './draft';
@@ -16,17 +15,33 @@ export function useDraftCheckpoint(key: string | null, database: BloomlabDatabas
   const [failure, setFailure] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
   const sequence = useRef(0);
-  const loaded = useLiveQuery(async () => {
-    if (!key) return { key, checkpoint: null, error: false };
-    try {
-      return {
-        key,
-        checkpoint: (await loadWorkspace<DraftCheckpoint>(key, database)) ?? null,
-        error: false,
+  const [loaded, setLoaded] = useState<{
+    key: string | null;
+    checkpoint: DraftCheckpoint | null;
+    error: boolean;
+  }>();
+
+  useEffect(() => {
+    let current = true;
+    if (!key) {
+      void Promise.resolve().then(() => {
+        if (current) setLoaded({ key, checkpoint: null, error: false });
+      });
+      return () => {
+        current = false;
       };
-    } catch {
-      return { key, checkpoint: null, error: true };
     }
+    void loadWorkspace<DraftCheckpoint>(key, database).then(
+      (checkpoint) => {
+        if (current) setLoaded({ key, checkpoint: checkpoint ?? null, error: false });
+      },
+      () => {
+        if (current) setLoaded({ key, checkpoint: null, error: true });
+      },
+    );
+    return () => {
+      current = false;
+    };
   }, [key, database, retry]);
 
   const persist = useCallback(

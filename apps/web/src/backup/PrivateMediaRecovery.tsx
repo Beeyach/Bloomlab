@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Cluster, Field, Input } from '@bloomlab/design-system';
 import {
   cancelPrivateMedia,
@@ -6,7 +6,7 @@ import {
   exportPrivateMedia,
   previewPrivateMedia,
   type PrivateMediaPreview,
-} from './privateMedia';
+} from '../data/privateMediaRecovery';
 
 const kindName = {
   evidence_image: 'Evidence screenshots',
@@ -23,6 +23,10 @@ export function PrivateMediaRecovery() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (preview) heading.current?.focus();
+  }, [preview]);
 
   async function run(task: () => Promise<void>, progress: string, done: string) {
     if (pending.current) return;
@@ -48,7 +52,6 @@ export function PrivateMediaRecovery() {
       async () => {
         const next = await previewPrivateMedia(file);
         setPreview(next);
-        requestAnimationFrame(() => heading.current?.focus());
       },
       'Validating private media. Saved assets are unchanged…',
       'Archive validated. Review before confirming.',

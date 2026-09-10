@@ -1,4 +1,4 @@
-import { currentDevice } from '../data';
+import { currentDevice } from './device';
 
 export const PRIVATE_MEDIA_MAX_BYTES = 25 * 1024 * 1024;
 export interface PrivateMediaPreview {

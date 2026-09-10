@@ -7,7 +7,7 @@ const api = vi.hoisted(() => ({
   confirmPrivateMedia: vi.fn(),
   cancelPrivateMedia: vi.fn(),
 }));
-vi.mock('./privateMedia', () => api);
+vi.mock('../data/privateMediaRecovery', () => api);
 
 import { PrivateMediaRecovery } from './PrivateMediaRecovery';
 
