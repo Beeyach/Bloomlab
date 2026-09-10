@@ -4,6 +4,7 @@ import { Button, Field, Input, Select } from '@bloomlab/design-system';
 import { runCommand } from './commands';
 import type { CrmSetupProps } from './CrmSetup';
 import styles from './crm.module.css';
+import { NATIVE_LABELS } from '../content/featureNames';
 
 type Props = CrmSetupProps & { area: 'companies' | 'objects' | 'lists' };
 const text = (data: FormData, key: string) => String(data.get(key) ?? '').trim();
@@ -171,8 +172,8 @@ export function AdvancedCrm({ run, apply, area }: Props) {
     );
   if (area === 'lists')
     return (
-      <section className={styles.advanced} aria-label="Smart lists">
-        <h2>Smart lists</h2>
+      <section className={styles.advanced} aria-label={NATIVE_LABELS.lists}>
+        <h2>{NATIVE_LABELS.lists}</h2>
         <p>
           Save rules, not a frozen audience. Membership below is recomputed from this account after
           contact, tag, field, company or opportunity changes. Saving a list never sends a message.
@@ -285,8 +286,8 @@ export function AdvancedCrm({ run, apply, area }: Props) {
       </section>
     );
   return (
-    <section className={styles.advanced} aria-label="Custom objects">
-      <h2>Custom objects</h2>
+    <section className={styles.advanced} aria-label={NATIVE_LABELS.objects}>
+      <h2>{NATIVE_LABELS.objects}</h2>
       <p>
         Use an object for repeated things with their own lifecycle, such as multiple properties per
         owner. A second “lead” object usually duplicates Contacts and loses native contact features.

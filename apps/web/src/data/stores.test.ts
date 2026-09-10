@@ -4,10 +4,31 @@ import { freshDatabase } from './testing';
 import { ensureDevice } from './device';
 import { createNotesStore } from './notes';
 import { listOperations, takeOperations } from './syncQueue';
+import { createSyncableStore } from './stores';
+import { LOCAL_SYNC_ENTITIES, type SyncEnvelope } from './types';
+import { ENVELOPE_FIELDS } from '@bloomlab/shared';
 
 const draft = (body: string) => ({ body, target_kind: 'general' as const, target_ref: null });
 
 describe('syncable store (DATA-001 write path)', () => {
+  it.each(LOCAL_SYNC_ENTITIES)(
+    '%s writes and tombstones carry the complete sync envelope',
+    async (entity) => {
+      const database = freshDatabase();
+      // Envelope contract, not entity-specific validation (covered by each consumer/Worker schema).
+      const store = createSyncableStore<SyncEnvelope>(entity, database);
+      const created = await store.create({});
+      const deleted = await store.remove(created.id);
+      for (const row of [created, deleted]) {
+        for (const field of ENVELOPE_FIELDS) expect(Object.hasOwn(row, field)).toBe(true);
+        expect(row.id && row.learner_id && row.device_id && row.updated_at).toBeTruthy();
+        expect(row.revision).toBeGreaterThan(0);
+      }
+      expect(deleted.deleted_at).not.toBeNull();
+      expect((await listOperations(database))[0]?.payload).toEqual(deleted);
+    },
+  );
+
   it('creates a record with a full envelope and queues an upsert in the same transaction', async () => {
     const database = freshDatabase();
     const notes = createNotesStore(database);

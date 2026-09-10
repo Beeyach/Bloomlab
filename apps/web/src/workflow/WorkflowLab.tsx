@@ -27,6 +27,7 @@ import { useWorkflowRun, DEFAULT_WORKFLOW_SCENARIO_ID, scenarioFor } from './use
 import { simulatorTime } from './words';
 import styles from './workflow.module.css';
 import { playSound } from '../moments/sound';
+import { useDraftCheckpoint, workflowDraftKey } from './useDraftCheckpoint';
 
 /**
  * The Workflow Lab (WFL-001 … WFL-012).
@@ -104,11 +105,11 @@ export default function WorkflowLab() {
    * the account's version or carries unsaved edits; otherwise a fresh history from what the account
    * holds (or a blank definition for a workflow that is not saved yet).
    */
-  const [stored, setStored] = useState<{
-    key: string;
-    version: number;
-    history: DraftHistory;
-  } | null>(null);
+  const checkpointKey =
+    run && workflowId ? workflowDraftKey(run.state.run_id, run.generation, workflowId) : null;
+  const checkpoint = useDraftCheckpoint(checkpointKey);
+  const stored = checkpoint.checkpoint;
+  const setStored = checkpoint.persist;
   const [watchedId, setWatchedId] = useState<string | null>(null);
   const [autoplay, setAutoplay] = useState<Autoplay | null>(null);
   const [playhead, setPlayhead] = useState<{
@@ -137,23 +138,23 @@ export default function WorkflowLab() {
   }, [account, workflowId, setParam]);
 
   const history: DraftHistory | null = useMemo(() => {
-    if (!account || !workflowId) return null;
+    if (!account || !workflowId || !checkpoint.ready) return null;
     if (
       stored &&
-      stored.key === workflowId &&
+      stored.key === checkpointKey &&
       (stored.version === savedVersion || isDirty(stored.history))
     ) {
       return stored.history;
     }
     return startHistory(saved ?? blankWorkflow(workflowId));
-  }, [account, workflowId, stored, saved, savedVersion]);
+  }, [account, workflowId, stored, saved, savedVersion, checkpoint.ready, checkpointKey]);
 
   const setHistory = useCallback(
     (update: (current: DraftHistory) => DraftHistory, version: number = savedVersion) => {
-      if (!workflowId || !history) return;
-      setStored({ key: workflowId, version, history: update(history) });
+      if (!checkpointKey || !history) return;
+      setStored({ key: checkpointKey, version, history: update(history) });
     },
-    [workflowId, history, savedVersion],
+    [checkpointKey, history, savedVersion, setStored],
   );
 
   const draft = history?.present ?? null;
@@ -312,7 +313,12 @@ export default function WorkflowLab() {
         <h1 id="workflow-title" className={styles.title}>
           Workflow Lab
         </h1>
-        <p className={styles.lead}>{problem ?? 'Opening the account…'}</p>
+        <p className={styles.lead}>
+          {checkpoint.readError
+            ? 'The local workflow draft could not be read. Retry before editing so saved work is not replaced.'
+            : (problem ?? 'Opening the account…')}
+        </p>
+        {checkpoint.readError && <Button onClick={checkpoint.retryRead}>Retry draft</Button>}
       </Stack>
     );
   }
@@ -484,7 +490,7 @@ export default function WorkflowLab() {
                 variant="danger"
                 onClick={() => {
                   setConfirmingReset(false);
-                  setStored(null);
+                  checkpoint.clearMemory();
                   setWatchedId(null);
                   void reset();
                 }}
@@ -533,7 +539,11 @@ export default function WorkflowLab() {
             onChange={(event) => {
               if (event.target.value === '__new__') {
                 const fresh = blankWorkflow();
-                setStored({ key: fresh.id, version: 0, history: startHistory(fresh) });
+                setStored({
+                  key: workflowDraftKey(run.state.run_id, run.generation, fresh.id),
+                  version: 0,
+                  history: startHistory(fresh),
+                });
                 setWatchedId(null);
                 setParam({ workflow: fresh.id, node: 'trigger' });
               } else {
@@ -602,6 +612,15 @@ export default function WorkflowLab() {
               Dismiss
             </Button>
           </div>
+        </Surface>
+      )}
+      {checkpoint.writeError && (
+        <Surface padding="md" role="alert">
+          <p>
+            The draft is still open, but could not be saved on this device. Keep this page open and
+            retry.
+          </p>
+          <Button onClick={checkpoint.retryWrite}>Retry draft save</Button>
         </Surface>
       )}
       {problem && (

@@ -201,9 +201,9 @@ export function reasonSentence(report: GradeReport): string {
     case 'threshold_met':
       return 'Every critical check held and the score cleared the pass mark.';
     case 'rubric_pending':
-      return `The deterministic checks ran. The written half is judged against ${report.rubric_pending}, which arrives with the AI gateway in Phase 19.`;
+      return `The deterministic checks ran. Coaching against ${report.rubric_pending} is still pending. Your work is saved; a deterministic score alone does not pass the written half.`;
     case 'unevaluated_assertions':
-      return 'Some checks need a runtime that does not exist yet, so this attempt cannot be scored.';
+      return 'Some checks lack the required run data, so this attempt is not fully evaluated.';
     case 'nothing_to_grade':
       return 'This exercise authored no deterministic check to score.';
   }

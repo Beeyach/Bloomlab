@@ -108,6 +108,33 @@ describe('the Workflow Lab opens on the real account (WFL-001)', () => {
 });
 
 describe('editing is drafts, saving is an event (WFL-002)', () => {
+  it('recovers unsaved graph edits across reload without syncing draft coordinates', async () => {
+    const view = await openLab();
+    const beforeEvents = await db.sim_events.count();
+    const beforeQueue = await db.sync_queue.count();
+    fireEvent.click(node('n2') as HTMLElement);
+    fireEvent.click(
+      within(document.querySelector('[data-palette="GHL-WF-WAIT"]') as HTMLElement).getByRole(
+        'button',
+        { name: 'Add' },
+      ),
+    );
+    await waitFor(() => expect(node('n4')).not.toBeNull());
+    await waitFor(async () =>
+      expect(
+        (await db.workspace.toArray()).some((row) => row.key.startsWith('workflow.draft.')),
+      ).toBe(true),
+    );
+    view.unmount();
+    await openLab();
+    expect(node('n4')).toHaveTextContent('Wait');
+    expect(screen.getByText('Unsaved draft')).toBeInTheDocument();
+    expect(await db.sim_events.count()).toBe(beforeEvents);
+    expect(await db.sync_queue.count()).toBe(beforeQueue);
+    fireEvent.click(screen.getByTestId('undo'));
+    await waitFor(() => expect(node('n4')).toBeNull());
+  });
+
   it('adds a step, undoes and redoes it, saves it as a new version, and shows the version in history', async () => {
     await openLab();
     fireEvent.click(node('n2') as HTMLElement);

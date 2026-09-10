@@ -28,6 +28,8 @@ import {
 } from './attempt';
 import { learnerState } from './response';
 import { availableSources, canGradeNow, runtimeFor } from './runtime';
+import { saveWorkspace } from '../data/workspace';
+import { captureRunReplay, runReplayKey } from './runReplay';
 
 /**
  * Finalizing an attempt: grade what the learner did, then write it once through the Phase 6
@@ -255,6 +257,13 @@ async function finalizeOneAttempt(
     await checkpointSubmission(exercise.id, attemptContext, current, database);
   }
   const completedAt = (options.now ?? new Date()).toISOString();
+  if (exercise.type === 'RUN_THE_LEAD' && context) {
+    await saveWorkspace(
+      runReplayKey(current.attempt_id),
+      captureRunReplay(exercise, context, current.response.prediction),
+      database,
+    );
+  }
   const { attempt: row } = await recordEvidence(
     {
       skill_ids: skillIds,

@@ -9,6 +9,29 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Changed — Field-Ready v1 independent-audit remediation
+
+- Added actual active-client Home state and local Workflow draft checkpoint/reload recovery.
+- Completed the interrupted R5 sync ownership fix: D1 migration 0007 preserves all existing rows
+  while replacing global IDs with learner-scoped primary keys across 13 sync tables. Added
+  collision/update/tombstone, byte-preservation and migration rollback/retry regressions; deployed
+  sync probes now reuse curriculum IDs across learners and check each owner's data independently.
+- General sync review now checks the saved note's persisted outbox payload while offline rather
+  than assuming the diagnostics queue contains exactly one operation; negative cases remain failing.
+- Fixed late-booking temporal grading and added in-runner actual-event playback with reduced motion;
+  prediction-before-Lab enforcement remains an explicit gap. Proved later open architecture writing.
+- Added learner-authored removable fee portions so scope changes can alter quote/payment without
+  revealing hidden economics; broad pricing/negotiation semantic acceptance remains open.
+- Added registry-native naming and exact B/C limitation projection, source credential regressions,
+  read-only cloud privacy CI gating, and stable-only precaching with visited-route offline recovery.
+- Reconciled only objectively supported audit rows, including authorized INF-015; kept all twelve
+  human/real-GHL statuses parked. Added five-width short-height, keyboard/touch, offline and new-surface
+  regressions; exact-head Checks/Preview use the source SHA. Preview-only migration/deployment;
+  no merge or provider spend.
+
+Evidence and remaining gaps: `docs/reviews/field-ready-v1-remediation.md`. Historical Phase 26
+precache and Phase 17 scope-price limitations below describe their original closure checkpoints.
+
 ### Added — Phase 26 recovery, search and maintenance
 
 - Strict bounded version/schema/ownership validation and explicit preview/confirm/cancel for local

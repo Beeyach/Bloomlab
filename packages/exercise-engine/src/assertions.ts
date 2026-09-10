@@ -23,6 +23,9 @@ export function sourcesFor(assertion: AssertionDefinition): ContextSource[] {
     }
     case 'event':
     case 'negative':
+      return assertion.where && Object.hasOwn(assertion.where, 'after')
+        ? ['events', 'references']
+        : ['events'];
     case 'sequence':
       return ['events'];
     case 'timing':
@@ -38,9 +41,18 @@ const byRunOrder = (a: GradingEvent, b: GradingEvent): number =>
   a.at.localeCompare(b.at) || a.index - b.index;
 
 /** `where` is exact equality on the event's own fields; a field the run never set never matches. */
-function matchesWhere(event: GradingEvent, where: AssertionDefinition['where']): boolean {
+function matchesWhere(
+  event: GradingEvent,
+  where: AssertionDefinition['where'],
+  references: GradingContext['references'],
+): boolean {
   if (!where) return true;
-  return Object.entries(where).every(([field, expected]) => event.fields[field] === expected);
+  return Object.entries(where).every(([field, expected]) =>
+    field === 'after'
+      ? typeof expected === 'string' &&
+        Date.parse(event.at) > Date.parse(references[expected] ?? '')
+      : event.fields[field] === expected,
+  );
 }
 
 const describeWhere = (where: AssertionDefinition['where']): string =>
@@ -54,7 +66,9 @@ const eventsOfType = (context: GradingContext, type: string | undefined): Gradin
   context.events.filter((event) => event.type === type).sort(byRunOrder);
 
 const matching = (context: GradingContext, assertion: AssertionDefinition): GradingEvent[] =>
-  eventsOfType(context, assertion.event).filter((event) => matchesWhere(event, assertion.where));
+  eventsOfType(context, assertion.event).filter((event) =>
+    matchesWhere(event, assertion.where, context.references),
+  );
 
 /** STATE: a path in the state tree compared with an authored operator. */
 function evaluateState(assertion: AssertionDefinition, context: GradingContext) {
@@ -498,6 +512,26 @@ export function evaluateAssertion(
       expected: assertion.description,
       observed: `not evaluated: this run provides no ${missing}`,
     };
+  }
+  if (assertion.where && Object.hasOwn(assertion.where, 'after')) {
+    const reference = assertion.where.after;
+    const validReference =
+      typeof reference === 'string' &&
+      Number.isFinite(Date.parse(context.references[reference] ?? ''));
+    const validEvents = eventsOfType(context, assertion.event).every((event) =>
+      Number.isFinite(Date.parse(event.at)),
+    );
+    if (!validReference || !validEvents)
+      return {
+        ...base,
+        passed: false,
+        unevaluated: true,
+        missing_source: !validReference ? 'references' : 'events',
+        expected: assertion.description,
+        observed: !validReference
+          ? 'not evaluated: missing or invalid after-reference instant'
+          : 'not evaluated: invalid event timestamp',
+      };
   }
   const outcome = (() => {
     switch (assertion.type) {

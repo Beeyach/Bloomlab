@@ -38,6 +38,7 @@ import {
   type LearnerSnapshot,
 } from '../data/learning';
 import styles from './CommandCenter.module.css';
+import { ActiveClient } from './ActiveClient';
 import {
   KIND_WORDS,
   SESSION_LENGTH_LABELS,
@@ -414,6 +415,7 @@ export default function CommandCenter() {
       <div className={styles.columns}>
         <SessionBuilder focusId={focusId} />
         <div className={styles.side}>
+          <ActiveClient />
           <DueRetrieval snapshot={snapshot} />
           <SkillRows
             id="repair-title"

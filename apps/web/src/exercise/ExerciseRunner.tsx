@@ -30,6 +30,7 @@ import { WorkSurface } from './work/WorkSurface';
 import styles from './ExerciseRunner.module.css';
 import { useAttemptHistory } from './useAttemptHistory';
 import { playSound } from '../moments/sound';
+import { ActualRunReplay } from './ActualRunReplay';
 
 /** What the exercise needs that nothing can supply yet, in the learner's words (EXR-024). */
 function RuntimeRequired({ exercise }: { exercise: Exercise }) {
@@ -331,13 +332,18 @@ export default function ExerciseRunner() {
             </section>
           )}
           {exercise.type !== 'FIELDWORK' && !attempt && finished && (
-            <ResultView
-              fresh={freshResult === finished.id}
-              attempt={finished}
-              skillId={skillId}
-              snapshot={snapshot}
-              onTryAgain={() => void tryAgain()}
-            />
+            <>
+              {exercise.type === 'RUN_THE_LEAD' && (
+                <ActualRunReplay attemptId={finished.id} fresh={freshResult === finished.id} />
+              )}
+              <ResultView
+                fresh={freshResult === finished.id}
+                attempt={finished}
+                skillId={skillId}
+                snapshot={snapshot}
+                onTryAgain={() => void tryAgain()}
+              />
+            </>
           )}
           {treatment.offersLesson && skillId && <UnitLink exercise={exercise} skillId={skillId} />}
         </div>

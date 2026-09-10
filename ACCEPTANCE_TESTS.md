@@ -154,9 +154,12 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **EXR-004** BUILD IT: objective shown; learner constructs in the Lab; deterministic assertions grade it.
 - **EXR-005** FIX IT: symptom text shown; faulty node hidden until diagnosed; repair graded.
 - **EXR-006** RUN THE LEAD: prediction captured before execution; execution animates; mismatch highlighted.
+  - Remediation R9: actual saved contact-event playback, controls, reduced motion and reload are directly tested in `runReplay.test.tsx` and `remediation-exercise-probe.mjs`. PARTIAL remains because an immutable pre-Lab prediction checkpoint is not enforced; a predict-first happy path alone does not prove it.
 - **EXR-007** EDGE CASE: variable change applied to a passing system; learner verdict graded against actual simulator outcome.
+  - Remediation R9: `after.test.ts` and `workflow/exerciseRuntime.test.ts` prove the actual late-booking reference boundary, immediate confirmation success, delayed post-start critical failure and missing/invalid-time refusal. Existing cancelled/missing-phone cases remain. The historical Phase 12 `after:` limitation is resolved.
 - **EXR-008** WHAT WOULD YOU BUILD?: no feature named in the prompt; at least two authored valid architectures accepted; AI invoked only for unmatched designs.
 - **EXR-009** ARCHITECTURE DECISION: choice + reasoning captured; later-level version has no multiple choice.
+  - Remediation R9: the later veterinary task has no options/choice assertion; `openArchitecture.test.tsx` and the five-width remediation exercise probe cover all five data mechanisms and writing/reload without radio controls.
 - **EXR-019** REBUILD BLIND: no lesson link, no step support; any hint use is recorded and reduces independence.
 - **EXR-022** Three hint levels available per exercise; each use recorded with level.
 - **MAS-004** An attempt with 95% score and one critical failure reports FAILED (test).
@@ -289,6 +292,7 @@ Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine a
 ## Phase 17 — Pricing Arena
 
 - **PRI-001** Deal desk shows the seven areas; removing a scope item visibly changes the structure and price.
+  - **PASSED (remediation R9).** Optional learner-authored fee portions resolve the original Phase 17 gap below without exposing delivery economics: a $400 calendar portion removed from a $2,400 full-scope quote becomes $2,000 alongside the dependency warning, and reinstating restores $2,400. Old unallocated quotes stay compatible and explicitly change scope only. Unit/hidden-economics/reload and all-five-width browser checks prove this path; no universally correct price is supplied.
   - **PARTIAL (Phase 17).** The seven areas are there and the structural half is fully met: a removed line says what it leaves the client with, a requirement the client stated reads "Nothing left in the deal answers this" the moment the last line answering it comes out, and a line left depending on something removed is named. The price half is deliberately not met before submission. The learner sets one project fee for the whole deal, so there is no per-line price to subtract, and showing what the removed line costs to deliver is what the hidden-economics criterion below forbids. After submitting, the full economic consequence is shown: the floor moves with the scope, so the same $1,600 that is indefensible on the whole Summit build clears the floor once the migration and handover are out. Recorded in D-162 rather than settled by weakening either criterion.
   - Evidence: `npm run review:pricing` → `scope-consequences`, `reveal-after-submit`; `apps/web/src/exercise/pricingRunner.test.tsx`, `apps/web/src/exercise/pricingCoverage.test.ts`.
 - **PRI-002** Scenario stores the nine economics fields; evaluation returns price, margin, scope, risk and reasoning feedback; two different defensible prices can both pass.

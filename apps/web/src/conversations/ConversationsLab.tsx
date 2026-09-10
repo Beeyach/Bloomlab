@@ -14,6 +14,7 @@ import {
   useWorkflowRun,
 } from '../workflow/useWorkflowRun';
 import styles from './conversations.module.css';
+import { NATIVE_LABELS } from '../content/featureNames';
 
 /**
  * Conversations (CONV-001).
@@ -57,7 +58,7 @@ export default function ConversationsLab() {
     return (
       <Stack as="section" gap={3} className={styles.screen} aria-labelledby="inbox-title">
         <h1 id="inbox-title" className={styles.title}>
-          Conversations
+          {NATIVE_LABELS.conversations}
         </h1>
         <p className={styles.lead}>{problem ?? 'Opening the account…'}</p>
       </Stack>
@@ -96,11 +97,12 @@ export default function ConversationsLab() {
     <Stack as="section" gap={4} className={styles.screen} aria-labelledby="inbox-title">
       <div className={styles.header}>
         <h1 id="inbox-title" className={styles.title}>
-          Conversations
+          {NATIVE_LABELS.conversations}
         </h1>
         <p className={styles.lead}>
           {account.account.name}. Every text and email the account has sent or received, and who
-          sent it. Reply as the contact to see what the workflows do next.
+          sent it. Reply as the contact to see what the workflows do next. Synthetic SMS/email only;
+          no live delivery, native multi-channel inbox or rich composer.
         </p>
       </div>
 

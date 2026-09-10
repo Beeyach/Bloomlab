@@ -23,9 +23,8 @@ import styles from './work.module.css';
  * What the learner sees here is their own arithmetic and their own promises: the total, what is
  * due on signature, what is left on delivery, which requirement no longer has anything answering
  * it. What they do not see is what any of it costs to deliver. Hours, cost, the floor and the
- * margin stay hidden until the attempt is submitted (EXR-016), which is why the price column on
- * every scope line reads as a dash: there is no number there to lean on, so the decision has to
- * be made on what the client actually asked for.
+ * margin stay hidden until the attempt is submitted (EXR-016). Optional per-line prices are
+ * authored by the learner, not supplied from the scenario's delivery economics.
  */
 export function DealDesk({
   exercise,
@@ -93,24 +92,48 @@ export function DealDesk({
           What is in the deal
         </h3>
         <p className={styles.deskNote} data-testid="scope-count">
-          {kept.length} of {config.scope.length} lines in. Prices per line are not shown: you are
-          deciding what the client gets, and what that is worth is your call afterwards.
+          {kept.length} of {config.scope.length} lines in. Assign your own portion of the full-scope
+          project fee to removable lines. Taking a line out subtracts that portion; putting it back
+          restores it. An unassigned line changes scope only, not your price.
         </p>
         <fieldset className={styles.scope} disabled={disabled}>
           <legend className={styles.legend}>Lines you can take out</legend>
           {config.scope.map((item) => (
-            <PricingScopeItem
-              key={item.id}
-              name={item.name}
-              description={item.description}
-              priceImpact={null}
-              currency={currency}
-              included={kept.some((line) => line.id === item.id)}
-              locked={item.locked}
-              dependency={item.consequence}
-              className={styles.scopeLine}
-              onIncludedChange={(included) => toggleScope(item.id, included)}
-            />
+            <div key={item.id}>
+              <PricingScopeItem
+                name={item.name}
+                description={item.description}
+                priceImpact={pricing.scope_fees?.[item.id] ?? null}
+                currency={currency}
+                included={kept.some((line) => line.id === item.id)}
+                locked={item.locked}
+                dependency={item.consequence}
+                className={styles.scopeLine}
+                onIncludedChange={(included) => toggleScope(item.id, included)}
+              />
+              {!item.locked && (
+                <label className={styles.field}>
+                  <span className={styles.fieldLabel}>Your quoted portion: {item.name}</span>
+                  <input
+                    className={styles.input}
+                    type="number"
+                    min={0}
+                    step={1}
+                    inputMode="numeric"
+                    data-testid={`scope-fee-${item.id}`}
+                    value={pricing.scope_fees?.[item.id] ?? ''}
+                    onChange={(event) =>
+                      onChange({
+                        scope_fees: {
+                          ...pricing.scope_fees,
+                          [item.id]: parseMoney(event.target.value),
+                        },
+                      })
+                    }
+                  />
+                </label>
+              )}
+            </div>
           ))}
         </fieldset>
         {dangling.length > 0 && (
@@ -142,6 +165,10 @@ export function DealDesk({
         <h3 id="deal-price" className={styles.deskTitle}>
           The price
         </h3>
+        <p className={styles.help}>
+          Project fee is your full-scope quote before your assigned reductions. If reductions exceed
+          it, the total stays unset until you correct the figures.
+        </p>
         <div className={styles.dealFields}>
           <label className={styles.field}>
             <span className={styles.fieldLabel}>Project fee</span>

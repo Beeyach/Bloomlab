@@ -124,6 +124,31 @@ describe('the desk is one object with seven areas (PRI-001)', () => {
 });
 
 describe('taking scope out has consequences the learner can see (PRI-001)', () => {
+  it('subtracts the learner’s own line quote alongside the structural consequence and recovers it after reload', async () => {
+    const view = await openRunner(SUMMIT);
+    await screen.findByTestId('deal-desk');
+    fireEvent.change(screen.getByTestId('deal-project'), { target: { value: '2400' } });
+    fireEvent.change(screen.getByTestId('scope-fee-discovery_calendar'), {
+      target: { value: '400' },
+    });
+    const calendar = screen.getByText('Discovery calendar').closest('label');
+    fireEvent.click(document.getElementById(calendar?.getAttribute('for') ?? '') as HTMLElement);
+    await waitFor(() => expect(screen.getByTestId('deal-total')).toHaveTextContent('$2,000'));
+    expect(screen.getByTestId('scope-dangling')).toHaveTextContent('No-show recovery');
+    await waitFor(async () =>
+      expect((await loadAttempt(SUMMIT, NORMAL_RUN))?.response.pricing).toMatchObject({
+        excluded: ['discovery_calendar'],
+        scope_fees: { discovery_calendar: 400 },
+      }),
+    );
+    view.unmount();
+    await openRunner(SUMMIT);
+    await waitFor(() => expect(screen.getByTestId('deal-total')).toHaveTextContent('$2,000'));
+    expect(screen.getByTestId('scope-fee-discovery_calendar')).toHaveValue(400);
+    const restored = screen.getByText('Discovery calendar').closest('label');
+    fireEvent.click(document.getElementById(restored?.getAttribute('for') ?? '') as HTMLElement);
+    await waitFor(() => expect(screen.getByTestId('deal-total')).toHaveTextContent('$2,400'));
+  });
   it('says which requirement nothing answers any more', async () => {
     await openRunner(GLOWHAUS);
     await screen.findByTestId('deal-desk');
