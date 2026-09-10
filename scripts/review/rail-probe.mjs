@@ -307,8 +307,9 @@ try {
       checks.rendered = false;
     } else if (width >= 768) {
       const expected = Number.parseFloat(m.token);
-      // Expanded D-202 band; the dedicated navigation probe covers both states.
-      checks.tokenInBand = expected >= 220 && expected <= 248;
+      // Fresh-profile D-202 default; sidebar-resize covers the adjustable range and
+      // viewport clamp, while navigation covers both expanded and collapsed states.
+      checks.tokenIsExpandedDefault = expected === 200;
       checks.railWidthMatchesToken = Math.abs(m.rail.w - expected) < 0.5;
       checks.railIsColumn = m.rail.h >= m.innerHeight - 1 && m.rail.x === 0;
       checks.mainStartsBesideRail = m.main.x >= m.rail.w - 0.5;

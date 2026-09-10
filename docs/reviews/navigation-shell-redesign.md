@@ -59,6 +59,13 @@ The corrected probe preserves the established scrollbar driver's held-button dis
 moderate axe region finding moved the fixed separator into the main landmark while keeping it
 outside the navigation scroll owner; no accessibility rule was suppressed.
 
+The first deployed refinement sweep passed the resize/navigation/accessibility probes, but the
+legacy rail probe still required the superseded 220–248 px band. Its genuine scrolling and
+layout assertions passed. Its fresh-profile width assertion now requires exactly the new
+200 px default; the dedicated resize probe covers every supported bound. The failed raw
+attestation is retained, and complete CI/Preview verification is repeated on the corrected
+probe head. Application layout and scrolling code did not change for this reconciliation.
+
 Final immutable-head Node 22 CI, deployed Worker/browser identity, full navigation, resize,
 accessibility and related probe results are attested in draft PR #31 after deployment. This
 review is committed before those runs so that verification can remain tied to one exact head.
