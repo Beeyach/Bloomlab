@@ -457,3 +457,15 @@ offline reload assertion or status was relaxed. Corrected Search (25 width state
 keyboard/touch/reduced motion, offline bookmark reload) and Exercise (offline submission/reload,
 unchanged evidence counts and queued writes) both pass against that deployed candidate. The final
 committed head's complete CI and deployed reruns supersede the failed candidate probe runs.
+
+The `ff96ad06` deployed sweep passed every other probe but exposed a **Call probe touch-target
+precondition defect** after the five-width restart/retention flow. Read-only inspection of that
+failed profile found the original attempt and a 5,152-byte local recording still present, with
+retention false: the small-checkbox tap had not enabled retention before recording. No audio was
+lost during failed deletion. The probe now touches the existing associated 44 px label after
+scroll anchoring settles, asserts its actual hit target, and requires both the native checked
+state and persisted retention value before recording. The complete corrected Call probe passes,
+including all three retention toggles and held failed-deletion/retry assertions. This changes
+only probe setup/assertions, not Call application code, provider boundaries or any parked status.
+The final exact-head attestation follows this correction as well; earlier mixed sweep results
+are retained rather than silently relabelled as passing.
