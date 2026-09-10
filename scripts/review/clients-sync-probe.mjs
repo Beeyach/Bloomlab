@@ -73,6 +73,21 @@ assert.equal(
   (await call('/api/sync/pull', { cursor: 0 }, stranger.session_token)).changes.length,
   0,
 );
+// The curriculum ID is deliberately identical across learners. A read-only stranger check
+// alone misses an id-only UPSERT that silently overwrites the first learner's payload.
+const strangerRecord = {
+  ...record,
+  device_id: stranger.device_id,
+  journal: [{ id: crypto.randomUUID(), at, text: 'Separate controlled learner; same client ID.' }],
+};
+assert.equal((await push(strangerRecord, stranger.session_token)).outcomes[0].status, 'applied');
+const strangerPull = await call('/api/sync/pull', { cursor: 0 }, stranger.session_token);
+assert.equal(strangerPull.changes[0].record.learner_id, stranger.learner_id);
+assert.deepEqual(strangerPull.changes[0].record.journal, strangerRecord.journal);
+assert.deepEqual(
+  (await call('/api/sync/pull', { cursor: 0 }, b.session_token)).changes[0].record.journal,
+  record.journal,
+);
 assert.equal((await push({ ...record, image_bytes: [1, 2] })).outcomes[0].status, 'rejected');
 assert.equal(
   (
@@ -116,6 +131,21 @@ assert.equal(
   ).outcomes[0].status,
   'applied',
 );
+assert.equal(
+  (await call('/api/sync/pull', { cursor: 0 }, stranger.session_token)).changes[0].record
+    .deleted_at,
+  null,
+);
+assert.equal(
+  (
+    await push(
+      { ...strangerRecord, deleted_at: new Date().toISOString() },
+      stranger.session_token,
+      1,
+    )
+  ).outcomes[0].status,
+  'applied',
+);
 await call('/api/sync/devices/revoke', { device_id: deviceB }, a.session_token);
 await call('/api/sync/devices/revoke', { device_id: deviceA }, a.session_token);
 await call('/api/sync/devices/revoke', { device_id: stranger.device_id }, stranger.session_token);
@@ -130,6 +160,7 @@ writeFileSync(
         'D1 client journal and stage-attempt references roundtrip',
         'linked-device pull',
         'cross-learner isolation',
+        'same client ID independently owned; forged owner ignored; tombstone isolated',
         'anonymous 401',
         'binary rejection',
         'relationship/project snapshot conflict',

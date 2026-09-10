@@ -88,6 +88,20 @@ assert.equal(
   (await call('/api/sync/pull', { cursor: 0 }, stranger.session_token)).changes.length,
   0,
 );
+// Keep the real curriculum ID: randomizing it would mask the global-primary-key defect.
+const strangerRecord = {
+  ...record,
+  device_id: stranger.device_id,
+  reflection: 'Separate controlled owner',
+};
+assert.equal((await push(strangerRecord, stranger.session_token)).outcomes[0].status, 'applied');
+const strangerPull = await call('/api/sync/pull', { cursor: 0 }, stranger.session_token);
+assert.equal(strangerPull.changes[0].record.learner_id, stranger.learner_id);
+assert.equal(strangerPull.changes[0].record.reflection, strangerRecord.reflection);
+assert.equal(
+  (await call('/api/sync/pull', { cursor: 0 }, b.session_token)).changes[0].record.reflection,
+  record.reflection,
+);
 assert.equal((await push({ ...record, image_bytes: [1, 2] })).outcomes[0].status, 'rejected');
 assert.equal(
   (
@@ -131,6 +145,24 @@ assert.equal(
   ).outcomes[0].status,
   'applied',
 );
+assert.equal(
+  (await call('/api/sync/pull', { cursor: 0 }, stranger.session_token)).changes[0].record
+    .deleted_at,
+  null,
+);
+assert.equal(
+  (
+    await push(
+      { ...strangerRecord, deleted_at: new Date().toISOString() },
+      stranger.session_token,
+      1,
+    )
+  ).outcomes[0].status,
+  'applied',
+);
+await call('/api/sync/devices/revoke', { device_id: deviceB }, a.session_token);
+await call('/api/sync/devices/revoke', { device_id: deviceA }, a.session_token);
+await call('/api/sync/devices/revoke', { device_id: stranger.device_id }, stranger.session_token);
 writeFileSync(
   resolve(out, 'live-sync.json'),
   JSON.stringify(
@@ -138,6 +170,8 @@ writeFileSync(
       head: process.env.REVIEW_HEAD,
       base,
       health,
+      sameIdOwnership:
+        'Two learners reuse the curriculum ID; forged owner ignored; writes and tombstones isolated.',
       checks: [
         'D1 ten-category roundtrip',
         'linked-device pull',

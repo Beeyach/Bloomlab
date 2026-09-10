@@ -5,6 +5,31 @@ Implementation branch: `codex/field-ready-v1-remediation`. Draft PR base must be
 `6b58d3c54bae3c7759ac238dc9dc9651ae5298ee` plus the independent report only).
 `AUDIT_REPORT.md` is the authoritative input, unchanged; this is remediation evidence, not a new audit.
 
+## Resumed checkpoint inventory (2026-09-10)
+
+Resumed on `20b61295d863a1b189a8e4c3d9ad85eae157a49c`, tracking the same remote branch.
+`3c6e732` contains the R1–R9 implementation and initial R10 reconciliation; `20b6129` contains
+probe failure-exit hardening and corrected fieldwork touch evidence. Both commits were preserved.
+The six uncommitted files were the R5 ownership correction discovered by R10 Preview probes:
+`0007_sync_learner_keys.sql`, `ownership.test.ts`, `sync/db.ts` and the three sync drivers.
+No checkpoint was restarted and no prior implementation or failed evidence was discarded.
+
+| Checkpoint | State at resumption | Remaining work in this continuation |
+| --- | --- | --- |
+| R1 | Reconciliation/negative checks recorded; INF-015 already PASSED from the independent report. | Preserve evidence/statuses; final control validation. |
+| R2 | Inventory and rubric-copy fix committed and tested. | Final regression sweep. |
+| R3 | Home fix, five-width short-height states and matrix committed/tested. | Final browser sweep; preserve open broader design cells. |
+| R4 | Keyboard core-flow probe committed/passed; A11Y-001 remains PARTIAL. | Final keyboard/axe runs, no human promotion. |
+| R5 | Local draft/envelope work complete; deployed same-ID ownership defect reopened this checkpoint. | Finish preserved migration/writer/test/probe patch, then verify deployed ownership. |
+| R6 | Source/config/private-media checks committed; cloud gate passed on intermediate CI. | Repeat source/build/privacy gates on final head. |
+| R7 | Naming corrections and all B/C limitations committed/tested. | Final content/registry checks; GHL-005/010 remain open. |
+| R8 | Precache and visited-Lab offline fix committed/tested. | Final network/cache/offline probe. |
+| R9 | Replay, temporal grading, open decision and quote changes committed/tested. | Final changed-surface probes; retain explicit incomplete criteria below. |
+| R10 | Interrupted: deployed sync failures and final immutable attestation unresolved. | Complete Node 22 checks, Preview-only migration/deploy, full browser sweep and PR #30 attestation. |
+
+Checkpoint completion here means the recorded bounded remediation work, not acceptance of every
+target row. The complete remaining P0/P1 ledger below retains the actual code/audit gaps.
+
 ## R1 — control and negative constraints
 
 Read the entire handoff, independent report, master, CLAUDE, requirements, acceptance tests,
@@ -109,6 +134,44 @@ DATA-006 remains PARTIAL: R2 screenshot/audio ownership is implemented, but repo
 export/restore is not binary recovery backup and authored scenario attachment recovery is absent.
 No binary-backup or real-cloud recovery claim is made. Final offline/sync/restore probes remain
 required in R10 before reconciling DATA-001/SYNC-007/INF-011.
+
+### R5 reopened by deployed ownership evidence
+
+The intermediate Preview client/portfolio probes failed when their first pull returned no record.
+Their IDs (`cp:CL-glowhaus-medspa`, `pp:PF-consultation-booking-system`) are learner-local, but
+the legacy D1 primary key and UPSERT matched only `id`. A later authenticated learner could
+overwrite the earlier learner's payload while leaving the row's owner unchanged. Read isolation
+alone and randomized record IDs failed to expose this write collision.
+
+The preserved migration `0007_sync_learner_keys.sql` rebuilds all **13 server sync tables** with
+`PRIMARY KEY (learner_id, id)` and copies every existing envelope/payload byte. The writer uses
+the matching composite conflict target. Identity, Call/media, AI and `sync_operations` tables
+remain intact. The **12 browser-sync entities** are a separate existing count. No Dexie version
+change or second persistence architecture is introduced.
+
+Focused Node 22 evidence: **29 tests / 2 files pass**, including 15 new ownership/migration cases.
+Every server entity tests colliding IDs, independent updates/deletions and isolated pull logs;
+HTTP client push/pull ignores forged ownership. The migration test preserves live/deleted legacy
+rows, Unicode/whitespace payload bytes, indexes and cursor history, injects a late uniqueness
+failure to prove the entire rebuild rolls back, then successfully retries. The first resumed test
+run failed 13 assertions because cases shared learner IDs/log history; the fixtures now isolate
+learners per entity and compare the entire cursor log before new writes. No product assertion
+was removed to hide an ownership failure.
+
+The two deployed metadata drivers retain real curriculum IDs and deliberately reuse each across
+two disposable learners, checking forged owner rejection, both pull payloads, snapshot conflicts
+and independent tombstones. The general sync probe holds page and worker offline before checking
+the outbox, so the automatic scheduler cannot drain it before observation. All drivers still fail
+on false evidence. Required final deployed results belong to the final PR attestation.
+
+Deployment order follows existing CI: Checks → `bloomlab-dev` migration with `--env preview` →
+Preview Worker. The old writer is incompatible with the composite schema during the short
+migration/deployment interval; local data and queued changes survive failed sync and can retry
+after deployment. Do not roll back only the Worker to the old writer. Migration prevents future
+collisions; it cannot reconstruct payloads overwritten before it. No production learner data was
+queried and no claim is made about recovering historical collisions. Production stays skipped.
+Cloudflare guidance informed the use of the existing transactional D1 migration/batch path;
+the rollback and byte-preservation claims are also exercised directly in local workerd/D1.
 
 ## R6 — security and infrastructure checks
 
@@ -217,15 +280,37 @@ are recorded below, without deleting these failed-run records.
 Every changed criterion is re-read against `ACCEPTANCE_TESTS.md` and the unchanged matrix wording.
 No human row, priority, earlier PR or independent report is changed. Exact-head CI checks and
 Preview now explicitly check out the source SHA rather than labelling a synthetic merge checkout.
-No migration is added. Provider spend is $0. Draft PR base remains the independent audit branch.
+Migration 0007 is the R5 ownership correction described above. Provider spend is $0.
+Draft PR base remains the independent audit branch.
 
-Local complete Node 22 chain: 2090 tests / 157 files, all 15 adversarial cases, content/freshness,
+Original local complete Node 22 chain: 2090 tests / 157 files, all 15 adversarial cases, content/freshness,
 voice, source/built-browser secret checks, build and 75 axe scans. An earlier formatting-stage
 failure while the probe was being edited is retained separately; the complete chain was rerun.
 The existing hook dependency warning remains non-fatal. `npm ci` reports five high dependency
 advisories; no unrequested forced dependency upgrade or claim of a clean dependency audit.
 Production-mode build, stable browser sweep and immutable CI/Preview identity remain pending
 the final attestation below; this paragraph alone is not exact-head deployment evidence.
+
+Resumed Node 22.23.2 verification after a clean `npm ci`: 2106 tests / 159 files, including the
+15 new ownership/migration cases; all 15 adversarial cases; typecheck, lint, format, control-doc
+validation, source-secret scan (1272 files), content validation/freshness, voice check and build
+pass. A separate production-mode build and its browser-secret scan pass. The first invocation
+incorrectly set `CLOUDFLARE_ENV=production` for the entire chain and stopped at a Wrangler named
+export during Vitest setup; running the normal test environment passed without dependency or
+test-runner changes. The production environment is selected only for the build, as in CI.
+The initial accessibility launch failed because `google-chrome` was unavailable; the explicit
+installed Chrome-for-Testing binary also needed the existing local shared-library directory.
+Those launch failures are not accessibility passes. The configured rerun and final immutable
+CI/Preview attestation below are the acceptance evidence, not these failed attempts.
+
+Configured local accessibility rerun: Chrome for Testing 153.0.8010.12, axe-core 4.13.0,
+75 scans, negative control detected, zero serious/critical violations; both local Worker and
+browser identify the explicitly non-immutable build `remediation-resumed`. This production-mode
+build was served locally with simulated bindings, not deployed to production. Artifacts are in
+`.review/remediation/resumed-local-a11y-configured`; manual/physical acceptance remains open.
+The final 33-probe deployed sweep will use `.review/remediation/final-preview` and require the
+immutable PR head before and after execution. Its result, CI URL and deployment version belong
+in the final PR #30 attestation; pending or failed probes must not be inferred as passed here.
 
 ### Exact acceptance reconciliation
 
@@ -271,7 +356,7 @@ P2/P3/deferred work is unchanged. In particular no PORT-003, INF-018, FLD-003 or
 The stable Preview-mode build is labelled `remediation-r10`, not an immutable deployed SHA.
 `phase-26-suite.mjs` runs 33 explicitly allowed probes sequentially with isolated profiles,
 fake-media/controlled-provider boundaries, real scrollbar gutters and no live fieldwork mode.
-The first checkpoint probe includes 30 additional axe scans (three changed surfaces × five widths
+The changed-exercise probe includes 30 additional axe scans (three changed surfaces × five widths
 × two motion modes), with no serious/critical exclusions. Raw artifacts remain under
 `.review/remediation/stable`; no private fixture blobs, tokens or media are committed.
 Final suite result and immutable PR/CI/Preview attestation are recorded after completion.

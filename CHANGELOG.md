@@ -12,6 +12,10 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 ### Changed — Field-Ready v1 independent-audit remediation
 
 - Added actual active-client Home state and local Workflow draft checkpoint/reload recovery.
+- Completed the interrupted R5 sync ownership fix: D1 migration 0007 preserves all existing rows
+  while replacing global IDs with learner-scoped primary keys across 13 sync tables. Added
+  collision/update/tombstone, byte-preservation and migration rollback/retry regressions; deployed
+  sync probes now reuse curriculum IDs across learners and check each owner's data independently.
 - Fixed late-booking temporal grading and added in-runner actual-event playback with reduced motion;
   prediction-before-Lab enforcement remains an explicit gap. Proved later open architecture writing.
 - Added learner-authored removable fee portions so scope changes can alter quote/payment without
@@ -20,7 +24,8 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
   read-only cloud privacy CI gating, and stable-only precaching with visited-route offline recovery.
 - Reconciled only objectively supported audit rows, including authorized INF-015; kept all twelve
   human/real-GHL statuses parked. Added five-width short-height, keyboard/touch, offline and new-surface
-  regressions; exact-head Checks/Preview use the source SHA. No merge, migration or provider spend.
+  regressions; exact-head Checks/Preview use the source SHA. Preview-only migration/deployment;
+  no merge or provider spend.
 
 Evidence and remaining gaps: `docs/reviews/field-ready-v1-remediation.md`. Historical Phase 26
 precache and Phase 17 scope-price limitations below describe their original closure checkpoints.

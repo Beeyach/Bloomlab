@@ -87,7 +87,7 @@ export async function applyRecord(
       .prepare(
         `INSERT INTO ${entity} (id, learner_id, created_at, updated_at, revision, device_id, deleted_at, payload)
          VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
-         ON CONFLICT(id) DO UPDATE SET
+         ON CONFLICT(learner_id, id) DO UPDATE SET
            updated_at = excluded.updated_at, revision = excluded.revision, device_id = excluded.device_id,
            deleted_at = excluded.deleted_at, payload = excluded.payload`,
       )

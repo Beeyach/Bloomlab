@@ -18,6 +18,14 @@ are promoted including the four R1 audit/negative-constraint rows. Remaining cod
 human gaps are separately listed in the remediation review. Exact-head CI/Preview verification
 must be recorded in the remediation PR before independent re-audit; older phase SHAs are not proof.
 
+Resumed from `20b6129` with all partial work preserved. R10's deployed client/portfolio checks
+reopened R5: the global D1 record key could overwrite another learner using the same curriculum ID.
+Migration 0007 and the matching writer use `(learner_id, id)` across 13 server sync tables, with
+29 focused ownership/API tests passing, including byte-preservation and full rollback/retry.
+The 12 browser-sync entities and their existing metadata semantics are unchanged. Preview CI
+applies the migration before code; production stays skipped. Final verification is recorded in
+the remediation review and PR #30, not inferred from intermediate CI 34458928776.
+
 Phase 26 — Polish/hardening is implemented on `codex/phase-26-polish`, draft PR #28 against
 `codex/phase-25-advanced-curriculum`, atop audited `ad54be84999c263f5ebe5a293528a85614bd20d6`.
 Checkpoints A–H ran in order: atomic confirmed restore, private local search/glossary, deterministic
@@ -67,10 +75,10 @@ Phase 21 update-check recovery: a failed update/build check is visible even when
 ## VERSIONS
 
 - app: 0.1.0
-- content: 2026.09.27 (`content/content.yaml`, locked by `content/content.lock.yaml`; CUR-023 webhook freshness audit correction only)
+- content: 2026.09.28 (`content/content.yaml`, locked by `content/content.lock.yaml`; remediation registry/open-decision changes)
 - simulator: 2026.09.23-r1 (`SIMULATOR_VERSION`, carried on every run and saved run and stamped on evidence)
 - mastery rules: 2026.09.09-r5 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
-- exercise grader: 2026.09.22 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
+- exercise grader: 2026.09.28 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
 
 ## PASSED
 
@@ -436,9 +444,10 @@ None
 
 ## NEXT
 
-Stop for independent no-coding audit of draft PR #28 after final exact-head CI/Preview verification.
-Its base remains `codex/phase-25-advanced-curriculum`, never main. INF-015 and AUDIT_REPORT.md belong
-to that auditor. Do not merge or retarget PR #24/#25/#26/#27/#28. Preserve the twelve parked human
+Stop for independent ChatGPT re-audit of draft PR #30 after final exact-head CI/Preview verification.
+Its base remains `audit/field-ready-v1` at `a2466d3651ac5544f6baa113c46ae472385fa8f5`.
+INF-015 is PASSED solely from the unchanged existing independent AUDIT_REPORT.md.
+Do not merge or retarget PR #24–#29 or merge #30. Preserve the twelve parked human
 rows and the acceptance checklists in `docs/operations/{call-room,fieldwork,field-ready}.md`.
 No new GHL inspection, media publication, production deployment or paid provider work is authorized.
 

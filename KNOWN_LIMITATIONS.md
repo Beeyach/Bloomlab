@@ -7,7 +7,12 @@ not a Field-Ready Complete certification. The exact human/real-GHL rows remain u
 R9 fixes actual in-runner event playback, the late-booking `after:` comparison, later-level
 no-choice architecture evidence and learner-authored scope price reductions. R5 retains unsaved
 Workflow drafts locally; R8 excludes unvisited Labs from stable precache and retains visited
-hashed assets for offline reload. No migration or provider spend was added.
+hashed assets for offline reload. R10's deployed sync failures reopened R5: migration 0007 and the
+matching writer now scope all 13 server sync primary keys to `(learner_id, id)`. Existing rows,
+payload bytes and cursor history are preserved; transactional failure/retry is tested. This prevents
+future same-ID collisions but cannot reconstruct earlier overwritten payloads. Preview CI applies
+the schema before code; the old writer cannot run against it during that brief interval or via a
+Worker-only rollback. Production migration/deployment remains skipped. Provider spend stays $0.
 
 Still open: immutable prediction-before-Lab enforcement (EXR-006); R2 recovery-backup/scenario
 attachment coverage (DATA-006); broad semantic quality (EXR-008/PRI-002/NEG-003); whole-product

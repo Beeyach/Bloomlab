@@ -59,9 +59,13 @@ try {
   // ---------- A writes learner data locally and it syncs ----------
   await A.go('/system');
   await waitFor(A.page, hasButton('Add test note'));
+  // Hold both page and service worker offline so the auto-sync scheduler cannot drain
+  // the outbox before this local-first assertion observes it.
+  await A.setOffline(true);
   await click(A.page, 'Add test note');
   const savedLocally = await waitFor(A.page, bodyHas('notes 1'), 16);
   const aQueuedBefore = await A.page.evaluate(bodyHas('sync_queue 1'));
+  await A.setOffline(false);
   await syncNow(A.page);
   const aNote = await newestNote(A.page);
   step('A wrote a note: local write first, then the queue drained', {
