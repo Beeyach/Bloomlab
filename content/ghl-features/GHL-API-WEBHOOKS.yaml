@@ -15,6 +15,9 @@ skills:
   - SK-CONNECT-webhook-payloads
 supported_configs: {}
 approximation_note: Local contract-inspection fixtures only; no live API, signature verification or account connection.
-verification_note: Read the official reference on 2026-09-09; versioning lists v3 and date-based
-  versions, authorisation distinguishes Private Integrations and OAuth, and the webhook guide
-  documents Ed25519 plus legacy RSA and retry behaviour.
+verification_note: >-
+  Read the official reference on 2026-09-09. From 1 September 2026, HighLevel Marketplace webhook
+  deliveries use X-GHL-Signature with Ed25519 only. Reject a missing signature or failed
+  verification. The dated deprecation notice supersedes older examples still on the page.
+  Historical context: X-WH-Signature (RSA-SHA256) was deprecated on 1 September 2026; it is not
+  supported for current delivery. Non-2xx or missing responses are retried with backoff and jitter.

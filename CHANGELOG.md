@@ -9,6 +9,10 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Fixed — CUR-023 webhook freshness audit
+
+- Current Marketplace webhook guidance now requires X-GHL-Signature with Ed25519 only after 1 September 2026. Removed stale transition guidance from the lesson and API registry notes; legacy RSA is historical/deprecated context only. Added a corpus-wide curriculum regression and negative stale-copy cases. The local-fixture practical and all requirement statuses are unchanged.
+
 ### Added — Phase 25 post-Field-Ready paths
 
 - Seven compiler-enforced curated routes over the existing graph, with the recommended Bloomwired Operator Path. Campaign selection is bookmarkable and shares actual evidence; preview wording preserves unfinished Field Ready and manual human acceptance.

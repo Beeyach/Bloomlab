@@ -64,6 +64,18 @@ try {
       );
       const layout = await measure();
       assert(layout.scrollWidth <= width + 1, `${unit.id} overflows at ${width}`);
+      if (unit.id === 'LU-connect-webhooks') {
+        const text = await page.evaluate('document.querySelector("main").innerText');
+        assert(text.includes('X-GHL-Signature with Ed25519 only'));
+        assert(text.includes('was deprecated on 1 September 2026'));
+        assert(text.includes('reject a missing signature or failed verification'));
+        assert(text.includes('Bloomlab does not perform cryptographic verification here'));
+        await page.evaluate(
+          `void [...document.querySelectorAll('main p')].find(el => el.textContent.startsWith('From 1 September 2026'))?.scrollIntoView({ block: 'center' })`,
+        );
+        await screenshot(page, `${OUT}/webhooks-${width}.png`, undefined, false);
+        layout.webhookFreshness = true;
+      }
       cases.push({ id: unit.id, ...layout });
     }
     await screenshot(page, `${OUT}/academy-${width}.png`, undefined, false);

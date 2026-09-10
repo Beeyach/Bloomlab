@@ -14,6 +14,6 @@ skills:
   - SK-CONNECT-ghl-api
 supported_configs: {}
 approximation_note: Local contract-inspection fixtures only; no live API, signature verification or account connection.
-verification_note: Read the official reference on 2026-09-09; versioning lists v3 and date-based
-  versions, authorisation distinguishes Private Integrations and OAuth, and the webhook guide
-  documents Ed25519 plus legacy RSA and retry behaviour.
+verification_note: Read the official reference on 2026-09-09; authorisation distinguishes
+  Private Integrations and OAuth. Current Marketplace webhook signature guidance is recorded
+  separately in GHL-API-WEBHOOKS.

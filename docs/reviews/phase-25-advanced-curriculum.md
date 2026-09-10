@@ -44,8 +44,9 @@ using eight new graph skills and the existing webhook skill. No one-off page or 
 the Academy, named-answer runner, queued draft writes, finalizer and immutable evidence path are
 reused. The pure fixture projection parses JSON; it never executes submitted code or network work.
 Four official API registry entries cover Private Integrations, versioning, Get Contact and
-Marketplace webhooks. Current documentation distinguishes v3/date-based versions and newer
-Ed25519/legacy RSA signature handling. Every lesson and registry entry records its source boundary.
+Marketplace webhooks. Documentation distinguishes v3/date-based versions. The original webhook
+signature freshness claim was corrected by the CUR-023 audit follow-up below: current delivery
+is Ed25519-only after 1 September 2026. Every lesson and registry entry records its source boundary.
 
 `advanced_topics` citations produce `.content/coverage-advanced.json`. Enforced topic gaps,
 unrelated learning/practical skills, stale referenced features, invalid JSON expectations,
@@ -308,3 +309,54 @@ No AppRail styling, width, component or navigation behavior changed in this foll
 
 The final source-head CI and Preview record in PR #27 must include this probe synchronization
 commit. The application/content remain byte-identical to the fully reviewed implementation.
+
+## CUR-023 independent-audit correction — webhook freshness
+
+Re-read the [official Webhook Integration Guide](https://marketplace.gohighlevel.com/docs/webhook/WebhookIntegrationGuide/)
+on **9 September 2026**. Its dated deprecation notice says that post-1-September-2026 delivery
+uses **X-GHL-Signature with Ed25519 only**. Older transition examples remain on the same page;
+they are not current guidance after that deadline. This corrects the checkpoint B freshness claim,
+not any other Phase 25 acceptance evidence.
+
+The CONNECT webhook lesson and GHL-API-WEBHOOKS registry now require current Ed25519 verification
+and rejection of missing/invalid signatures. The only curriculum RSA reference is an explicitly
+historical sentence recording the deprecated header and date, with no current support. Removed
+copied stale signature claims from the Private Integrations and Versioning registry notes; those
+records point to GHL-API-WEBHOOKS for signature guidance. A branch-wide search found no other
+learner-facing legacy signature/fallback/transition guidance. Unrelated JavaScript nullish,
+workflow, phone and UI fallback/transition wording is unchanged.
+
+`webhookFreshness.test.ts` scans the entire content corpus, permits only the reviewed historical
+sentence, and rejects the original stale lesson/registry wording and other current fallback
+claims even beside a correct dated disclaimer. It also requires post-deprecation verification
+metadata, Ed25519-only/fail-closed guidance and the existing conceptual-fixture boundary.
+Focused freshness/advanced-content/CONNECT grading checks pass **15 tests / 3 files**.
+The CONNECT browser probe additionally checks the rendered corrected guidance and captures the
+affected lesson at each required width. Content version is **2026.09.27**, 400 source files.
+
+The webhook practical, all runtime/application behavior, requirement statuses, parked Phase 22/24
+human acceptance, PRI-001/002 and NEG-003 are unchanged. No migration or paid provider call is
+needed; no earlier PR is changed or merged.
+
+Correction verification:
+
+- Complete Node **22.23.2** `npm run ci`: **1,985 tests / 143 files passed**, typecheck, lint
+  (existing ExerciseRunner hook warning only), formatting, control docs, content lock/coverage,
+  voice inventory and Production build. The separate Preview build also passed; both builds
+  passed the browser provider/secret scan.
+- Built CONNECT probe with AI Off: **90 layouts** (nine lessons and nine practicals at exactly
+  **1440/1024/768/390/320**), all nine empty-fail/correct-retry/draft/result reload flows, visible
+  keyboard focus, touch retry and reduced motion at 480 px height passed. The corrected webhook
+  text and retained fixture disclaimer passed at every width. Artifact:
+  `.review/phase-25-webhook-freshness/local/connect-probe.json`.
+- The first browser launch could not start because a previous temporary Chromium dependency
+  directory was absent. Restored the missing libraries in a new temporary directory, without
+  repository or system-package changes; the full probe then passed. This was not an app failure.
+- Content lock: `f14486b89eaa1e66a9326128385748b31c1ad6986c7f25c81549db7d0cb899fc`.
+  Chromium emulation does not establish physical-device or personal real-GHL acceptance.
+
+The [CUR-023 correction verification record in PR #27](https://github.com/Beeyach/Bloomlab/pull/27#issuecomment-5610563595)
+holds the final immutable correction source SHA, exact-head CI, Preview Worker version and
+matching browser/Worker build IDs, plus the repeated deployed CONNECT probe results after this
+review commit deploys. Earlier Phase 25 verification heads are not substitutes for this correction.
+PR #27 remains draft against `codex/phase-24-field-ready`; stop for independent re-audit.

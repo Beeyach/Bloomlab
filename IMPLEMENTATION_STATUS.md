@@ -45,7 +45,7 @@ Phase 21 update-check recovery: a failed update/build check is visible even when
 ## VERSIONS
 
 - app: 0.1.0
-- content: 2026.09.26 (`content/content.yaml`, locked by `content/content.lock.yaml`)
+- content: 2026.09.27 (`content/content.yaml`, locked by `content/content.lock.yaml`; CUR-023 webhook freshness audit correction only)
 - simulator: 2026.09.23-r1 (`SIMULATOR_VERSION`, carried on every run and saved run and stamped on evidence)
 - mastery rules: 2026.09.09-r5 (`MASTERY_RULES_VERSION`, stamped on every evidence record and evaluation)
 - exercise grader: 2026.09.22 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)

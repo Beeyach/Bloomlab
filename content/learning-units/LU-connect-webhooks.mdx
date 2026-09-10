@@ -16,7 +16,11 @@ summary: 'Map webhook payloads, verify authenticity before effects and reason ab
 
 Outbound webhooks send notifications; inbound webhooks receive them. Map the minimum fields needed, keeping event ID separate from contact ID. One contact can generate many legitimate events.
 
-The current HighLevel Marketplace guide prefers X-GHL-Signature with Ed25519 verification, retaining X-WH-Signature as the legacy RSA transition path. A header's presence is not verification. Use the current provider key and documented signed-message contract; reject failed verification. Marketplace events are not the same feature as a workflow's Custom Webhook or Inbound Webhook trigger.
+From 1 September 2026, HighLevel Marketplace webhook deliveries use X-GHL-Signature with Ed25519 only. A header's presence is not verification. Use the current GHL Ed25519 public key and documented signed-message contract; reject a missing signature or failed verification before applying effects.
+
+Historical context: X-WH-Signature (RSA-SHA256) was deprecated on 1 September 2026; it is not supported for current delivery.
+
+The dated deprecation notice governs current guidance even where older examples remain in the official guide. Marketplace events are not the same feature as a workflow's Custom Webhook or Inbound Webhook trigger.
 
 ## Repeated delivery is normal
 
