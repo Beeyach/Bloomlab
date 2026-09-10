@@ -374,3 +374,65 @@ active-client clause remains open; DES-011 stays PASSED. DES-012's real director
 collectible covers; PORT-003 still has five rather than twenty projects. EXR-024 remains PARTIAL
 with known exercise/judgment/content boundaries, not silently treated as full product completion.
 No new out-of-v1 deferral, provider spend, migration or parked human-status change.
+
+## Checkpoint I — reconciliation and independent-audit boundary
+
+Promoted only these **twelve** directly evidenced requirements: PRD-015, PRD-016, HOL-005,
+A11Y-010, DATA-009, INF-016, INF-017, GHL-008, CNT-010, DES-009, RSP-001 and INF-005. The first nine
+are the implemented Phase 26/glossary contracts above; the last three have current full-width rail,
+screen-width and actual CI/deploy-dependency evidence. INF-005's historical missing-simulator-test
+note is obsolete: the complete suite executes the simulator and Worker regressions.
+
+All **301 other statuses remain exactly as on audited Phase 25**. The roll-up is 313 requirements:
+258 PASSED, 7 IN_PROGRESS, 20 PARTIAL, 12 IMPLEMENTED_UNVERIFIED, 2 DEFERRED, 14 NOT_STARTED;
+none BLOCKED or FAILED. Control-doc validation checks consistency. Requirement scope/priority/IDs
+were not weakened. The older 68–80 px acceptance line now correctly points to master §73/D-117's
+104 px rail, and the adversarial list retains all fifteen cases.
+
+### Remaining ledger disposition
+
+| Retained scope | Evidence examined and why no blanket promotion |
+|---|---|
+| PRD-001/004/009; INF-001/006/007/008/018 | App route/dependency/data boundaries and actual AI-Off practical/Lab/Portfolio flows reviewed. Source search found no prohibited infrastructure or invasive analytics implementation. These broad all-phase architecture/product claims remain at baseline for independent requirement-level assessment; a negative source search or controlled subset is not treated as full audit certification. No commercial or analytics service was added. |
+| PRD-014; DES-010/012; PORT-003 | New acknowledgements do not change unlock semantics. Home active-client coverage and collectible directory treatment remain incomplete; five projects are not the required twenty. No requirement is silently deferred. |
+| EXR-006/007/008/009/024; PRI-001/002; NEG-003 | Real prediction/run and economic/negotiation flows were exercised. The documented replay placement, late-booking assertion, later-level content and broad/open-ended judgment boundaries remain; no paid quality experiment or pricing-scope change was authorized. |
+| DES-006/008/017/018; RSP-002/003/004; A11Y-001; PERF-001 | Full five-width layout plus many actual state/input flows are recorded, but the matrix retains open/held-loading or unit-only cells, physical/long-session proof is absent, client covers remain unfinished and offline precache is broader than likely-next content. No Chromium-only blanket design, accessibility or performance certificate. |
+| DATA-001; SYNC-007; INF-011 | Atomic local restore, no-coordinate sync, offline finalization, separate-device conflict and failure recovery regressions pass. Historical broad all-environment statuses remain for independent cross-cutting audit rather than being inferred solely from the new restore path. |
+| DATA-006; INF-004; SEC-001/002/003; GHL-005/009/010 | No R2 recovery-backup/attachment flow or production reconfiguration was implemented. Both browser builds are secret-scanned; provider ownership/failure tests and registry references/limitations are checked. This is not a new whole-product credential history, production-data/public-media configuration or GHL terminology audit. The maintenance command does not re-research 89 features. |
+| INF-015 | Independent no-coding auditor owns AUDIT_REPORT.md and the audit verdict. Remains NOT_STARTED; the implementation agent does not self-certify it. |
+| PRD-005, CUR-015, CUR-031, EXR-015, EXR-020, CALL-002/005/006, FLD-001, VOI-006/007, SEC-005 | All twelve remain IMPLEMENTED_UNVERIFIED. Actual physical-device/privacy and Ary's real-GHL placement-to-capstone/reasoning acceptance remain required. Fictional media and seeded certificates are not that evidence. |
+| FLD-003; SEC-006 | Original two DEFERRED rows unchanged: optional post-v1 GHL API inspection and commercial legal review. No new deferral. |
+
+There are still **25 open P0 and 25 open P1 rows** (including the human/audit rows), so the
+Field-Ready Complete gate is explicitly **not claimed**. Their exact IDs/statuses remain in the
+baseline ledger and requirements matrix; this closeout is implementation evidence for independent
+audit, not permission to merge, publish media, spend provider credits or deploy production.
+
+Versions are unchanged: Node 22.23.2/npm 10.9.8; app 0.1.0, content 2026.09.27/hash
+`f14486b89eaa1e66a9326128385748b31c1ad6986c7f25c81549db7d0cb899fc`, simulator 2026.09.23-r1,
+mastery 2026.09.09-r5, grader 2026.09.22, IndexedDB 8. Still 400 source files, 58 skills,
+54 units, 104 exercises, 10 campaigns, 89 registry features, 20 clients, five projects/two
+templates. No content lock change, D1/IndexedDB migration or provider spend ($0).
+
+Final verification uses a fresh `npm ci && npm run ci` under Node 22, then the committed final head's
+GitHub Checks/Preview deploy (Production skipped). The final immutable source SHA, CI run/job
+conclusions, Preview Worker version and browser/Worker IDs are attested on draft PR #28 **after this
+document is committed**, avoiding a self-referential documentation SHA or testing an earlier head.
+Only PR #28 receives the attestation; #24/#25/#26/#27 remain draft/unmerged and unmodified.
+
+### Complete local verification
+
+Fresh lockfile install and **complete `npm run ci` pass under Node 22.23.2**: all workspace
+typechecks, ESLint (zero errors; the existing ExerciseRunner `context` dependency warning), full
+format check, **2,040 tests / 148 files**, the **15/15 adversarial harness (31 executed assertions /
+11 files)**, control-doc validation, content lock/schema validation, dated freshness report,
+voice-manifest checks, app build/provider-secret scan and **75 actual axe scans with zero
+violations**, including failed linking and the detected negative control. This includes simulator,
+sync, restore, search, AI Off, timeout/budget/provider/transcription failures and signature/motion
+regressions, not just focused samples. Local log: `/tmp/bloomlab-phase26-complete-ci.log`.
+
+The fresh install reports five high-severity development-tool dependency advisories; the production
+dependency audit reports **zero vulnerabilities**. No forced unrelated toolchain upgrade or hidden
+audit suppression. The separately built Preview/provider-secret scan and H browser checks above
+also pass. Final deployed probes repeat the required widths/new paths against the final SHA, not
+the historical checkpoint heads. Their immutable record belongs to PR #28 as described above.

@@ -33,8 +33,8 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | PRD-012 | App copy is short, smart, direct, professional, occasionally playful ("Run it.", "Something broke. Find out why.", "Deal lost. Good decision."). No childish gamification, no "Amazing job, superstar!". | P1 | 7 | PASSED | §158 |
 | PRD-013 | Progress language uses capabilities demonstrated and the states Passed / Needs another run / Demonstrated / Independent / Mastered / Field Ready. No XP, no star ratings. | P1 | 7 | PASSED | §159 |
 | PRD-014 | Rewards are new capabilities, simulator tools, clients, scenarios, Playground features, portfolio projects, skill mastery and territory access — never meaningless points. | P1 | 7 | PARTIAL | §160 |
-| PRD-015 | Signature moments heavily polished: Holo Skill Interaction, First Workflow Execution, Client Case Reveal, Failed Test reveal, Independent Pass recognition, Field Ready (restrained cinematic). | P2 | 26 | NOT_STARTED | §161 |
-| PRD-016 | Sound is optional and subtle (snap, connect, execution, selection, completion), always mutable, never constant. | P3 | 26 | NOT_STARTED | §162 |
+| PRD-015 | Signature moments heavily polished: Holo Skill Interaction, First Workflow Execution, Client Case Reveal, Failed Test reveal, Independent Pass recognition, Field Ready (restrained cinematic). | P2 | 26 | PASSED | §161 |
+| PRD-016 | Sound is optional and subtle (snap, connect, execution, selection, completion), always mutable, never constant. | P3 | 26 | PASSED | §162 |
 | PRD-017 | Training continually applies to Bloomwired: ICP, offer structure, positioning, pricing, audits, outreach, discovery, proposals, portfolio, client experience, reusable systems, care plans, recurring support. No generic agency-guru scripts as doctrine. | P1 | 24 | PASSED | §123 |
 | PRD-018 | Scenarios biased toward Bloomwired prospect industries (coaches, consultants, therapists, med spas, photographers, realtors, fitness, pet, home services, wedding vendors, local services) plus additional industries for transfer. | P1 | 24 | PASSED | §124, §37 |
 
@@ -293,7 +293,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DES-006 | No AI-slop patterns: giant gradient hero, purple SaaS gradient, gradient text, glassmorphism everywhere, random blobs, icon beside every heading, endless three-column cards, every section in a card, giant useless stats, fake analytics, emoji navigation, trophy spam, rocket graphics, stock SaaS art, generic AI avatar, huge shadows, random confetti, excessive pills, identical layouts everywhere, generic "Welcome back" dashboard. | P0 | all | IN_PROGRESS | §70 |
 | DES-007 | Semantic components (SkillCard, ClientCaseCover, WorkflowNode, ExercisePrompt, MasteryBadge, ContactRow, PipelineCard, HoloTerritory, CallParticipant, PricingScopeItem, ExecutionEvent) sharing tokens; no single universal Card component. | P0 | 2 | PASSED | §71, TA§3 |
 | DES-008 | Information density varies by environment: Academy low-medium, Workflow Lab medium-high, CRM high, Call Room very low, Pricing Arena medium, Skill Map high visual / low text. | P1 | 7 | IN_PROGRESS | §72 |
-| DES-009 | App shell: compact labelled left rail, widened by D-117 to 104 px so full labels have breathing room; Home, Campaign, Skill Map, Workflow, CRM, Inbox and Playground are present today, with Clients and Portfolio arriving in Phases 23–24. The page offsets from the same `--bl-size-rail` token. Phones keep the separate 64 px four-plus-More composition from D-116. Phase 12 visual re-check at the new width is pending. | P1 | 7 | PARTIAL | §73, D-117 |
+| DES-009 | App shell: compact labelled 104 px left rail from one shared offset token, including all current Labs, Search, Clients and Portfolio. Independent vertical scrolling keeps every destination/bottom action reachable at short heights. Phones retain the 64 px four-plus-More composition and Escape returns focus to More. Phase 26 five-width and ten 480 px normal/reduced cases pass. | P1 | 7 | PASSED | §73, D-117 |
 | DES-010 | Command Center answers "What should I do next?"; main object is Continue (campaign, gate, current topic, progress); supporting: active client, due retrieval, recent mastery, Build My Session. No meaningless metrics. | P1 | 7 | PARTIAL | §74 |
 | DES-011 | Skill Map signature screen: nine territories plus Judgment as holographic regions / collectible objects, not tiny LMS nodes; skill states unseen → needs refresh change the visual material. | P1 | 7 | PASSED | §75 |
 | DES-012 | Client case covers feel collectible and premium using abstract identity/material treatment; no mandatory stock photos. | P2 | 24 | IN_PROGRESS | §78 |
@@ -316,7 +316,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | HOL-002 | Variants: soft, collectible, mastery, legendary (legendary stays tasteful). | P1 | 2 | PASSED | §67 |
 | HOL-003 | Desktop physics: pointer position drives rotateX, rotateY, reflection position, spectral angle, shadow direction, edge sheen; max tilt ≈ 5–7°; settle to neutral in ≈ 350–500 ms on pointer exit. | P1 | 2 | PASSED | §68 |
 | HOL-004 | Touch: press changes reflection, drag moves reflection, release settles. Device orientation permission never requested. | P1 | 2 | PASSED | §68 |
-| HOL-005 | Holo Skill Interaction signature moment (pointer/touch physical response) polished. | P2 | 26 | NOT_STARTED | §161 |
+| HOL-005 | Holo Skill Interaction signature moment (pointer/touch physical response) polished. | P2 | 26 | PASSED | §161 |
 
 ## MOT — Motion
 
@@ -331,7 +331,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| RSP-001 | Required review widths: 1440, 1024, 768, 390, 320. | P0 | all | IN_PROGRESS | §82 |
+| RSP-001 | Required review widths: 1440, 1024, 768, 390, 320. | P0 | all | PASSED | §82 |
 | RSP-002 | Tablet is first class; mobile is recomposed, not shrunk. | P0 | all | IN_PROGRESS | §82 |
 | RSP-003 | No critical desktop feature disappears on mobile because responsive work is difficult; recompose instead. | P0 | all | IN_PROGRESS | §82, §131 |
 | RSP-004 | Mobile recompositions: Workflow → vertical step editor; CRM → stage view / local horizontal scroller; Academy → editorial reading; Call Room → mobile-first voice; Inbox → natural conversation flow; Skill Map → territory-first. Phase 13: Funnel → the step list and the block inspector become labelled sheets on phones and every mode stays operable at 390 and 320 (probe). Phase 12: Workflow → vertical step editor holds at 390 and 320 (probe). Call Room and Inbox recompositions belong to Phase 21 and later. | P1 | 12 | PARTIAL | §83 |
@@ -350,7 +350,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | A11Y-007 | Touch targets ≈ 44 px. | P0 | 2 | PASSED | §84 |
 | A11Y-008 | Mobile input font size ≥ 16 px. | P0 | 2 | PASSED | §84 |
 | A11Y-009 | No critical information is hover-only. | P0 | 2 | PASSED | §84 |
-| A11Y-010 | Automated accessibility checks in CI plus manual review of keyboard, focus flow, touch, reduced motion, holographic contrast, drag alternatives. | P1 | 26 | NOT_STARTED | TA§77 |
+| A11Y-010 | Automated accessibility checks in CI plus manual review of keyboard, focus flow, touch, reduced motion, holographic contrast, drag alternatives. | P1 | 26 | PASSED | TA§77 |
 
 ## SYNC — Cross-device Sync
 
@@ -383,7 +383,7 @@ DATA-003 recovery follow-up: failed update/build checks expose a retry before a 
 | DATA-006 | R2 holds generated audio, voice assets, screenshots, portfolio media, fieldwork media, recovery backups, scenario attachments; D1 holds metadata; no huge binaries or giant JSON blobs in D1. | P1 | 20 | PARTIAL | §94, TA§15 |
 | DATA-007 | Private learner assets are never public; access through Worker authorisation, short-lived signed access, or controlled routes. | P0 | 20 | PASSED | §94, TA§16 |
 | DATA-008 | Export Bloomlab Data: versioned backup containing progress, evidence, projects, notes, simulator saves, portfolio metadata. | P1 | 23 | PASSED | §150, TA§80 |
-| DATA-009 | Restore Backup validates version and schema, requires confirmation, never silently overwrites. | P2 | 26 | NOT_STARTED | §150, TA§81 |
+| DATA-009 | Restore Backup validates version and schema, requires confirmation, never silently overwrites. | P2 | 26 | PASSED | §150, TA§81 |
 | DATA-010 | Separate development and production D1 (`bloomlab-dev`, `bloomlab-prod`); migrations never tested against production first. | P0 | 4 | PASSED | §104, TA§61 |
 | DATA-011 | Content update safety: completed historical attempts are never mutated when GHL features or content change. | P0 | 5 | PASSED | TA§82 |
 
@@ -429,7 +429,7 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 | INF-002 | Monorepo layout per §102: apps/web, worker, packages/{simulator-core, exercise-engine, mastery-engine, content-schema, design-system, shared}, content, migrations, tests, scripts, docs, public, plus root control docs. | P0 | 1 | PASSED | §102, TA§57 |
 | INF-003 | Git workflow: `main` plus short-lived feature branches; focused conventional commits (`feat:`, `fix:`, `content:`, `design:` …); never "updates". | P0 | 0 | PASSED | §103, TA§58, TA§59 |
 | INF-004 | Environments local / preview / production with separate dev and prod D1 and, where practical, R2. | P0 | 1 | PARTIAL | §104, TA§61 |
-| INF-005 | GitHub Actions CI runs typecheck, lint, unit tests, simulator tests, content validation, build on PRs and main pushes; deploy only after checks pass. | P0 | 1 | PARTIAL | §134, TA§75 |
+| INF-005 | GitHub Actions CI runs typecheck, lint, unit tests, simulator tests, content validation, build on PRs and main pushes; deploy only after checks pass. | P0 | 1 | PASSED | §134, TA§75 |
 | INF-006 | No Durable Objects in v1 unless a concrete feature requires coordinated real-time server state. | P0 | all | NOT_STARTED | §95, TA§17 |
 | INF-007 | No Cloudflare Queues in v1. | P0 | all | NOT_STARTED | §96, TA§18 |
 | INF-008 | No Redis, Supabase, Firebase, separate Node server, Kubernetes, microservices, or vector database unless a real feature proves necessity. | P0 | all | NOT_STARTED | TA§85 |
@@ -440,8 +440,8 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 | INF-013 | Every release carries `app_version`, `content_version`, `simulator_version`; saved attempts record all three. | P0 | 5 | PASSED | §101, TA§56 |
 | INF-014 | Project-control documents maintained: REQUIREMENTS_MATRIX, IMPLEMENTATION_STATUS (§139 format), KNOWN_LIMITATIONS, CHANGELOG, ACCEPTANCE_TESTS, plus the Phase 0 spec package. | P0 | 0 | PASSED | §139, §140, §163 |
 | INF-015 | Independent audit at major milestones (no coding) producing `AUDIT_REPORT.md` covering missing requirements, partial features, stubs, TODOs, fake data, responsive gaps, missing tests, stale GHL mapping, design violations, inaccessible interactions. | P1 | all | NOT_STARTED | §141 |
-| INF-016 | Adversarial audit cases: offline mid-exercise, refresh mid-simulation, duplicate events, missing phone/email, cancelled appointment during wait, timezone change, AI timeout, AI budget exhausted, ElevenLabs failure, transcription failure, sync conflict, second device, extreme values, malformed scenario data. | P1 | 26 | NOT_STARTED | §142 |
-| INF-017 | Client-side global search over skills, GHL features, lessons, glossary, clients, past exercises; no external search service. | P2 | 26 | NOT_STARTED | TA§71 |
+| INF-016 | Adversarial audit cases: offline mid-exercise, refresh mid-simulation, duplicate events, missing phone/email, cancelled appointment during wait, timezone change, AI timeout, AI budget exhausted, ElevenLabs failure, transcription failure, sync conflict, second device, extreme values, malformed scenario data. | P1 | 26 | PASSED | §142 |
+| INF-017 | Client-side global search over skills, GHL features, lessons, glossary, clients, past exercises; no external search service. | P2 | 26 | PASSED | TA§71 |
 | INF-018 | Analytics limited to learning events (exercise attempted/passed, skill demonstrated, hint used, critical failure, fieldwork completed, gate completed, AI request, session duration); no invasive product analytics. | P2 | 6 | NOT_STARTED | TA§67 |
 
 ## PERF — Performance
@@ -476,7 +476,7 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 | CNT-007 | Content version recorded on every release; attempts preserve version metadata so old evidence stays historically valid. | P0 | 5 | PASSED | §101 |
 | CNT-008 | Client schema: id, business_name, industry, locations, team, offers, lead_sources, current_systems, metrics, problems, relationship_state, assets, hidden_facts, voice, history. | P0 | 5 | PASSED | §38 |
 | CNT-009 | Persistent fictional clients with persistent state across the §37 industries (med spa, coach, consultant, therapist, photographer, realtor, gym, pet service, HVAC, roofing, cleaning, remodeling, dentist, chiropractor, law firm, accounting, recruiting, course creator, wedding vendor, B2B service). | P1 | 24 | PASSED | §37 |
-| CNT-010 | Glossary content type and search integration. | P2 | 24 | NOT_STARTED | §98, TA§71 |
+| CNT-010 | Glossary content type and search integration. | P2 | 24 | PASSED | §98, TA§71 |
 | CNT-011 | Content tests run in CI (all IDs valid, no missing prerequisites, no unknown GHL features). | P0 | 5 | PASSED | TA§73 |
 
 ## GHL — GoHighLevel Accuracy
@@ -490,6 +490,6 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 | GHL-005 | No supposed native GHL feature is ever exposed in Bloomlab without a registry entry. | P0 | all | NOT_STARTED | §25 |
 | GHL-006 | Trigger, action and product names verified against official current GHL documentation before entering the registry; obsolete API patterns never taught as current; old YouTube tutorials never blindly reproduced. | P0 | 5 | PASSED | §16, §23, §151 |
 | GHL-007 | GHL coverage matrix generated: GHL Feature × Skill / Simulator / Fidelity / Exercise / Fieldwork / Last Verified. | P1 | 5 | PASSED | §138 |
-| GHL-008 | Freshness: features not verified recently are flagged; a maintenance script generates a review list. | P2 | 26 | NOT_STARTED | TA§83 |
+| GHL-008 | Freshness: features not verified recently are flagged; a maintenance script generates a review list. | P2 | 26 | PASSED | TA§83 |
 | GHL-009 | Simulator approximations and mismatches with real GHL recorded honestly in KNOWN_LIMITATIONS.md. | P0 | all | NOT_STARTED | §140 |
 | GHL-010 | Exact real GHL terminology used in UI wherever a real feature is represented. | P0 | all | NOT_STARTED | §44, §51 |
