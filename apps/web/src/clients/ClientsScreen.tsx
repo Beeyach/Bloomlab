@@ -9,6 +9,7 @@ import { Markdown } from '../exercise/markdown';
 import { clientProgressId, ensureClients, saveClientNote, selectProjectAttempt } from './store';
 import { projectProgress } from './progression';
 import styles from './clients.module.css';
+import { SignatureMoment } from '../moments/SignatureMoment';
 
 function Relationship({ record }: { record: ClientProgressRecord }) {
   const [text, setText] = useState('');
@@ -337,11 +338,13 @@ export default function ClientsScreen() {
     return (
       <section className={styles.page}>
         <Link to="/clients">All clients</Link>
-        <h1>{client.business_name}</h1>
-        <p>
-          Fictional {client.industry.replaceAll('_', ' ')} client ·{' '}
-          {client.locations.map((location) => location.city).join(', ')}
-        </p>
+        <SignatureMoment key={client.id} kind="client-case">
+          <h1>{client.business_name}</h1>
+          <p>
+            Fictional {client.industry.replaceAll('_', ' ')} client ·{' '}
+            {client.locations.map((location) => location.city).join(', ')}
+          </p>
+        </SignatureMoment>
         <section className={styles.section}>
           <h2>The business</h2>
           <ul>

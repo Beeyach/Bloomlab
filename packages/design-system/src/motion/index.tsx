@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 import { IconSkip } from '../icons';
@@ -38,6 +45,8 @@ export function ExecutionTrack({ progress, label, className }: ExecutionTrackPro
 }
 
 export interface RewardRevealProps {
+  /** Quiet acknowledgement: keep text at full opacity/scale; only its frame responds. */
+  recognition?: boolean;
   /** 1500–3000 ms (spec §69); clamped. */
   durationMs?: number;
   /** Called when the sequence finishes or is skipped. */
@@ -52,6 +61,7 @@ export interface RewardRevealProps {
  * end state shows immediately and `onDone` fires at once (MOT-002, MOT-003).
  */
 export function RewardReveal({
+  recognition = false,
   durationMs = 2000,
   onDone,
   skipLabel = 'Skip',
@@ -61,32 +71,52 @@ export function RewardReveal({
   const reduced = usePrefersReducedMotion();
   const duration = Math.max(motion.rewardMin, Math.min(motion.rewardMax, durationMs));
   const [done, setDone] = useState(reduced);
+  if (reduced && !done) setDone(true);
+  const stage = useRef<HTMLDivElement>(null);
+  const skip = useRef<HTMLButtonElement>(null);
+  const setSkipRef = useCallback((element: HTMLButtonElement | null) => {
+    if (!element && document.activeElement === skip.current) stage.current?.focus();
+    skip.current = element;
+  }, []);
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
 
   useEffect(() => {
     if (done) {
+      if (document.activeElement === skip.current) stage.current?.focus();
       onDoneRef.current?.();
       return;
     }
-    const timer = setTimeout(() => setDone(true), duration);
+    const timer = setTimeout(() => {
+      if (document.activeElement === skip.current) stage.current?.focus();
+      setDone(true);
+    }, duration);
     return () => clearTimeout(timer);
   }, [done, duration]);
 
   return (
-    <div className={cx(styles.reward, className)} data-done={done || undefined}>
+    <div
+      className={cx(styles.reward, recognition && styles.recognition, className)}
+      data-done={done || undefined}
+    >
       {!done && (
         <Button
+          ref={setSkipRef}
           size="sm"
           variant="ghost"
           className={styles.rewardSkip}
           icon={<IconSkip size={16} />}
-          onClick={() => setDone(true)}
+          onClick={() => {
+            stage.current?.focus();
+            setDone(true);
+          }}
         >
           {skipLabel}
         </Button>
       )}
       <div
+        ref={stage}
+        tabIndex={-1}
         className={done ? undefined : styles.rewardStage}
         style={{ '--reward-duration': `${duration}ms` } as CSSProperties}
       >

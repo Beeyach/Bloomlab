@@ -48,6 +48,7 @@ import {
   stepDestination,
 } from './learningCopy';
 import styles from './SkillMap.module.css';
+import { playSound } from '../moments/sound';
 
 /** Reading order: JUDGMENT sits fifth of ten, so it is central in every composition. */
 const TERRITORIES: Territory[] = [
@@ -445,7 +446,10 @@ export default function SkillMap() {
                     data-skill={skill.id}
                     data-locked={availability?.locked ? 'true' : undefined}
                     className={styles.card}
-                    onClick={() => navigate(`/skills/${skill.id}`)}
+                    onClick={() => {
+                      void playSound('selection');
+                      navigate(`/skills/${skill.id}`);
+                    }}
                   />
                   <div id={`${skill.id}-availability`} className={styles.availability}>
                     {availability && (

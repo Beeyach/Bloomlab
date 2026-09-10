@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { HoloMaterial } from './HoloMaterial';
@@ -38,6 +38,52 @@ afterEach(() => {
 });
 
 describe('HoloMaterial', () => {
+  it('cancels active physics immediately when reduced motion changes live or the card leaves the viewport', async () => {
+    let reduced = false;
+    let changed = () => {};
+    let intersect!: (entries: { isIntersecting: boolean }[]) => void;
+    vi.stubGlobal('matchMedia', () => ({
+      get matches() {
+        return reduced;
+      },
+      addEventListener: (_: string, callback: () => void) => {
+        changed = callback;
+      },
+      removeEventListener: vi.fn(),
+    }));
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(callback: typeof intersect) {
+          intersect = callback;
+        }
+        observe() {}
+        disconnect() {}
+      },
+    );
+    render(<HoloMaterial data-testid="live-holo">Skill</HoloMaterial>);
+    const holo = screen.getByTestId('live-holo');
+    mockRect(holo);
+    fireEvent.pointerMove(holo, { pointerType: 'mouse', clientX: 150, clientY: 25 });
+    await waitFor(() => expect(prop(holo, '--holo-lift')).toBe('1.000'), settled);
+    act(() => {
+      reduced = true;
+      changed();
+    });
+    expect(holo).not.toHaveAttribute('data-tracking');
+    expect(prop(holo, '--holo-lift')).toBe('0.000');
+    act(() => {
+      reduced = false;
+      changed();
+    });
+    fireEvent.pointerMove(holo, { pointerType: 'mouse', clientX: 150, clientY: 25 });
+    expect(holo).toHaveAttribute('data-tracking');
+    act(() => intersect([{ isIntersecting: false }]));
+    expect(holo).not.toHaveAttribute('data-tracking');
+    expect(prop(holo, '--holo-lift')).toBe('0.000');
+    fireEvent.pointerMove(holo, { pointerType: 'mouse', clientX: 150, clientY: 25 });
+    expect(holo).not.toHaveAttribute('data-tracking');
+  });
   it('renders bands, grain, glare and rim over a pearl base, under the content', () => {
     render(<HoloMaterial data-testid="holo">Skill</HoloMaterial>);
     const holo = screen.getByTestId('holo');

@@ -26,6 +26,7 @@ import { actions, type PaletteEntry } from './palette';
 import { useWorkflowRun, DEFAULT_WORKFLOW_SCENARIO_ID, scenarioFor } from './useWorkflowRun';
 import { simulatorTime } from './words';
 import styles from './workflow.module.css';
+import { playSound } from '../moments/sound';
 
 /**
  * The Workflow Lab (WFL-001 … WFL-012).
@@ -177,7 +178,10 @@ export default function WorkflowLab() {
       setFeature: (id, featureId) => applyEdit((w) => graph.setNodeFeature(w, id, featureId)),
       setConfig: (id, config) => applyEdit((w) => graph.setNodeConfig(w, id, config)),
       setLabel: (id, label) => applyEdit((w) => graph.updateNode(w, id, { label })),
-      connect: (from, to, branch) => applyEdit((w) => graph.connect(w, from, to, branch)),
+      connect: (from, to, branch) => {
+        applyEdit((w) => graph.connect(w, from, to, branch));
+        void playSound('connect');
+      },
       disconnect: (from, to) => applyEdit((w) => graph.disconnect(w, from, to)),
       remove: (id) => {
         applyEdit((w) => graph.removeNode(w, id));
@@ -211,6 +215,7 @@ export default function WorkflowLab() {
       });
       setSheet(null);
       setAddTarget(null);
+      void playSound('connect');
     },
     [applyEdit, selectedId, setParam],
   );
@@ -282,6 +287,7 @@ export default function WorkflowLab() {
   // finished by now; only the presentation moves.
   const onRan = useCallback(
     (id: string) => {
+      void playSound('execution');
       setWatchedId(id);
       setAutoplay((current) => ({ runId: id, token: (current?.token ?? 0) + 1 }));
       if (narrow) setLowerTab('timeline');
@@ -691,7 +697,10 @@ export default function WorkflowLab() {
                 account={account}
                 selectedId={selectedId}
                 onSelect={(id) => setParam({ node: id })}
-                onMove={(id, x, y) => applyEdit((w) => graph.moveNode(w, id, x, y))}
+                onMove={(id, x, y) => {
+                  applyEdit((w) => graph.moveNode(w, id, x, y));
+                  void playSound('snap');
+                }}
                 watched={watched}
                 records={run.state.execution}
                 playhead={playhead.index}

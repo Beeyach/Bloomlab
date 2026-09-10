@@ -56,6 +56,9 @@
       calc(30px + var(--holo-lift) * 12px) var(--holo-glow),
     0 2px 6px var(--holo-glow-ambient);
   touch-action: pan-y;
+}
+
+.holo[data-tracking='true'] {
   will-change: transform;
 }
 

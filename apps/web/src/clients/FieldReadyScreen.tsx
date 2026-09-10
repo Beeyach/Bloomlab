@@ -7,6 +7,7 @@ import { content } from '../content/bundle';
 import { evaluateLearner } from '../data/learning/progress';
 import { fieldReadyCompletion } from './completion';
 import styles from './clients.module.css';
+import { SignatureMoment } from '../moments/SignatureMoment';
 
 export default function FieldReadyScreen() {
   const [retry, setRetry] = useState(0);
@@ -43,26 +44,28 @@ export default function FieldReadyScreen() {
           ? 'Your required training evidence and project records are complete.'
           : 'Completion requires every evidence area and all required project work. Missing work stays visible below.'}
       </p>
-      <section
-        className={complete ? styles.certificate : styles.section}
-        aria-labelledby="capabilities-title"
-      >
-        <h2 id="capabilities-title">
-          {complete ? 'Field Ready certificate' : 'What Field Ready means'}
-        </h2>
-        <p>{copy?.statement}</p>
-        <ol>
-          {copy?.capabilities.map((capability) => (
-            <li key={capability}>{capability}</li>
-          ))}
-        </ol>
-        {complete && (
-          <p>
-            Real-GHL evidence is learner-supplied manual proof. Bloomlab does not inspect the
-            account. No real client outcome is certified.
-          </p>
-        )}
-      </section>
+      <SignatureMoment kind="field-ready" active={complete} key={String(complete)}>
+        <section
+          className={complete ? styles.certificate : styles.section}
+          aria-labelledby="capabilities-title"
+        >
+          <h2 id="capabilities-title">
+            {complete ? 'Field Ready certificate' : 'What Field Ready means'}
+          </h2>
+          <p>{copy?.statement}</p>
+          <ol>
+            {copy?.capabilities.map((capability) => (
+              <li key={capability}>{capability}</li>
+            ))}
+          </ol>
+          {complete && (
+            <p>
+              Real-GHL evidence is learner-supplied manual proof. Bloomlab does not inspect the
+              account. No real client outcome is certified.
+            </p>
+          )}
+        </section>
+      </SignatureMoment>
       <section className={styles.section}>
         <h2>Independent evidence</h2>
         <ul className={styles.directory}>

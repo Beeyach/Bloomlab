@@ -247,3 +247,48 @@ Native keyboard traces and Holo pointer/touch/settle/reduced captures were revie
 device or full assistive-technology certification; A11Y-001 is not promoted from this subset.
 
 Checkpoint F follows only after these checks. Status reconciliation remains at I. No provider spend.
+
+## Checkpoint F — meaningful recognition and optional sound
+
+The six existing moments retain their own purpose. Holo Skill Interaction uses the one material;
+First Workflow Execution still plays actual engine records with Pause/Skip/Replay; Client Case
+Reveal receives a 3 px spatial settle around the real business heading; Failed Test receives the
+same brief, non-opacity settle without hiding critical differences; a newly saved Independent Pass
+receives a quiet 1.8 s skippable frame acknowledgement; evidence-complete Field Ready receives the
+same restrained treatment around its existing certificate. No confetti, points, trophy, new gradient
+system, blocking overlay, result delay or manufactured progress. Historical results do not replay
+recognition, and guided/assisted passes cannot present independent recognition. Field Ready still
+depends on the unchanged evaluator and retains its manual-proof/no-real-client-certification warning.
+
+The existing RewardReveal now offers this readable-at-full-opacity recognition treatment. Skip and
+automatic finish preserve focus. Live reduced-motion changes finish recognition and Workflow
+playback immediately. Holo cancels in-flight frames and resets neutral immediately on a live
+preference change or leaving the viewport; compositor promotion is limited to active tracking.
+Pointer/touch settle physics, rounded clip, focus ring, pan-y and the one reusable material remain.
+
+A labelled global Sound cues toggle defaults off, persists explicit opt-in locally and remains
+44 px tall at all widths. Five short sine cues cover selection, snap, connect, execution and
+completion; 80 ms rate limiting, 0.018 peak gain and 55–130 ms envelopes prevent chatter/ambience.
+Mute cancels active/pending audio and honors other-tab changes. Unsupported/denied audio or storage
+does not reject, delay or change a learner action. No recording, generated voice, audio download,
+external service or provider dependency was added.
+
+Checks before G:
+
+- 78 tests / 9 files pass (moments/sound, Holo/motion, Search history, Field Ready completion,
+  Workflow UI and sales runner); final focus/physics/design subset 50 tests / 6 files passes.
+  All workspace types and scoped lint pass, with only the pre-existing runner dependency warning.
+- Built probe passes **30 width states** at 1440/1024/768/390/320: actual AI-Off failed/pass
+  webhook results, static reopened results, real client case, incomplete Field Ready and explicitly
+  controlled complete certificates at 480 px in both motion modes. Sound opt-in/navigation/mute and
+  denied-AudioContext grading pass. Live Holo preference/offscreen reset passes on an actual Skill
+  Map card. Artifacts: `.review/phase-26-moments/verified/moments-probe.json`; 320 px pass and
+  reduced certificate captures inspected. Fixture certificates are not Ary's acceptance.
+- Workflow browser probe passes all **16 sections**, including new live reduced-motion settlement,
+  first execution/skip/replay, keyboard/drag/touch alternatives, five compositions and 500-event
+  responsiveness in this controlled container. `.review/phase-26-moments/workflow/workflow-probe.json`.
+- Browser review found the initial small Sound toggle target; the 44 px minimum is fixed and
+  asserted. Holo input waits for IntersectionObserver/media updates before sending the next actual
+  event; no app assertion was weakened. Preview build/provider-secret scan passes.
+
+No content, schema, evaluator, ownership, human-acceptance status or migration changes. Spend $0.
