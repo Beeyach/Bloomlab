@@ -62,6 +62,15 @@ try {
         ),
         `${unit.id} did not render at ${width}`,
       );
+      // Academy metadata renders before the lazy MDX body; wait for the audited copy itself.
+      if (unit.id === 'LU-connect-webhooks')
+        assert(
+          await waitFor(
+            page,
+            `document.querySelector('main')?.innerText.includes('X-GHL-Signature with Ed25519 only')`,
+          ),
+          `Current Ed25519-only webhook guidance did not render at ${width}`,
+        );
       const layout = await measure();
       assert(layout.scrollWidth <= width + 1, `${unit.id} overflows at ${width}`);
       if (unit.id === 'LU-connect-webhooks') {

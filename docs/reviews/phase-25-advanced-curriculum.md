@@ -360,3 +360,21 @@ holds the final immutable correction source SHA, exact-head CI, Preview Worker v
 matching browser/Worker build IDs, plus the repeated deployed CONNECT probe results after this
 review commit deploys. Earlier Phase 25 verification heads are not substitutes for this correction.
 PR #27 remains draft against `codex/phase-24-field-ready`; stop for independent re-audit.
+
+Correction implementation source `9e51cdc9c04ef684dd911c46d171afeed1b39373` passed
+[CI 34420067407](https://github.com/Beeyach/Bloomlab/actions/runs/34420067407): **1,985 tests /
+143 files**, both bundle scans, Checks and Preview deploy successful, Production skipped,
+no migrations to apply. Preview Worker version `7fc2a522-8dd8-480c-b881-ae26103b813c`.
+The first deployed text probe asserted after the Academy title rendered but while the lazy MDX
+body still displayed “Opening the unit…”. The correction probe now waits for the actual
+Ed25519-only body text before measuring/asserting/capturing it; no application behavior changed.
+The complete Node 22 chain passed again after this probe adjustment (**1,985 / 143**).
+
+The corrected probe passed against that deployed implementation: **90 layouts / nine practical
+fail-retry-draft-result flows**, five-width freshness text, keyboard focus, touch, reduced motion,
+AI Off and exact browser/Worker identity. Artifact:
+`.review/phase-25-webhook-freshness/preview-settled/connect-probe.json`. Desktop and 320 px
+correction screenshots were inspected; current guidance and deprecated historical context wrap
+without horizontal overflow. This is implementation evidence; the final exact-head CI and
+repeated deployed CONNECT result for the probe/documentation follow-up are in the linked
+correction verification record, not inferred from this earlier source.
