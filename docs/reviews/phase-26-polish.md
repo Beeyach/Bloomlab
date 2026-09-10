@@ -118,3 +118,44 @@ PRI-001/002 and NEG-003 remain PARTIAL. INF-015 is reserved for the independent 
 No provider spending, production learner data, media publication, migration or merge is part
 of this baseline. Work proceeds B → C → D → E → F → G → H → I, with focused checks between checkpoints.
 
+## Checkpoint B — staged restore
+
+Restore Backup now accompanies the existing Export Bloomlab Data action in Sync settings. It
+reads bounded JSON (25 MB, depth/node limits), rejects unsupported versions, malformed record
+schemas, duplicate IDs, unsafe/prototype keys and all credential/media values excluded by export.
+Selection and cancellation write nothing. The summary names missing versus retained records and
+excluded private media; confirmation is explicit. Restore requires the same learner identity;
+another device must first link with the original Sync Key, never import a session or reassign rows.
+
+D-200 defines add-missing conflict behavior: keep all existing IDs and tombstones, keep the entire
+history of an existing simulator run, and reject a preview if local/sync state changed. Missing
+records and ordinary outbox operations commit in one IndexedDB transaction. Progress is recomputed
+from validated evidence, not imported as a serialized completion claim. Interrupted/quota-failed
+writes roll back together and can be retried. No network request, fake upload or fake sync status.
+
+Simulator saves must reproduce from their history using the available content/engine; incompatible,
+redacted or incomplete histories are refused without changing local data. This exposed an export
+sanitizer bug: numeric calendar pre/post buffer minutes had been removed as if they were binary
+buffers. The narrowly tested numeric exception preserves scheduling data in new v1 exports while
+raw binary/audio fields remain excluded. Older redacted simulator exports may be refused; keep
+their source device and make a fresh export. Raw private media and unfinished drafts remain outside
+the export/restore contract. No schema/storage/content version or migration change.
+
+Checkpoint checks before C:
+
+- **56 tests / 4 files passed**: export/restore, sync engine and simulator persistence. Restore
+  covers all supported groups/reopen, schema/version/date errors, duplicate IDs, existing edits
+  and tombstones, cancellation, unsafe keys, foreign ownership, dangling references, changed
+  previews, transactional partial failure/retry, and derived-progress recomputation.
+- Web typecheck and scoped ESLint pass. Preview build and browser provider/secret scan pass.
+- Built Chromium probe passes **1440/1024/768/390/320 at 480 px height**: file selection and
+  summary/cancel are read-only; malformed/unsupported files are refused; offline confirmation,
+  queued restore, reopen, duplicate protection, keyboard/visible focus, focus return, touch and
+  reduced motion pass. Artifact: `.review/phase-26-restore/verified/restore-probe.json`.
+  The 320 px summary and confirmation screenshots were inspected; no horizontal overflow.
+- The first keyboard probe omitted Enter's character event; the committed probe now sends the
+  same native keypress used by the existing Academy probe. No assertion or app keyboard behavior
+  was weakened. This is controlled Chromium evidence, not physical-device acceptance.
+
+Requirement statuses remain at baseline until final evidence reconciliation. No provider spend,
+parked human-status change, earlier-PR mutation or merge.

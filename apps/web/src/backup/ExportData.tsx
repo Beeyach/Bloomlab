@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Button } from '@bloomlab/design-system';
 import { createBackup, downloadBackup } from './export';
+import { RestoreData } from './RestoreData';
 
 export function ExportData() {
   const pending = useRef(false);
@@ -25,20 +26,23 @@ export function ExportData() {
     }
   }
   return (
-    <section aria-labelledby="export-title">
-      <h2 id="export-title">Your data</h2>
-      <p>
-        Save progress, evidence, projects, notes, simulator saves and portfolio metadata from this
-        device. Sync first if you need recent work from another device.
-      </p>
-      <p>
-        Private images, raw call audio and connection keys are excluded. Your written work remains
-        in the file; keep it private. Restore is not available yet.
-      </p>
-      <Button loading={busy} onClick={() => void run()}>
-        Export Bloomlab Data
-      </Button>
-      <p role={error ? 'alert' : 'status'}>{status}</p>
-    </section>
+    <>
+      <section aria-labelledby="export-title">
+        <h2 id="export-title">Your data</h2>
+        <p>
+          Save progress, evidence, projects, notes, simulator saves and portfolio metadata from this
+          device. Sync first if you need recent work from another device.
+        </p>
+        <p>
+          Private images, raw call audio and connection keys are excluded. Your written work remains
+          in the file; keep it private.
+        </p>
+        <Button loading={busy} onClick={() => void run()}>
+          Export Bloomlab Data
+        </Button>
+        <p role={error ? 'alert' : 'status'}>{status}</p>
+      </section>
+      <RestoreData />
+    </>
   );
 }

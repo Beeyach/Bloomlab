@@ -69,12 +69,18 @@ export function safeBackupValue(value: unknown): unknown {
   return Object.fromEntries(
     Object.entries(value)
       .filter(
-        ([key]) => !forbidden.test(key) && !['__proto__', 'constructor', 'prototype'].includes(key),
+        ([key, entry]) =>
+          // Calendar scheduling buffers are durations, not binary buffers (DATA-009).
+          ((['pre_buffer_minutes', 'post_buffer_minutes'].includes(key) &&
+            typeof entry === 'number' &&
+            Number.isFinite(entry)) ||
+            !forbidden.test(key)) &&
+          !['__proto__', 'constructor', 'prototype'].includes(key),
       )
       .map(([key, entry]) => [key, safeBackupValue(entry)]),
   );
 }
-const envelope = [
+export const BACKUP_ENVELOPE = [
   'id',
   'learner_id',
   'device_id',
@@ -83,7 +89,7 @@ const envelope = [
   'revision',
   'deleted_at',
 ];
-const columns = {
+export const BACKUP_COLUMNS = {
   skill_progress: [
     'skill_id',
     'state',
@@ -190,7 +196,7 @@ export async function createBackup(
   return database.transaction(
     'r',
     [
-      ...Object.keys(columns).map((name) => database.table(name)),
+      ...Object.keys(BACKUP_COLUMNS).map((name) => database.table(name)),
       database.client_progress,
       database.portfolio_projects,
       database.portfolio_assets,
@@ -199,7 +205,7 @@ export async function createBackup(
     ],
     async () => {
       const device = await database.device.toCollection().first();
-      const pickRows = async (table: keyof typeof columns) => {
+      const pickRows = async (table: keyof typeof BACKUP_COLUMNS) => {
         const records = (await database
           .table(table)
           .filter((r) => r.learner_id === device?.learner_id)
@@ -209,7 +215,9 @@ export async function createBackup(
           .map((r) =>
             safeBackupValue(
               Object.fromEntries(
-                [...envelope, ...columns[table]].filter((k) => k in r).map((k) => [k, r[k]]),
+                [...BACKUP_ENVELOPE, ...BACKUP_COLUMNS[table]]
+                  .filter((k) => k in r)
+                  .map((k) => [k, r[k]]),
               ),
             ),
           ) as Record<string, unknown>[];
