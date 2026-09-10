@@ -105,13 +105,13 @@ try {
   await page.evaluate(`(async()=>{
     const p=window.__fieldworkProbe,d=(await p.rows('device'))[0],at=new Date().toISOString();
     await p.put('device',{...d,session_token:'controlled-portfolio-session-secret'});
-    await p.put('workspace',{key:'ai.mode',value:'Off',updated_at:at});
+    await p.put('workspace',{key:'ai.mode',learner_id:d.learner_id,device_id:d.device_id,value:'Off',updated_at:at});
     const envelope=id=>({id,learner_id:d.learner_id,device_id:d.device_id,created_at:at,updated_at:at,revision:1,deleted_at:null});
     const versions={app:'0.1.0',content:${JSON.stringify(bundle.content_version)},content_hash:${JSON.stringify(bundle.content_hash)},simulator:'1',rules:'1'};
     for(const [i,e] of ${JSON.stringify(exercises)}.entries()) {
       const id=crypto.randomUUID(),screenshot=crypto.randomUUID(),deleted=crypto.randomUUID();
       const response={text:'Controlled saved learner reasoning: verify the fallback before activation.',choice:null,prediction:{},written:{}};
-      if(i===1) {response.fieldwork={version:1,configuration:{inventory:'Controlled training proof'},explanations:{why:'Verify references'},tests:{inspect:{status:'passed',observed:'Controlled fixture'}},reasoning:{why:'Inspect destination values'},screenshots:{destination_workflow:screenshot,deleted_example:deleted},confirmed:true};await p.put('evidence_assets',{asset_id:deleted,attempt_id:id,exercise_id:e.id,item_key:'deleted_example',blob:null,status:'deleted',upload_started:true});}
+      if(i===1) {response.fieldwork={version:1,configuration:{inventory:'Controlled training proof'},explanations:{why:'Verify references'},tests:{inspect:{status:'passed',observed:'Controlled fixture'}},reasoning:{why:'Inspect destination values'},screenshots:{destination_workflow:screenshot,deleted_example:deleted},confirmed:true};await p.put('evidence_assets',{asset_id:deleted,learner_id:d.learner_id,device_id:d.device_id,attempt_id:id,exercise_id:e.id,item_key:'deleted_example',blob:null,status:'deleted',upload_started:true});}
       const common={source:{type:i===1?'fieldwork':'exercise',id:e.id},exercise_id:e.id,exercise_type:e.type,result:'passed',score:100,assistance:'independent',hints_used:[],difficulty:3,critical_failures:[],mode:'independent',versions};
       await p.put('exercise_attempts',{...envelope(id),...common,skill_ids:e.skills,started_at:at,completed_at:at,response,grade:null,...(i===0?{portfolio_capture:{version:1,workflows:[{id:'wf',name:'No-show recovery',trigger:'GHL-WF-APPOINTMENT-STATUS',nodes:[{id:'sms',type:'action',feature:'GHL-WF-SEND-SMS',label:'Invite a rebooking'}]}],funnels:[{id:'funnel',name:'Consultation booking',steps:[{id:'book',name:'Book a consultation',purpose:'booking',blocks:[{role:'calendar',connected:true}]}]}]}}:{})});
       for(const skill_id of e.skills) await p.put('skill_evidence',{...envelope(crypto.randomUUID()),...common,skill_id,kind:i===1?'fieldwork':'independent_exercise',attempt_id:id,occurred_at:at,real_ghl:i===1?{required:true,provided:true,evidence:['test:inspect']}:null});

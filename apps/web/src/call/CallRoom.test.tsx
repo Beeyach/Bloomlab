@@ -313,8 +313,11 @@ describe('CALL-001/004/006 call work area', () => {
   });
   it('shows immediate upload/transcription progress, blocks duplicates and recovers the saved audio after failure', async () => {
     const a = await open(cold, 'locally_saved');
+    const device = await ensureDevice();
     await db.call_recordings.put({
       recording_id: a.id,
+      learner_id: device.learner_id,
+      device_id: device.device_id,
       attempt_id: a.attempt.attempt_id,
       exercise_id: cold.id,
       turn: 0,

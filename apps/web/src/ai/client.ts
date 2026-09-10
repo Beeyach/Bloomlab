@@ -35,7 +35,7 @@ async function reconcileSettings(
   revision: number,
   database: BloomlabDatabase,
 ) {
-  return database.transaction('rw', database.workspace, async () => {
+  return database.transaction('rw', database.workspace, database.device, async () => {
     const state = guard(database);
     if (state.revision === revision && state.writes === 0) {
       await saveWorkspace('ai.mode', settings.mode, database);

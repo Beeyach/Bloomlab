@@ -245,7 +245,7 @@ export async function createBackup(
       ]);
       const ownedAttempts = new Set(exercise_attempts.map((a) => a.id));
       const private_assets = (await database.evidence_assets.toArray())
-        .filter((a) => ownedAttempts.has(a.attempt_id))
+        .filter((a) => a.learner_id === device?.learner_id && ownedAttempts.has(a.attempt_id))
         .sort((a, b) => a.asset_id.localeCompare(b.asset_id))
         .map((a) => ({
           asset_id: a.asset_id,

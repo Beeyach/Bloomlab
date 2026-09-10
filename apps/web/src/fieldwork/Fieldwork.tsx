@@ -12,6 +12,8 @@ import { completionMissing, contractFor, emptyFieldwork, proofMissing } from './
 import {
   deleteEvidence,
   evidenceFetch,
+  localEvidence,
+  localEvidenceForAttempt,
   readEvidence,
   selectEvidence,
   uploadEvidence,
@@ -31,7 +33,7 @@ function Screenshot({
   onRemove: () => Promise<unknown>;
   onBusy: (busy: boolean) => void;
 }) {
-  const local = useLiveQuery(() => db.evidence_assets.get(id), [id]);
+  const local = useLiveQuery(() => localEvidence(id), [id]);
   const [url, setUrl] = useState('');
   const [status, setStatus] = useState('Checking screenshot…');
   const [error, setError] = useState('');
@@ -156,8 +158,7 @@ export function Fieldwork({
   const completed = !attempt && Boolean(saved);
   const locked = busy || submitting || completed || Boolean(attempt?.submitted);
   const localAssets = useLiveQuery(
-    () =>
-      attempt ? db.evidence_assets.where('attempt_id').equals(attempt.attempt_id).toArray() : [],
+    () => (attempt ? localEvidenceForAttempt(attempt.attempt_id) : []),
     [attempt?.attempt_id],
   );
   const change = (mutate: (value: FieldworkResponse) => FieldworkResponse) => {

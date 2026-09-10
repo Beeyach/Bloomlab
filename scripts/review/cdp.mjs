@@ -209,16 +209,26 @@ export async function session() {
           const request = indexedDB.open('bloomlab');
           request.onsuccess = () => {
             const database = request.result;
-            if (!database.objectStoreNames.contains('workspace')) {
+            if (
+              !database.objectStoreNames.contains('workspace') ||
+              !database.objectStoreNames.contains('device')
+            ) {
               database.close();
               return;
             }
-            const transaction = database.transaction('workspace', 'readwrite');
-            transaction.objectStore('workspace').put({
-              key: 'ai.mode',
-              value: 'Off',
-              updated_at: new Date().toISOString(),
-            });
+            const transaction = database.transaction(['workspace', 'device'], 'readwrite');
+            const devices = transaction.objectStore('device').getAll();
+            devices.onsuccess = () => {
+              const owner = devices.result[0];
+              if (!owner) return;
+              transaction.objectStore('workspace').put({
+                key: 'ai.mode',
+                learner_id: owner.learner_id,
+                device_id: owner.device_id,
+                value: 'Off',
+                updated_at: new Date().toISOString(),
+              });
+            };
             transaction.oncomplete = () => database.close();
             transaction.onerror = () => database.close();
           };

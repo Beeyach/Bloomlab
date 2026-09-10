@@ -4,6 +4,7 @@ import { freshDatabase } from '../testing';
 import { ensureDevice } from '../device';
 import { createNotesStore } from '../notes';
 import { listOperations } from '../syncQueue';
+import { saveWorkspace } from '../workspace';
 import { SYNC_STATE_KEY, resolveConflict, syncNow } from './engine';
 import { FakeSyncServer } from './fakeServer';
 import { createSyncKey, isLinked, linkThisDevice } from './link';
@@ -26,6 +27,34 @@ describe('linking (SYNC-001, SYNC-004, D-027)', () => {
     const notes = createNotesStore(database);
     const before = await ensureDevice(database);
     const note = await notes.create(draft('written before linking'));
+    await saveWorkspace('draft', { body: 'local' }, database);
+    await database.call_recordings.put({
+      recording_id: 'recording-1',
+      learner_id: before.learner_id,
+      device_id: before.device_id,
+      attempt_id: 'attempt-1',
+      exercise_id: 'exercise-1',
+      turn: 0,
+      mime_type: 'audio/webm;codecs=opus',
+      byte_length: 1,
+      duration_ms: 1,
+      checksum: 'checksum',
+      created_at: new Date().toISOString(),
+      uploaded: false,
+      retain: false,
+      blob: new Blob(['a']),
+    });
+    await database.evidence_assets.put({
+      asset_id: 'asset-1',
+      learner_id: before.learner_id,
+      device_id: before.device_id,
+      attempt_id: 'attempt-1',
+      exercise_id: 'exercise-1',
+      item_key: 'proof',
+      blob: new Blob(['a']),
+      status: 'local',
+      upload_started: false,
+    });
     expect(note.learner_id).toBe(before.learner_id);
     expect(before.learner_id).toMatch(/^local:/);
 
@@ -36,7 +65,17 @@ describe('linking (SYNC-001, SYNC-004, D-027)', () => {
     expect(device.session_token).toMatch(/^token-/);
     expect(device.sync_key).toHaveLength(52);
     expect((await notes.get(note.id))?.learner_id).toBe('learner-1');
-    expect((await listOperations(database))[0]?.payload?.learner_id).toBe('learner-1');
+    expect((await listOperations(database))[0]).toMatchObject({
+      learner_id: 'learner-1',
+      payload: { learner_id: 'learner-1' },
+    });
+    expect(await database.workspace.get('draft')).toMatchObject({ learner_id: 'learner-1' });
+    expect(await database.call_recordings.get('recording-1')).toMatchObject({
+      learner_id: 'learner-1',
+    });
+    expect(await database.evidence_assets.get('asset-1')).toMatchObject({
+      learner_id: 'learner-1',
+    });
   });
 
   it('rejects a malformed key without touching the device', async () => {

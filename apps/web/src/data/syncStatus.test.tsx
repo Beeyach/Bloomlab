@@ -51,6 +51,7 @@ describe('sync status', () => {
       await database.sync_queue.clear();
       await database.sync_state.put({
         entity: 'notes',
+        learner_id: (await database.device.toCollection().first())!.learner_id,
         last_synced_at: '2026-09-02T00:00:00.000Z',
         server_cursor: null,
       });

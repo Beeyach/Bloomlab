@@ -1,4 +1,5 @@
 import { emptyFieldwork } from '../fieldwork/proof';
+import { localRecordingsForAttempt } from '../call/local';
 import { content } from '../content/bundle';
 import type { CallResponse, FieldworkResponse } from '@bloomlab/shared';
 import type { GradeReport } from '@bloomlab/exercise-engine';
@@ -278,37 +279,45 @@ export async function replaceUnfinishedCall(
 ): Promise<ActiveAttempt> {
   const key = attemptKey(exercise.id, context);
   return enqueue(key, () =>
-    database.transaction('rw', database.workspace, database.call_recordings, async () => {
-      const current = await loadAttempt(exercise.id, context, database);
-      if (
-        !exercise.call ||
-        current?.attempt_id !== expectedId ||
-        current.submitted ||
-        current.response.call?.snapshot?.complete ||
-        [
-          'microphone_permission',
-          'recording',
-          'uploading',
-          'transcribing',
-          'evaluating',
-          'resolving',
-        ].includes(current.response.call?.phase ?? '') ||
-        (await database.call_recordings.where('attempt_id').equals(expectedId).count()) > 0
-      )
-        throw new Error('This call changed or still has saved audio. Review it before restarting.');
-      const fresh: ActiveAttempt = {
-        attempt_id: randomId(),
-        exercise_id: exercise.id,
-        rubric_id: exercise.grading.rubric,
-        skill_id: context.skill_id,
-        run: context.run,
-        started_at: new Date().toISOString(),
-        hints_revealed: [],
-        response: emptyResponse(),
-      };
-      await saveWorkspace(key, fresh, database);
-      return fresh;
-    }),
+    database.transaction(
+      'rw',
+      database.workspace,
+      database.call_recordings,
+      database.device,
+      async () => {
+        const current = await loadAttempt(exercise.id, context, database);
+        if (
+          !exercise.call ||
+          current?.attempt_id !== expectedId ||
+          current.submitted ||
+          current.response.call?.snapshot?.complete ||
+          [
+            'microphone_permission',
+            'recording',
+            'uploading',
+            'transcribing',
+            'evaluating',
+            'resolving',
+          ].includes(current.response.call?.phase ?? '') ||
+          (await localRecordingsForAttempt(expectedId, database)).length > 0
+        )
+          throw new Error(
+            'This call changed or still has saved audio. Review it before restarting.',
+          );
+        const fresh: ActiveAttempt = {
+          attempt_id: randomId(),
+          exercise_id: exercise.id,
+          rubric_id: exercise.grading.rubric,
+          skill_id: context.skill_id,
+          run: context.run,
+          started_at: new Date().toISOString(),
+          hints_revealed: [],
+          response: emptyResponse(),
+        };
+        await saveWorkspace(key, fresh, database);
+        return fresh;
+      },
+    ),
   );
 }
 

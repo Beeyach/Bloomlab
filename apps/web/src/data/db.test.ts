@@ -1,6 +1,7 @@
+import Dexie from 'dexie';
 import { describe, expect, it } from 'vitest';
 
-import { DB_VERSION } from './db';
+import { BloomlabDatabase, DB_VERSION } from './db';
 import { freshDatabase } from './testing';
 
 describe('BloomlabDatabase', () => {
@@ -56,5 +57,50 @@ describe('BloomlabDatabase', () => {
     expect(await database.notes.count()).toBe(1);
     expect(localStorage.length).toBe(0);
     database.close();
+  });
+
+  it('adds explicit owners to every legacy local and sync-bookkeeping row during v9 upgrade', async () => {
+    const name = `legacy-ownership-${crypto.randomUUID()}`;
+    const legacy = new Dexie(name);
+    legacy.version(8).stores({
+      device: '&device_id',
+      workspace: '&key',
+      call_recordings: '&recording_id, attempt_id, [attempt_id+turn]',
+      evidence_assets: '&asset_id, attempt_id',
+      sync_queue: '++seq, [entity+entity_id], status',
+      sync_state: '&entity',
+      sync_shadow: '&[entity+entity_id]',
+      sync_conflicts: '&[entity+entity_id], detected_at',
+    });
+    await legacy.open();
+    await legacy.table('device').put({ device_id: 'device-1', learner_id: 'learner-1' });
+    for (const [table, row] of [
+      ['workspace', { key: 'draft' }],
+      ['call_recordings', { recording_id: 'recording-1' }],
+      ['evidence_assets', { asset_id: 'asset-1' }],
+      ['sync_queue', { entity: 'notes', entity_id: 'note-1', status: 'pending' }],
+      ['sync_state', { entity: 'all' }],
+      ['sync_shadow', { entity: 'notes', entity_id: 'note-1' }],
+      ['sync_conflicts', { entity: 'notes', entity_id: 'note-1' }],
+    ] as const)
+      await legacy.table(table).put(row);
+    legacy.close();
+
+    const upgraded = new BloomlabDatabase(name);
+    await upgraded.open();
+    for (const table of [
+      upgraded.workspace,
+      upgraded.call_recordings,
+      upgraded.evidence_assets,
+      upgraded.sync_queue,
+      upgraded.sync_state,
+      upgraded.sync_shadow,
+      upgraded.sync_conflicts,
+    ])
+      expect(await table.toCollection().first()).toMatchObject({ learner_id: 'learner-1' });
+    for (const table of [upgraded.workspace, upgraded.call_recordings, upgraded.evidence_assets])
+      expect(await table.toCollection().first()).toMatchObject({ device_id: 'device-1' });
+    upgraded.close();
+    await Dexie.delete(name);
   });
 });

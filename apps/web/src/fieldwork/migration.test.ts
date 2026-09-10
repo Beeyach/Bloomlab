@@ -34,7 +34,13 @@ it('v6 adds evidence assets without rewriting v5 workspaces or call recordings',
   expect(await next.evidence_assets.count()).toBe(0);
   expect(await next.workspace.get('exercise.attempt.old')).toMatchObject({
     value: { text: 'Existing learner work' },
+    learner_id: expect.stringMatching(/^local:/),
+    device_id: expect.any(String),
   });
-  expect(await next.call_recordings.get('retained-call')).toMatchObject({ checksum: 'original' });
+  expect(await next.call_recordings.get('retained-call')).toMatchObject({
+    checksum: 'original',
+    learner_id: expect.stringMatching(/^local:/),
+    device_id: expect.any(String),
+  });
   await next.delete();
 });

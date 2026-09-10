@@ -2,6 +2,7 @@ import type { CallRecording, CallSnapshot, CallTurnSubmission, CallPhase } from 
 import { db, type BloomlabDatabase } from '../data/db';
 import { saveCall, type ActiveAttempt, type AttemptContext } from '../exercise/attempt';
 import { callFetch, callRequest, uploadLocal } from './client';
+import { localRecording, localRecordingsForAttempt } from './local';
 
 export async function transcribeSaved(
   attempt: ActiveAttempt,
@@ -12,7 +13,7 @@ export async function transcribeSaved(
 ): Promise<CallRecording> {
   const checkpoint = (patch: Parameters<typeof saveCall>[3]) =>
     saveCall(attempt.exercise_id, context, attempt.attempt_id, patch, database);
-  const local = await database.call_recordings.get(id);
+  const local = await localRecording(id, database);
   if (local && !local.uploaded) {
     await checkpoint({ phase: 'uploading' });
     await onPhase?.('uploading');
@@ -100,10 +101,7 @@ export async function cleanConfirmedAudio(
     }
   }
   // A re-record may supersede audio that was never uploaded or whose upload response was lost.
-  const local = await database.call_recordings
-    .where('attempt_id')
-    .equals(snapshot.attempt_id)
-    .toArray();
+  const local = await localRecordingsForAttempt(snapshot.attempt_id, database);
   for (const recording of local) {
     if (recording.retain || !snapshot.turns.some((turn) => turn.turn === recording.turn)) continue;
     await callFetch(
