@@ -1,0 +1,335 @@
+# Navigation shell redesign — independent audit handoff
+
+Branch `codex/navigation-shell-redesign`, base `codex/field-ready-v1-remediation` at
+`1e6a9fdee20089805037e0b290961a92d96d0661`. No stacked PR may be merged.
+
+## Current human acceptance — resizable-width refinement
+
+The learner's latest report is authoritative:
+
+- **Human scroll acceptance: PASS** on the original device/browser. Preserve the scrolling fix.
+- **Prior visual composition: FAIL**, followed by **horizontal expanded/icon-only collapsed
+  composition materially better**. Keep `[icon] Label` expanded and `[icon]` collapsed.
+- **Remaining issue:** fixed 232 px expanded width leaves too much empty horizontal space;
+  the learner requests control over that width.
+- **Adjustable expanded/collapsed visual acceptance: PENDING learner confirmation.** DES-009
+  stays IN_PROGRESS. Independent ChatGPT audit and the twelve human/real-GHL rows stay separate.
+
+### Resizable-width implementation and review
+
+D-202 now specifies a 200 px default, 176–280 px expanded range and fixed 76 px collapsed rail.
+This supersedes the initial fixed 232 px expanded decision, retaining its original requirement
+intent. A 12 px right-edge hit area sits outside the native scrollbar in existing content
+padding, so scrollbar drag keeps its separate target. It appears only on expanded desktop/tablet.
+The named, focusable vertical separator exposes current/min/max values and controls the primary
+navigation. Left/Right change 8 px, Home/End select the effective bounds and double-click resets.
+
+One inherited active CSS width drives the sidebar, separator position and shell padding. Pointer
+capture keeps dragging beyond the narrow handle; requestAnimationFrame coalesces live CSS/ARIA
+updates without app rerenders or storage writes per move. Release commits the selected width.
+Cancelled capture, collapse or a viewport change clears the gesture and restores committed
+geometry and ARIA values. No width transition is used.
+
+Mode remains in `bloomlab.sidebar.v1`; width uses `bloomlab.sidebar.width.v1`. Both are device
+presentation only, excluded from learner evidence/sync. Missing, malformed and non-finite values
+fall back to 200; finite out-of-range values clamp. Denied storage retains session usability;
+other-tab updates and clearing storage are handled. Collapse/reload/expand retains the choice.
+The effective maximum reserves 536 px of content: at a 768 px viewport it is 232 px, at 800 it
+is 264 px and at 816+ it is 280 px. Narrowing the viewport does not overwrite a wider saved choice.
+The existing Workflow readable-canvas composition is unchanged.
+
+The new `review:sidebar-resize` probe uses native CDP held-button drag and keyboard input. It
+covers smaller/larger mouse and tablet drag, touch cancellation, both bounds, live offset equality, storage only on release, keyboard
+focus/values, reset, reload, corruption, collapsed geometry/restoration, viewport cancellation,
+mobile controls and Workflow. It measures every destination's actual icon/label rectangles at
+minimum/default/maximum, including full label fit, and runs axe at those nine width states.
+The original navigation probe retains genuine wheel/small deltas, native scrollbar drag,
+forward/reverse Tab, tablet touch, boundary/page independence, motion and phone More assertions.
+
+Working-build resize verification passed 224 checks across 23 layouts, with zero violations
+in nine axe width-state scans (`.review/sidebar-resize/working-landmark`). The existing 38-case
+navigation run also passed (`working-navigation`). Initial visual artifacts are in `working-3`; minimum/default/
+maximum captures at 1440/1024/768 were manually inspected. All visible destination names fit
+176 px without stacking; selected rows and group dividers remain quiet. At 768 the maximum
+keeps the Workflow nodes readable and inside the canvas. These observations support the
+requested bounds; they do not substitute for learner visual confirmation. The initial new
+probe omitted the held mouse button on move events, causing a harness pointer-capture failure;
+retained failing artifacts and native event tracing distinguish this from application behavior.
+The corrected probe preserves the established scrollbar driver's held-button dispatch. A new
+moderate axe region finding moved the fixed separator into the main landmark while keeping it
+outside the navigation scroll owner; no accessibility rule was suppressed.
+
+The first deployed refinement sweep passed the resize/navigation/accessibility probes, but the
+legacy rail probe still required the superseded 220–248 px band. Its genuine scrolling and
+layout assertions passed. Its fresh-profile width assertion now requires exactly the new
+200 px default; the dedicated resize probe covers every supported bound. The failed raw
+attestation is retained, and complete CI/Preview verification is repeated on the corrected
+probe head. Application layout and scrolling code did not change for this reconciliation.
+
+Final immutable-head Node 22 CI, deployed Worker/browser identity, full navigation, resize,
+accessibility and related probe results are attested in draft PR #31 after deployment. This
+review is committed before those runs so that verification can remain tied to one exact head.
+No PR is merged. Independent ChatGPT audit and learner confirmation are the stop boundary.
+
+## Historical visual-composition investigation
+
+The following records preserve the earlier contradictory human reports and investigation.
+Original-device scrolling is now HUMAN PASS and horizontal composition is materially better;
+older fixed-232 wording describes the initial implementation, superseded by the refinement above.
+
+### Deployed reproduction and remaining uncertainty
+
+Before changing application code, inspected Preview head
+`e9ad959675c633940c5e3981ffb737bd4c67e0b8` at 1440/1024/768, expanded and collapsed.
+Fresh Chromium 153 captures already show horizontal icon-left/label-right rows when expanded
+and icons only when collapsed. Every destination measures 44 px high; icon/label centerlines
+coincide (0 px difference), and collapsed icons are centered in their interaction targets.
+All six captures were manually inspected. This **does not reproduce or dismiss the human FAIL**.
+
+Inspected actual computed styles and matching delivered CSS-module selectors, rather than only
+source declarations. The base mobile `.item` column rule loses to the later desktop `.item`
+row rule at the same specificity. The more-specific `[data-sidebar=collapsed] .label` rule
+sets `display:none`; labels have zero rendered boxes. `data-sidebar`, 232/76 px rail widths,
+layout/visual viewport widths and active desktop media queries all agree. No overriding
+selector or intermediate stacked composition was found in this environment.
+
+The delivered Vite 8 stylesheet rewrites min/max-width queries to range syntax. Its actual
+`(width >= 768px)` query matches at all three review widths; this is an observed build detail,
+not a proven explanation of the learner's browser. Vite documents its CSS target/minifier
+behavior in [build options](https://v8.vite.dev/config/build-options). No compatibility-target
+change or duplicate CSS override is justified by the current evidence.
+
+Checked initial service-worker installation, a subsequent controlled reload and a copy of the
+retained pre-redesign baseline browser profile. All rendered the current browser build and
+current hashed stylesheet; the controlled reload retained the same correct composition.
+No stale installed shell was reproduced. Browser/device, installed-PWA versus tab, and tested
+URL/build were requested from the learner because the real-device discrepancy remains
+unexplained. **No application CSS or scrolling behavior was changed on a conjectured cause.**
+
+Raw computed selector/media/viewport/state/PWA evidence and six screenshots are retained at
+`.review/navigation-composition/{baseline,computed,pwa}`. A compact baseline summary is in
+`navigation-composition-evidence.json`. Fresh final-head results belong in PR #31's attestation.
+
+### Geometry regression
+
+The navigation probe now measures every destination's real row, SVG and label rectangles.
+Expanded checks require a visible label to the right of the entire icon, a gap no larger than
+16 px, centerlines within 2 px, and 44–48 px rows. Collapsed checks require zero label boxes,
+visible icons centered within 1 px, and interaction targets at least 44 px. These assertions
+extend every desktop/tablet width, height, state and motion case while preserving genuine
+wheel, native scrollbar drag, keyboard/focus, tablet touch, page independence, persistence
+and phone four-plus-More checks. Browser-only negative controls deliberately stack expanded
+rows or reveal collapsed labels; neither changes shipping CSS. Both controls fail at the
+new geometry assertions (`Home: visible label beside icon` and `Home: no rendered label
+boxes`). The unmodified deployed layout passes the focused 14-case navigation run (six
+desktop/tablet state cases, six Workflow compositions and both phone cases).
+
+The new automated geometry evidence is not learner visual acceptance. Independent ChatGPT
+audit and learner confirmation remain required; the learner-specific cause is still open.
+
+## N1 — contradictory real-use evidence and starting-head reproduction
+
+The learner reports that the deployed sidebar cannot actually scroll to lower destinations.
+That report is authoritative contradictory evidence against the previous DES-009 PASS, even
+though Chromium probes passed. Its exact device/browser failure is **not yet explained**.
+
+Read the complete redesign handoff, AppRail, RootLayout, global CSS, tokens, app/design-rule
+regressions, rail/CDP probes, DES-009 and acceptance criterion, D-053/D-084/D-116/D-117,
+Phase 24/25/26 rail evidence, Phase 26 accessibility review and PR #30 remediation review and
+final attestation. Starting source head is `1bd8454b0d6c7b5cd3810dc7077843cbddfe5492`;
+its only change from the deployed base is the handoff document.
+
+Before any app edit, tested both the exact starting-head built local Worker and the deployed
+base above at 1440 × 720/600/480. Both browser identities matched their respective source heads.
+Native CDP wheel input over the rail moved scroll position 0 → 240 at all three heights;
+eight 12.5 px deltas moved it to 340. Repeated wheel gestures revealed Design at the bottom
+(scroll maxima 742/862/982). Native scrollbar dragging moved it to 588/710/896 respectively.
+Forward Tab reached all 17 current/flagged destinations with visible focus. An outside-page
+wheel moved the page by 240 without moving the rail. No scrollTop assignment was used for
+these measurements. Raw scripts, JSON and captures: `.review/navigation/baseline*`.
+The unchanged existing rail probe is also retained as baseline evidence, not deleted because
+it contradicts the learner report.
+
+Chromium did **not** reproduce the exact inability to wheel-scroll. It did confirm a narrower
+interaction defect: continued boundary wheel gestures moved neither owner because the whole
+fixed rail used unconditional `overscroll-behavior-y: contain`. That explains a boundary dead
+end, not the learner's entire device-specific symptom. The old probe explicitly required this
+containment and used direct scrollTop assignment to reach its boundaries, so it cannot establish
+the new natural-input reachability contract by itself.
+
+The first app change isolates one flex child with `min-height: 0` as the destination scroll
+owner, reserves a native scrollbar gutter, retains natural list heights, and permits native
+boundary chaining. Brand stays outside scrolling. This is structural remediation of the
+observed dead end and likely layout/scroll-chain causes, not a claimed physical-browser diagnosis.
+
+## N2–N8
+
+Implementation and fresh evidence are recorded below as each ordered checkpoint completes.
+The twelve human/real-GHL IMPLEMENTED_UNVERIFIED rows and unrelated statuses stay unchanged.
+Old Phase 26 attestations are historical evidence only; physical Safari/learner confirmation
+and independent ChatGPT audit remain separate from controlled Chromium verification.
+
+Scroll-only fix verification (before N2): built label `navigation-scroll-fix`, 1440 ×
+720/600/480. Wheel moved 0 → 240, small deltas → 340, repeated wheel revealed the last action;
+continued bottom gestures now moved the page 0 → 240, and outside input independently → 480.
+Scrollbar drag and all destination Tabs remained reachable. This demonstrates correction of
+the reproducible boundary dead end without asserting reproduction of the entire human symptom.
+Artifacts: `.review/navigation/scroll-fix/127.0.0.1.json` and captures.
+
+## N2 — two navigation states
+
+232 px expanded rows use existing typography, colour, spacing and radius tokens. Learning and
+Search precede Labs, followed by Clients/Portfolio, Playground and enabled developer actions;
+subtle dividers separate these existing areas. The 76 px state centers icons while retaining
+explicit accessible names. The selected row has an inset marker as well as surface/weight cues.
+The 44 px toggle works with pointer, native Enter/Space and touch. Tooltips render outside the
+scroll clip, appear on hover and focus, permit pointer entry, stay within the viewport and dismiss
+on Escape. No desktop toggle is shown on phones.
+
+`bloomlab.sidebar.v1` stores only `expanded`/`collapsed`, matching the device-preference policy
+used by sound. Unknown/blocked reads default expanded; blocked writes retain session operability.
+Other same-device tabs follow storage events. No learner store, sync payload or migration changes.
+
+## N3 — scroll owner
+
+The scroll-only fix is retained inside both states. One bounded flex child (`min-height: 0`)
+owns all destinations including system actions; the brand/toggle remains fixed. Lists cannot
+shrink to conceal overflow. Thin native scrollbar plus stable gutter remain discoverable and
+draggable. Focus padding leaves room for the outline; native boundary chaining is deliberate.
+No wheel/touch handlers prevent browser scrolling. Phone More retains its existing containment.
+
+## N4 — shell layout
+
+Explicit expanded/collapsed tokens feed inherited `--bl-size-rail` on RootLayout. The rail width
+and frame padding consume that same active contract. State changes have no width/padding
+animation, including reduced motion. Phone layout ignores desktop width while preserving the
+stored preference for return to tablet/desktop.
+
+## N5 — requirement and decision reconciliation
+
+DES-009 retains its ID, P1 priority, phase and reachability/accessibility intent. Its wording and
+acceptance now require both states, local persistence and genuine input at all required widths
+and short heights. It remains IN_PROGRESS for independent audit and confirmation on the learner’s original device; controlled Chromium success does not resolve that contradictory physical-use report. D-202 explicitly
+supersedes D-117, with master §73, design system and implementation status aligned. Historical
+Phase 26/remediation records now identify their fixed-width/containment assertions as superseded;
+no historical failure or PASS is erased. Existing pricing/calendar/reporting/incident/sales rail
+checks measure the active token instead of mandating 104 px forever. The original rail probe's
+reachability assertions remain, while desktop boundary expectations follow the new native-chaining
+contract; the new dedicated probe never assigns scrollTop to demonstrate reachability.
+
+## N6 — direct regression coverage
+
+The dedicated `review:navigation` drives native CDP input without `scrollTop`, `scrollIntoView`,
+DOM focus or scripted click calls. It covers 1440/1024/768 × 900/720/600/480 × both states,
+plus reduced motion at 480 (30 cases), both phone widths, and readable Workflow canvas space
+in six desktop/tablet compositions. Every focused destination must show the matching tooltip;
+hover entry into the tooltip and Escape dismissal are checked. Native Space/Enter, pointer and
+touch toggle, reload/phone round-trip persistence, token/offset equality, actual wheel/small
+deltas, revealed lower links, native thumb drag, touch swipes/taps and forward/reverse Tab are
+asserted. A blocked-scrolling negative control fails specifically at
+`realWheelConsumesBeforeBoundary` despite overflow geometry still existing. It exits nonzero;
+artifact `.review/navigation/n7-negative`. It never modifies shipping CSS.
+
+Three preference tests cover reload/remount, both choices, blocked storage, unknown values and
+same-device storage events. Focused App/preference/design checks: 41 tests pass. The existing
+Search test assumed desktop DOM index 3 was always Workflow; it now verifies the actual four
+phone-primary entries while retaining the shortcut assertions (9 tests pass). Phone browser
+checks independently verify visible composition, so this does not substitute DOM order for UI.
+
+Retained intermediate failures: the first new driver omitted Enter's character event; corrected
+to the existing CDP keyboard convention. A tall viewport's entire overflow was consumed by one
+wheel notch; small-delta testing now starts from a fresh page, requiring independent actual
+movement. A bottom tap during inertial touch scrolling was rejected; the driver now waits for
+three unchanged scroll samples and then taps the real target. These are input-driver corrections,
+not relaxed reachability assertions. Tooltip inspection found a real app issue (stale labels on
+rapid focus changes and scroll-dismissed focused hints); blur now dismisses immediately and
+focus-driven scroll repositions the current hint. Every destination's tooltip is asserted.
+
+Full unit run before updating the old Search index expectation: 2109 passed, one failed / 160
+files. The corrected Search run passes. An early lint run included ignored temporary reproduction
+scripts; their preserved copies now have `.mjs.txt` suffixes, and lint passes with the existing
+ExerciseRunner hook warning only. A local sweep interrupted by rebuilding the served assets is
+retained as incomplete; only the subsequent stable-build run counts as full evidence.
+
+## N7 — visual review
+
+Inspected actual expanded/collapsed captures at desktop/tablet sizes, including short-height
+bottom focus/tooltip captures and both phone compositions. Quiet dividers, aligned horizontal
+rows, full-row marker, readable labels, centered icons within scrollbar-adjusted usable space,
+visible native thumb, fixed toggle and content offsets are present. The longest current label
+fits naturally. The global shell is light-only; inspected it beside Workflow's dark canvas at
+1440/1024/768 in both states. No invented dark theme is claimed.
+
+The 768 px expanded capture exposed a 121 px Workflow canvas even though the numerical page
+scan passed. Its existing viewport-based two-column grid ignored the larger sidebar. A local
+workspace container query now stacks canvas/tools below 40 rem of available content width;
+canvas nodes remain readable, with tools reachable below. The container is limited to Workflow's
+workspace, preserving the shell and overlay containing blocks. The corrected 768 px capture has
+a 457 px canvas. Six direct canvas-width checks now prevent recurrence in the dedicated probe.
+
+Fresh full exact-head and deployed results are recorded at N8 in the PR attestation, after all
+source/document/probe changes are committed. This avoids embedding a self-referential hash.
+
+The unchanged Workflow probe subsequently rejected the deliberate 768 px stack because it
+required two columns at every tablet viewport. That obsolete layout assertion now checks the
+available workspace measure, a ≥280 px readable canvas and tools below the canvas in the narrow
+composition. All edit, undo/redo, keyboard/drag, execution and phone touch assertions remain.
+Two direct tooltip unit regressions also pass, guarding immediate focus-label replacement,
+focus-scroll persistence, Escape and pointer entry into the tooltip.
+
+
+Stable pre-N8 results: built label `navigation-n7` passes all **32 navigation cases** (30
+both-state desktop/tablet height/motion cases plus both 480 px phone cases), including every
+focused tooltip, touch toggle/bottom activation and native scrollbar drag. The adapted legacy
+rail probe passes all five standard widths and ten short/motion cases. Corrected Workflow probe
+passes all sections, including readable tablet composition and genuine phone interactions.
+The broad five-width screen scan passes 180 route/width combinations. Raw artifacts live under
+`.review/navigation/{n7-complete,legacy-n6,n7-workflow-corrected,polish-n6,visual}`; these are
+working-build evidence, not immutable source-head attestations. Baseline and negative-control
+summaries are committed in `navigation-shell-evidence.json`.
+
+## N8 — exact-head CI, Preview and audit boundary
+
+The final draft PR targets `codex/field-ready-v1-remediation`. Complete Node 22 CI and the
+configured Preview deployment must pass on its exact source head; Production must remain
+skipped. Browser and `/api/health` identities must match that head before and after the deployed
+suite. Repeat all 33 existing isolated browser probes and the dedicated navigation probe
+(including its six added Workflow-space checks, 38 cases total) on Preview. The final PR body
+records the immutable SHA, CI URL, Worker version and actual results without changing that SHA.
+
+DES-009 is deliberately **IN_PROGRESS**, with its new contract and fresh controlled evidence,
+until independent audit and the learner’s original-device scrolling confirmation. It is not
+promoted on the strength of the contradicted historical attestation. Every other requirement
+row, all twelve human/real-GHL IMPLEMENTED_UNVERIFIED rows, and AUDIT_REPORT.md are unchanged.
+Stop for independent ChatGPT audit; do not merge PR #24–#30 or this PR.
+
+### N8 visual contradiction — reopen the bounded N7 composition check
+
+First immutable head `29529fc0f5ca215012745b076762a320e4afe9c9` passed clean local and
+[GitHub CI 34489625276](https://github.com/Beeyach/Bloomlab/actions/runs/34489625276), attempt 1:
+2112 tests / 161 files, 15 adversarial cases, 75 axe scans and all checks. Preview version
+`4b1e59cb-0091-414d-a64b-82d61427b9a1` served that exact head. Its deployed dedicated probe
+passed all 38 cases; 16 additional all-width 480 px sidebar/More axe scans also passed with
+an unnamed-button negative control. The initial broad rail launch failed before interaction
+at a Node TCP connection timeout; fresh health and the unchanged same-head rail rerun passed
+all 15 cases. The first failed log remains, not overwritten or counted as a pass.
+
+Actual deployed capture inspection then disproved complete content visibility at 768 expanded:
+Skill Map's selected “Showing” cue extended to x551.94 beyond its card's right edge x486.5.
+The existing card header forbade wrapping. This is content loss even though outer-page overflow,
+all navigation interactions and axe passed. The broad sweep was stopped; this head is
+**intermediate evidence only**, not the final audit result. The new direct
+`selectedCueNotClipped` regression fails on that deployed head. All ten territory names are also
+checked against their card bounds in each desktop/tablet navigation case.
+
+Allow the existing territory header to wrap its selection cue inside the card. A browser-only
+proposed-style reproduction moves the cue to x284–357.11 and preserves all ten full names;
+the capture was inspected. Source CSS now applies that same bounded correction without changing
+the material or selection meaning. Evidence: `.review/navigation/cue-reproduction` and
+`cue-regression-old`. Complete exact-head CI and all deployed probes must repeat on the new head.
+
+The compiled correction passes the focused ten-case navigation run (both 768 × 600 states,
+six Workflow compositions and both phones), plus eight all-width/state cue-and-name bounds
+checks with inspected captures. Desktop and phone captures retain a readable selection cue;
+no title text is clipped. The dedicated probe now asserts these content bounds in all desktop
+cases and both phone cases. Artifacts: `.review/navigation/{cue-fixed-local-4189,cue-fixed-visual}`.

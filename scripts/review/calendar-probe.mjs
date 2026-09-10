@@ -547,7 +547,7 @@ try {
       'document.documentElement.scrollWidth <= innerWidth + 1',
     );
     const rail = await page.evaluate(
-      `(() => { const el = document.querySelector('nav'); if (!el) return null; const r = el.getBoundingClientRect(); return Math.round(${width >= 768 ? 'r.width' : 'r.height'}); })()`,
+      `(() => { const el = document.querySelector('nav'); if (!el) return null; const r = el.getBoundingClientRect(); return { width: r.width, token: parseFloat(getComputedStyle(el).getPropertyValue('--bl-size-rail')) }; })()`,
     );
     let settingsReachable = await exists(page, '[data-testid="group-basics"]');
     if (width < 768) {
@@ -578,7 +578,8 @@ try {
       bookingStillThere: bookingThere,
       appointmentsStillThere: appointmentsThere,
       touchTargets44: targets,
-      railUnchanged: width >= 768 ? rail === 104 : rail !== null,
+      railMatchesActiveToken:
+        width >= 768 ? rail !== null && Math.abs(rail.width - rail.token) < 0.5 : rail !== null,
     });
     await screenshot(page, resolve(OUT, `calendar-${width}.png`), null, false);
   }

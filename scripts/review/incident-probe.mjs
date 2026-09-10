@@ -291,7 +291,7 @@ try {
       `document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1`,
     );
     const rail = await page.evaluate(
-      `(() => { const el = document.querySelector('nav[aria-label="Primary"]'); return el ? Math.round(el.getBoundingClientRect().width) : null; })()`,
+      `(() => { const el = document.querySelector('nav[aria-label="Primary"]'); return el ? { width: el.getBoundingClientRect().width, token: parseFloat(getComputedStyle(el).getPropertyValue('--bl-size-rail')) } : null; })()`,
     );
     const targets = await page.evaluate(
       `[...document.querySelectorAll('[data-testid="reproduce"], [data-testid="incident-reset"], [data-testid="log-toggle"], [data-testid^="inject-"]')].filter((el) => el.getClientRects().length > 0).every((el) => el.getBoundingClientRect().height >= 43)`,
@@ -304,7 +304,8 @@ try {
       systemStateStillThere: body.includes('System state'),
       actionsStillThere: await exists(page, '[data-testid="incident-reset"]'),
       touchTargets44: targets,
-      railUnchanged: width >= 768 ? rail === 104 : rail !== null,
+      railMatchesActiveToken:
+        width >= 768 ? rail !== null && Math.abs(rail.width - rail.token) < 0.5 : rail !== null,
     });
     await screenshot(page, resolve(OUT, `incident-${width}.png`), null, false);
   }

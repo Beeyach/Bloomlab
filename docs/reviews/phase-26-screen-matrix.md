@@ -1,5 +1,8 @@
 # Phase 26 — screen and state coverage
 
+> Navigation follow-up: D-202 and [the navigation redesign review](../reviews/navigation-shell-redesign.md) supersede this document’s fixed-104 px/containment contract. Historical PASS evidence is preserved, but the learner’s contradictory real-use report requires fresh two-state genuine-input verification. All unrelated acceptance remains unchanged.
+
+
 This is controlled implementation review, not physical-device, screen-reader or long-session
 acceptance. The executable route list is `scripts/review/screen-matrix.mjs`: 36 route/detail/runner
 states. `polish-probe.mjs` checks every state at **1440/1024/768/390/320**, captures each viewport,

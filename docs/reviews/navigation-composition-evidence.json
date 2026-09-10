@@ -1,0 +1,119 @@
+{
+  "startingHead": "e9ad959675c633940c5e3981ffb737bd4c67e0b8",
+  "humanScrollAcceptance": "PASS",
+  "priorHumanVisualAcceptance": "FAIL",
+  "correctedHumanVisualAcceptance": "PENDING",
+  "learnerSpecificCause": "Not reproduced; browser/device and PWA/tab details requested. No speculative application CSS changes.",
+  "browser": "Chromium 153.0.8010.12",
+  "cases": [
+    {
+      "width": 1440,
+      "mode": "expanded",
+      "browserBuild": "e9ad959675c633940c5e3981ffb737bd4c67e0b8",
+      "desktopMediaMatches": true,
+      "railWidth": 232,
+      "destinations": 17,
+      "rowHeights": [44],
+      "maxCenterlineDifference": 0,
+      "maxCollapsedIconCenterDifference": null,
+      "labelBoxes": [1],
+      "screenshotManuallyInspected": true,
+      "stylesheet": "https://bloomlab-preview.cool-sunset-2169.workers.dev/assets/index-SiJBqFxv.css",
+      "serviceWorkerControlled": false
+    },
+    {
+      "width": 1440,
+      "mode": "collapsed",
+      "browserBuild": "e9ad959675c633940c5e3981ffb737bd4c67e0b8",
+      "desktopMediaMatches": true,
+      "railWidth": 76,
+      "destinations": 17,
+      "rowHeights": [44],
+      "maxCenterlineDifference": null,
+      "maxCollapsedIconCenterDifference": 0.0,
+      "labelBoxes": [0],
+      "screenshotManuallyInspected": true,
+      "stylesheet": "https://bloomlab-preview.cool-sunset-2169.workers.dev/assets/index-SiJBqFxv.css",
+      "serviceWorkerControlled": false
+    },
+    {
+      "width": 1024,
+      "mode": "expanded",
+      "browserBuild": "e9ad959675c633940c5e3981ffb737bd4c67e0b8",
+      "desktopMediaMatches": true,
+      "railWidth": 232,
+      "destinations": 17,
+      "rowHeights": [44],
+      "maxCenterlineDifference": 0,
+      "maxCollapsedIconCenterDifference": null,
+      "labelBoxes": [1],
+      "screenshotManuallyInspected": true,
+      "stylesheet": "https://bloomlab-preview.cool-sunset-2169.workers.dev/assets/index-SiJBqFxv.css",
+      "serviceWorkerControlled": false
+    },
+    {
+      "width": 1024,
+      "mode": "collapsed",
+      "browserBuild": "e9ad959675c633940c5e3981ffb737bd4c67e0b8",
+      "desktopMediaMatches": true,
+      "railWidth": 76,
+      "destinations": 17,
+      "rowHeights": [44],
+      "maxCenterlineDifference": null,
+      "maxCollapsedIconCenterDifference": 0.0,
+      "labelBoxes": [0],
+      "screenshotManuallyInspected": true,
+      "stylesheet": "https://bloomlab-preview.cool-sunset-2169.workers.dev/assets/index-SiJBqFxv.css",
+      "serviceWorkerControlled": false
+    },
+    {
+      "width": 768,
+      "mode": "expanded",
+      "browserBuild": "e9ad959675c633940c5e3981ffb737bd4c67e0b8",
+      "desktopMediaMatches": true,
+      "railWidth": 232,
+      "destinations": 17,
+      "rowHeights": [44],
+      "maxCenterlineDifference": 0,
+      "maxCollapsedIconCenterDifference": null,
+      "labelBoxes": [1],
+      "screenshotManuallyInspected": true,
+      "stylesheet": "https://bloomlab-preview.cool-sunset-2169.workers.dev/assets/index-SiJBqFxv.css",
+      "serviceWorkerControlled": false
+    },
+    {
+      "width": 768,
+      "mode": "collapsed",
+      "browserBuild": "e9ad959675c633940c5e3981ffb737bd4c67e0b8",
+      "desktopMediaMatches": true,
+      "railWidth": 76,
+      "destinations": 17,
+      "rowHeights": [44],
+      "maxCenterlineDifference": null,
+      "maxCollapsedIconCenterDifference": 0.0,
+      "labelBoxes": [0],
+      "screenshotManuallyInspected": true,
+      "stylesheet": "https://bloomlab-preview.cool-sunset-2169.workers.dev/assets/index-SiJBqFxv.css",
+      "serviceWorkerControlled": true
+    }
+  ],
+  "baselineNavigation": {
+    "status": "PASSED",
+    "cases": 14,
+    "artifact": ".review/navigation-composition/geometry-baseline/navigation-probe.json"
+  },
+  "negativeControls": [
+    {
+      "name": "stacked",
+      "status": "FAILED",
+      "error": "AssertionError [ERR_ASSERTION]: 1440x900-expanded-normal: Home: visible label beside icon",
+      "lastCase": "1440x900-expanded-normal"
+    },
+    {
+      "name": "visible-label",
+      "status": "FAILED",
+      "error": "AssertionError [ERR_ASSERTION]: 1440x900-collapsed-normal: Home: no rendered label boxes",
+      "lastCase": "1440x900-collapsed-normal"
+    }
+  ]
+}

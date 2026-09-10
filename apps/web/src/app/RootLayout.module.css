@@ -1,7 +1,17 @@
 .frame {
+  --bl-size-rail: var(--bl-sidebar-effective-width, var(--bl-size-sidebar-expanded));
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+}
+
+.frame[data-sidebar-resizing] {
+  user-select: none;
+  cursor: col-resize;
+}
+
+.frame[data-sidebar='collapsed'] {
+  --bl-size-rail: var(--bl-size-sidebar-collapsed);
 }
 
 .main {

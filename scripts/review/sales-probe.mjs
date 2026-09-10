@@ -422,7 +422,7 @@ try {
       `[...document.querySelectorAll('[data-testid^="finding-"], [data-testid^="cite-"], [data-testid="finding-add"]')].map((el) => el.closest('label, button, section') ?? el).filter((el) => el.getClientRects().length > 0).every((el) => el.getBoundingClientRect().height >= 43)`,
     );
     const rail = await page.evaluate(
-      `(() => { const el = document.querySelector('nav[aria-label="Primary"]'); return el ? Math.round(el.getBoundingClientRect().width) : null; })()`,
+      `(() => { const el = document.querySelector('nav[aria-label="Primary"]'); return el ? { width: el.getBoundingClientRect().width, token: parseFloat(getComputedStyle(el).getPropertyValue('--bl-size-rail')) } : null; })()`,
     );
     section(`width-${width}`, {
       noHorizontalOverflow: noOverflow,
@@ -431,7 +431,8 @@ try {
       classificationsStillThere: await exists(page, 'finding-0-verified'),
       inputsAtLeast16px: inputs16,
       touchTargets44: targets,
-      railUnchanged: width >= 768 ? rail === 104 : rail !== null,
+      railMatchesActiveToken:
+        width >= 768 ? rail !== null && Math.abs(rail.width - rail.token) < 0.5 : rail !== null,
     });
     await screenshot(page, resolve(OUT, `sales-${width}.png`), null, false);
   }

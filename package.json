@@ -61,7 +61,9 @@
     "review:pricing": "node scripts/review/pricing-probe.mjs",
     "review:call": "node scripts/review/call-probe.mjs",
     "review:fieldwork": "node scripts/review/fieldwork-probe.mjs",
-    "review:portfolio": "node scripts/review/portfolio-probe.mjs"
+    "review:portfolio": "node scripts/review/portfolio-probe.mjs",
+    "review:navigation": "node scripts/review/navigation-probe.mjs",
+    "review:sidebar-resize": "node scripts/review/sidebar-resize-probe.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

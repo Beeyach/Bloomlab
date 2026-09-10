@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useId, useRef, type CSSProperties } from 'react';
 import { Outlet, useNavigate } from 'react-router';
 import { BUILD_ID } from '@bloomlab/shared';
 
@@ -11,6 +11,8 @@ import {
   syncApi,
 } from '../data';
 import { AppRail } from './AppRail';
+import { SidebarResizer } from './SidebarResizer';
+import { useSidebarPreference } from './useSidebarPreference';
 import { ConflictChooser } from './ConflictChooser';
 import styles from './RootLayout.module.css';
 import { SyncStatusIndicator } from './SyncStatusIndicator';
@@ -25,6 +27,9 @@ import { SoundToggle } from '../moments/SoundToggle';
  */
 export function RootLayout() {
   const navigate = useNavigate();
+  const { collapsed, toggle, width, maximum, resize } = useSidebarPreference();
+  const frame = useRef<HTMLDivElement>(null);
+  const sidebarId = useId();
   useEffect(() => {
     const search = (event: KeyboardEvent) => {
       if (
@@ -57,16 +62,31 @@ export function RootLayout() {
   }, []);
 
   return (
-    <div className={styles.frame} data-build-id={BUILD_ID}>
+    <div
+      ref={frame}
+      className={styles.frame}
+      style={{ '--bl-sidebar-effective-width': `${width}px` } as CSSProperties}
+      data-build-id={BUILD_ID}
+      data-sidebar={collapsed ? 'collapsed' : 'expanded'}
+    >
       <a className={styles.skipLink} href="#main">
         Skip to content
       </a>
-      <AppRail />
+      <AppRail collapsed={collapsed} onToggle={toggle} sidebarId={sidebarId} />
       <div className={styles.status}>
         <SoundToggle />
         <SyncStatusIndicator />
       </div>
       <main id="main" className={styles.main} tabIndex={-1}>
+        {!collapsed && (
+          <SidebarResizer
+            frame={frame}
+            width={width}
+            maximum={maximum}
+            controls={sidebarId}
+            onCommit={resize}
+          />
+        )}
         <UpdateNotice />
         <Outlet />
       </main>

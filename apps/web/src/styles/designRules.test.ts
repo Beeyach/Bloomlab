@@ -316,21 +316,29 @@ describe('the tablet engines the cards are actually read on (D-086)', () => {
   });
 });
 
-describe('the rail is one token (DES-009, D-117)', () => {
-  it('keeps the roomier desktop rail inside the user-directed 96–112 px band', () => {
+describe('two sidebar sizes share one active offset (DES-009, D-202)', () => {
+  it('keeps the requested expanded default and fixed collapsed width', () => {
     const tokens = read(join(ROOT, 'packages', 'design-system', 'src', 'tokens.css'));
-    const match = tokens.match(/--bl-size-rail:\s*(\d+)px/);
-    expect(match).not.toBeNull();
-    const width = Number(match?.[1]);
-    expect(width).toBeGreaterThanOrEqual(96);
-    expect(width).toBeLessThanOrEqual(112);
+    for (const [state, min, max] of [
+      ['expanded', 200, 200],
+      ['collapsed', 76, 76],
+    ] as const) {
+      const match = tokens.match(new RegExp(`--bl-size-sidebar-${state}:\\s*(\\d+)px`));
+      expect(match).not.toBeNull();
+      expect(Number(match?.[1])).toBeGreaterThanOrEqual(min);
+      expect(Number(match?.[1])).toBeLessThanOrEqual(max);
+    }
   });
 
-  it('the rail draws it and the page offsets by it — nothing hardcodes the width', () => {
+  it('the rail and page consume the same active width without layout animation', () => {
     const rail = read(join(ROOT, 'apps', 'web', 'src', 'app', 'AppRail.module.css'));
     const layout = read(join(ROOT, 'apps', 'web', 'src', 'app', 'RootLayout.module.css'));
     expect(rail).toMatch(/width:\s*var\(--bl-size-rail\)/);
     expect(layout).toMatch(/padding-left:\s*var\(--bl-size-rail\)/);
-    for (const sheet of [rail, layout]) expect(sheet).not.toMatch(/\b(80|96|104|112)px\b/);
+    expect(layout).toContain('--bl-size-rail: var(--bl-size-sidebar-collapsed)');
+    for (const sheet of [rail, layout]) {
+      expect(sheet).not.toMatch(/\b(104|232)px\b/);
+      expect(sheet).not.toMatch(/transition:\s*(width|padding|all)/);
+    }
   });
 });

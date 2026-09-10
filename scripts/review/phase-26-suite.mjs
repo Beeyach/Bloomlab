@@ -9,6 +9,8 @@ const allowed = [
   'polish',
   'a11y',
   'rail',
+  'navigation',
+  'sidebar-resize',
   'restore',
   'search',
   'moments',

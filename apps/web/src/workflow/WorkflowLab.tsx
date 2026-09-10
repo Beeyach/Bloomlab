@@ -709,34 +709,36 @@ export default function WorkflowLab() {
         </>
       ) : (
         <>
-          <div className={styles.workspace}>
-            <div className={styles.canvasColumn}>
-              <Canvas
-                workflow={draft}
-                account={account}
-                selectedId={selectedId}
-                onSelect={(id) => setParam({ node: id })}
-                onMove={(id, x, y) => {
-                  applyEdit((w) => graph.moveNode(w, id, x, y));
-                  void playSound('snap');
-                }}
-                watched={watched}
-                records={run.state.execution}
-                playhead={playhead.index}
-                trail={playhead.trail}
-                settled={playhead.settled}
-              />
-              <p className={styles.canvasHint}>
-                Drag a step to move it, or select it and use the arrow keys. Connections and order
-                are set in the inspector.
-              </p>
+          <div className={styles.workspaceFrame}>
+            <div className={styles.workspace}>
+              <div className={styles.canvasColumn}>
+                <Canvas
+                  workflow={draft}
+                  account={account}
+                  selectedId={selectedId}
+                  onSelect={(id) => setParam({ node: id })}
+                  onMove={(id, x, y) => {
+                    applyEdit((w) => graph.moveNode(w, id, x, y));
+                    void playSound('snap');
+                  }}
+                  watched={watched}
+                  records={run.state.execution}
+                  playhead={playhead.index}
+                  trail={playhead.trail}
+                  settled={playhead.settled}
+                />
+                <p className={styles.canvasHint}>
+                  Drag a step to move it, or select it and use the arrow keys. Connections and order
+                  are set in the inspector.
+                </p>
+              </div>
+              <div className={styles.sideColumn}>
+                {inspector ?? palette}
+                {inspector && palette}
+              </div>
             </div>
-            <div className={styles.sideColumn}>
-              {inspector ?? palette}
-              {inspector && palette}
-            </div>
+            <div className={styles.lower}>{lower}</div>
           </div>
-          <div className={styles.lower}>{lower}</div>
           {historyPanel}
         </>
       )}

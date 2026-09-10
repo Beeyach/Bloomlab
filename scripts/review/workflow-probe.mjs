@@ -480,12 +480,14 @@ try {
     await waitFor(page, READY);
     await sleep(300);
     const columns = await page.evaluate(
-      `getComputedStyle(${q('[data-testid="workflow-canvas"]')}.closest('[class*=workspace]')).gridTemplateColumns.split(' ').length`,
+      `(() => { const canvas = ${q('[data-testid="workflow-canvas"]')}, workspace = canvas.closest('[class*=workspace]'); return { count: getComputedStyle(workspace).gridTemplateColumns.split(' ').length, width: workspace.getBoundingClientRect().width, canvasWidth: canvas.getBoundingClientRect().width, canvasBottom: canvas.getBoundingClientRect().bottom, paletteTop: ${q('[data-testid="palette"]')}.getBoundingClientRect().top }; })()`,
     );
     const overflow = await page.evaluate('document.documentElement.scrollWidth <= innerWidth');
     section(`width-${width}`, {
       canvas: await exists(page, '[data-testid="workflow-canvas"]'),
-      twoColumns: columns === 2,
+      columnsFollowAvailableSpace: columns.count === (columns.width <= 640 ? 1 : 2),
+      readableCanvas: columns.canvasWidth >= 280,
+      narrowToolsBelowCanvas: columns.width > 640 || columns.paletteTop >= columns.canvasBottom,
       palette: await exists(page, '[data-testid="palette"]'),
       testPanel: await exists(page, '[data-testid="test-panel"]'),
       timeline: await exists(page, '[data-testid="timeline"]'),

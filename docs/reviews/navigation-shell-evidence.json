@@ -1,0 +1,764 @@
+{
+  "humanReport": "Deployed sidebar cannot actually be scrolled to lower destinations. Authoritative contradictory evidence; Chromium success does not invalidate it.",
+  "chromiumReproducedExactWheelFailure": false,
+  "confirmedProblem": "Unconditional overscroll containment swallows continued boundary gestures; original physical-device symptom remains unexplained.",
+  "baseline": [
+    {
+      "base": "http://127.0.0.1:4183",
+      "sourceHead": "1bd8454b0d6c7b5cd3810dc7077843cbddfe5492",
+      "cases": [
+        {
+          "height": 720,
+          "initialTop": 0,
+          "wheelTop": 240,
+          "smallDeltaTop": 340,
+          "bottomTop": 742,
+          "wheelRevealedLast": true,
+          "boundaryPageTop": 0,
+          "outsidePageTop": 240,
+          "dragTop": 588,
+          "destinationTabs": [
+            {
+              "href": "/",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/campaign",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/skills",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/workflow",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/search",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/crm",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/funnel",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/calendar",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/conversations",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/reporting",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/payments",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/incident",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/clients",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/portfolio",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/playground",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/system",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/design",
+              "visible": true,
+              "focus": true
+            }
+          ]
+        },
+        {
+          "height": 600,
+          "initialTop": 0,
+          "wheelTop": 240,
+          "smallDeltaTop": 340,
+          "bottomTop": 862,
+          "wheelRevealedLast": true,
+          "boundaryPageTop": 0,
+          "outsidePageTop": 240,
+          "dragTop": 710,
+          "destinationTabs": [
+            {
+              "href": "/",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/campaign",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/skills",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/workflow",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/search",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/crm",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/funnel",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/calendar",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/conversations",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/reporting",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/payments",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/incident",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/clients",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/portfolio",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/playground",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/system",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/design",
+              "visible": true,
+              "focus": true
+            }
+          ]
+        },
+        {
+          "height": 480,
+          "initialTop": 0,
+          "wheelTop": 240,
+          "smallDeltaTop": 340,
+          "bottomTop": 982,
+          "wheelRevealedLast": true,
+          "boundaryPageTop": 0,
+          "outsidePageTop": 240,
+          "dragTop": 896,
+          "destinationTabs": [
+            {
+              "href": "/",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/campaign",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/skills",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/workflow",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/search",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/crm",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/funnel",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/calendar",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/conversations",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/reporting",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/payments",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/incident",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/clients",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/portfolio",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/playground",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/system",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/design",
+              "visible": true,
+              "focus": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "base": "https://bloomlab-preview.cool-sunset-2169.workers.dev",
+      "sourceHead": "1e6a9fdee20089805037e0b290961a92d96d0661",
+      "cases": [
+        {
+          "height": 720,
+          "initialTop": 0,
+          "wheelTop": 240,
+          "smallDeltaTop": 340,
+          "bottomTop": 742,
+          "wheelRevealedLast": true,
+          "boundaryPageTop": 0,
+          "outsidePageTop": 240,
+          "dragTop": 588,
+          "destinationTabs": [
+            {
+              "href": "/",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/campaign",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/skills",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/workflow",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/search",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/crm",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/funnel",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/calendar",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/conversations",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/reporting",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/payments",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/incident",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/clients",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/portfolio",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/playground",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/system",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/design",
+              "visible": true,
+              "focus": true
+            }
+          ]
+        },
+        {
+          "height": 600,
+          "initialTop": 0,
+          "wheelTop": 240,
+          "smallDeltaTop": 340,
+          "bottomTop": 862,
+          "wheelRevealedLast": true,
+          "boundaryPageTop": 0,
+          "outsidePageTop": 240,
+          "dragTop": 710,
+          "destinationTabs": [
+            {
+              "href": "/",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/campaign",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/skills",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/workflow",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/search",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/crm",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/funnel",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/calendar",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/conversations",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/reporting",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/payments",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/incident",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/clients",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/portfolio",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/playground",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/system",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/design",
+              "visible": true,
+              "focus": true
+            }
+          ]
+        },
+        {
+          "height": 480,
+          "initialTop": 0,
+          "wheelTop": 240,
+          "smallDeltaTop": 340,
+          "bottomTop": 982,
+          "wheelRevealedLast": true,
+          "boundaryPageTop": 0,
+          "outsidePageTop": 240,
+          "dragTop": 896,
+          "destinationTabs": [
+            {
+              "href": "/",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/campaign",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/skills",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/workflow",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/search",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/crm",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/funnel",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/calendar",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/conversations",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/reporting",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/payments",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/incident",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/clients",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/portfolio",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/playground",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/system",
+              "visible": true,
+              "focus": true
+            },
+            {
+              "href": "/design",
+              "visible": true,
+              "focus": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scrollOnlyFix": {
+    "buildLabel": "navigation-scroll-fix",
+    "heights": [720, 600, 480],
+    "wheelTop": 240,
+    "smallDeltaTop": 340,
+    "bottomBoundaryPageTop": 240,
+    "outsidePageTop": 480,
+    "artifact": ".review/navigation/scroll-fix/127.0.0.1.json"
+  },
+  "negativeControl": {
+    "buildLabel": "navigation-n7",
+    "viewport": [1440, 600],
+    "injection": "destination overflow-y: hidden (browser-only fixture)",
+    "expectedFailure": "realWheelConsumesBeforeBoundary",
+    "exitCode": 1,
+    "artifact": ".review/navigation/n7-negative/navigation-probe.json"
+  },
+  "limits": [
+    "No physical Safari certification",
+    "No human/real-GHL acceptance promotion",
+    "Final immutable CI and deployed evidence in draft PR attestation"
+  ],
+  "preImmutableVerification": {
+    "buildLabel": "navigation-n7",
+    "navigationCases": 32,
+    "navigationStatus": "PASSED",
+    "heights": [900, 720, 600, 480],
+    "widths": [1440, 1024, 768, 390, 320],
+    "modes": ["expanded", "collapsed"],
+    "legacyRail": {
+      "standardWidths": 5,
+      "shortMotionCases": 10,
+      "status": "PASSED"
+    },
+    "workflow": "PASSED after measured-space assertion replaces obsolete two-column mandate",
+    "polishScreenWidthCases": 180,
+    "polishStatus": "PASSED",
+    "scope": "Controlled working-build evidence; final exact-head evidence belongs in the PR attestation"
+  },
+  "firstImmutableAttempt": {
+    "head": "29529fc0f5ca215012745b076762a320e4afe9c9",
+    "ci": "https://github.com/Beeyach/Bloomlab/actions/runs/34489625276",
+    "ciStatus": "PASSED",
+    "workerVersion": "4b1e59cb-0091-414d-a64b-82d61427b9a1",
+    "navigationCasesPassed": 38,
+    "extraAxeScansPassed": 16,
+    "broadSuite": "Stopped after actual capture exposed clipped selected territory cue. Initial rail launch TCP timeout retained; unchanged same-head rerun passed. Not final evidence.",
+    "cueReproduction": {
+      "head": "29529fc0f5ca215012745b076762a320e4afe9c9",
+      "before": {
+        "card": {
+          "left": 264,
+          "right": 486.5
+        },
+        "cue": {
+          "left": 478.828125,
+          "right": 551.9375
+        },
+        "cueFits": false,
+        "names": [
+          {
+            "name": "Strategize",
+            "fits": true
+          },
+          {
+            "name": "Build",
+            "fits": true
+          },
+          {
+            "name": "Automate",
+            "fits": true
+          },
+          {
+            "name": "Architect",
+            "fits": true
+          },
+          {
+            "name": "Judgment",
+            "fits": true
+          },
+          {
+            "name": "Diagnose",
+            "fits": true
+          },
+          {
+            "name": "Connect",
+            "fits": true
+          },
+          {
+            "name": "Sell",
+            "fits": true
+          },
+          {
+            "name": "Deliver",
+            "fits": true
+          },
+          {
+            "name": "Scale",
+            "fits": true
+          }
+        ]
+      },
+      "after": {
+        "card": {
+          "left": 264,
+          "right": 486.5
+        },
+        "cue": {
+          "left": 284,
+          "right": 357.109375
+        },
+        "cueFits": true,
+        "names": [
+          {
+            "name": "Strategize",
+            "fits": true
+          },
+          {
+            "name": "Build",
+            "fits": true
+          },
+          {
+            "name": "Automate",
+            "fits": true
+          },
+          {
+            "name": "Architect",
+            "fits": true
+          },
+          {
+            "name": "Judgment",
+            "fits": true
+          },
+          {
+            "name": "Diagnose",
+            "fits": true
+          },
+          {
+            "name": "Connect",
+            "fits": true
+          },
+          {
+            "name": "Sell",
+            "fits": true
+          },
+          {
+            "name": "Deliver",
+            "fits": true
+          },
+          {
+            "name": "Scale",
+            "fits": true
+          }
+        ]
+      }
+    }
+  }
+}

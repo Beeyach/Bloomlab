@@ -3,6 +3,8 @@ import { NavLink, useLocation } from 'react-router';
 
 import {
   IconBolt,
+  IconChevronLeft,
+  IconChevronRight,
   IconCalendar,
   IconCampaign,
   IconChat,
@@ -22,6 +24,7 @@ import {
   type IconProps,
 } from '@bloomlab/design-system';
 
+import { NavigationHint } from './NavigationHint';
 import { useFeatureFlags } from './featureFlagsContext';
 import styles from './AppRail.module.css';
 
@@ -32,22 +35,14 @@ interface Area {
   end?: boolean;
 }
 
-/**
- * The compact rail (spec §73, DES-009): the areas that exist today. Clients joins
- * it with its phase — nothing inert stands in for them.
- *
- * Tablet and desktop: one labelled column of every area, drawn from `--bl-size-rail`. Phones: a
- * bottom bar of the first four areas, each with its name showing, plus a labelled **More** that
- * opens the remaining areas as a small labelled list above the bar. Every area keeps its name in
- * every composition; nothing is icon-only, nothing is dropped, and the developer surfaces (flag
- * gated) sit in the same list on phones.
- */
+/** Current destinations only. Desktop groups learning, Labs and client work; phones keep
+ * Home/Campaign/Skill Map/Workflow plus More regardless of desktop ordering. */
 const AREAS: Area[] = [
   { to: '/', label: 'Home', icon: IconHome, end: true },
   { to: '/campaign', label: 'Campaign', icon: IconCampaign },
   { to: '/skills', label: 'Skill Map', icon: IconMap },
-  { to: '/workflow', label: 'Workflow', icon: IconBolt },
   { to: '/search', label: 'Search', icon: IconSearch },
+  { to: '/workflow', label: 'Workflow', icon: IconBolt },
   { to: '/crm', label: 'CRM', icon: IconRecords },
   { to: '/funnel', label: 'Funnel', icon: IconFunnel },
   { to: '/calendar', label: 'Calendar', icon: IconCalendar },
@@ -61,7 +56,8 @@ const AREAS: Area[] = [
 ];
 
 /** How many areas the phone bar shows beside More; the rest live in the More list. */
-const PHONE_PRIMARY = 4;
+const PHONE_PRIMARY = ['/', '/campaign', '/skills', '/workflow'];
+const GROUP_STARTS = ['/workflow', '/clients', '/playground'];
 
 const DEVELOPER: Area[] = [
   { to: '/system', label: 'System', icon: IconInfo },
@@ -72,33 +68,47 @@ function Item({
   area,
   className,
   onNavigate,
+  collapsed = false,
 }: {
   area: Area;
   className?: string;
   onNavigate?: () => void;
+  collapsed?: boolean;
 }) {
   const Icon = area.icon;
   return (
     <li className={className}>
-      <NavLink
-        to={area.to}
-        end={area.end}
-        className={({ isActive }) => cx(styles.item, isActive && styles.active)}
-        onClick={onNavigate}
-      >
-        <span className={styles.glyph} aria-hidden="true">
-          <Icon size={20} />
-        </span>
-        <span className={styles.label}>{area.label}</span>
-      </NavLink>
+      <NavigationHint label={area.label} enabled={collapsed}>
+        <NavLink
+          aria-label={area.label}
+          to={area.to}
+          end={area.end}
+          className={({ isActive }) => cx(styles.item, isActive && styles.active)}
+          onClick={onNavigate}
+        >
+          <span className={styles.glyph} aria-hidden="true">
+            <Icon size={20} />
+          </span>
+          <span className={styles.label}>{area.label}</span>
+        </NavLink>
+      </NavigationHint>
     </li>
   );
 }
 
-export function AppRail() {
+export function AppRail({
+  collapsed,
+  onToggle,
+  sidebarId,
+}: {
+  collapsed: boolean;
+  onToggle: () => void;
+  sidebarId: string;
+}) {
   const flags = useFeatureFlags();
   const location = useLocation();
   const menuId = useId();
+  const destinationsId = useId();
   const nav = useRef<HTMLElement>(null);
   const moreButton = useRef<HTMLButtonElement>(null);
   // The More list is open for one page only: navigating anywhere reads as closed, with no effect
@@ -111,7 +121,7 @@ export function AppRail() {
       (area.to === '/system' && flags.system_diagnostics) ||
       (area.to === '/design' && flags.design_gallery),
   );
-  const more = [...AREAS.slice(PHONE_PRIMARY), ...developer];
+  const more = [...AREAS.filter((area) => !PHONE_PRIMARY.includes(area.to)), ...developer];
   const moreActive = more.some((area) =>
     area.end ? location.pathname === area.to : location.pathname.startsWith(area.to),
   );
@@ -137,43 +147,67 @@ export function AppRail() {
   }, [open]);
 
   return (
-    <nav ref={nav} className={styles.rail} aria-label="Primary">
-      <span className={styles.brand} aria-hidden="true">
-        Bloomlab
-      </span>
-      <VisuallyHidden>Bloomlab</VisuallyHidden>
-      <ul className={styles.list}>
-        {AREAS.map((area, index) => (
-          <Item
-            key={area.to}
-            area={area}
-            className={index >= PHONE_PRIMARY ? styles.secondary : undefined}
-          />
-        ))}
-        <li className={styles.moreItem}>
+    <nav id={sidebarId} ref={nav} className={styles.rail} aria-label="Primary">
+      <div className={styles.header}>
+        <span className={styles.brand} aria-hidden="true">
+          {collapsed ? 'B' : 'Bloomlab'}
+        </span>
+        <NavigationHint
+          label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          enabled={collapsed}
+        >
           <button
-            ref={moreButton}
             type="button"
-            className={cx(styles.item, moreActive && styles.active)}
-            aria-expanded={open}
-            aria-controls={menuId}
-            onClick={() => setOpenFor(open ? null : location.pathname)}
-            data-testid="rail-more"
+            className={styles.toggle}
+            data-testid="rail-toggle"
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-expanded={!collapsed}
+            aria-controls={destinationsId}
+            onClick={onToggle}
           >
-            <span className={styles.glyph} aria-hidden="true">
-              <IconMore size={20} />
-            </span>
-            <span className={styles.label}>More</span>
+            {collapsed ? <IconChevronRight size={20} /> : <IconChevronLeft size={20} />}
           </button>
-        </li>
-      </ul>
-      {developer.length > 0 && (
-        <ul className={cx(styles.list, styles.developer)} aria-label="Developer surfaces">
-          {developer.map((area) => (
-            <Item key={area.to} area={area} />
+        </NavigationHint>
+      </div>
+      <VisuallyHidden>Bloomlab</VisuallyHidden>
+      <div id={destinationsId} className={styles.destinations} data-testid="rail-destinations">
+        <ul className={styles.list}>
+          {AREAS.map((area) => (
+            <Item
+              key={area.to}
+              area={area}
+              collapsed={collapsed}
+              className={cx(
+                !PHONE_PRIMARY.includes(area.to) && styles.secondary,
+                GROUP_STARTS.includes(area.to) && styles.groupStart,
+              )}
+            />
           ))}
+          <li className={styles.moreItem}>
+            <button
+              ref={moreButton}
+              type="button"
+              className={cx(styles.item, moreActive && styles.active)}
+              aria-expanded={open}
+              aria-controls={menuId}
+              onClick={() => setOpenFor(open ? null : location.pathname)}
+              data-testid="rail-more"
+            >
+              <span className={styles.glyph} aria-hidden="true">
+                <IconMore size={20} />
+              </span>
+              <span className={styles.label}>More</span>
+            </button>
+          </li>
         </ul>
-      )}
+        {developer.length > 0 && (
+          <ul className={cx(styles.list, styles.developer)} aria-label="Developer surfaces">
+            {developer.map((area) => (
+              <Item key={area.to} area={area} collapsed={collapsed} />
+            ))}
+          </ul>
+        )}
+      </div>
       <div id={menuId} className={styles.moreMenu} hidden={!open} data-testid="rail-more-menu">
         <ul className={styles.moreList} aria-label="More areas">
           {more.map((area) => (

@@ -1,5 +1,8 @@
 # Field Ready v1 remediation handoff
 
+> Navigation follow-up: D-202 and [the navigation redesign review](../reviews/navigation-shell-redesign.md) supersede this document’s fixed-104 px/containment contract. Historical PASS evidence is preserved, but the learner’s contradictory real-use report requires fresh two-state genuine-input verification. All unrelated acceptance remains unchanged.
+
+
 Branch: `codex/field-ready-v1-remediation`
 
 Base: independent audit commit `a2466d3651ac5544f6baa113c46ae472385fa8f5` on `audit/field-ready-v1`, which itself is exact Phase 26 head `6b58d3c54bae3c7759ac238dc9dc9651ae5298ee` plus `AUDIT_REPORT.md` only.
