@@ -15,6 +15,7 @@ import { useLearnerSnapshot } from '../data/learning';
 import { joinWords, skillTitle } from '../screens/learningCopy';
 import {
   discardAttempt,
+  commitRunPrediction,
   resolveRunContext,
   revealHint,
   startAttempt,
@@ -167,6 +168,19 @@ export default function ExerciseRunner() {
     }
   }
 
+  async function commitPrediction() {
+    if (!attempt || !exercise) return;
+    setBusy(true);
+    setFailure(null);
+    try {
+      await commitRunPrediction(exercise, context, db);
+    } catch (error) {
+      setFailure(error instanceof Error ? error.message : 'The prediction could not be committed.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function tryAgain() {
     if (!exercise) return;
     // A new attempt in the same context: the finished one keeps its place in the history.
@@ -283,6 +297,7 @@ export default function ExerciseRunner() {
                 attempt={attempt}
                 context={context}
                 disabled={busy || Boolean(attempt.submitted)}
+                predictionLocked={Boolean(attempt.response.run_prediction)}
               />
             )
           )}
@@ -298,15 +313,38 @@ export default function ExerciseRunner() {
               <h2 id="submit-title" className={styles.sectionTitle}>
                 Submit
               </h2>
+              {exercise.type === 'RUN_THE_LEAD' && !attempt.response.run_prediction && (
+                <>
+                  <Button loading={busy} onClick={() => void commitPrediction()}>
+                    Commit prediction
+                  </Button>
+                  <p className={styles.help}>
+                    Commit before executing. Your prediction then locks for this attempt.
+                  </p>
+                </>
+              )}
+              {exercise.type === 'RUN_THE_LEAD' && attempt.response.run_prediction && (
+                <p className={styles.help}>
+                  Prediction committed and locked.{' '}
+                  <Link
+                    className={styles.inlineLink}
+                    to={`/workflow?scenario=${exercise.scenario}&exercise=${exercise.id}&attempt=${attempt.attempt_id}`}
+                  >
+                    Open Workflow Lab to execute it
+                  </Link>
+                  .
+                </p>
+              )}
               {gradable ? (
                 <>
                   <Button
                     variant="primary"
                     loading={busy}
                     disabled={Boolean(
-                      exercise.negotiation &&
-                      (!attempt.response.negotiation ||
-                        attempt.response.negotiation.status === 'open'),
+                      (exercise.type === 'RUN_THE_LEAD' && !attempt.response.run_prediction) ||
+                      (exercise.negotiation &&
+                        (!attempt.response.negotiation ||
+                          attempt.response.negotiation.status === 'open')),
                     )}
                     onClick={() => void submit()}
                   >

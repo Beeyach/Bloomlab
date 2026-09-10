@@ -17,6 +17,8 @@ import { db, type BloomlabDatabase } from '../data/db';
 import { randomId } from '../data/envelope';
 import { clearWorkspace, loadWorkspace, saveWorkspace } from '../data/workspace';
 import { emptyResponse, type LearnerResponse } from './response';
+import { predictionFields } from './response';
+import { currentRun } from '../simulator/currentRun';
 
 /**
  * The active attempt: one logical try at an exercise, from the moment the learner starts until
@@ -238,9 +240,63 @@ export const saveResponse = (
   update(
     exerciseId,
     context,
-    (attempt) => ({ ...attempt, response: { ...attempt.response, ...response } }),
+    (attempt) => {
+      const checkpoint = attempt.response.run_prediction;
+      if (
+        checkpoint &&
+        response.prediction &&
+        JSON.stringify(response.prediction) !== JSON.stringify(checkpoint.prediction)
+      )
+        throw new Error('This prediction is committed. Start a new attempt to change it.');
+      return { ...attempt, response: { ...attempt.response, ...response } };
+    },
     database,
   );
+
+/**
+ * Freezes a RUN THE LEAD prediction before execution. The current run/generation and its last
+ * event are the boundary; finalization will ignore everything at or before it.
+ */
+export function commitRunPrediction(
+  exercise: Exercise,
+  context: AttemptContext,
+  database: BloomlabDatabase = db,
+  now: Date = new Date(),
+): Promise<ActiveAttempt | null> {
+  if (exercise.type !== 'RUN_THE_LEAD' || !exercise.scenario)
+    return Promise.reject(new Error('Only RUN THE LEAD exercises have a prediction checkpoint.'));
+  return update(
+    exercise.id,
+    context,
+    async (attempt) => {
+      if (attempt.response.run_prediction) return attempt;
+      const prediction = { ...attempt.response.prediction };
+      const missing = predictionFields(exercise).filter((field) => !prediction[field.key]?.trim());
+      if (missing.length > 0)
+        throw new Error(`Complete ${missing.map((field) => field.label).join(', ')} first.`);
+      const run = await currentRun(exercise.scenario!, database);
+      return {
+        ...attempt,
+        response: {
+          ...attempt.response,
+          prediction,
+          run_prediction: {
+            committed_at: now.toISOString(),
+            prediction,
+            scenario_id: exercise.scenario!,
+            run_id: run?.state.run_id ?? null,
+            run_generation: run?.generation ?? null,
+            through_event_index: Math.max(
+              -1,
+              ...(run?.state.log.map((event) => event.sequence) ?? []),
+            ),
+          },
+        },
+      };
+    },
+    database,
+  );
+}
 
 /**
  * Reveals the next hint the exercise offers and records it on the attempt, because assistance is

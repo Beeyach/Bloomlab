@@ -39,6 +39,11 @@ export interface LearnerResponse {
   /** Structured predictions, keyed by the field name after `prediction.`. */
   prediction: Record<string, string>;
   /**
+   * Immutable RUN THE LEAD boundary: the answer as committed, and the exact simulator generation
+   * and event position that already existed. Finalization accepts only execution after it.
+   */
+  run_prediction?: RunPredictionCheckpoint;
+  /**
    * Named long-form answers, keyed by the exercise's own `written_fields` (EXR-010, D-143).
    * Optional on the type so an attempt saved before Phase 15 still reads: an old draft has no
    * `written` and resumes with none rather than failing to load.
@@ -56,6 +61,15 @@ export interface LearnerResponse {
    */
   pricing?: PricingResponse;
   negotiation?: NegotiationState;
+}
+
+export interface RunPredictionCheckpoint {
+  committed_at: string;
+  prediction: Record<string, string>;
+  scenario_id: string;
+  run_id: string | null;
+  run_generation: string | null;
+  through_event_index: number;
 }
 
 export const emptyResponse = (): LearnerResponse => ({
