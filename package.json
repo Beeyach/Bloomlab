@@ -65,7 +65,8 @@
     "review:navigation": "node scripts/review/navigation-probe.mjs",
     "review:sidebar-resize": "node scripts/review/sidebar-resize-probe.mjs",
     "review:ai-off": "node scripts/review/ai-off-suite.mjs",
-    "review:binary-recovery": "node scripts/review/binary-recovery-probe.mjs"
+    "review:binary-recovery": "node scripts/review/binary-recovery-probe.mjs",
+    "review:failure-isolation": "node scripts/review/failure-isolation-probe.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
