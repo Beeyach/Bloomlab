@@ -9,6 +9,7 @@ const allowed = [
   'polish',
   'a11y',
   'rail',
+  'navigation',
   'restore',
   'search',
   'moments',

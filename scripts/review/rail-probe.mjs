@@ -1,4 +1,4 @@
-// Measures the primary rail (DES-009, D-117, RSP-004): the column is exactly --bl-size-rail wide
+// Measures the primary rail (DES-009, D-202, RSP-004): the column is exactly --bl-size-rail wide
 // on tablet and desktop and the page starts beside it, never under it; on phones it is a bottom
 // bar every area still fits in, with no horizontal overflow. Writes rail-probe.json and rail-*.png
 // to .review/ (override with REVIEW_OUT).
@@ -46,7 +46,7 @@ const measure = (page) =>
     if (!rail || !main) return { missing: true };
     const r = rail.getBoundingClientRect();
     const m = main.getBoundingClientRect();
-    const token = getComputedStyle(document.documentElement).getPropertyValue('--bl-size-rail').trim();
+    const token = getComputedStyle(rail).getPropertyValue('--bl-size-rail').trim();
     const shown = (el) => { const b = el.getBoundingClientRect(); return b.width > 0 && b.height > 0 && getComputedStyle(el).visibility !== 'hidden'; };
     // Every control in the rail: links and the More button. A label counts as visible wording
     // only when it takes up real space (a clipped, one-pixel label does not).
@@ -112,7 +112,7 @@ async function overflowCase(page, width, reducedMotion) {
   await openPage(page, `${BASE}${PAGE}`);
   const phone = width < 768;
   if (phone) await click(page, '[data-testid="rail-more"]');
-  const selector = phone ? '[data-testid="rail-more-menu"]' : 'nav[aria-label="Primary"]';
+  const selector = phone ? '[data-testid="rail-more-menu"]' : '[data-testid="rail-destinations"]';
   await page.evaluate(
     `void (window.__railScroller = document.querySelector(${JSON.stringify(selector)}))`,
   );
@@ -141,16 +141,21 @@ async function overflowCase(page, width, reducedMotion) {
     noHorizontalOverflow: !initial.pageOverflow && initial.contentWidth <= initial.width,
     nativeMotion: initial.behavior === 'auto',
   };
-  // Reach each boundary, then keep scrolling there: the page must not inherit that gesture.
+  // Phone More retains containment; desktop destinations deliberately chain at boundaries (D-202).
   await page.evaluate('window.__railScroller.scrollTop = window.__railScroller.scrollHeight');
   await wheel(initial.x, initial.y, 300);
-  checks.bottomDoesNotChain = (await state()).page === initial.page;
+  checks.bottomBoundaryBehavior = phone
+    ? (await state()).page === initial.page
+    : (await state()).page > initial.page;
+  await page.evaluate('scrollTo(0, 0)');
   await page.evaluate('window.__railScroller.scrollTop = 0');
   await wheel(phone ? 4 : width - 40, 100, 240);
   const pageScrolled = await state();
   checks.pageScrollsIndependently = pageScrolled.page > initial.page && pageScrolled.top === 0;
   await wheel(initial.x, initial.y, -300);
-  checks.topDoesNotChain = (await state()).page === pageScrolled.page;
+  checks.topBoundaryBehavior = phone
+    ? (await state()).page === pageScrolled.page
+    : (await state()).page < pageScrolled.page;
   await page.evaluate('scrollTo(0, 0)');
 
   // Every real link, including flag-gated bottom actions, must scroll into view with its ring.
@@ -302,8 +307,8 @@ try {
       checks.rendered = false;
     } else if (width >= 768) {
       const expected = Number.parseFloat(m.token);
-      // D-117: the user-directed band is 96–112 px (104 today); the design-rule test pins the same.
-      checks.tokenInBand = expected >= 96 && expected <= 112;
+      // Expanded D-202 band; the dedicated navigation probe covers both states.
+      checks.tokenInBand = expected >= 220 && expected <= 248;
       checks.railWidthMatchesToken = Math.abs(m.rail.w - expected) < 0.5;
       checks.railIsColumn = m.rail.h >= m.innerHeight - 1 && m.rail.x === 0;
       checks.mainStartsBesideRail = m.main.x >= m.rail.w - 0.5;

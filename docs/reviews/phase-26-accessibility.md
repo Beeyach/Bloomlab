@@ -1,5 +1,8 @@
 # Phase 26 — controlled accessibility review
 
+> Navigation follow-up: D-202 and [the navigation redesign review](../reviews/navigation-shell-redesign.md) supersede this document’s fixed-104 px/containment contract. Historical PASS evidence is preserved, but the learner’s contradictory real-use report requires fresh two-state genuine-input verification. All unrelated acceptance remains unchanged.
+
+
 This is implementation evidence, not physical-device or independent accessibility certification.
 Checkpoint E uses built Chromium with real keyboard/pointer/touch input, axe-core 4.13.0 and
 reduced-motion emulation. Later final-head runs are recorded in the Phase 26 review/PR.

@@ -1,3 +1,4 @@
+import railStyles from '../app/AppRail.module.css';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router';
@@ -176,9 +177,16 @@ describe('INF-017 / CNT-010 one private local search', () => {
     fireEvent.keyDown(document, { key: 'k', ctrlKey: true });
     expect(await screen.findByRole('searchbox')).toHaveFocus();
     const nav = screen.getByRole('navigation', { name: 'Primary' });
-    expect([...nav.querySelectorAll('ul')][0]!.querySelectorAll('a')[3]).toHaveTextContent(
+    // Desktop learning/search grouping no longer defines the phone inventory by array index.
+    const primary = [
+      ...nav.querySelectorAll('ul')[0]!.querySelectorAll(`li:not(.${railStyles.secondary}) a`),
+    ];
+    expect(primary.map((a) => a.textContent)).toEqual([
+      'Home',
+      'Campaign',
+      'Skill Map',
       'Workflow',
-    );
+    ]);
     screen.getByRole('button', { name: 'Clear search' }).focus();
     fireEvent.keyDown(document, { key: 'k', metaKey: true });
     expect(screen.getByRole('searchbox')).toHaveFocus();

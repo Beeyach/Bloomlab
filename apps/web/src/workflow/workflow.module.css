@@ -112,6 +112,12 @@
 
 /* ---- the workspace grid ------------------------------------------------------------------ */
 
+.workspaceFrame {
+  container-type: inline-size;
+  display: grid;
+  gap: var(--bl-space-4);
+}
+
 .workspace {
   display: grid;
   gap: var(--bl-space-4);
@@ -149,6 +155,15 @@
   .workspace {
     grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
     gap: var(--bl-space-6);
+  }
+}
+
+/* A 768 px tablet can have a 232 px expanded sidebar. Compose from the remaining
+   content measure so the canvas keeps readable nodes beside or above its tools. */
+@container (max-width: 40rem) {
+  .workspace,
+  .lower {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

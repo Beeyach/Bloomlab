@@ -11,6 +11,7 @@ import {
   syncApi,
 } from '../data';
 import { AppRail } from './AppRail';
+import { useSidebarPreference } from './useSidebarPreference';
 import { ConflictChooser } from './ConflictChooser';
 import styles from './RootLayout.module.css';
 import { SyncStatusIndicator } from './SyncStatusIndicator';
@@ -25,6 +26,7 @@ import { SoundToggle } from '../moments/SoundToggle';
  */
 export function RootLayout() {
   const navigate = useNavigate();
+  const { collapsed, toggle } = useSidebarPreference();
   useEffect(() => {
     const search = (event: KeyboardEvent) => {
       if (
@@ -57,11 +59,15 @@ export function RootLayout() {
   }, []);
 
   return (
-    <div className={styles.frame} data-build-id={BUILD_ID}>
+    <div
+      className={styles.frame}
+      data-build-id={BUILD_ID}
+      data-sidebar={collapsed ? 'collapsed' : 'expanded'}
+    >
       <a className={styles.skipLink} href="#main">
         Skip to content
       </a>
-      <AppRail />
+      <AppRail collapsed={collapsed} onToggle={toggle} />
       <div className={styles.status}>
         <SoundToggle />
         <SyncStatusIndicator />

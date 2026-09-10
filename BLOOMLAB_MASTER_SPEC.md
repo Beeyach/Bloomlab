@@ -2914,7 +2914,7 @@ Do not use one design density everywhere.
 
 Desktop:
 
-compact left rail around 96–112px, currently 104px, with enough room for full labels.
+A two-state desktop/tablet sidebar (D-202, superseding D-117): expanded icon + readable label rows at 232px, collapsed accessible icons at 76px. One shared active-width token offsets the page. Explicit toggle, hover/focus tooltips, persistent device-only preference and one independent native destination scroller keep all areas reachable through real wheel, keyboard and tablet touch input at short heights. Phones retain the 64px four-plus-More composition.
 
 Primary areas:
 

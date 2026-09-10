@@ -154,9 +154,11 @@ Never one density everywhere.
 
 ### App shell (DES-009)
 
-Desktop: compact labelled left rail, 96–112 px (104 px today, D-117). Primary areas: Home · Campaign · Skill Map · Simulator · Clients · Portfolio · Playground. Minimal top context. No giant sidebar.
+Desktop/tablet (≥768 px): 232 px expanded sidebar with horizontal icon + label rows and quiet dividers for learning/search, Labs, client work and Playground; flag-gated developer destinations follow. A full-row active surface and inset marker identify the selected route. The explicit 44 px toggle selects a 76 px icon-only state; accessible names and hover/focus tooltips remain. No width animation.
 
-**Implementation (Phase 12):** the rail is drawn from one token, `--bl-size-rail: 104px` after D-117 (a 64 px bottom bar from `--bl-size-rail-bar` below 768 px), and `RootLayout` offsets the page by the same token, so the page starts beside the rail and never under it. Areas today: Home · Campaign · Skill Map · Workflow · CRM · Inbox · Playground; Clients and Portfolio join with Phases 23 and 24. On phones the bar shows four areas with their names and a labelled More that opens the rest as a small labelled list (D-116); no label is hidden. `npm run review:rail` measures all five widths and checks the token against the 96–112 px band. Real-tablet check of the 104 px rail: pending.
+D-202 supersedes D-117's fixed 104 px contract. `--bl-size-sidebar-expanded` and `--bl-size-sidebar-collapsed` feed `--bl-size-rail` on the shell; both sidebar and page offset inherit it. The bounded `min-height: 0` destination region owns vertical scrolling with a visible native gutter, natural list heights, focus padding and native boundary chaining. Preference `bloomlab.sidebar.v1` is local device presentation, never learner evidence. Storage refusal retains session operability.
+
+Below 768 px the unchanged 64 px four-plus-More bar retains Home, Campaign, Skill Map and Workflow; More exposes every other destination and returns focus on Escape. Desktop toggle stays hidden. Fresh two-state navigation/rail probes replace the learner-contradicted Phase 26 PASS; physical-user and Safari acceptance remain pending. The product currently has a light global shell; dark Lab workspaces retain that same shell.
 
 ### Command Center (DES-010)
 

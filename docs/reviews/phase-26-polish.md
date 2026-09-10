@@ -1,5 +1,8 @@
 # Phase 26 — Polish and hardening
 
+> Navigation follow-up: D-202 and [the navigation redesign review](../reviews/navigation-shell-redesign.md) supersede this document’s fixed-104 px/containment contract. Historical PASS evidence is preserved, but the learner’s contradictory real-use report requires fresh two-state genuine-input verification. All unrelated acceptance remains unchanged.
+
+
 ## Checkpoint A — baseline and closeout ledger
 
 Branch: `codex/phase-26-polish`. Audited Phase 25 base:
