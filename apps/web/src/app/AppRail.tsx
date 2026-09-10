@@ -96,7 +96,15 @@ function Item({
   );
 }
 
-export function AppRail({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+export function AppRail({
+  collapsed,
+  onToggle,
+  sidebarId,
+}: {
+  collapsed: boolean;
+  onToggle: () => void;
+  sidebarId: string;
+}) {
   const flags = useFeatureFlags();
   const location = useLocation();
   const menuId = useId();
@@ -139,7 +147,7 @@ export function AppRail({ collapsed, onToggle }: { collapsed: boolean; onToggle:
   }, [open]);
 
   return (
-    <nav ref={nav} className={styles.rail} aria-label="Primary">
+    <nav id={sidebarId} ref={nav} className={styles.rail} aria-label="Primary">
       <div className={styles.header}>
         <span className={styles.brand} aria-hidden="true">
           {collapsed ? 'B' : 'Bloomlab'}

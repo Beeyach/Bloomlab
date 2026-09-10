@@ -10,6 +10,7 @@ const allowed = [
   'a11y',
   'rail',
   'navigation',
+  'sidebar-resize',
   'restore',
   'search',
   'moments',

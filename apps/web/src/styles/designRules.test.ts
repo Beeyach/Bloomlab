@@ -317,11 +317,11 @@ describe('the tablet engines the cards are actually read on (D-086)', () => {
 });
 
 describe('two sidebar sizes share one active offset (DES-009, D-202)', () => {
-  it('keeps expanded and collapsed sizes inside the requested bands', () => {
+  it('keeps the requested expanded default and fixed collapsed width', () => {
     const tokens = read(join(ROOT, 'packages', 'design-system', 'src', 'tokens.css'));
     for (const [state, min, max] of [
-      ['expanded', 220, 248],
-      ['collapsed', 68, 80],
+      ['expanded', 200, 200],
+      ['collapsed', 76, 76],
     ] as const) {
       const match = tokens.match(new RegExp(`--bl-size-sidebar-${state}:\\s*(\\d+)px`));
       expect(match).not.toBeNull();

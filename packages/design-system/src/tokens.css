@@ -59,7 +59,7 @@
 
   /* ---- layout sizes ---- */
   /* D-202 supersedes the fixed D-117 rail. The shell selects one shared active width. */
-  --bl-size-sidebar-expanded: 232px;
+  --bl-size-sidebar-expanded: 200px;
   --bl-size-sidebar-collapsed: 76px;
   --bl-size-rail: var(--bl-size-sidebar-expanded);
   /* The phone bottom bar the rail becomes below 768 px. */

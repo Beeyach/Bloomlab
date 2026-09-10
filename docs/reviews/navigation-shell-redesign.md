@@ -3,19 +3,72 @@
 Branch `codex/navigation-shell-redesign`, base `codex/field-ready-v1-remediation` at
 `1e6a9fdee20089805037e0b290961a92d96d0661`. No stacked PR may be merged.
 
-## Current human acceptance — visual follow-up
+## Current human acceptance — resizable-width refinement
 
 The learner's latest report is authoritative:
 
 - **Human scroll acceptance: PASS** on the original device/browser. Preserve the scrolling fix.
-- **Prior visual composition: FAIL.** Expanded must be `[icon] Label`, never stacked; collapsed
-  must be `[icon]` with no rendered destination words.
-- **Corrected expanded/collapsed visual acceptance: PENDING learner confirmation.** DES-009
-  stays IN_PROGRESS. The twelve human/real-GHL acceptance rows remain unchanged.
+- **Prior visual composition: FAIL**, followed by **horizontal expanded/icon-only collapsed
+  composition materially better**. Keep `[icon] Label` expanded and `[icon]` collapsed.
+- **Remaining issue:** fixed 232 px expanded width leaves too much empty horizontal space;
+  the learner requests control over that width.
+- **Adjustable expanded/collapsed visual acceptance: PENDING learner confirmation.** DES-009
+  stays IN_PROGRESS. Independent ChatGPT audit and the twelve human/real-GHL rows stay separate.
 
-The historical sections below describe evidence available before this new human result.
-Their original-device scrolling caveat is now resolved by the human PASS; their automated
-visual attestation does not override the subsequent human FAIL.
+### Resizable-width implementation and review
+
+D-202 now specifies a 200 px default, 176–280 px expanded range and fixed 76 px collapsed rail.
+This supersedes the initial fixed 232 px expanded decision, retaining its original requirement
+intent. A 12 px right-edge hit area sits outside the native scrollbar in existing content
+padding, so scrollbar drag keeps its separate target. It appears only on expanded desktop/tablet.
+The named, focusable vertical separator exposes current/min/max values and controls the primary
+navigation. Left/Right change 8 px, Home/End select the effective bounds and double-click resets.
+
+One inherited active CSS width drives the sidebar, separator position and shell padding. Pointer
+capture keeps dragging beyond the narrow handle; requestAnimationFrame coalesces live CSS/ARIA
+updates without app rerenders or storage writes per move. Release commits the selected width.
+Cancelled capture, collapse or a viewport change clears the gesture and restores committed
+geometry and ARIA values. No width transition is used.
+
+Mode remains in `bloomlab.sidebar.v1`; width uses `bloomlab.sidebar.width.v1`. Both are device
+presentation only, excluded from learner evidence/sync. Missing, malformed and non-finite values
+fall back to 200; finite out-of-range values clamp. Denied storage retains session usability;
+other-tab updates and clearing storage are handled. Collapse/reload/expand retains the choice.
+The effective maximum reserves 536 px of content: at a 768 px viewport it is 232 px, at 800 it
+is 264 px and at 816+ it is 280 px. Narrowing the viewport does not overwrite a wider saved choice.
+The existing Workflow readable-canvas composition is unchanged.
+
+The new `review:sidebar-resize` probe uses native CDP held-button drag and keyboard input. It
+covers smaller/larger mouse and tablet drag, touch cancellation, both bounds, live offset equality, storage only on release, keyboard
+focus/values, reset, reload, corruption, collapsed geometry/restoration, viewport cancellation,
+mobile controls and Workflow. It measures every destination's actual icon/label rectangles at
+minimum/default/maximum, including full label fit, and runs axe at those nine width states.
+The original navigation probe retains genuine wheel/small deltas, native scrollbar drag,
+forward/reverse Tab, tablet touch, boundary/page independence, motion and phone More assertions.
+
+Working-build resize verification passed 224 checks across 23 layouts, with zero violations
+in nine axe width-state scans (`.review/sidebar-resize/working-landmark`). The existing 38-case
+navigation run also passed (`working-navigation`). Initial visual artifacts are in `working-3`; minimum/default/
+maximum captures at 1440/1024/768 were manually inspected. All visible destination names fit
+176 px without stacking; selected rows and group dividers remain quiet. At 768 the maximum
+keeps the Workflow nodes readable and inside the canvas. These observations support the
+requested bounds; they do not substitute for learner visual confirmation. The initial new
+probe omitted the held mouse button on move events, causing a harness pointer-capture failure;
+retained failing artifacts and native event tracing distinguish this from application behavior.
+The corrected probe preserves the established scrollbar driver's held-button dispatch. A new
+moderate axe region finding moved the fixed separator into the main landmark while keeping it
+outside the navigation scroll owner; no accessibility rule was suppressed.
+
+Final immutable-head Node 22 CI, deployed Worker/browser identity, full navigation, resize,
+accessibility and related probe results are attested in draft PR #31 after deployment. This
+review is committed before those runs so that verification can remain tied to one exact head.
+No PR is merged. Independent ChatGPT audit and learner confirmation are the stop boundary.
+
+## Historical visual-composition investigation
+
+The following records preserve the earlier contradictory human reports and investigation.
+Original-device scrolling is now HUMAN PASS and horizontal composition is materially better;
+older fixed-232 wording describes the initial implementation, superseded by the refinement above.
 
 ### Deployed reproduction and remaining uncertainty
 

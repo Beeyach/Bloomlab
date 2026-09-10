@@ -131,7 +131,7 @@ try {
           if (HEAD) check('browserHead', initial.build === HEAD);
           check(
             'widthAndOffset',
-            initial.railWidth === (mode === 'expanded' ? 232 : 76) &&
+            initial.railWidth === (mode === 'expanded' ? 200 : 76) &&
               initial.token === initial.railWidth &&
               initial.offset === initial.railWidth &&
               initial.mainLeft >= initial.railWidth,
