@@ -142,38 +142,40 @@ export function AppRail() {
         Bloomlab
       </span>
       <VisuallyHidden>Bloomlab</VisuallyHidden>
-      <ul className={styles.list}>
-        {AREAS.map((area, index) => (
-          <Item
-            key={area.to}
-            area={area}
-            className={index >= PHONE_PRIMARY ? styles.secondary : undefined}
-          />
-        ))}
-        <li className={styles.moreItem}>
-          <button
-            ref={moreButton}
-            type="button"
-            className={cx(styles.item, moreActive && styles.active)}
-            aria-expanded={open}
-            aria-controls={menuId}
-            onClick={() => setOpenFor(open ? null : location.pathname)}
-            data-testid="rail-more"
-          >
-            <span className={styles.glyph} aria-hidden="true">
-              <IconMore size={20} />
-            </span>
-            <span className={styles.label}>More</span>
-          </button>
-        </li>
-      </ul>
-      {developer.length > 0 && (
-        <ul className={cx(styles.list, styles.developer)} aria-label="Developer surfaces">
-          {developer.map((area) => (
-            <Item key={area.to} area={area} />
+      <div className={styles.destinations} data-testid="rail-destinations">
+        <ul className={styles.list}>
+          {AREAS.map((area, index) => (
+            <Item
+              key={area.to}
+              area={area}
+              className={index >= PHONE_PRIMARY ? styles.secondary : undefined}
+            />
           ))}
+          <li className={styles.moreItem}>
+            <button
+              ref={moreButton}
+              type="button"
+              className={cx(styles.item, moreActive && styles.active)}
+              aria-expanded={open}
+              aria-controls={menuId}
+              onClick={() => setOpenFor(open ? null : location.pathname)}
+              data-testid="rail-more"
+            >
+              <span className={styles.glyph} aria-hidden="true">
+                <IconMore size={20} />
+              </span>
+              <span className={styles.label}>More</span>
+            </button>
+          </li>
         </ul>
-      )}
+        {developer.length > 0 && (
+          <ul className={cx(styles.list, styles.developer)} aria-label="Developer surfaces">
+            {developer.map((area) => (
+              <Item key={area.to} area={area} />
+            ))}
+          </ul>
+        )}
+      </div>
       <div id={menuId} className={styles.moreMenu} hidden={!open} data-testid="rail-more-menu">
         <ul className={styles.moreList} aria-label="More areas">
           {more.map((area) => (

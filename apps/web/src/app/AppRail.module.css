@@ -11,6 +11,10 @@
   display: none;
 }
 
+.destinations {
+  display: contents;
+}
+
 .list {
   display: flex;
   margin: 0;
@@ -181,16 +185,26 @@
     bottom: 0;
     left: 0;
     width: var(--bl-size-rail);
-    /* The whole rail scrolls, including its bottom actions; the page keeps its own scroll. */
-    overflow-x: hidden;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    scroll-padding-block: var(--bl-space-2);
-    scrollbar-width: thin;
     flex-direction: column;
     align-items: stretch;
-    padding: var(--bl-space-5) var(--bl-space-3);
+    padding: var(--bl-space-5) 0 0;
     border-right: 1px solid;
+  }
+
+  /* One bounded scroll owner; never shrink lists to conceal real overflow. Native chaining
+     at the boundaries keeps wheel/touch gestures from feeling swallowed. */
+  .destinations {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: auto;
+    scrollbar-width: thin;
+    scrollbar-gutter: stable;
+    scroll-padding-block: var(--bl-space-2);
+    padding: var(--bl-space-2) var(--bl-space-3) var(--bl-space-5);
   }
 
   .brand {
