@@ -28,6 +28,36 @@ const only = (state: SimulatorState, kind: string) =>
 
 const FIXTURES: RegressionFixture[] = [
   {
+    id: 'MSG-EMAIL-MISSING',
+    behaviour:
+      'An email to a contact without an email address is explicitly skipped, never reported as sent.',
+    covers: 'INF-016, SIM-010',
+    status: 'implemented',
+    run: ({ scenario: authored }) => {
+      const state = processEvent(
+        createRun(authored),
+        event('CONTACT_CREATED', NOW, {
+          contact_id: 'no-email',
+          first_name: 'Training',
+          phone: '+15125550199',
+        }),
+      );
+      return processEvent(
+        state,
+        event('EMAIL_SENT', NOW, {
+          contact_id: 'no-email',
+          subject: 'Training',
+          body: 'A local test.',
+        }),
+      );
+    },
+    expect: (state) => {
+      expect(state.account.conversations['no-email']).toBeUndefined();
+      expect(only(state, 'action_skipped')[0]?.reason).toBe('missing_email');
+      expect(state.account.analytics.messages_sent).toBe(0);
+    },
+  },
+  {
     id: 'CLOCK-001',
     behaviour: 'A run starts at the scenario’s authored time, in the scenario’s zone.',
     covers: 'SIM-006',

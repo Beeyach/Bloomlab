@@ -292,3 +292,26 @@ Checks before G:
   event; no app assertion was weakened. Preview build/provider-secret scan passes.
 
 No content, schema, evaluator, ownership, human-acceptance status or migration changes. Spend $0.
+
+## Checkpoint G — adversarial harness
+
+All **15 master §142 cases pass**, derived from **28 executed assertions / 11 files**, not a static
+checklist. `scripts/adversarial-cases.mjs` names each setup, expected behavior, exact regression
+title and limitation. `npm run test:adversarial` runs those regressions against local IndexedDB,
+local Worker/D1 test storage and controlled provider transports, then generates fresh observed
+PASS/FAIL JSON/Markdown. Missing/skipped/ambiguous/failed assertions or runner failure fail the
+harness. It now runs in complete local CI and GitHub Checks with an exact-build artifact.
+
+The committed [fifteen-case record](phase-26-adversarial.md) includes every setup, expected/observed
+result, reference and limitation: offline exercise, simulation refresh, duplicate events, missing
+phone, missing email, cancellation during wait, timezone change, AI timeout, budget exhaustion,
+ElevenLabs failure, transcription failure, sync conflict, second device, extreme values and malformed
+scenario. Missing email previously lacked its own named regression; `MSG-EMAIL-MISSING` now proves
+an explicit skip with no message or sent-count increment. The existing implementation behaved safely;
+no unrelated simulator rewrite was needed. The older acceptance count of fourteen is corrected to
+fifteen without combining phone/email or weakening the master.
+
+All workspace typechecks and scoped ESLint pass. Artifacts:
+`.review/adversarial/adversarial.{json,md}` plus its uniquely named fresh Vitest report.
+No real provider was called, no generated success was substituted, no migrations or parked-status
+changes occurred; spend $0. This is adversarial implementation evidence, not INF-015 independent audit.

@@ -36,6 +36,14 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm test
+      - run: npm run test:adversarial
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: adversarial-${{ env.BLOOMLAB_BUILD_ID }}
+          path: .review/adversarial/adversarial.*
+          include-hidden-files: true
+          if-no-files-found: warn
       - run: npm run validate:docs
       # Content validation (CNT-011): every ID resolves, no missing prerequisite or unknown GHL
       # feature, and content.lock.yaml matches the sources (content_version was bumped).

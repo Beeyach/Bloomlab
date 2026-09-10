@@ -450,7 +450,7 @@ Implementation and controlled verification: `docs/reviews/phase-24-field-ready.m
 ## Phase 26 — Polish
 
 - **A11Y-010** Automated a11y job in CI; manual review log for the six areas.
-- **INF-016** Each of the fourteen adversarial cases has a recorded test result.
+- **INF-016** Each of the fifteen adversarial cases in master §142 has a recorded test result. Missing phone and missing email are separate cases; the older count of fourteen was a prose error. `npm run test:adversarial` executes the exact regressions in `scripts/adversarial-cases.mjs` and derives each observed PASS/FAIL from fresh Vitest output; a missing, skipped, ambiguous or failed case fails the harness. Controlled provider failures spend $0.
 
 ---
 
