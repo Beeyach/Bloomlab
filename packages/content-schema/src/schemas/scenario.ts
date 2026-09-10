@@ -148,7 +148,8 @@ const calendar = z
   .strictObject({
     id: z.string().min(1),
     name: z.string().min(1),
-    type: z.enum(['personal', 'round_robin', 'service']).optional(),
+    type: z.enum(['personal', 'round_robin', 'service', 'class']).optional(),
+    seats_per_class: z.number().int().positive().optional(),
     duration_minutes: z.number().int().min(5),
     slot_interval_minutes: z.number().int().min(5).optional(),
     pre_buffer_minutes: z.number().int().min(0).optional(),

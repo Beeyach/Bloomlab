@@ -1,0 +1,22 @@
+id: GHL-SITE-SEO
+official_name: SEO
+area: Funnels & Websites
+feature_type: product
+implementation_type: integration
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000004723-seo-a-guide-to-boosting-your-search-rankings
+skills:
+  - SK-BUILD-publishing-seo
+known_limitations:
+  - Conceptual instruction and objective local policy/trace fixtures only. No
+    live product execution, external account, paid provider, publishing, calling
+    or autonomous action is simulated.
+  - Integrated Search Atlas service; entitlement, quotas and billing require
+    verification. Not a native local SEO engine.
+approximation_note: Local contract reasoning only, not a full Lab or real-GHL acceptance.
+verification_note: Current official HighLevel documentation read on 2026-09-09.
+  Integrated Search Atlas service; entitlement, quotas and billing require
+  verification. Not a native local SEO engine.
+supported_configs: {}

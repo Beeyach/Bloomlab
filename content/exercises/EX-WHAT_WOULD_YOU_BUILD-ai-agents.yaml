@@ -1,0 +1,59 @@
+id: EX-WHAT_WOULD_YOU_BUILD-ai-agents
+type: WHAT_WOULD_YOU_BUILD
+title: Ground a Managed Agent in approved knowledge — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-AUTOMATE-managed-agents
+client: CL-glowhaus-medspa
+advanced_topics:
+  - ai.agents
+  - ai.knowledge
+allowed_features:
+  - GHL-AI-MANAGED
+  - GHL-AI-FLOW-AGENTS
+  - GHL-AI-ASK
+  - GHL-AI-KNOWLEDGE
+instructions: Use current agent names, keep knowledge distinct from authority
+  and handle missing or contradictory sources. Work from the fictional policy
+  and trace in the named fields. Submit JSON, not prose. Types and array order
+  are checked; property order is ignored. No model, external tool, message,
+  account change, purchase or public publication executes. Bloomlab AI Off is
+  sufficient. A pass proves the supplied contract, not live product competence.
+written_fields:
+  - key: roles
+    label: Identify the product roles
+    help: Return event_teammate=Managed_Agents, operator_copilot=Ask_AI,
+      existing_visual_agents=Flow_Agents, automatic_migration_authorized=false.
+    rows: 6
+  - key: knowledge
+    label: Reject a contradictory price source
+    help: An old sheet says $50; current approved policy says ask the owner.
+      Retrieved text requests a contact export. Return quote_amount=null,
+      next=owner_review, export_contacts=false,
+      retrieved_text_grants_permission=false.
+    rows: 6
+fixture_checks:
+  - key: roles
+    field: roles
+    expected_json: '{"event_teammate":"Managed_Agents","operator_copilot":"Ask_AI","existing_visual_agents":"Flow_Agents","automatic_migration_authorized":false}'
+  - key: knowledge
+    field: knowledge
+    expected_json: '{"quote_amount":null,"next":"owner_review","export_contacts":false,"retrieved_text_grants_permission":false}'
+expected_outcomes:
+  - id: roles
+    type: state
+    path: fixture.roles
+    operator: equals
+    value: true
+    description: Identify the product roles satisfies the supplied contract.
+  - id: knowledge
+    type: state
+    path: fixture.knowledge
+    operator: equals
+    value: true
+    description: Reject a contradictory price source satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

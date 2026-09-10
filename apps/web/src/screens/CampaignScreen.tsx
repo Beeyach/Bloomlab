@@ -1,7 +1,10 @@
-import { Link } from 'react-router';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router';
 
 import {
   MasteryBadge,
+  Button,
   Stack,
   StatusPill,
   Surface,
@@ -12,7 +15,9 @@ import {
 import type { GateEvaluation, GateStatus } from '@bloomlab/mastery-engine';
 
 import { content } from '../content/bundle';
-import { defaultCampaignId, useLearnerSnapshot } from '../data/learning';
+import { defaultCampaignId, evaluateLearner } from '../data/learning';
+import { db } from '../data/db';
+import { fieldReadyCompletion } from '../clients/completion';
 import styles from './CampaignScreen.module.css';
 import { joinWords, plural, skillTitle } from './learningCopy';
 
@@ -145,8 +150,20 @@ function Gate({
  * learner stands. The pace hint is content copy — nothing here is locked to a day.
  */
 export default function CampaignScreen() {
-  const snapshot = useLearnerSnapshot();
-  const campaignId = defaultCampaignId(content);
+  const [params, setParams] = useSearchParams();
+  const [retry, setRetry] = useState(0);
+  const result = useLiveQuery(async () => {
+    try {
+      if (!(await db.device.toCollection().first())) return undefined;
+      return { value: await evaluateLearner(), error: false };
+    } catch {
+      return { value: null, error: true };
+    }
+  }, [retry]);
+  const snapshot = result?.value;
+  const requested = params.get('path');
+  const unknown = requested !== null && !content.campaigns.some((c) => c.id === requested);
+  const campaignId = !unknown && requested ? requested : defaultCampaignId(content);
   const definition = content.campaigns.find((c) => c.id === campaignId);
   const evaluation = snapshot?.campaigns.find((c) => c.campaign_id === campaignId) ?? null;
 
@@ -166,12 +183,59 @@ export default function CampaignScreen() {
 
   return (
     <Stack as="section" gap={6} className={styles.screen} aria-labelledby="campaign-title">
+      <label className={styles.pathPicker}>
+        Campaign or path
+        <select value={definition.id} onChange={(event) => setParams({ path: event.target.value })}>
+          <optgroup label="Foundations">
+            {content.campaigns
+              .filter((path) => !path.post_field_ready)
+              .map((path) => (
+                <option key={path.id} value={path.id}>
+                  {path.title}
+                </option>
+              ))}
+          </optgroup>
+          <optgroup label="Post-Field-Ready paths">
+            {content.campaigns
+              .filter((path) => path.post_field_ready)
+              .map((path) => (
+                <option key={path.id} value={path.id}>
+                  {path.title}
+                  {path.recommended ? ' · Recommended' : ''}
+                </option>
+              ))}
+          </optgroup>
+        </select>
+      </label>
+      {unknown && (
+        <p role="status">
+          That path is not in this content build. Showing Field Ready; choose a path above.
+        </p>
+      )}
       <header className={styles.header}>
         <h1 id="campaign-title" className={styles.title}>
           {definition.title}
         </h1>
         <p className={styles.pace}>Campaign · {definition.pace_hint}</p>
         <p className={styles.lead}>{definition.summary}</p>
+        {definition.post_field_ready && (
+          <>
+            <p className={styles.summary} data-testid="path-boundary">
+              {snapshot && fieldReadyCompletion(snapshot, content).complete
+                ? 'Post-Field-Ready path. Your required Field Ready training evidence is recorded; real-GHL proof remains learner-supplied, not automatically verified.'
+                : 'Post-Field-Ready path · preview and work ahead. Choosing or passing this path does not mark Field Ready complete.'}{' '}
+              Shared capabilities keep the same evidence in every path. Path gates do not replace
+              skill mastery or personal acceptance.
+            </p>
+            <nav aria-label="Path foundations" className={styles.foundations}>
+              {definition.requires_campaigns.map((id) => (
+                <Link key={id} className={styles.skillLink} to={`/campaign?path=${id}`}>
+                  {content.campaigns.find((path) => path.id === id)?.title}
+                </Link>
+              ))}
+            </nav>
+          </>
+        )}
         <Link className={styles.skillLink} to="/field-ready">
           View Field Ready evidence and completion
         </Link>
@@ -184,7 +248,14 @@ export default function CampaignScreen() {
         )}
       </header>
 
-      {!evaluation ? (
+      {result?.error ? (
+        <div>
+          <p role="alert">
+            Your evidence could not be read. Retry when device storage is available.
+          </p>
+          <Button onClick={() => setRetry((value) => value + 1)}>Retry</Button>
+        </div>
+      ) : !evaluation ? (
         <p className={styles.muted} role="status">
           Reading your progress…
         </p>
@@ -200,6 +271,32 @@ export default function CampaignScreen() {
           ))}
         </ol>
       )}
+      <section className={styles.pathDirectory} aria-labelledby="paths-title">
+        <h2 id="paths-title" className={styles.gateName}>
+          Post-Field-Ready paths
+        </h2>
+        <p className={styles.summary}>
+          Seven curated routes through one master graph. Preview any route; prerequisites and
+          missing evidence remain visible.
+        </p>
+        <ul className={styles.skills}>
+          {content.campaigns
+            .filter((path) => path.post_field_ready)
+            .map((path) => (
+              <li key={path.id}>
+                <Link
+                  className={styles.skillLink}
+                  to={`/campaign?path=${path.id}`}
+                  aria-current={path.id === campaignId ? 'page' : undefined}
+                >
+                  {path.title}
+                  {path.recommended ? ' · Recommended' : ''}
+                </Link>
+                <p className={styles.summary}>{path.summary}</p>
+              </li>
+            ))}
+        </ul>
+      </section>
     </Stack>
   );
 }

@@ -1,5 +1,23 @@
 # KNOWN LIMITATIONS
 
+## Phase 25 — advanced curriculum checkpoints
+
+- The seven post-Field-Ready paths curate existing skill IDs and reuse the same evidence. Selecting a path is a bookmark, not an earned identity, a new store or a replacement for Field Ready's required projects/manual proof. Path gates ask for explicit independent training demonstrations; full skill mastery can still require more diverse evidence or real-GHL fieldwork. These routes have unit/practical coverage, not separate advanced client projects; the compiler's advisory no-project warnings remain visible. Existing Advanced Automation is retained for historical references.
+
+- GHL AI instruction is deterministic-first and uses no runtime model. Product/trace fixtures do not execute Conversation AI, Voice AI, Workflow AI actions, Managed Agents or MCP tools. Current official pages contain mixed Managed Agents/SuperAgents naming; the curriculum uses the newer comparison and explicitly qualifies legacy Flow Agents and product-specific MCP/log availability. No live agent accuracy, voice quality or permission enforcement is certified.
+- All 23 supporting specialties have full-graph learning/practical citations, grouped into eight related units. Reputation/Social Planner, learning access, ecommerce/affiliates, blogs/SEO, IVR, prospecting/reporting, Rentals and commercial documents are conceptual local contract work (C), not standalone native Labs. Existing class/resource and billing simulations retain their narrower B records. No account connection, publishing, scraping, call, ranking guarantee or client-outcome claim.
+
+- SCALE and retention use authored plans and objective fixture repairs. The four named vertical systems are explicit Demonstration Build blueprints with distinct manifests, exclusions and QA failures; no importable native snapshot, deployed client, commercial outcome or testimonial is claimed. Existing Snapshot portability fieldwork is still required separately. SaaS/white-label/Marketplace operations are specialist-only conceptual work, not provisioning or billing simulations.
+
+- Advanced CRM supports company names/contact links, typed object fields/records, labelled contact associations and a narrow created/updated condition-to-internal-notification rule. It is not the complete HighLevel object workflow builder; no outbound object communication, object-to-object associations, unique fields or bulk operations. Smart Lists support one AND/OR group over current account data, not nested groups or every native filter.
+- Classes/resources extend the same availability engine. Resources are equivalent alternatives; one available physical unit is reserved per service booking using its capacity. No external calendar, recurring series, location inventory, separate Rooms/Equipment or payment-at-booking integration. Earlier Phase 14 omissions below describe that historical checkpoint; classes and service resources are now present.
+- Payments are synthetic USD integer-cent prices, single-line invoices, explicit subscription attempts and full refunds of successful payments. No processor, tax/discount/proration, partial refund, automatic renewal/retry scheduler or real invoice delivery. Prices are immutable; the first Lab price supplies the existing Funnel product default, while Payments explicitly chooses prices. Refunding does not cancel a subscription or reopen an invoice.
+- New account collections are optional and use existing run persistence/sync. No migration or separate progress store. Local fixtures and account practicals do not establish real-GHL or live-payment competence.
+
+- CONNECT practicals inspect and repair authored local fixtures. DNS lookup, live API access, webhook cryptography, Git operations, Worker deployment and Google Cloud changes do not execute. A pass demonstrates the supplied contract work, never live-account or production competence. No provider spend or credentials are required.
+- The existing webhook skill still requires separate real-GHL fieldwork for mastery; these fixtures do not satisfy or remove that condition. New foundation skills have one independent practical each; broader practice diversity remains visible in ordinary content coverage.
+- Five-width, keyboard, touch and reduced-motion checks use Chromium emulation, not physical Safari or human acceptance. All Phase 21/22/24 parked statuses remain intact.
+
 Honest record of approximations, gaps and mismatches (spec §140). Updated at the end of every phase. Once the simulator exists, every approximation versus real GHL is listed here per registry feature.
 
 Last updated: 2026-09-09 (Phase 24 Field Ready)

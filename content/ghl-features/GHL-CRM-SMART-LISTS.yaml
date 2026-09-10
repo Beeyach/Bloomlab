@@ -1,21 +1,21 @@
-# Verified 2026-09-02 against "Getting Started With Smart Lists": dynamic contact lists driven by
-# filters (tags, custom fields, engagement, opportunity stage).
 id: GHL-CRM-SMART-LISTS
 official_name: Smart Lists
 area: Contacts
 feature_type: capability
 implementation_type: native_ghl
 status: current
-simulation_fidelity: C
-last_verified: 2026-09-02
-source_url: https://help.gohighlevel.com/support/solutions/articles/48001062094-how-to-create-manage-smart-lists
-known_limitations:
-  - Not simulated in v1; segmentation is taught conceptually and practised in GHL.
+simulation_fidelity: B
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000007530-advanced-filters-in-smart-lists
 skills:
-  - SK-ARCHITECT-tags-vs-custom-fields
-supported_configs:
-  notes: Saved filters; membership updates automatically.
-approximation_note: Conceptual demonstration — smart lists are explained, not simulated.
-aliases:
-  - SmartLists
-verification_note: Name and behaviour confirmed on the help-center article, 2026-09-02.
+  - SK-ARCHITECT-smart-lists
+known_limitations:
+  - Live contact segmentation supports one all/any rule group, typed equality, contains, empty and
+    numeric greater-than. Nested groups, sharing, company/object lists, every field and
+    channel-specific DND filters are not simulated.
+supported_configs: {}
+approximation_note: Live contact segmentation supports one all/any rule group, typed equality,
+  contains, empty and numeric greater-than. Nested groups, sharing, company/object lists, every
+  field and channel-specific DND filters are not simulated.
+verification_note: Read the current official HighLevel article on 2026-09-09. Local behaviour is
+  deliberately narrower than the platform; no real account verification is implied.

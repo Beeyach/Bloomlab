@@ -1,0 +1,58 @@
+id: EX-WHAT_WOULD_YOU_BUILD-vertical-photographer
+type: WHAT_WOULD_YOU_BUILD
+title: Photographer Inquiry System — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SCALE-photographer-system
+client: CL-glowhaus-medspa
+advanced_topics:
+  - scale.vertical_photographer
+allowed_features:
+  - GHL-FORM-FORMS
+  - GHL-CRM-PIPELINES
+  - GHL-WF-SEND-EMAIL
+instructions: Configure and QA a reusable training system where a date-sensitive
+  inquiry becomes a reviewed proposal without a false reservation. Work only
+  from the fictional policy and assets in the named fields. Submit JSON, not
+  prose. Types and array order are checked; property order is ignored. This
+  local contract-repair exercise executes no snapshot, account change, message,
+  deployment or purchase. It is demonstration work, not a client outcome.
+written_fields:
+  - key: manifest
+    label: Separate inquiry from reservation
+    help: Return inquiry_reserves_date=false,
+      confirmation_requires=[signed_agreement,required_deposit],
+      gallery_url_source=custom_value.
+    rows: 6
+  - key: qa
+    label: Handle a signed but unpaid agreement
+    help: Return pipeline_stage=Proposal_Sent, send_confirmation=false,
+      owner_review=true, label=Demonstration Build.
+    rows: 6
+fixture_checks:
+  - key: manifest
+    field: manifest
+    expected_json: '{"inquiry_reserves_date":false,"confirmation_requires":["signed_agreement","required_deposit"],"gallery_url_source":"custom_value"}'
+  - key: qa
+    field: qa
+    expected_json:
+      '{"pipeline_stage":"Proposal_Sent","send_confirmation":false,"owner_review":true,"label":"Demonstration
+      Build"}'
+expected_outcomes:
+  - id: manifest
+    type: state
+    path: fixture.manifest
+    operator: equals
+    value: true
+    description: Separate inquiry from reservation satisfies the supplied contract.
+  - id: qa
+    type: state
+    path: fixture.qa
+    operator: equals
+    value: true
+    description: Handle a signed but unpaid agreement satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

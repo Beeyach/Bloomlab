@@ -1,0 +1,55 @@
+id: EX-WHAT_WOULD_YOU_BUILD-connect-http
+type: WHAT_WOULD_YOU_BUILD
+title: Read both sides of an HTTP exchange — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-CONNECT-http
+client: CL-glowhaus-medspa
+advanced_topics:
+  - connect.http
+allowed_features: []
+instructions: >-
+  Choose methods and headers, diagnose response status and plan retries without exposing credentials
+  or duplicating writes.
+
+
+  Work from the fictional fixtures below. Submit JSON, not prose, in each named answer. This is a
+  local inspection/repair practical: no DNS lookup, API request, terminal command, cryptographic
+  verification or deployment runs. Never enter actual credentials. Object property order is ignored;
+  types and array order are checked. Read the CONNECT unit for the model and source boundaries.
+written_fields:
+  - key: request
+    label: Construct the contract
+    help: A fictional endpoint requires POST with JSON. Return method, content_type and
+      credential_location. Choose server_secret or browser_bundle for the latter.
+    rows: 6
+  - key: responses
+    label: Classify the next actions
+    help: Return actions keyed "401", "403", "429", "timeout_after_post"; choose inspect_auth,
+      inspect_scope, bounded_retry, reconcile or blindly_retry.
+    rows: 6
+fixture_checks:
+  - key: request
+    field: request
+    expected_json: '{"method":"POST","content_type":"application/json","credential_location":"server_secret"}'
+  - key: responses
+    field: responses
+    expected_json: '{"401":"inspect_auth","403":"inspect_scope","429":"bounded_retry","timeout_after_post":"reconcile"}'
+expected_outcomes:
+  - id: request
+    type: state
+    path: fixture.request
+    operator: equals
+    value: true
+    description: Construct the contract matches the objective fixture contract.
+  - id: responses
+    type: state
+    path: fixture.responses
+    operator: equals
+    value: true
+    description: Classify the next actions matches the objective fixture contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

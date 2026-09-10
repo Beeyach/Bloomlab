@@ -1,4 +1,5 @@
 import { curriculumTopics } from './fieldReady.ts';
+import { advancedTopics } from './advanced.ts';
 import { z } from 'zod';
 
 import { TERRITORIES } from '../ids.ts';
@@ -54,6 +55,7 @@ export const LearningUnitFrontMatterSchema = z
      * claims; the unit still has to actually teach them.
      */
     topics: curriculumTopics,
+    advanced_topics: advancedTopics,
     pricing_concepts: z.array(z.enum(PRICING_CONCEPTS)).default([]),
   })
   .superRefine((unit, ctx) => {

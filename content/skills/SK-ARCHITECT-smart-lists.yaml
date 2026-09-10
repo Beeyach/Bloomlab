@@ -1,0 +1,19 @@
+id: SK-ARCHITECT-smart-lists
+title: Keep a saved audience connected to current data
+territory: ARCHITECT
+tier: practitioner
+summary: Build a live contact segment, test its inclusion boundary and distinguish membership from consent.
+prerequisites:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features:
+  - GHL-CRM-SMART-LISTS
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - smart-lists
+  - advanced
+  - shared account

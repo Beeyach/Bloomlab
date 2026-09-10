@@ -1,0 +1,19 @@
+id: SK-CONNECT-http
+title: Read both sides of an HTTP exchange
+territory: CONNECT
+tier: practitioner
+summary: Choose methods and headers, diagnose response status and plan retries without exposing
+  credentials or duplicating writes.
+prerequisites:
+  - SK-CONNECT-json
+ghl_features: []
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - http
+  - integration
+  - operator

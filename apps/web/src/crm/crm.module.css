@@ -530,3 +530,32 @@
 .screen textarea {
   font-size: max(1rem, var(--bl-font-size-md));
 }
+.advanced {
+  display: grid;
+  gap: var(--bl-space-4);
+  max-width: 52rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.advancedForm {
+  display: grid;
+  gap: var(--bl-space-3);
+  padding-block: var(--bl-space-4);
+  border-block-start: 1px solid var(--bl-color-border);
+  min-width: 0;
+}
+
+.advanced fieldset {
+  display: grid;
+  gap: var(--bl-space-3);
+  min-width: 0;
+  padding: var(--bl-space-3);
+  border: 1px solid var(--bl-color-border);
+}
+
+.advanced input,
+.advanced select {
+  min-width: 0;
+  width: 100%;
+}

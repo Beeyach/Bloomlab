@@ -1,0 +1,56 @@
+id: EX-WHAT_WOULD_YOU_BUILD-specialty-publishing
+type: WHAT_WOULD_YOU_BUILD
+title: Publish blogs and interpret SEO evidence — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-BUILD-publishing-seo
+client: CL-glowhaus-medspa
+advanced_topics:
+  - specialty.blogs
+  - specialty.seo
+allowed_features:
+  - GHL-SITE-BLOGS
+  - GHL-SITE-SEO
+instructions: Review publication, metadata and search evidence without treating
+  an audit score as a ranking guarantee. Work from the fictional policy and
+  trace in the named fields. Submit JSON, not prose. Types and array order are
+  checked; property order is ignored. No model, external tool, message, account
+  change, purchase or public publication executes. Bloomlab AI Off is
+  sufficient. A pass proves the supplied contract, not live product competence.
+written_fields:
+  - key: publication
+    label: Classify this page
+    help: The final URL loads; no indexing evidence exists. Return published=true,
+      indexed_verified=false, ranking_guaranteed=false.
+    rows: 6
+  - key: audit
+    label: Interpret the supplied audit
+    help: Audit found broken internal links; traffic increased during an unrelated
+      campaign. Return verified_issue=broken_internal_links,
+      traffic_cause=unknown, buy_seo_service_authorized=false.
+    rows: 6
+fixture_checks:
+  - key: publication
+    field: publication
+    expected_json: '{"published":true,"indexed_verified":false,"ranking_guaranteed":false}'
+  - key: audit
+    field: audit
+    expected_json: '{"verified_issue":"broken_internal_links","traffic_cause":"unknown","buy_seo_service_authorized":false}'
+expected_outcomes:
+  - id: publication
+    type: state
+    path: fixture.publication
+    operator: equals
+    value: true
+    description: Classify this page satisfies the supplied contract.
+  - id: audit
+    type: state
+    path: fixture.audit
+    operator: equals
+    value: true
+    description: Interpret the supplied audit satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

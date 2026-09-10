@@ -1,0 +1,65 @@
+id: CAMP-AUTOMATION_SPECIALIST
+title: Automation Specialist
+pace_hint: Post-Field-Ready · progress by evidence, at your own pace
+summary: Deepen deterministic automation, model its CRM consequences and repair its integration
+  boundaries.
+requires_campaigns:
+  - CAMP-FIELD_READY
+  - CAMP-CONNECT_FOUNDATIONS
+post_field_ready: true
+recommended: false
+gates:
+  - id: GATE-1
+    number: 1
+    name: Automation and failure recovery
+    summary: Trace duplicate, cancellation, reply and phone-routing paths before widening the system.
+    skills:
+      - SK-AUTOMATE-reentry-and-duplicates
+      - SK-AUTOMATE-no-show-recovery
+      - SK-DIAGNOSE-workflow-troubleshooting
+      - SK-AUTOMATE-ivr-phone
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-2
+    number: 2
+    name: CRM architecture
+    summary: Use typed object and segment evidence to justify the account model.
+    skills:
+      - SK-ARCHITECT-companies-objects
+      - SK-ARCHITECT-smart-lists
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-3
+    number: 3
+    name: Integration contracts
+    summary: Read payload, transport and endpoint contracts with safe local fixtures.
+    skills:
+      - SK-CONNECT-json
+      - SK-CONNECT-http
+      - SK-CONNECT-ghl-api
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-4
+    number: 4
+    name: Webhook transfer
+    summary: Local retry/idempotency work plus the existing separate real-GHL fieldwork boundary.
+    skills:
+      - SK-CONNECT-webhook-payloads
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: true
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.

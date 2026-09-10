@@ -9,6 +9,37 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Fixed — CUR-023 webhook freshness audit
+
+- Current Marketplace webhook guidance now requires X-GHL-Signature with Ed25519 only after 1 September 2026. Removed stale transition guidance from the lesson and API registry notes; legacy RSA is historical/deprecated context only. Added a corpus-wide curriculum regression and negative stale-copy cases. The local-fixture practical and all requirement statuses are unchanged.
+
+### Added — Phase 25 post-Field-Ready paths
+
+- Seven compiler-enforced curated routes over the existing graph, with the recommended Bloomwired Operator Path. Campaign selection is bookmarkable and shares actual evidence; preview wording preserves unfinished Field Ready and manual human acceptance.
+- Loading/error/retry, path-contract mutation and shared-progress regressions; committed five-width path/map, keyboard, touch, offline and reduced-motion probe. The independent 104 px rail and short-height regression remain intact.
+
+### Added — Phase 25 GHL AI and supporting specialties
+
+- Six deterministic-first GHL AI units/practicals cover current product roles, customer messaging/voice, workflow actions, knowledge, tools/permissions and operational risk. The compiler rejects AI skills that lose their deterministic prerequisites.
+- Eight grouped units/practicals represent all 23 supporting specialties in the master graph, with 31 current official feature records and truthful conceptual fidelity. AI Off completes every new practical; no runtime model or live external action is introduced.
+
+### Added — Phase 25 SCALE and retention checkpoint
+
+- Nine units/practicals cover template release discipline, snapshot portability, agency boundaries, specialist distribution, evidence-based retention and four distinct Bloomwired vertical Demonstration Builds.
+- Content-derived learn/practical enforcement and AI-Off contract mutation tests preserve real-GHL fieldwork and exclude specialist distribution from Field Ready. No live snapshot, account provisioning, client-outcome claim or paid call.
+
+### Added — Phase 25 advanced Labs checkpoint
+
+- Shared-account companies, typed custom objects, associations, narrow object notifications and live Smart Lists; class capacity and service-resource availability with booking/rescheduling enforcement.
+- Payments Lab products/prices, links/invoices, explicit subscriptions, failure/retry/refund lifecycle and shared workflow/revenue consequences. Four sourced units and account-backed practicals use existing grading and persistence.
+- Typed/reference/idempotency/replay regressions, loading/error/empty presentation tests and a committed five-width account-flow/grading probe. Synthetic data only, no migration or paid provider, no parked human-status change.
+
+### Added — Phase 25 CONNECT checkpoint
+
+- Nine sourced CONNECT units and nine local fixture practicals reuse the Academy, runner, deterministic grader and existing evidence persistence. Advanced learn/practical coverage is compiler-enforced and emitted as a derived report.
+- Current HighLevel API version, Private Integrations, Get Contact and Marketplace webhook records state their local-only fidelity. No secrets, account connection, fake terminal, provider call or deployment exercise.
+- Fixed long JSON help-text overflow at 320 px and labelled fixture work truthfully without an ungraded free-response box. Preserved independent rail scrolling and all parked human acceptance.
+
 ### Added — Phase 24 Field Ready
 
 - Completed eight-area placement and Gates 1–12 with enforced topic/identity/time/Bloomwired coverage, nineteen-test QA, fourteen judgments and required sales/delivery work.

@@ -64,16 +64,16 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | CUR-020 | AUTOMATE curriculum: foundations, core triggers, core actions, wait logic, branching, re-entry, common systems, advanced (modular automation, naming, date logic, webhooks, idempotency, race conditions, large architecture). | P1 | 24 | PASSED | §16 |
 | CUR-021 | ARCHITECT curriculum: contacts, tags (correct/incorrect use), custom fields, custom values (major competency), pipelines, opportunities, smart lists, companies, custom objects (advanced), data modeling with realistic problems. | P1 | 24 | PASSED | §17 |
 | CUR-022 | DIAGNOSE curriculum: Bloomwired QA protocol (19 areas), workflow troubleshooting, funnel troubleshooting, deliverability, SMS/phone reliability, analytics (visitor→lead→booked→show→sale, UTM, attribution), experimentation. | P1 | 24 | PASSED | §18 |
-| CUR-023 | CONNECT curriculum: DNS, JSON, HTTP, webhooks, APIs (current GHL API practice, no obsolete patterns), Git/GitHub, Cloudflare Workers, Google Cloud, JavaScript for operator work; Marketplace/App extension specialist only. | P1 | 25 | NOT_STARTED | §19 |
+| CUR-023 | CONNECT curriculum: DNS, JSON, HTTP, webhooks, APIs (current GHL API practice, no obsolete patterns), Git/GitHub, Cloudflare Workers, Google Cloud, JavaScript for operator work; Marketplace/App extension specialist only. | P1 | 25 | PASSED | §19 |
 | CUR-024 | SELL curriculum: ICP, research, evidence-based audit, prospect qualification, cold email, social outreach, cold calls, discovery, listening, technical discovery, presentation, client language, pricing, scope, negotiation, closing. | P1 | 24 | PASSED | §20 |
 | CUR-025 | DELIVER curriculum: proposal, change requests, onboarding, build order dependencies, client communication, handoff, retention (later). | P1 | 24 | PASSED | §21 |
-| CUR-026 | SCALE curriculum: templates, naming standards, deployment checklist, snapshots, vertical systems (Bloomwired Med Spa Core, Coach Lead Path, Home Services Follow-Up, Photographer Inquiry System), agency architecture; SaaS / white label / Marketplace specialist only. | P2 | 25 | NOT_STARTED | §22 |
-| CUR-027 | GHL AI curriculum taught only after deterministic understanding; covers when workflows beat AI, Conversation AI, Voice AI, workflow AI actions, agents, knowledge bases, tools, MCP/external tools, escalation, permissions, hallucination risk, cost, logs, irreversible actions. Product names verified from official GHL sources. | P2 | 25 | NOT_STARTED | §23 |
-| CUR-028 | Supporting GHL specialties present in the full graph (reputation, reviews, Social Planner, courses, memberships, communities, client portal, affiliates, ecommerce, blogs, SEO, IVR, prospecting tool, ad reporting, rentals, services, resources, contracts, estimates, invoices, payment links, subscriptions, advanced reporting); not all in Field Ready. | P2 | 25 | NOT_STARTED | §24 |
+| CUR-026 | SCALE curriculum: templates, naming standards, deployment checklist, snapshots, vertical systems (Bloomwired Med Spa Core, Coach Lead Path, Home Services Follow-Up, Photographer Inquiry System), agency architecture; SaaS / white label / Marketplace specialist only. | P2 | 25 | PASSED | §22 |
+| CUR-027 | GHL AI curriculum taught only after deterministic understanding; covers when workflows beat AI, Conversation AI, Voice AI, workflow AI actions, agents, knowledge bases, tools, MCP/external tools, escalation, permissions, hallucination risk, cost, logs, irreversible actions. Product names verified from official GHL sources. | P2 | 25 | PASSED | §23 |
+| CUR-028 | Supporting GHL specialties present in the full graph (reputation, reviews, Social Planner, courses, memberships, communities, client portal, affiliates, ecommerce, blogs, SEO, IVR, prospecting tool, ad reporting, rentals, services, resources, contracts, estimates, invoices, payment links, subscriptions, advanced reporting); not all in Field Ready. | P2 | 25 | PASSED | §24 |
 | CUR-029 | Learner increasingly writes copy without automatically using AI. | P1 | 24 | PASSED | §15 |
 | CUR-030 | Starter projects: Lead Capture System, Consultation Booking, Application Funnel, Reactivation, Full Capstone (complete fictional Bloomwired client). | P1 | 24 | PASSED | §154 |
 | CUR-031 | Capstone exam: no normal hints; learner receives business, offers, staff, metrics, current systems, problems, hidden edge cases, client communications, budget constraints; must diagnose, architect, build, test, troubleshoot, price, negotiate, propose, explain; reasoning questions asked; major implementation in real GHL. | P1 | 24 | IMPLEMENTED_UNVERIFIED | §155 |
-| CUR-032 | Post-Field-Ready paths: Automation Specialist, Funnel & Conversion Specialist, Sales Operator, Technical GHL Specialist, Agency Systems, GHL AI Specialist, recommended Bloomwired Operator Path. | P2 | 25 | NOT_STARTED | §157 |
+| CUR-032 | Post-Field-Ready paths: Automation Specialist, Funnel & Conversion Specialist, Sales Operator, Technical GHL Specialist, Agency Systems, GHL AI Specialist, recommended Bloomwired Operator Path. | P2 | 25 | PASSED | §157 |
 | CUR-033 | Content coverage matrix (Skill × Learn / Guided / Practice / Fix / Independent / Pressure / Fieldwork / Sales Use) generated from content data, not maintained by hand. | P1 | 5 | PASSED | §137 |
 | CUR-034 | Minimum curriculum: one master graph, Field Ready path, practical work for every core skill, independent assessment, retrieval, pricing, negotiation, calls, written sales, proposals, prospecting, real GHL fieldwork. | P0 | 24 | PASSED | §144 |
 | CUR-035 | Field Ready content complete from placement through capstone before advanced curriculum; no hundreds of shallow lessons before the learning loop works. | P1 | 24 | PASSED | PHASE 24 |
@@ -170,10 +170,10 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
 | CRM-001 | CRM Lab supports contacts, fields, tags, opportunities, pipelines, assignments, activity history, notes, tasks. Phase 11: all nine are worked in the Lab at `/crm` on the shared simulated account, and every change is a simulator event through one command layer (D-094) — 35 engine tests, 22 data-layer tests, 22 screen tests, a 27-check browser probe and a five-width review probe, all green. | P0 | 11 | PASSED | §55 |
-| CRM-002 | Companies and custom objects added later (schemas, records, associations, workflows, limitations, when excessive). | P2 | 25 | NOT_STARTED | §55, §17 |
+| CRM-002 | Companies and custom objects added later (schemas, records, associations, workflows, limitations, when excessive). | P2 | 25 | PASSED | §55, §17 |
 | CRM-003 | Poor architectural choices are allowed when technically possible; later consequences teach why they were poor. Phase 11: a tag where a field belongs is allowed and unremarked (tests), and the consequence is `EX-FIX_IT-jordan-treatment-interest`, a deterministic exercise graded from the learner's own CRM account through the first registered exercise runtime (D-097): it fails while the interest is three tags and passes once it is one field. | P1 | 11 | PASSED | §55 |
 | CRM-004 | High information density on desktop; mobile uses stage view / deliberate local horizontal scroller. Phase 11: dense rows and a two-pane workspace at 1440 / 1024; a stage switcher over a snapping local scroller at 768 / 390 / 320; seventeen states audited at all five widths with no page-level overflow and nothing removed (`npm run review:crm-review`). | P1 | 11 | PASSED | §72, §83 |
-| CRM-005 | Smart list segmentation. | P2 | 25 | NOT_STARTED | §17 |
+| CRM-005 | Smart list segmentation. | P2 | 25 | PASSED | §17 |
 
 ## FUN — Funnel Lab
 
@@ -189,7 +189,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
 | CAL-001 | Calendar Lab supports progressively: duration, availability, buffers, minimum notice, staff, assignment, round robin, services, locations, confirmation, reschedule, cancellation. | P1 | 14 | PASSED | §57 |
-| CAL-002 | Advanced resource rules (classes, resources, complex scheduling) later. | P3 | 25 | NOT_STARTED | §57, §15 |
+| CAL-002 | Advanced resource rules (classes, resources, complex scheduling) later. | P3 | 25 | PASSED | §57, §15 |
 | CAL-003 | Booking events (APPOINTMENT_BOOKED / RESCHEDULED / CANCELLED / STATUS_CHANGED) fire workflows through the shared simulator. | P0 | 14 | PASSED | §44, §57 |
 
 ## CONV — Conversations
@@ -203,7 +203,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 
 | ID | Requirement | Priority | Phase | Status | Spec |
 |---|---|---|---|---|---|
-| PAY-001 | Payments Lab (later): product, price, one-time, subscription, payment link, invoice, failed payment, refund; payment events fire workflows. | P2 | 25 | NOT_STARTED | §59 |
+| PAY-001 | Payments Lab (later): product, price, one-time, subscription, payment link, invoice, failed payment, refund; payment events fire workflows. | P2 | 25 | PASSED | §59 |
 
 ## REP — Reporting Lab
 
@@ -231,7 +231,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | SAL-012 | Build order taught as dependencies (data → pipeline → calendar → forms → workflows → funnel → tracking → QA), not random building. | P1 | 24 | PASSED | §21 |
 | SAL-013 | Client communication types: update, blocker, delay, approval, revision, technical explanation. | P1 | 16 | PASSED | §21 |
 | SAL-014 | Handoff: documentation, training, ownership, support. | P1 | 24 | PASSED | §21 |
-| SAL-015 | Retention (later): reporting, maintenance, retainer, expansion, referral, account strategy. | P2 | 25 | NOT_STARTED | §21 |
+| SAL-015 | Retention (later): reporting, maintenance, retainer, expansion, referral, account strategy. | P2 | 25 | PASSED | §21 |
 | SAL-016 | Scope training: deliverables, assumptions, exclusions, revisions, dependencies, location count, workflow complexity, migration, integration, rush, copy, design, support. | P1 | 17 | PASSED | §20 |
 
 ## PRI — Pricing

@@ -1,0 +1,19 @@
+id: GHL-API-PRIVATE-INTEGRATIONS
+official_name: Private Integrations
+area: API
+feature_type: capability
+implementation_type: integration
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-09
+source_url: https://marketplace.gohighlevel.com/docs/Authorization/PrivateIntegrationsToken/index.html
+known_limitations:
+  - No token generation, credential capture or real API calls. OAuth applications remain specialist
+    work.
+skills:
+  - SK-CONNECT-ghl-api
+supported_configs: {}
+approximation_note: Local contract-inspection fixtures only; no live API, signature verification or account connection.
+verification_note: Read the official reference on 2026-09-09; authorisation distinguishes
+  Private Integrations and OAuth. Current Marketplace webhook signature guidance is recorded
+  separately in GHL-API-WEBHOOKS.

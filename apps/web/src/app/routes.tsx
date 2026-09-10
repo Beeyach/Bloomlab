@@ -73,6 +73,11 @@ export const APP_ROUTES: readonly AppRoute[] = [
     Component: lazy(() => import('../reporting/ReportingLab')),
   },
   {
+    path: '/payments',
+    id: 'payments',
+    Component: lazy(() => import('../payments/PaymentsLab')),
+  },
+  {
     id: 'incident',
     path: '/incident',
     Component: lazy(() => import('../incident/IncidentRoom')),

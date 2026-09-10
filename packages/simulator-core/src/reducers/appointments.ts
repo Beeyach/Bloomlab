@@ -1,4 +1,5 @@
 import { serviceDuration } from '../calendar/validation.ts';
+import { slotAt } from '../calendar/availability.ts';
 import { fail } from '../errors.ts';
 import { optionalString, requireString, type SimulatorEvent } from '../events.ts';
 import type { AccountState, Appointment, AppointmentStatus, BookedBy, Calendar } from '../state.ts';
@@ -117,7 +118,21 @@ export function appointmentBooked(account: AccountState, event: SimulatorEvent):
   instant(startsAt);
 
   const service = bookedService(calendar, event);
-  const hostId = bookedHost(account, event);
+  if (
+    calendar.type === 'service' &&
+    calendar.services.some((row) => row.resource_ids?.length) &&
+    !service
+  )
+    fail('INVALID_PAYLOAD', 'Select a service so its resource can be reserved.', {});
+  let hostId = bookedHost(account, event);
+  const advanced =
+    calendar.type === 'class' || calendar.services.some((row) => row.resource_ids?.length);
+  const advancedSlot = advanced
+    ? slotAt(account, calendar, event.at, startsAt, { service_id: service?.id, staff_id: hostId })
+    : null;
+  if (advanced && !advancedSlot)
+    fail('INVALID_PAYLOAD', 'That class or resource slot is no longer available.', {});
+  if (advancedSlot) hostId = advancedSlot.host_id;
   if (hostId && calendar.staff_ids.length > 0 && !calendar.staff_ids.includes(hostId)) {
     fail('INVALID_PAYLOAD', `${hostId} does not host on calendar ${calendarId}`, {
       calendar_id: calendarId,
@@ -126,8 +141,9 @@ export function appointmentBooked(account: AccountState, event: SimulatorEvent):
   }
   // The length is snapshotted here: what the booking asked for, else what the service or the
   // calendar says today. A later calendar edit never reaches back into it (D-128).
-  const duration =
-    typeof event.payload.duration_minutes === 'number'
+  const duration = advancedSlot
+    ? advancedSlot.duration_minutes
+    : typeof event.payload.duration_minutes === 'number'
       ? event.payload.duration_minutes
       : serviceDuration(calendar, service);
   if (!Number.isInteger(duration) || duration <= 0) {
@@ -137,6 +153,7 @@ export function appointmentBooked(account: AccountState, event: SimulatorEvent):
   }
 
   const appointment: Appointment = {
+    ...(advancedSlot?.resource_id ? { resource_id: advancedSlot.resource_id } : {}),
     id,
     contact_id: contactId,
     calendar_id: calendarId,
@@ -189,7 +206,24 @@ export function appointmentRescheduled(
     });
   }
   const calendar = account.calendars[existing.calendar_id] ?? null;
-  const hostId = optionalString(event.payload, 'host_id') ?? existing.host_id;
+  let hostId = optionalString(event.payload, 'host_id') ?? existing.host_id;
+  const advanced =
+    calendar &&
+    (calendar.type === 'class' ||
+      calendar.services.some((row) => row.resource_ids?.length) ||
+      existing.resource_id);
+  const advancedSlot =
+    advanced && calendar
+      ? slotAt(account, calendar, event.at, startsAt, {
+          service_id: existing.service_id,
+          staff_id: hostId,
+          duration_minutes: existing.duration_minutes,
+          ignore_appointment_id: id,
+        })
+      : null;
+  if (advanced && !advancedSlot)
+    fail('INVALID_PAYLOAD', 'That class or resource slot is no longer available.', {});
+  if (advancedSlot) hostId = advancedSlot.host_id;
   if (hostId && hostId !== existing.host_id) entity(account.users, hostId, 'user', event.type);
   if (hostId && calendar && calendar.staff_ids.length > 0 && !calendar.staff_ids.includes(hostId)) {
     fail('INVALID_PAYLOAD', `${hostId} does not host on calendar ${existing.calendar_id}`, {
@@ -199,6 +233,7 @@ export function appointmentRescheduled(
   }
   const updated: Appointment = {
     ...existing,
+    ...(advanced ? { resource_id: advancedSlot?.resource_id ?? null } : {}),
     starts_at: startsAt,
     // A reschedule may land on a different host; everything else the booking was made for
     // travels with it, because the appointment moved rather than became a different one.

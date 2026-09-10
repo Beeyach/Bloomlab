@@ -1,0 +1,55 @@
+id: EX-WHAT_WOULD_YOU_BUILD-retention
+type: WHAT_WOULD_YOU_BUILD
+title: Run an evidence-based account review — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SELL-retention
+client: CL-glowhaus-medspa
+advanced_topics:
+  - retention.account_strategy
+allowed_features: []
+instructions: Turn reporting and maintenance into a bounded retainer, justified
+  expansion and permission-based referral discussion. Work only from the
+  fictional policy and assets in the named fields. Submit JSON, not prose. Types
+  and array order are checked; property order is ignored. This local
+  contract-repair exercise executes no snapshot, account change, message,
+  deployment or purchase. It is demonstration work, not a client outcome.
+written_fields:
+  - key: report
+    label: Calculate and qualify the report
+    help: Forty qualified inquiries yielded 10 bookings, then 12 from 40. Return
+      before_percent, after_percent, change_percentage_points, causal_proof
+      (boolean).
+    rows: 6
+  - key: account
+    label: Apply the supplied retainer
+    help: The contract includes monthly checks and two copy edits, excludes new
+      locations. Return included=[monthly_checks,two_copy_edits],
+      expansion=[new_location], referral_requires_permission=true,
+      guaranteed_revenue=false.
+    rows: 6
+fixture_checks:
+  - key: report
+    field: report
+    expected_json: '{"before_percent":25,"after_percent":30,"change_percentage_points":5,"causal_proof":false}'
+  - key: account
+    field: account
+    expected_json: '{"included":["monthly_checks","two_copy_edits"],"expansion":["new_location"],"referral_requires_permission":true,"guaranteed_revenue":false}'
+expected_outcomes:
+  - id: report
+    type: state
+    path: fixture.report
+    operator: equals
+    value: true
+    description: Calculate and qualify the report satisfies the supplied contract.
+  - id: account
+    type: state
+    path: fixture.account
+    operator: equals
+    value: true
+    description: Apply the supplied retainer satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

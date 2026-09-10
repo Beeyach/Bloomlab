@@ -1,0 +1,22 @@
+id: GHL-MEM-MEMBERSHIPS
+official_name: Memberships
+area: Memberships
+feature_type: product
+implementation_type: native_ghl
+status: current
+simulation_fidelity: C
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002045
+skills:
+  - SK-BUILD-learning-access
+known_limitations:
+  - Conceptual instruction and objective local policy/trace fixtures only. No
+    live product execution, external account, paid provider, publishing, calling
+    or autonomous action is simulated.
+  - Only the explicitly described product boundary is taught; entitlements, live
+    permissions and rollout must be verified in the intended account.
+approximation_note: Local contract reasoning only, not a full Lab or real-GHL acceptance.
+verification_note: Current official HighLevel documentation read on 2026-09-09.
+  Only the explicitly described product boundary is taught; entitlements, live
+  permissions and rollout must be verified in the intended account.
+supported_configs: {}

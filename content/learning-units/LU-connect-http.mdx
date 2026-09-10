@@ -1,0 +1,35 @@
+---
+id: 'LU-connect-http'
+title: 'Read both sides of an HTTP exchange'
+territory: 'CONNECT'
+tier: 'practitioner'
+skills: ['SK-CONNECT-http']
+ghl_features: []
+advanced_topics: ['connect.http']
+estimated_minutes: 12
+summary: 'Choose methods and headers, diagnose response status and plan retries without exposing credentials or duplicating writes.'
+---
+
+# Read both sides of an HTTP exchange
+
+## Request and response
+
+A request has a method, URL, headers and sometimes a body. A response has status, headers and sometimes a body. GET retrieves; POST submits; PUT replaces according to the endpoint contract; PATCH modifies partially; DELETE requests removal. Read which methods the endpoint actually supports. A 200 HTML page is not the JSON resource you expected.
+
+Content-Type describes the representation being sent; Accept names acceptable response formats. Authentication often uses Authorization, not a query string that will leak into histories. TLS protects transport but does not authorise the caller. Keep reusable credentials on the trusted backend and redact logs.
+
+## Diagnose before retrying
+
+A 2xx status is protocol success; still inspect the body. A 400 suggests malformed input, 401 requires valid authentication, 403 forbids access, 404 indicates a missing route or resource, 409 can mean conflict, 429 asks you to slow down, and 5xx identifies a server failure. Inspect structured reasons rather than guessing from a number alone.
+
+A network failure has no response. JavaScript fetch normally resolves even for HTTP error statuses; check response.ok or status. JSON parsing can fail separately. Log a correlation ID, route and status, never a token or full personal payload.
+
+## Avoid duplicate effects
+
+A timeout can follow a committed write. Repeating POST blindly may duplicate a contact or charge. Use documented idempotency or reconcile by stable identity. Respect Retry-After when present, bound retries and surface exhaustion. Fix invalid input or permission before resubmitting. The supplied fixtures test your request contract and recovery choice; nothing leaves the browser.
+
+## Source and practice
+
+[Official reference](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status), checked 9 September 2026. Recheck the selected service contract before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-connect-http" />

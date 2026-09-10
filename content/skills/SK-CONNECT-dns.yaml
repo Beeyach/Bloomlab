@@ -1,0 +1,19 @@
+id: SK-CONNECT-dns
+title: Trace a domain before changing it
+territory: CONNECT
+tier: practitioner
+summary: Read DNS records and distinguish a wrong authoritative answer, a cached result and an HTTP
+  routing failure.
+prerequisites:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features: []
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - dns
+  - integration
+  - operator

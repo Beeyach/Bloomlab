@@ -1,0 +1,41 @@
+---
+id: 'LU-connect-webhooks'
+title: 'Accept an event once when it arrives twice'
+territory: 'CONNECT'
+tier: 'practitioner'
+skills: ['SK-CONNECT-webhook-payloads']
+ghl_features: ['GHL-WF-WEBHOOK', 'GHL-WF-INBOUND-WEBHOOK', 'GHL-API-WEBHOOKS']
+advanced_topics: ['connect.webhooks']
+estimated_minutes: 12
+summary: 'Map webhook payloads, verify authenticity before effects and reason about idempotency, retries and durable recovery.'
+---
+
+# Accept an event once when it arrives twice
+
+## Trust precedes effects
+
+Outbound webhooks send notifications; inbound webhooks receive them. Map the minimum fields needed, keeping event ID separate from contact ID. One contact can generate many legitimate events.
+
+From 1 September 2026, HighLevel Marketplace webhook deliveries use X-GHL-Signature with Ed25519 only. A header's presence is not verification. Use the current GHL Ed25519 public key and documented signed-message contract; reject a missing signature or failed verification before applying effects.
+
+Historical context: X-WH-Signature (RSA-SHA256) was deprecated on 1 September 2026; it is not supported for current delivery.
+
+The dated deprecation notice governs current guidance even where older examples remain in the official guide. Marketplace events are not the same feature as a workflow's Custom Webhook or Inbound Webhook trigger.
+
+## Repeated delivery is normal
+
+HighLevel documents retries for non-2xx and missing responses, with backoff and jitter. Do not assume exactly-once delivery. A stable event ID should be scoped to sender/account and claimed with an atomic durable receipt/effect strategy. An in-memory set vanishes on restart. Marking handled before durable work can lose an event; applying effects before claiming can duplicate it.
+
+A committed duplicate should acknowledge without another effect. A new event for the same contact is not necessarily duplicate. Preserve redacted identifiers and failure reasons. Before replaying, fix the cause and reconcile what already committed.
+
+## Training boundary
+
+The fixture supplies signature-valid and already-processed facts; Bloomlab does not perform cryptographic verification here. Apply authenticate, validate, identify, safely commit and acknowledge in that order. Invalid authentication fails closed.
+
+An integration needs an owner, monitoring, bounded retries and a recovery procedure. Prefer a native workflow when it solves the job. Marketplace extensions and custom app lifecycle are specialist work; no app, webhook or real account connection is created by this practice.
+
+## Source and practice
+
+[Official reference](https://marketplace.gohighlevel.com/docs/webhook/WebhookIntegrationGuide/), checked 9 September 2026. Recheck the selected service contract before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-connect-webhooks" />

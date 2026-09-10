@@ -1,0 +1,37 @@
+---
+id: LU-scale-templates
+title: Name and release a reusable system
+territory: SCALE
+tier: practitioner
+skills:
+  - SK-SCALE-reusable-templates
+ghl_features:
+  - GHL-CRM-CUSTOM-VALUES
+advanced_topics:
+  - scale.templates
+estimated_minutes: 15
+summary: Separate reusable assets from client configuration and sequence an
+  accountable release checklist.
+---
+
+# Name and release a reusable system
+
+## A template is a maintained contract
+
+A reusable template should explain its entry conditions, output, owner, dependencies and exclusions before somebody copies it. Use a stable naming grammar: vertical, purpose, asset type and release version. For this training convention, `medspa.booking.workflow.v2` identifies purpose more usefully than “New workflow final final”. This is a Bloomwired convention, not a HighLevel naming requirement. Renaming alone does not update references.
+
+Keep a manifest linking the form, pipeline, calendar, workflows and reusable custom-value keys. Put client-specific location text and booking URLs behind explicit configuration. Never make a secret a custom value. Separate demonstration data from required configuration; a source account's phone number is not a safe default for every future customer.
+
+## Release in an observable order
+
+First freeze the candidate manifest and compare it with the previous release. Resolve permissions, ownership and destination configuration. Then test an isolated training destination: valid capture, invalid input, duplicate entry, booking, cancellation, DND and a missing dependency. Record expected and observed results. A green screenshot without the test inputs is weak evidence.
+
+Only an authorised owner can approve a client rollout. Select a limited pilot, record the prior configuration and a recovery procedure, monitor the affected journeys, then expand deliberately. Recovery may require repairing configuration and handling already-enrolled contacts; importing a previous template is not a guaranteed transactional rollback.
+
+## Maintain the template
+
+Track client overrides separately from the reusable source. An override might solve a real local need; overwriting it because the shared template is newer is not maintenance. Record compatibility, unresolved failures and which destinations actually received the release. A template can remain useful while a particular deployment is blocked.
+
+The practical repairs a manifest and release order under a supplied naming policy. Its deterministic checks establish that contract only. They neither inspect a real account nor certify the quality of an arbitrary agency process.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-scale-templates" />

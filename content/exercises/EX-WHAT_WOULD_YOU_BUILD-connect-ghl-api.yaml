@@ -1,0 +1,61 @@
+id: EX-WHAT_WOULD_YOU_BUILD-connect-ghl-api
+type: WHAT_WOULD_YOU_BUILD
+title: Choose a current HighLevel API contract — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-CONNECT-ghl-api
+client: CL-glowhaus-medspa
+advanced_topics:
+  - connect.ghl_api
+allowed_features:
+  - GHL-API-PRIVATE-INTEGRATIONS
+  - GHL-API-VERSIONING
+  - GHL-API-GET-CONTACT
+instructions: >-
+  Distinguish scoped Private Integrations from OAuth apps and select the documented version without
+  exposing account credentials.
+
+
+  Work from the fictional fixtures below. Submit JSON, not prose, in each named answer. This is a
+  local inspection/repair practical: no DNS lookup, API request, terminal command, cryptographic
+  verification or deployment runs. Never enter actual credentials. Object property order is ignored;
+  types and array order are checked. Read the CONNECT unit for the model and source boundaries.
+written_fields:
+  - key: contract
+    label: Read the supplied contract
+    help:
+      'Get Contact contract with a fictional contact ID: GET /contacts/:contactId, Version v3, sub-account scope,
+      contacts.readonly. Return method, version, scope and permission. Do not issue it.'
+    rows: 6
+  - key: access
+    label: Choose access and custody
+    help:
+      'An internal single-account report needs read access only. Return access (private_integration
+      or public_oauth_app), storage (backend_secret or browser_bundle), and live_call (boolean: does
+      this practical call the API?).'
+    rows: 6
+fixture_checks:
+  - key: contract
+    field: contract
+    expected_json: '{"method":"GET","version":"v3","scope":"sub-account","permission":"contacts.readonly"}'
+  - key: access
+    field: access
+    expected_json: '{"access":"private_integration","storage":"backend_secret","live_call":false}'
+expected_outcomes:
+  - id: contract
+    type: state
+    path: fixture.contract
+    operator: equals
+    value: true
+    description: Read the supplied contract matches the objective fixture contract.
+  - id: access
+    type: state
+    path: fixture.access
+    operator: equals
+    value: true
+    description: Choose access and custody matches the objective fixture contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

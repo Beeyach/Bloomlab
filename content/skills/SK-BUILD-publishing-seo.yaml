@@ -1,0 +1,27 @@
+id: SK-BUILD-publishing-seo
+title: Publish blogs and interpret SEO evidence
+territory: BUILD
+tier: practitioner
+summary: Review publication, metadata and search evidence without treating an
+  audit score as a ranking guarantee.
+prerequisites:
+  - SK-BUILD-conversion-copy
+  - SK-CONNECT-dns
+ghl_features:
+  - GHL-SITE-BLOGS
+  - GHL-SITE-SEO
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - specialty-publishing
+  - post-Field-Ready
+  - blogs
+  - seo

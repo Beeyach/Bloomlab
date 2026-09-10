@@ -1,0 +1,88 @@
+id: CAMP-TECHNICAL_GHL
+title: Technical GHL Specialist
+pace_hint: Post-Field-Ready · progress by evidence, at your own pace
+summary: Connect operator infrastructure, shared-account architecture and governed AI without
+  making live providers a training dependency.
+requires_campaigns:
+  - CAMP-FIELD_READY
+  - CAMP-CONNECT_FOUNDATIONS
+post_field_ready: true
+recommended: false
+gates:
+  - id: GATE-1
+    number: 1
+    name: CONNECT foundations
+    summary: Complete the nine safe local infrastructure contracts before using more powerful
+      interfaces.
+    skills:
+      - SK-AUTOMATE-workflow-foundations
+      - SK-CONNECT-dns
+      - SK-CONNECT-json
+      - SK-CONNECT-http
+      - SK-CONNECT-webhook-payloads
+      - SK-CONNECT-ghl-api
+      - SK-CONNECT-git
+      - SK-CONNECT-workers
+      - SK-CONNECT-google-cloud
+      - SK-CONNECT-javascript
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-2
+    number: 2
+    name: Automation and account model
+    summary: Trace actual account state, resource constraints and payment consequences.
+    skills:
+      - SK-ARCHITECT-companies-objects
+      - SK-ARCHITECT-smart-lists
+      - SK-BUILD-advanced-scheduling
+      - SK-BUILD-payment-lifecycle
+      - SK-ARCHITECT-scheduling-specialties
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-3
+    number: 3
+    name: Deterministic AI boundary
+    summary: Keep rules authoritative and validate proposed AI outputs.
+    skills:
+      - SK-JUDGMENT-ai-boundaries
+      - SK-AUTOMATE-customer-ai
+      - SK-AUTOMATE-workflow-ai
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-4
+    number: 4
+    name: Agent architecture
+    summary: Separate product roles, knowledge and deployment scope.
+    skills:
+      - SK-AUTOMATE-managed-agents
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-5
+    number: 5
+    name: External tools and operations
+    summary: Restrict irreversible actions and reconcile logs and cost.
+    skills:
+      - SK-CONNECT-ai-tools
+      - SK-DIAGNOSE-ai-operations
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.

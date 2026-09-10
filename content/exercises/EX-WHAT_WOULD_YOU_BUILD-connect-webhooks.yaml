@@ -1,0 +1,59 @@
+id: EX-WHAT_WOULD_YOU_BUILD-connect-webhooks
+type: WHAT_WOULD_YOU_BUILD
+title: Accept an event once when it arrives twice — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-CONNECT-webhook-payloads
+client: CL-glowhaus-medspa
+advanced_topics:
+  - connect.webhooks
+allowed_features:
+  - GHL-WF-WEBHOOK
+  - GHL-WF-INBOUND-WEBHOOK
+  - GHL-API-WEBHOOKS
+instructions: >-
+  Map webhook payloads, verify authenticity before effects and reason about idempotency, retries and
+  durable recovery.
+
+
+  Work from the fictional fixtures below. Submit JSON, not prose, in each named answer. This is a
+  local inspection/repair practical: no DNS lookup, API request, terminal command, cryptographic
+  verification or deployment runs. Never enter actual credentials. Object property order is ignored;
+  types and array order are checked. Read the CONNECT unit for the model and source boundaries.
+written_fields:
+  - key: events
+    label: Decide each delivery
+    help:
+      a has valid signature and new event ID; b repeats a after commit; c has invalid signature and
+      a new ID. Return a, b, c actions using commit_once, acknowledge_only or reject.
+    rows: 6
+  - key: mapping
+    label: Map the minimum payload
+    help: From {"event":{"id":"evt-7"},"contact":{"id":"jordan","privateNote":"omit"}} return only
+      event_id and contact_id.
+    rows: 6
+fixture_checks:
+  - key: events
+    field: events
+    expected_json: '{"a":"commit_once","b":"acknowledge_only","c":"reject"}'
+  - key: mapping
+    field: mapping
+    expected_json: '{"event_id":"evt-7","contact_id":"jordan"}'
+expected_outcomes:
+  - id: events
+    type: state
+    path: fixture.events
+    operator: equals
+    value: true
+    description: Decide each delivery matches the objective fixture contract.
+  - id: mapping
+    type: state
+    path: fixture.mapping
+    operator: equals
+    value: true
+    description: Map the minimum payload matches the objective fixture contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

@@ -1,0 +1,47 @@
+---
+id: LU-specialty-commerce
+title: Trace ecommerce and affiliate obligations
+territory: BUILD
+tier: advanced
+skills:
+  - SK-BUILD-commerce-affiliates
+ghl_features:
+  - GHL-STORE-ECOMMERCE
+  - GHL-MKT-AFFILIATES
+  - GHL-PAY-PRODUCTS
+advanced_topics:
+  - specialty.ecommerce
+  - specialty.affiliates
+estimated_minutes: 15
+summary: Separate checkout, fulfillment, attribution and commission approval
+  using a supplied commerce policy.
+---
+
+# Trace ecommerce and affiliate obligations
+
+## A purchase begins several obligations
+
+An ecommerce storefront lets customers browse products and purchase them. Product configuration and price are only part of the journey: payment, inventory, fulfillment, customer notifications and returns have separate states. The Payments Lab models a narrow synthetic charge lifecycle, not a complete ecommerce operation.
+
+HighLevel products can be used in online stores and other selling experiences. Select the appropriate channel and verify that the intended product is actually available there. A product existing in Payments does not by itself prove that the storefront, shipping or downloadable file is configured correctly.
+
+## Affiliate attribution is not immediate payout
+
+Affiliate Manager uses campaign sources and tracking links to associate referred activity with an affiliate. An attributed sale, an approved commission and a paid commission are distinct facts. Define attribution policy, qualifying products, refund treatment, review period and payout responsibility before inviting promoters.
+
+In this fictional policy, commissions become eligible only after successful payment and the review window, and a refunded sale does not qualify. This is a training contract, not a claim that every native campaign automatically follows the same rules. Check the configured campaign and transaction evidence.
+
+## Verify the complete commercial chain
+
+Test a failed payment, duplicate checkout, refunded order, missing fulfillment and an affiliate claiming the wrong campaign. Do not report gross attributed revenue as profit or imply that tracking proves a causal contribution. Make media and promotion permissions explicit; an affiliate may not invent claims on the business's behalf.
+
+The practical separates an order's states and computes a commission under a supplied rule. It neither launches a store nor tracks a real visitor or pays an affiliate. Any real fulfillment, return, tax or commercial policy needs the business owner's review; this specialty introduces the system boundaries without manufacturing a full commerce Lab.
+
+## Official sources
+
+- [Online Store](https://help.gohighlevel.com/support/solutions/articles/155000005071)
+- [Affiliate Manager](https://help.gohighlevel.com/support/solutions/articles/155000003633-glossary)
+
+Checked 9 September 2026. Feature records state the local boundary and current naming/rollout qualifications. Recheck before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-specialty-commerce" />

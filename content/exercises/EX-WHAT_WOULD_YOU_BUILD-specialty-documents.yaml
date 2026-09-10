@@ -1,0 +1,64 @@
+id: EX-WHAT_WOULD_YOU_BUILD-specialty-documents
+type: WHAT_WOULD_YOU_BUILD
+title: Separate agreements, estimates and billing states — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-DELIVER-commercial-documents
+client: CL-glowhaus-medspa
+advanced_topics:
+  - specialty.contracts
+  - specialty.estimates
+  - specialty.invoices
+  - specialty.payment_links
+  - specialty.subscriptions
+allowed_features:
+  - GHL-PAY-CONTRACTS
+  - GHL-PAY-ESTIMATES
+  - GHL-PAY-INVOICES
+  - GHL-PAY-LINKS
+  - GHL-PAY-SUBSCRIPTIONS
+instructions: Trace commercial acceptance, invoice payment and recurring
+  obligations without collapsing them into a single success state. Work from the
+  fictional policy and trace in the named fields. Submit JSON, not prose. Types
+  and array order are checked; property order is ignored. No model, external
+  tool, message, account change, purchase or public publication executes.
+  Bloomlab AI Off is sufficient. A pass proves the supplied contract, not live
+  product competence.
+written_fields:
+  - key: documents
+    label: Classify incomplete commercial evidence
+    help: Agreement was viewed, estimate accepted, invoice unpaid. Return
+      contract_signed_verified=false, estimate_accepted=true,
+      invoice_paid=false, send_without_owner_review=false.
+    rows: 6
+  - key: billing
+    label: Separate link and recurring status
+    help: Payment link is inactive; one monthly charge refunded; subscription not
+      cancelled. Return link_usable=false, charge_refunded=true,
+      subscription_cancelled=false, automatic_legal_release=false.
+    rows: 6
+fixture_checks:
+  - key: documents
+    field: documents
+    expected_json: '{"contract_signed_verified":false,"estimate_accepted":true,"invoice_paid":false,"send_without_owner_review":false}'
+  - key: billing
+    field: billing
+    expected_json: '{"link_usable":false,"charge_refunded":true,"subscription_cancelled":false,"automatic_legal_release":false}'
+expected_outcomes:
+  - id: documents
+    type: state
+    path: fixture.documents
+    operator: equals
+    value: true
+    description: Classify incomplete commercial evidence satisfies the supplied contract.
+  - id: billing
+    type: state
+    path: fixture.billing
+    operator: equals
+    value: true
+    description: Separate link and recurring status satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

@@ -1,0 +1,54 @@
+id: EX-WHAT_WOULD_YOU_BUILD-connect-json
+type: WHAT_WOULD_YOU_BUILD
+title: Repair a payload without changing its meaning — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-CONNECT-json
+client: CL-glowhaus-medspa
+advanced_topics:
+  - connect.json
+allowed_features: []
+instructions: >-
+  Inspect objects, arrays and scalar types; repair malformed JSON while preserving false, zero and
+  missing-value distinctions.
+
+
+  Work from the fictional fixtures below. Submit JSON, not prose, in each named answer. This is a
+  local inspection/repair practical: no DNS lookup, API request, terminal command, cryptographic
+  verification or deployment runs. Never enter actual credentials. Object property order is ignored;
+  types and array order are checked. Read the CONNECT unit for the model and source boundaries.
+written_fields:
+  - key: repair
+    label: Repair the JSON
+    help: 'Repair without changing values:
+      {"contact":{"name":"Jordan","active":false,"budget":0,},"tags":["consult",]}'
+    rows: 6
+  - key: projection
+    label: Inspect the types
+    help: From the repaired contact, return active (boolean), budget (number), and tag_count (number).
+    rows: 6
+fixture_checks:
+  - key: repair
+    field: repair
+    expected_json: '{"contact":{"name":"Jordan","active":false,"budget":0},"tags":["consult"]}'
+  - key: projection
+    field: projection
+    expected_json: '{"active":false,"budget":0,"tag_count":1}'
+expected_outcomes:
+  - id: repair
+    type: state
+    path: fixture.repair
+    operator: equals
+    value: true
+    description: Repair the JSON matches the objective fixture contract.
+  - id: projection
+    type: state
+    path: fixture.projection
+    operator: equals
+    value: true
+    description: Inspect the types matches the objective fixture contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

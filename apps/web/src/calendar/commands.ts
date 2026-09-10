@@ -56,6 +56,19 @@ const injected = (
 
 type Options = ExecutionOptions;
 
+export const saveResource = (
+  run: StoredRun,
+  scenario: SimulatorScenario,
+  resource: { id: string; name: string; capacity: number },
+  options?: Options,
+) =>
+  execute(
+    run,
+    scenario,
+    { kind: 'process', event: injected(run, 'RESOURCE_SAVED', resource) },
+    options,
+  );
+
 const unavailableSlot = (
   run: StoredRun,
   calendarId: string,

@@ -1,0 +1,16 @@
+id: GHL-PAY-SUBSCRIPTIONS
+official_name: Subscriptions
+area: Payments
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000006066-how-to-modify-existing-subscriptions
+skills:
+  - SK-BUILD-payment-lifecycle
+known_limitations:
+  - Local monthly/yearly terms, explicit synthetic charge attempts, incomplete/active/past-due/cancelled states and cancellation. No provider, automatic schedule, proration, trials, date editing or multi-product subscription changes.
+supported_configs: {}
+approximation_note: Local monthly/yearly terms, explicit synthetic charge attempts, incomplete/active/past-due/cancelled states and cancellation. No provider, automatic schedule, proration, trials, date editing or multi-product subscription changes.
+verification_note: Current official article read on 2026-09-09. Lab boundaries are local training approximations, not a real account verification.

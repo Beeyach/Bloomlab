@@ -1,0 +1,27 @@
+id: SK-SCALE-photographer-system
+title: Photographer Inquiry System
+territory: SCALE
+tier: advanced
+summary: Configure and QA a reusable training system where a date-sensitive
+  inquiry becomes a reviewed proposal without a false reservation.
+prerequisites:
+  - SK-SCALE-reusable-templates
+  - SK-SCALE-snapshot-portability
+ghl_features:
+  - GHL-FORM-FORMS
+  - GHL-CRM-PIPELINES
+  - GHL-WF-SEND-EMAIL
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - vertical-photographer
+  - post-Field-Ready
+  - training

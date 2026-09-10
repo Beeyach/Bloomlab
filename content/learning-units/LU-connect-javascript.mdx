@@ -1,0 +1,39 @@
+---
+id: 'LU-connect-javascript'
+title: 'Transform a payload defensively'
+territory: 'CONNECT'
+tier: 'practitioner'
+skills: ['SK-CONNECT-javascript']
+ghl_features: []
+advanced_topics: ['connect.javascript']
+estimated_minutes: 12
+summary: 'Trace small JavaScript transforms, preserve meaningful values and test missing or wrongly typed inputs before adding custom code.'
+---
+
+# Transform a payload defensively
+
+## Explicit input and output
+
+Operator JavaScript often selects fields, normalises a value, filters an array or chooses a branch. A utility should define its accepted input and returned output. Consider native configuration before assuming the maintenance burden of custom code.
+
+input.active === true accepts only boolean true. A truthiness check also accepts the string "false". Array.isArray validates array shape before array methods. Number.isFinite checks numbers without coercing arbitrary text. Nullish fallback preserves zero and false; logical OR can discard them.
+
+## Trace this utility
+
+`function project(input) { return { active: input.active === true, budget: input.budget ?? null, tags: Array.isArray(input.tags) ? input.tags.filter(tag => typeof tag === "string") : [] }; }`
+
+The function builds a new object without mutating input. A string "false" becomes active false, zero budget stays zero, missing budget becomes null, and tags retain only strings. Missing tags become an empty array. This is a teaching transform, not a complete production consent validator.
+
+The faulty condition if (input.active) sendMessage() would send when active is "false". Repair the type contract and condition; retries or waits do not repair an incorrect business rule.
+
+## Bound failure
+
+Catch expected JSON parsing errors and return a clear failure, not a successful empty object. Distinguish rejected asynchronous work from HTTP error statuses. Test valid input, missing properties, wrong types, empty arrays, zero and false. Never evaluate a payload as executable code.
+
+The practical asks you to trace outputs and choose the repaired condition. Bloomlab parses your JSON answers, not submitted JavaScript. It performs no code execution, terminal session or network request. General-purpose coding and live deployments remain outside this foundation.
+
+## Source and practice
+
+[Official reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing), checked 9 September 2026. Recheck the selected service contract before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-connect-javascript" />

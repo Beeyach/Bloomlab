@@ -59,6 +59,7 @@ export function useCrmRun(scenarioId: string = CRM_SCENARIO_ID): CrmRunApi {
   const [refusal, setRefusal] = useState<CrmRefusal | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
   const starting = useRef(false);
+  const applying = useRef(false);
   const scenario = scenarioFor(scenarioId);
 
   useEffect(() => {
@@ -91,6 +92,11 @@ export function useCrmRun(scenarioId: string = CRM_SCENARIO_ID): CrmRunApi {
   const apply = useCallback(
     async (command: (current: StoredRun) => Promise<CrmOutcome>) => {
       if (!run) return false;
+      if (applying.current) {
+        setProblem('Another account change is still saving. Wait for it, then try again.');
+        return false;
+      }
+      applying.current = true;
       setProblem(null);
       try {
         const outcome = await command(run);
@@ -105,6 +111,8 @@ export function useCrmRun(scenarioId: string = CRM_SCENARIO_ID): CrmRunApi {
       } catch (error) {
         setProblem(error instanceof Error ? error.message : 'That change could not be saved.');
         return false;
+      } finally {
+        applying.current = false;
       }
     },
     [run],

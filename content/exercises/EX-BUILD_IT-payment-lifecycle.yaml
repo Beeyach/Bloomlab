@@ -1,0 +1,106 @@
+id: EX-BUILD_IT-payment-lifecycle
+type: BUILD_IT
+title: Trace an offer through payment, failure and refund — account practical
+mode: independent
+difficulty: 3
+estimated_minutes: 35
+skills:
+  - SK-BUILD-payment-lifecycle
+scenario: SC-glowhaus-crm
+advanced_topics:
+  - labs.payments
+instructions: Follow the learning unit in [Payments Lab](/payments). Create training-service, prices
+  training-once and training-monthly (2500 cents each; one-time and monthly respectively), invoice
+  training-invoice for Maria and monthly link training-link. Fail invoice attempt training-failed,
+  retry successfully as training-retry, then fully refund training-retry. Record a successful
+  monthly checkout as training-first with subscription training-sub. Inspect the ledger and shared
+  workflow trail. No real payment is made.
+allowed_features:
+  - GHL-PAY-LINKS
+  - GHL-PAY-INVOICES
+  - GHL-PAY-SUBSCRIPTIONS
+  - GHL-PAY-PRODUCTS
+  - GHL-WF-PAYMENT-RECEIVED
+  - GHL-WF-REFUND
+expected_outcomes:
+  - id: a0
+    type: state
+    path: payments_catalog.prices.training-monthly.interval
+    operator: equals
+    value: month
+    description: The recurring price has an explicit interval.
+  - id: a1
+    type: state
+    path: payments_catalog.invoices.training-invoice.status
+    operator: equals
+    value: paid
+    description: The invoice was successfully settled.
+  - id: a2
+    type: state
+    path: payments.training-failed.status
+    operator: equals
+    value: failed
+    description: The failed attempt is retained.
+  - id: a3
+    type: state
+    path: payments.training-retry.status
+    operator: equals
+    value: refunded
+    description: The retry was collected and then refunded.
+  - id: a4
+    type: state
+    path: payments_catalog.subscriptions.training-sub.status
+    operator: equals
+    value: active
+    description: The monthly checkout created an active subscription.
+  - id: event
+    type: event
+    event: refund.issued
+    count:
+      min: 1
+    description: The practical produced an actual shared-account event.
+  - id: contract_0
+    type: state
+    path: payments_catalog.prices.training-once.cents
+    operator: equals
+    value: 2500
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_1
+    type: state
+    path: payments_catalog.prices.training-monthly.cents
+    operator: equals
+    value: 2500
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_2
+    type: state
+    path: payments_catalog.prices.training-once.interval
+    operator: equals
+    value: one_time
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_3
+    type: state
+    path: payments_catalog.prices.training-once.product_id
+    operator: equals
+    value: training-service
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_4
+    type: state
+    path: payments_catalog.prices.training-monthly.product_id
+    operator: equals
+    value: training-service
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_5
+    type: state
+    path: payments_catalog.invoices.training-invoice.price_id
+    operator: equals
+    value: training-once
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_6
+    type: state
+    path: payments_catalog.links.training-link.price_id
+    operator: equals
+    value: training-monthly
+    description: The saved account follows the practical's explicit model contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

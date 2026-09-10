@@ -57,7 +57,9 @@ export function Settings({
     case 'staff':
       return <Staff draft={draft} account={account} users={users} onChange={onChange} />;
     case 'service':
-      return <ServiceAndLocation draft={draft} users={users} onChange={onChange} />;
+      return (
+        <ServiceAndLocation draft={draft} account={account} users={users} onChange={onChange} />
+      );
     case 'rules':
       return <Rules draft={draft} onChange={onChange} />;
   }
@@ -110,6 +112,21 @@ function Basics({
           data-testid="calendar-duration"
         />
       </Field>
+      {draft.type === 'class' && (
+        <Field
+          label="Seats per class"
+          hint="Every overlapping attendee booking consumes one seat. A class has exactly one host."
+        >
+          <Input
+            type="number"
+            min={1}
+            step={1}
+            value={draft.seats_per_class ?? 1}
+            onChange={(e) => onChange({ ...draft, seats_per_class: number(e.target.value, 1) })}
+            data-testid="class-capacity"
+          />
+        </Field>
+      )}
       <Field
         label="Slot Interval"
         hint="Minutes between the times offered. Shorter than the duration gives overlapping starts."
@@ -384,10 +401,12 @@ function Staff({
 
 function ServiceAndLocation({
   draft,
+  account,
   users,
   onChange,
 }: {
   draft: Calendar;
+  account: AccountState;
   users: { id: string; name: string }[];
   onChange: (next: Calendar) => void;
 }) {
@@ -487,6 +506,30 @@ function ServiceAndLocation({
             )}
             {draft.services.map((service) => (
               <div className={styles.row} key={service.id}>
+                <fieldset className={styles.resourceChoices}>
+                  <legend>Equivalent resources — reserve one</legend>
+                  {Object.values(account.resources ?? {}).map((resource) => (
+                    <label key={resource.id}>
+                      <input
+                        type="checkbox"
+                        checked={service.resource_ids?.includes(resource.id) ?? false}
+                        onChange={(e) =>
+                          onChange(
+                            edit.editService(draft, service.id, {
+                              resource_ids: e.target.checked
+                                ? [...(service.resource_ids ?? []), resource.id]
+                                : (service.resource_ids ?? []).filter((id) => id !== resource.id),
+                            }),
+                          )
+                        }
+                      />
+                      {resource.name} · capacity {resource.capacity}
+                    </label>
+                  ))}
+                  {!Object.keys(account.resources ?? {}).length && (
+                    <p>No resources yet. Define one below the service settings.</p>
+                  )}
+                </fieldset>
                 <Field label="Service">
                   <Input
                     value={service.name}

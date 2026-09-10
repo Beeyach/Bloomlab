@@ -1,0 +1,60 @@
+id: EX-WHAT_WOULD_YOU_BUILD-specialty-learning
+type: WHAT_WOULD_YOU_BUILD
+title: Separate learning content, entitlement and portal access — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-BUILD-learning-access
+client: CL-glowhaus-medspa
+advanced_topics:
+  - specialty.courses
+  - specialty.memberships
+  - specialty.communities
+  - specialty.client_portal
+allowed_features:
+  - GHL-MEM-COURSES
+  - GHL-MEM-MEMBERSHIPS
+  - GHL-MEM-COMMUNITIES
+  - GHL-MEM-CLIENT-PORTAL
+instructions: Model course offers, community membership and client-portal
+  authentication without confusing login with entitlement. Work from the
+  fictional policy and trace in the named fields. Submit JSON, not prose. Types
+  and array order are checked; property order is ignored. No model, external
+  tool, message, account change, purchase or public publication executes.
+  Bloomlab AI Off is sufficient. A pass proves the supplied contract, not live
+  product competence.
+written_fields:
+  - key: access
+    label: Apply the fictional offer
+    help: Purchase grants Course A and Group A only. Return courses=[course-a],
+      groups=[group-a], all_resources=false, login_alone_grants_access=false.
+    rows: 6
+  - key: recovery
+    label: Handle an expired magic link
+    help: Return next=request_replacement_link, publish_old_link=false,
+      verify_entitlement=true, admin_view_proves_customer_access=false.
+    rows: 6
+fixture_checks:
+  - key: access
+    field: access
+    expected_json: '{"courses":["course-a"],"groups":["group-a"],"all_resources":false,"login_alone_grants_access":false}'
+  - key: recovery
+    field: recovery
+    expected_json: '{"next":"request_replacement_link","publish_old_link":false,"verify_entitlement":true,"admin_view_proves_customer_access":false}'
+expected_outcomes:
+  - id: access
+    type: state
+    path: fixture.access
+    operator: equals
+    value: true
+    description: Apply the fictional offer satisfies the supplied contract.
+  - id: recovery
+    type: state
+    path: fixture.recovery
+    operator: equals
+    value: true
+    description: Handle an expired magic link satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

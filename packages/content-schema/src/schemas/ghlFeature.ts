@@ -34,6 +34,7 @@ export const FEATURE_AREAS = [
   'Settings',
   'Snapshots',
   'Reputation',
+  'Marketing',
   'Memberships',
   'Reporting',
   'Phone',

@@ -39,6 +39,9 @@ export const CampaignSchema = z
     requires_campaigns: z.array(campaignRef).default([]),
     gates: z.array(gate).min(1),
     coverage_enforced: z.boolean().default(false),
+    /** A curated specialization over the same graph, not an earned identity. */
+    post_field_ready: z.boolean().default(false),
+    recommended: z.boolean().default(false),
     future_boundaries: z
       .array(
         z.strictObject({

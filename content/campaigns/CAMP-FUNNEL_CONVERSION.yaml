@@ -1,0 +1,64 @@
+id: CAMP-FUNNEL_CONVERSION
+title: Funnel & Conversion Specialist
+pace_hint: Post-Field-Ready · progress by evidence, at your own pace
+summary: Diagnose the conversion journey, build the offer and checkout, then distinguish
+  measurement from attribution.
+requires_campaigns:
+  - CAMP-FIELD_READY
+  - CAMP-CONNECT_FOUNDATIONS
+post_field_ready: true
+recommended: false
+gates:
+  - id: GATE-1
+    number: 1
+    name: Strategy and diagnosis
+    summary: Use denominators and customer friction to choose the next intervention.
+    skills:
+      - SK-STRATEGIZE-funnel-math
+      - SK-STRATEGIZE-bottleneck-diagnosis
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-2
+    number: 2
+    name: Build the conversion path
+    summary: Connect the message, capture and synthetic payment lifecycle.
+    skills:
+      - SK-BUILD-conversion-copy
+      - SK-BUILD-lead-capture-form
+      - SK-BUILD-payment-lifecycle
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-3
+    number: 3
+    name: Specialized delivery surfaces
+    summary: Separate publishing, commerce and customer entitlement obligations.
+    skills:
+      - SK-BUILD-commerce-affiliates
+      - SK-BUILD-publishing-seo
+      - SK-BUILD-learning-access
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-4
+    number: 4
+    name: Reporting and interpretation
+    summary: Reconcile prospect, ad-platform and account evidence without invented causal claims.
+    skills:
+      - SK-DIAGNOSE-advanced-reporting
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.

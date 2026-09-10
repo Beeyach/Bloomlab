@@ -1,0 +1,35 @@
+---
+id: 'LU-connect-json'
+title: 'Repair a payload without changing its meaning'
+territory: 'CONNECT'
+tier: 'practitioner'
+skills: ['SK-CONNECT-json']
+ghl_features: []
+advanced_topics: ['connect.json']
+estimated_minutes: 12
+summary: 'Inspect objects, arrays and scalar types; repair malformed JSON while preserving false, zero and missing-value distinctions.'
+---
+
+# Repair a payload without changing its meaning
+
+## A typed agreement
+
+JSON contains objects, ordered arrays, strings, numbers, booleans and null. Names and strings use double quotes. Comments, trailing commas, undefined and functions are not JSON. The string "false" is not boolean false; "120" is not numeric 120. Parse syntax, then validate the resulting shape: a parser does not know your business contract.
+
+Read nesting before mapping. contacts[0].email addresses the first contact; contacts.email does not. Missing, null and an empty string may have different meanings. A partial update must not erase a stored phone merely because the input omitted it.
+
+## Repair narrowly
+
+Find the first syntax fault, correct it without changing values, then inspect types and required properties. Do not stringify every value to make it parse. Preserve numeric zero and boolean false. In JavaScript a logical-OR fallback discards them; a nullish fallback only replaces null or undefined. A valid empty array is not a parse failure.
+
+When a partner changes a payload, retain a redacted sample, identify the changed contract and update mapping and regression fixtures together. Test missing data, wrong types and empty arrays. Do not copy an entire personal record into an outbound request when two identifiers suffice.
+
+## Inspect and project
+
+The practical compares parsed structure and types: object-property order is irrelevant, array order matters. Missing or extra properties fail the exact fixture. Malformed work remains saved and fails safely; it is never executed. Repair the fictional contact, then project only the requested facts. No endpoint is contacted and no HighLevel acceptance is implied.
+
+## Source and practice
+
+[Official reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse), checked 9 September 2026. Recheck the selected service contract before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-connect-json" />

@@ -1,0 +1,58 @@
+id: EX-WHAT_WOULD_YOU_BUILD-ai-customer
+type: WHAT_WOULD_YOU_BUILD
+title: Bound Conversation AI and Voice AI — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-AUTOMATE-customer-ai
+client: CL-glowhaus-medspa
+advanced_topics:
+  - ai.conversation
+  - ai.voice
+  - ai.escalation
+allowed_features:
+  - GHL-AI-CONVERSATION
+  - GHL-AI-VOICE
+instructions: Separate customer messaging and voice channels, define human
+  handover and test failed transfers safely. Work from the fictional policy and
+  trace in the named fields. Submit JSON, not prose. Types and array order are
+  checked; property order is ignored. No model, external tool, message, account
+  change, purchase or public publication executes. Bloomlab AI Off is
+  sufficient. A pass proves the supplied contract, not live product competence.
+written_fields:
+  - key: channel
+    label: Select the interaction
+    help: Return text_lead=Conversation_AI, phone_caller=Voice_AI,
+      draft_review_mode=Suggestive, test_chat_proves_phone_routing=false.
+    rows: 6
+  - key: handover
+    label: Recover an unanswered transfer
+    help: Caller asks for a human; destination does not answer. Training policy
+      requires a callback task. Return next=callback_task,
+      promise_live_person=false, loop_to_same_bot=false,
+      claim_booking_without_confirmation=false.
+    rows: 6
+fixture_checks:
+  - key: channel
+    field: channel
+    expected_json: '{"text_lead":"Conversation_AI","phone_caller":"Voice_AI","draft_review_mode":"Suggestive","test_chat_proves_phone_routing":false}'
+  - key: handover
+    field: handover
+    expected_json: '{"next":"callback_task","promise_live_person":false,"loop_to_same_bot":false,"claim_booking_without_confirmation":false}'
+expected_outcomes:
+  - id: channel
+    type: state
+    path: fixture.channel
+    operator: equals
+    value: true
+    description: Select the interaction satisfies the supplied contract.
+  - id: handover
+    type: state
+    path: fixture.handover
+    operator: equals
+    value: true
+    description: Recover an unanswered transfer satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

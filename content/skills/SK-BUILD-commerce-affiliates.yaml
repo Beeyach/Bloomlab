@@ -1,0 +1,27 @@
+id: SK-BUILD-commerce-affiliates
+title: Trace ecommerce and affiliate obligations
+territory: BUILD
+tier: advanced
+summary: Separate checkout, fulfillment, attribution and commission approval
+  using a supplied commerce policy.
+prerequisites:
+  - SK-BUILD-payment-lifecycle
+ghl_features:
+  - GHL-STORE-ECOMMERCE
+  - GHL-MKT-AFFILIATES
+  - GHL-PAY-PRODUCTS
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - specialty-commerce
+  - post-Field-Ready
+  - ecommerce
+  - affiliates

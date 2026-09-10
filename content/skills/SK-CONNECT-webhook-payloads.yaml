@@ -2,14 +2,14 @@ id: SK-CONNECT-webhook-payloads
 title: Webhook payloads
 territory: CONNECT
 tier: practitioner
-summary: >-
-  Read and shape the JSON a workflow webhook sends, know what an inbound webhook needs, and
+summary: Read and shape the JSON a workflow webhook sends, know what an inbound webhook needs, and
   tell a missing field from a failed request.
 prerequisites:
   - SK-AUTOMATE-workflow-foundations
 ghl_features:
   - GHL-WF-WEBHOOK
   - GHL-WF-INBOUND-WEBHOOK
+  - GHL-API-WEBHOOKS
 judgment_competencies:
   - custom_code_warranted
   - what_could_break
@@ -17,8 +17,12 @@ mastery_requirements:
   independent_evidence: 2
   pressure_test: false
   fieldwork_required: true
-keywords: [webhook, JSON, payload, POST, mapping]
-
+keywords:
+  - webhook
+  - JSON
+  - payload
+  - POST
+  - mapping
 identities:
   - Technical GHL Specialist
   - GHL Systems Builder

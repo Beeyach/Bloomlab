@@ -1,0 +1,48 @@
+---
+id: LU-specialty-scheduling
+title: Choose rentals, services and resource capacity
+territory: ARCHITECT
+tier: advanced
+skills:
+  - SK-ARCHITECT-scheduling-specialties
+ghl_features:
+  - GHL-CAL-RENTALS
+  - GHL-CAL-SERVICES
+  - GHL-CAL-RESOURCES
+advanced_topics:
+  - specialty.rentals
+  - specialty.services
+  - specialty.resources
+estimated_minutes: 15
+summary: Distinguish multi-day rental inventory from staff services and
+  equivalent physical resources.
+---
+
+# Choose rentals, services and resource capacity
+
+## Choose the object being booked
+
+A service appointment combines a service, time, staff and any required physical resource. A rental reserves a listing or asset across its permitted duration and inventory rules. A class reserves a seat in a shared session. These may all appear near scheduling, but they are not interchangeable capacity models.
+
+HighLevel Rentals supports rental listings and multi-duration booking needs, with inventory and pricing configuration. Services has its own staff and service views. Verify the intended module and available settings before promising a single template will cover a massage, a group class and a weekend equipment rental.
+
+## Capacity has a unit
+
+A room resource with capacity one cannot support two overlapping service bookings, even if two staff members are available. Equivalent alternatives mean one free resource may be selected; they do not mean the booking requires every alternative at once. A rental with three tracked units has an inventory constraint separate from a service host's calendar.
+
+The advanced Calendar Lab simulates classes and a deliberately narrower resource model. It does not implement multi-day Rentals, rental pricing or location inventory. Use that Lab to understand overlap and cancellation, then identify the native configuration still needed for a real rental deployment.
+
+## Rehearse the return and release
+
+Test overlapping requests, cancellation, changed duration, unavailable staff and a resource removed from service. For a rental, include return timing and inventory availability in the acceptance plan. Do not assume a paid deposit or a displayed opening guarantees all required assets exist.
+
+The practical selects a module for a supplied business and computes a resource conflict. It is a local architecture decision, not an actual rental reservation. The graph deliberately links this specialty to the account-backed class/resource prerequisite while preserving the limits of both. No external calendar, rental listing or paid booking is created.
+
+## Official sources
+
+- [Rentals](https://help.gohighlevel.com/support/solutions/articles/155000006740-guide-to-the-rentals-public-beta)
+- [Services](https://help.gohighlevel.com/support/solutions/articles/155000006096)
+
+Checked 9 September 2026. Feature records state the local boundary and current naming/rollout qualifications. Recheck before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-specialty-scheduling" />

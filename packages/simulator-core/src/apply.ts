@@ -1,4 +1,6 @@
 import type { SimulatorEvent, SimulatorEventType } from './events.ts';
+import { advancedCrmChanged } from './advanced-crm.ts';
+import { paymentsCatalogChanged } from './payments-lab.ts';
 import type { AccountState, SimulatorState } from './state.ts';
 import {
   appointmentBooked,
@@ -32,7 +34,7 @@ import { noteAdded, taskCompleted, taskCreated, taskUpdated } from './reducers/c
 import { paymentFailed, paymentReceived, refundIssued } from './reducers/payments.ts';
 import { result, type Reducer, type ReducerResult } from './reducers/shared.ts';
 import { workflowCreated, workflowUpdated } from './reducers/definitions.ts';
-import { calendarCreated, calendarUpdated } from './reducers/calendars.ts';
+import { calendarCreated, calendarUpdated, resourceSaved } from './reducers/calendars.ts';
 import { funnelCreated, funnelUpdated } from './reducers/funnels.ts';
 import {
   funnelFormStarted,
@@ -68,6 +70,20 @@ const timeAdvanced: Reducer = (account, event) =>
   ]);
 
 const REDUCERS: Record<SimulatorEventType, Reducer> = {
+  COMPANY_SAVED: advancedCrmChanged,
+  COMPANY_CONTACT_LINKED: advancedCrmChanged,
+  OBJECT_SCHEMA_SAVED: advancedCrmChanged,
+  OBJECT_RECORD_SAVED: advancedCrmChanged,
+  OBJECT_ASSOCIATION_SAVED: advancedCrmChanged,
+  OBJECT_AUTOMATION_SAVED: advancedCrmChanged,
+  SMART_LIST_SAVED: advancedCrmChanged,
+  RESOURCE_SAVED: resourceSaved,
+  PRODUCT_SAVED: paymentsCatalogChanged,
+  PRICE_CREATED: paymentsCatalogChanged,
+  PAYMENT_LINK_SAVED: paymentsCatalogChanged,
+  INVOICE_CREATED: paymentsCatalogChanged,
+  PAYMENT_CHECKOUT: paymentsCatalogChanged,
+  SUBSCRIPTION_CANCELLED: paymentsCatalogChanged,
   CONTACT_CREATED: contactCreated,
   CONTACT_UPDATED: contactUpdated,
   TAG_ADDED: tagAdded,

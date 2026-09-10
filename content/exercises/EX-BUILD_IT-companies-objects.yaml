@@ -1,0 +1,81 @@
+id: EX-BUILD_IT-companies-objects
+type: BUILD_IT
+title: Model repeated things without duplicating people — account practical
+mode: independent
+difficulty: 3
+estimated_minutes: 35
+skills:
+  - SK-ARCHITECT-companies-objects
+scenario: SC-glowhaus-crm
+advanced_topics:
+  - labs.companies_objects
+instructions: Use the Companies and Custom objects areas in [CRM](/crm?area=companies), following
+  the learning unit. Save company agency and link Maria. Define properties with required number
+  value and optional boolean ready. Create home-one with value 250000 and ready true, link Maria
+  with association owner-one labelled Owner, enable a created/ready=true notification to Priya, then
+  create home-two. Reuse identifiers to edit, not duplicate. The grade reads this actual account and
+  its generated event log.
+allowed_features:
+  - GHL-CRM-COMPANIES
+  - GHL-CRM-CUSTOM-OBJECTS
+expected_outcomes:
+  - id: a0
+    type: state
+    path: contacts.maria.company_id
+    operator: equals
+    value: agency
+    description: Maria references the company.
+  - id: a1
+    type: state
+    path: advanced_crm.records.home-one.values.value
+    operator: equals
+    value: 250000
+    description: The typed property record exists.
+  - id: a2
+    type: state
+    path: advanced_crm.associations.owner-one.contact_id
+    operator: equals
+    value: maria
+    description: The record links to the existing contact.
+  - id: event
+    type: event
+    event: notification.sent
+    count:
+      min: 1
+    description: The practical produced an actual shared-account event.
+    where:
+      object_automation_id: property-review
+      object_record_id: home-two
+  - id: contract_0
+    type: state
+    path: advanced_crm.records.home-one.schema_id
+    operator: equals
+    value: properties
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_1
+    type: state
+    path: advanced_crm.associations.owner-one.record_id
+    operator: equals
+    value: home-one
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_2
+    type: state
+    path: advanced_crm.associations.owner-one.label
+    operator: equals
+    value: Owner
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_3
+    type: state
+    path: advanced_crm.automations.property-review.enabled
+    operator: equals
+    value: true
+    description: The saved account follows the practical's explicit model contract.
+  - id: contract_4
+    type: state
+    path: advanced_crm.automations.property-review.schema_id
+    operator: equals
+    value: properties
+    description: The saved account follows the practical's explicit model contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

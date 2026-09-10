@@ -35,6 +35,8 @@ import { minutesOfDay, serviceDuration } from './validation.ts';
  */
 
 export interface Slot {
+  resource_id?: string | null;
+  seats_remaining?: number;
   starts_at: string;
   ends_at: string;
   duration_minutes: number;
@@ -80,6 +82,7 @@ export const locationFor = (calendar: Calendar, service: CalendarService | null)
 /* ---- who is busy ---------------------------------------------------------------------- */
 
 interface Busy {
+  resource_id: string | null;
   from: number;
   to: number;
   padded_from: number;
@@ -101,6 +104,7 @@ function busyIntervals(account: AccountState, ignoreAppointmentId: string | null
     const from = instant(appointment.starts_at);
     const to = from + minutes * MINUTE_MS;
     rows.push({
+      resource_id: appointment.resource_id ?? null,
       from,
       to,
       padded_from: from - (held?.pre_buffer_minutes ?? 0) * MINUTE_MS,
@@ -128,6 +132,14 @@ function isFree(
   const paddedFrom = from - calendar.pre_buffer_minutes * MINUTE_MS;
   const paddedTo = to + calendar.post_buffer_minutes * MINUTE_MS;
   for (const row of busy) {
+    // Class attendees share their host. Overlapping same-calendar bookings consume seats,
+    // not the entire host; appointments on other calendars still block that person.
+    if (
+      calendar.type === 'class' &&
+      row.calendar_id === calendar.id &&
+      overlaps(from, to, row.from, row.to)
+    )
+      continue;
     if (!inTheWay(row, calendar.id, hostId)) continue;
     if (overlaps(paddedFrom, paddedTo, row.from, row.to)) return false;
     if (overlaps(from, to, row.padded_from, row.padded_to)) return false;
@@ -216,6 +228,48 @@ function slotFrom(
   query: SlotQuery,
 ): Slot | null {
   const to = from + minutes * MINUTE_MS;
+  const overlapping = busy.filter((row) => overlaps(from, to, row.from, row.to));
+  const seatsRemaining =
+    calendar.type === 'class'
+      ? (calendar.seats_per_class ?? 1) -
+        overlapping.filter((row) => row.calendar_id === calendar.id).length
+      : undefined;
+  if (calendar.type === 'class' && (staff.length !== 1 || seatsRemaining! <= 0)) return null;
+  const resourceIds = serviceOf(calendar, query.service_id)?.resource_ids ?? [];
+  const resourceId = resourceIds.find((id) => {
+    const resource = account.resources?.[id];
+    const boundaries = busy
+      .filter((row) => row.resource_id === id)
+      .flatMap((row) => {
+        const start = Math.max(
+          from,
+          row.from - Math.max(row.from - row.padded_from, calendar.post_buffer_minutes * MINUTE_MS),
+        );
+        const end = Math.min(
+          to,
+          row.to + Math.max(row.padded_to - row.to, calendar.pre_buffer_minutes * MINUTE_MS),
+        );
+        return start < end
+          ? [
+              { at: start, delta: 1 },
+              { at: end, delta: -1 },
+            ]
+          : [];
+      })
+      .sort((a, b) => a.at - b.at || a.delta - b.delta);
+    let occupied = 0;
+    let peak = 0;
+    for (const boundary of boundaries) {
+      occupied += boundary.delta;
+      peak = Math.max(peak, occupied);
+    }
+    return resource && peak < resource.capacity;
+  });
+  if (resourceIds.length && !resourceId) return null;
+  const advanced = {
+    ...(calendar.type === 'class' ? { seats_remaining: seatsRemaining } : {}),
+    ...(resourceId ? { resource_id: resourceId } : {}),
+  };
   const startsAt = formatInstant(from, zone);
   const requested = query.staff_id ?? null;
   const considered =
@@ -224,6 +278,7 @@ function slotFrom(
   if (staff.length === 0) {
     if (!isFree(busy, calendar, null, from, to)) return null;
     return {
+      ...advanced,
       starts_at: startsAt,
       ends_at: formatInstant(to, zone),
       duration_minutes: minutes,
@@ -240,6 +295,7 @@ function slotFrom(
     ignore_appointment_id: query.ignore_appointment_id ?? null,
   });
   return {
+    ...advanced,
     starts_at: startsAt,
     ends_at: formatInstant(to, zone),
     duration_minutes: minutes,

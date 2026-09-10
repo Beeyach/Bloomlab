@@ -1,0 +1,56 @@
+id: EX-WHAT_WOULD_YOU_BUILD-scale-specialist
+type: WHAT_WOULD_YOU_BUILD
+title: Scope SaaS, white-label and Marketplace operations — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SCALE-agency-specialist
+client: CL-glowhaus-medspa
+advanced_topics:
+  - scale.specialist
+allowed_features:
+  - GHL-AGENCY-SAAS
+  - GHL-AGENCY-WHITELABEL
+  - GHL-APP-DISTRIBUTION
+instructions: Keep distribution, branding, billing and app permission
+  responsibilities separate from ordinary client builds. Work only from the
+  fictional policy and assets in the named fields. Submit JSON, not prose. Types
+  and array order are checked; property order is ignored. This local
+  contract-repair exercise executes no snapshot, account change, message,
+  deployment or purchase. It is demonstration work, not a client outcome.
+written_fields:
+  - key: scope
+    label: Separate the workstreams
+    help: Return billing=SaaS_Mode, branding=white_label, extension=Marketplace,
+      field_ready_required=false.
+    rows: 6
+  - key: permission
+    label: Review an app restriction
+    help: An installed app supplies a workflow action. Return
+      inventory_dependents=true, disapprove_without_review=false,
+      secret_in_snapshot=false, public_release_authorized=false.
+    rows: 6
+fixture_checks:
+  - key: scope
+    field: scope
+    expected_json: '{"billing":"SaaS_Mode","branding":"white_label","extension":"Marketplace","field_ready_required":false}'
+  - key: permission
+    field: permission
+    expected_json: '{"inventory_dependents":true,"disapprove_without_review":false,"secret_in_snapshot":false,"public_release_authorized":false}'
+expected_outcomes:
+  - id: scope
+    type: state
+    path: fixture.scope
+    operator: equals
+    value: true
+    description: Separate the workstreams satisfies the supplied contract.
+  - id: permission
+    type: state
+    path: fixture.permission
+    operator: equals
+    value: true
+    description: Review an app restriction satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

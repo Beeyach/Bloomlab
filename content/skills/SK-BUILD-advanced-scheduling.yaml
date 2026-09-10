@@ -1,0 +1,22 @@
+id: SK-BUILD-advanced-scheduling
+title: Schedule against seats, people and physical resources
+territory: BUILD
+tier: practitioner
+summary: Test overlapping class capacity and shared service resources without weakening ordinary
+  calendar constraints.
+prerequisites:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features:
+  - GHL-CAL-CALENDARS
+  - GHL-CAL-CLASSES
+  - GHL-CAL-RESOURCES
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - advanced-scheduling
+  - advanced
+  - shared account

@@ -1,0 +1,16 @@
+id: GHL-PAY-LINKS
+official_name: Payment Links
+area: Payments
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000002177-payment-links
+skills:
+  - SK-BUILD-payment-lifecycle
+known_limitations:
+  - A local link selects one explicit price and can be activated or deactivated. No public URL, real hosted checkout, provider, localisation, multi-item selection or delivery is created.
+supported_configs: {}
+approximation_note: A local link selects one explicit price and can be activated or deactivated. No public URL, real hosted checkout, provider, localisation, multi-item selection or delivery is created.
+verification_note: Current official article read on 2026-09-09. Lab boundaries are local training approximations, not a real account verification.

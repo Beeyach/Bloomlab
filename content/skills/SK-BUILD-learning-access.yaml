@@ -1,0 +1,30 @@
+id: SK-BUILD-learning-access
+title: Separate learning content, entitlement and portal access
+territory: BUILD
+tier: practitioner
+summary: Model course offers, community membership and client-portal
+  authentication without confusing login with entitlement.
+prerequisites:
+  - SK-ARCHITECT-tags-vs-custom-fields
+ghl_features:
+  - GHL-MEM-COURSES
+  - GHL-MEM-MEMBERSHIPS
+  - GHL-MEM-COMMUNITIES
+  - GHL-MEM-CLIENT-PORTAL
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - specialty-learning
+  - post-Field-Ready
+  - courses
+  - memberships
+  - communities
+  - client_portal

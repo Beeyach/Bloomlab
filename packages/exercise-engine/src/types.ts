@@ -101,6 +101,7 @@ export type ContextSource = (typeof CONTEXT_SOURCES)[number];
  * assertion reads exactly what it read before.
  */
 export const LEARNER_STATE_ROOTS = [
+  'fixture',
   'call',
   'review',
   'sequence',

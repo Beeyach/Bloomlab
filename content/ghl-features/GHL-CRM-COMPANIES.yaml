@@ -4,16 +4,16 @@ area: Contacts
 feature_type: entity
 implementation_type: native_ghl
 status: current
-simulation_fidelity: C
-last_verified: 2026-09-08
+simulation_fidelity: B
+last_verified: 2026-09-09
 source_url: https://help.gohighlevel.com/support/solutions/articles/155000004430-getting-started-with-companies
 skills:
-  - SK-ARCHITECT-tags-vs-custom-fields
+  - SK-ARCHITECT-companies-objects
 known_limitations:
-  - Company records and fields are discussed for architecture decisions; company editing and
-    associations are not simulated in Field Ready.
+  - Company names and contact-company references are editable. Company custom fields, bulk imports,
+    permissions and company-based workflow builders are not simulated.
 supported_configs: {}
-approximation_note: Company records and fields are discussed for architecture decisions; company
-  editing and associations are not simulated in Field Ready.
-verification_note: Read the official HighLevel support article directly on 2026-09-08. Only the
-  documented record/page capability is taught; no advanced UI is claimed.
+approximation_note: Company names and contact-company references are editable. Company custom
+  fields, bulk imports, permissions and company-based workflow builders are not simulated.
+verification_note: Read the current official HighLevel article on 2026-09-09. Local behaviour is
+  deliberately narrower than the platform; no real account verification is implied.

@@ -14,6 +14,26 @@
  */
 
 export { SIMULATOR_VERSION } from './version.ts';
+export {
+  paymentsCatalog,
+  type PaymentsCatalog,
+  type Price,
+  type PaymentLink,
+  type Invoice,
+  type Subscription,
+} from './payments-lab.ts';
+export {
+  advancedCrm,
+  segmentContacts,
+  type AdvancedCrm,
+  type ObjectSchema,
+  type ObjectRecord,
+  type ObjectAssociation,
+  type ObjectAutomation,
+  type ObjectField,
+  type SmartList,
+  type SegmentRule,
+} from './advanced-crm.ts';
 
 export {
   SIMULATOR_ERROR_CODES,

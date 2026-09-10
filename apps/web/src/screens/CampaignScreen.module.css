@@ -1,5 +1,48 @@
 .screen {
   --bl-density: var(--bl-density-content);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pathPicker {
+  display: grid;
+  gap: var(--bl-space-2);
+  width: 100%;
+  max-width: 44rem;
+  font-weight: var(--bl-font-weight-medium);
+}
+
+.pathPicker select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: var(--bl-space-2);
+  border: 1px solid var(--bl-color-border-strong);
+  border-radius: var(--bl-radius-sm);
+  background: var(--bl-color-surface);
+  color: var(--bl-color-text);
+  font: inherit;
+}
+
+.pathPicker select:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}
+
+.foundations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bl-space-2) var(--bl-space-4);
+}
+
+.pathDirectory {
+  display: grid;
+  gap: var(--bl-space-3);
+  max-width: 56rem;
+}
+
+.pathDirectory li {
+  padding-bottom: var(--bl-space-3);
 }
 
 .header {

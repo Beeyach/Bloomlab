@@ -1,0 +1,37 @@
+---
+id: 'LU-connect-git'
+title: 'Keep a reviewable change and recovery path'
+territory: 'CONNECT'
+tier: 'practitioner'
+skills: ['SK-CONNECT-git']
+ghl_features: []
+advanced_topics: ['connect.git']
+estimated_minutes: 12
+summary: 'Read branch and commit relationships, select a pull-request base and recover shared work without destructive history rewriting.'
+---
+
+# Keep a reviewable change and recovery path
+
+## Branch, stage and commit
+
+A commit records a snapshot and parent history. A branch is a movable name pointing to a commit. Working files, staging and committed history are different states. Inspect status and diff before staging so unrelated work does not enter your change. Keep a commit coherent and explain its test evidence.
+
+Create the task branch from its intended base. In stacked work that can be another feature branch, not main. A pull request compares head to base. Choosing main for a child can bury its changes under the parent diff. Inspect file and commit lists before requesting review.
+
+## Verify the exact revision
+
+Run local checks, push and wait for checks attached to that commit. A green result on an earlier revision does not verify the current head. Check deployed source identity too: a shared Preview URL can change. Review feedback does not itself authorise merging.
+
+Conflicts need explicit interpretation of both sides and intended behaviour. Resolve narrowly and retest; do not discard the other version simply because yours compiles. Hard resets and force pushes are not routine ways to remove someone else's work.
+
+## Recover without erasing evidence
+
+For an already-shared bad commit, a revert adds a reversing commit and preserves history. Review and test it because later changes may depend on the original. Preserve unfinished work before switching contexts using an inspected checkpoint or stash. A local stash is not a remote backup.
+
+The practical gives a fictional branch stack and incident. Select the comparison and safe recovery operation. No command runs and no repository changes. Passing demonstrates reasoning, not terminal fluency or permission to merge.
+
+## Source and practice
+
+[Official reference](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/reverting-a-pull-request), checked 9 September 2026. Recheck the selected service contract before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-connect-git" />

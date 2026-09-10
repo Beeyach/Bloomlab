@@ -1,0 +1,24 @@
+id: SK-AUTOMATE-ivr-phone
+title: Trace IVR and phone-routing failures
+territory: AUTOMATE
+tier: advanced
+summary: Model keypad routing, timeout and fallback behavior separately from
+  conversational Voice AI.
+prerequisites:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features:
+  - GHL-PHONE-IVR
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - specialty-phone
+  - post-Field-Ready
+  - ivr_phone

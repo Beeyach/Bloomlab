@@ -1,0 +1,28 @@
+id: SK-ARCHITECT-scheduling-specialties
+title: Choose rentals, services and resource capacity
+territory: ARCHITECT
+tier: advanced
+summary: Distinguish multi-day rental inventory from staff services and
+  equivalent physical resources.
+prerequisites:
+  - SK-BUILD-advanced-scheduling
+ghl_features:
+  - GHL-CAL-RENTALS
+  - GHL-CAL-SERVICES
+  - GHL-CAL-RESOURCES
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - specialty-scheduling
+  - post-Field-Ready
+  - rentals
+  - services
+  - resources

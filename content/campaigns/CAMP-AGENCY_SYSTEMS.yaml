@@ -1,0 +1,84 @@
+id: CAMP-AGENCY_SYSTEMS
+title: Agency Systems
+pace_hint: Post-Field-Ready · progress by evidence, at your own pace
+summary: Move from accountable delivery to portable vertical systems, account architecture and
+  separately scoped specialist operations.
+requires_campaigns:
+  - CAMP-FIELD_READY
+  - CAMP-CONNECT_FOUNDATIONS
+post_field_ready: true
+recommended: false
+gates:
+  - id: GATE-1
+    number: 1
+    name: Delivery responsibilities
+    summary: Define client ownership, reporting, commercial state and ongoing support.
+    skills:
+      - SK-DELIVER-client-explanation
+      - SK-SELL-retention
+      - SK-BUILD-payment-lifecycle
+      - SK-DELIVER-commercial-documents
+      - SK-DELIVER-reputation-social
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-2
+    number: 2
+    name: Reusable systems
+    summary: Name, rehearse and maintain a release across explicit account boundaries.
+    skills:
+      - SK-SCALE-reusable-templates
+      - SK-SCALE-snapshot-portability
+      - SK-SCALE-agency-architecture
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-3
+    number: 3
+    name: Vertical demonstrations
+    summary: Repair four distinct training manifests without claiming client outcomes.
+    skills:
+      - SK-SCALE-medspa-system
+      - SK-SCALE-coach-system
+      - SK-SCALE-home-services-system
+      - SK-SCALE-photographer-system
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-4
+    number: 4
+    name: Account architecture
+    summary: Choose the minimum data and scheduling model that supports the business.
+    skills:
+      - SK-ARCHITECT-companies-objects
+      - SK-ARCHITECT-smart-lists
+      - SK-BUILD-advanced-scheduling
+      - SK-ARCHITECT-scheduling-specialties
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.
+  - id: GATE-5
+    number: 5
+    name: Specialist distribution
+    summary: SaaS, white-label and Marketplace are separate specialist obligations, never Field
+      Ready requirements.
+    skills:
+      - SK-SCALE-agency-specialist
+    pass_criteria:
+      independent_evidence_per_skill: 1
+      pressure_test_required: false
+      fieldwork_required: false
+      notes: Gate progress is training evidence, not a new professional certification. Skill mastery
+        and real-GHL requirements remain separately visible.

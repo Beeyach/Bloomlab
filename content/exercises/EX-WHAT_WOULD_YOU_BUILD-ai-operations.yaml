@@ -1,0 +1,57 @@
+id: EX-WHAT_WOULD_YOU_BUILD-ai-operations
+type: WHAT_WOULD_YOU_BUILD
+title: Audit AI cost, logs and incorrect actions — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-DIAGNOSE-ai-operations
+client: CL-glowhaus-medspa
+advanced_topics:
+  - ai.cost_logs
+  - ai.hallucination
+allowed_features:
+  - GHL-AI-LOGS
+  - GHL-AI-ACTIVITY
+instructions: Reconcile proposed actions with tool results, protect diagnostic
+  data and budget a bounded AI rollout. Work from the fictional policy and trace
+  in the named fields. Submit JSON, not prose. Types and array order are
+  checked; property order is ignored. No model, external tool, message, account
+  change, purchase or public publication executes. Bloomlab AI Off is
+  sufficient. A pass proves the supplied contract, not live product competence.
+written_fields:
+  - key: budget
+    label: Compute the fictional pilot
+    help: 300 runs cost 2 cents each, with no other charge in this fixture. Budget
+      is 1000 cents. Return projected_cents, remaining_cents,
+      real_price_claim=false.
+    rows: 6
+  - key: incident
+    label: Investigate a false success
+    help: Final text says contact updated; tool returned permission_denied. Return
+      update_confirmed=false, next=review_permission_boundary,
+      retry_with_admin_token=false, export_secrets=false.
+    rows: 6
+fixture_checks:
+  - key: budget
+    field: budget
+    expected_json: '{"projected_cents":600,"remaining_cents":400,"real_price_claim":false}'
+  - key: incident
+    field: incident
+    expected_json: '{"update_confirmed":false,"next":"review_permission_boundary","retry_with_admin_token":false,"export_secrets":false}'
+expected_outcomes:
+  - id: budget
+    type: state
+    path: fixture.budget
+    operator: equals
+    value: true
+    description: Compute the fictional pilot satisfies the supplied contract.
+  - id: incident
+    type: state
+    path: fixture.incident
+    operator: equals
+    value: true
+    description: Investigate a false success satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

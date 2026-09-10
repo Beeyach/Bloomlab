@@ -1,0 +1,59 @@
+id: EX-WHAT_WOULD_YOU_BUILD-vertical-coach
+type: WHAT_WOULD_YOU_BUILD
+title: Coach Lead Path — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SCALE-coach-system
+client: CL-glowhaus-medspa
+advanced_topics:
+  - scale.vertical_coach
+allowed_features:
+  - GHL-FORM-SURVEYS
+  - GHL-CRM-PIPELINES
+  - GHL-CAL-CALENDARS
+instructions: Configure and QA a reusable training system where a fit-qualified
+  application reaches a discovery conversation without unsupported promises.
+  Work only from the fictional policy and assets in the named fields. Submit
+  JSON, not prose. Types and array order are checked; property order is ignored.
+  This local contract-repair exercise executes no snapshot, account change,
+  message, deployment or purchase. It is demonstration work, not a client
+  outcome.
+written_fields:
+  - key: manifest
+    label: Keep the review gate
+    help: Return invitation_trigger=staff_invited_stage,
+      automatic_qualification=false, booking_stops_invites=true,
+      course_delivery_included=false.
+    rows: 6
+  - key: qa
+    label: Trace a declined application
+    help: Return send_booking_link=false, pipeline_stage=Declined,
+      claim_guaranteed_results=false, label=Demonstration Build.
+    rows: 6
+fixture_checks:
+  - key: manifest
+    field: manifest
+    expected_json: '{"invitation_trigger":"staff_invited_stage","automatic_qualification":false,"booking_stops_invites":true,"course_delivery_included":false}'
+  - key: qa
+    field: qa
+    expected_json:
+      '{"send_booking_link":false,"pipeline_stage":"Declined","claim_guaranteed_results":false,"label":"Demonstration
+      Build"}'
+expected_outcomes:
+  - id: manifest
+    type: state
+    path: fixture.manifest
+    operator: equals
+    value: true
+    description: Keep the review gate satisfies the supplied contract.
+  - id: qa
+    type: state
+    path: fixture.qa
+    operator: equals
+    value: true
+    description: Trace a declined application satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

@@ -16,12 +16,14 @@ import type {
  */
 
 export const CALENDAR_TYPE_LABELS: Record<CalendarType, string> = {
+  class: 'Class Booking',
   personal: 'Personal Booking',
   round_robin: 'Round Robin',
   service: 'Service Calendar',
 };
 
 export const CALENDAR_TYPE_HELP: Record<CalendarType, string> = {
+  class: 'One host, multiple attendees. Overlapping bookings consume seats until capacity is full.',
   personal: 'One host, one appointment at a time. The calendar most consultations start as.',
   round_robin: 'A team. HighLevel picks the host from who is free and how the work is spread.',
   service: 'Named services, each with its own length, staff and place.',
@@ -85,6 +87,8 @@ export const STATUS_TONE: Record<string, 'neutral' | 'positive' | 'caution' | 'c
 
 /** What each validation code means, said the way a person would say it. */
 export const ISSUE_WORDS: Record<CalendarIssueCode, string> = {
+  CLASS_NEEDS_ONE_HOST: 'Class host',
+  CLASS_CAPACITY: 'Seats per class',
   NO_NAME: 'Name',
   INVALID_TIMEZONE: 'Time zone',
   DURATION_NOT_POSITIVE: 'Duration',
@@ -129,4 +133,4 @@ export const GROUP_LABELS: Record<Group, string> = {
 
 /** What Bloomlab does not simulate, said where the learner is looking at the setting. */
 export const OMISSIONS =
-  'Date-specific hours, linked external calendars, Look Busy, grouped calendars, recurring appointments, class capacity, rooms and equipment are practised in GoHighLevel. This Lab simulates weekly hours, duration, buffers, notice, staff, assignment, services and locations.';
+  'Date-specific hours, linked external calendars, Look Busy, grouped calendars and recurring appointments remain real-GoHighLevel work. This Lab adds class seats and service resource capacity to weekly hours, duration, buffers, notice, staff, assignment and locations. Resources use one account-wide capacity, not location-specific capacity or the separate Rooms & Equipment configuration.';

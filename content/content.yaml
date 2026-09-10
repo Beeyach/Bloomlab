@@ -1,3 +1,62 @@
-content_version: 2026.09.21
+content_version: 2026.09.27
 schema_version: 1
-notes: Phase 24 — Complete Field Ready campaign, twenty clients, five projects and independent capstone.
+notes: Phase 25 CUR-023 audit correction — post-deprecation Ed25519-only webhook guidance.
+advanced_paths_enforced: true
+advanced_coverage:
+  - ai.deterministic_first
+  - ai.conversation
+  - ai.voice
+  - ai.escalation
+  - ai.workflow_actions
+  - ai.agents
+  - ai.knowledge
+  - ai.tools
+  - ai.permissions
+  - ai.irreversible
+  - ai.cost_logs
+  - ai.hallucination
+  - specialty.reputation
+  - specialty.reviews
+  - specialty.social_planner
+  - specialty.courses
+  - specialty.memberships
+  - specialty.communities
+  - specialty.client_portal
+  - specialty.ecommerce
+  - specialty.affiliates
+  - specialty.blogs
+  - specialty.seo
+  - specialty.ivr_phone
+  - specialty.prospecting
+  - specialty.ad_reporting
+  - specialty.advanced_reporting
+  - specialty.rentals
+  - specialty.services
+  - specialty.resources
+  - specialty.contracts
+  - specialty.estimates
+  - specialty.invoices
+  - specialty.payment_links
+  - specialty.subscriptions
+  - scale.templates
+  - scale.portability
+  - scale.agency
+  - scale.specialist
+  - retention.account_strategy
+  - scale.vertical_medspa
+  - scale.vertical_coach
+  - scale.vertical_home_services
+  - scale.vertical_photographer
+  - labs.companies_objects
+  - labs.smart_lists
+  - labs.scheduling
+  - labs.payments
+  - connect.dns
+  - connect.json
+  - connect.http
+  - connect.webhooks
+  - connect.ghl_api
+  - connect.git
+  - connect.workers
+  - connect.google_cloud
+  - connect.javascript

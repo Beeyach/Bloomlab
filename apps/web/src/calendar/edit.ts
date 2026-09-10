@@ -60,10 +60,12 @@ export const setTimezone = (calendar: Calendar, timezone: string | null): Calend
  */
 export function setType(calendar: Calendar, type: CalendarType): Calendar {
   if (type === calendar.type) return calendar;
-  const staff = type === 'personal' ? calendar.staff_ids.slice(0, 1) : calendar.staff_ids;
+  const staff =
+    type === 'personal' || type === 'class' ? calendar.staff_ids.slice(0, 1) : calendar.staff_ids;
   return {
     ...calendar,
     type,
+    ...(type === 'class' ? { seats_per_class: calendar.seats_per_class ?? 1 } : {}),
     staff_ids: staff,
     assignment: type === 'round_robin' ? 'optimize_availability' : 'single',
     staff_selection: type === 'round_robin' ? calendar.staff_selection : false,
@@ -120,7 +122,8 @@ export const setWeekdays = (calendar: Calendar, start: string, end: string): Cal
 
 export function addStaff(calendar: Calendar, userId: string): Calendar {
   if (calendar.staff_ids.includes(userId)) return calendar;
-  if (calendar.type === 'personal') return { ...calendar, staff_ids: [userId] };
+  if (calendar.type === 'personal' || calendar.type === 'class')
+    return { ...calendar, staff_ids: [userId] };
   return { ...calendar, staff_ids: [...calendar.staff_ids, userId] };
 }
 

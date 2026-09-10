@@ -1,0 +1,70 @@
+id: EX-BUILD_IT-advanced-scheduling
+type: BUILD_IT
+title: Schedule against seats, people and physical resources — account practical
+mode: independent
+difficulty: 3
+estimated_minutes: 35
+skills:
+  - SK-BUILD-advanced-scheduling
+scenario: SC-glowhaus-calendar
+advanced_topics:
+  - labs.scheduling
+instructions: In [Calendar Lab](/calendar), set the existing Consultation calendar to Class Booking,
+  one host and 2 seats. Save and test two attendee bookings at a free time, then cancel one. Define
+  room-one / Training room / capacity 1 under Service & location. Assign it to the existing
+  Treatments service and save. Test a treatment booking. Inspect remaining openings and the resource
+  reservation; the grade reads actual definitions and event history.
+allowed_features:
+  - GHL-CAL-CALENDARS
+  - GHL-CAL-CLASSES
+  - GHL-CAL-RESOURCES
+expected_outcomes:
+  - id: class_bookings
+    type: event
+    event: appointment.booked
+    where:
+      calendar_id: consultation
+    count:
+      min: 2
+    description: Two attendee bookings exercised the class.
+  - id: resource_booking
+    type: event
+    event: appointment.booked
+    where:
+      calendar_id: treatments
+    count:
+      min: 1
+    description: A treatment booking exercised the resource configuration.
+  - id: a0
+    type: state
+    path: calendars.consultation.type
+    operator: equals
+    value: class
+    description: The existing calendar is a class.
+  - id: a1
+    type: state
+    path: calendars.consultation.seats_per_class
+    operator: equals
+    value: 2
+    description: The class has two seats.
+  - id: a2
+    type: state
+    path: resources.room-one.capacity
+    operator: equals
+    value: 1
+    description: The resource has one unit of capacity.
+  - id: a3
+    type: state
+    path: calendars.treatments.services.0.resource_ids.0
+    operator: equals
+    value: room-one
+    description: The treatment reserves the resource.
+  - id: event
+    type: event
+    event: appointment.cancelled
+    count:
+      min: 1
+    description: The practical produced an actual shared-account event.
+grading:
+  mode: deterministic
+  pass_threshold: 100

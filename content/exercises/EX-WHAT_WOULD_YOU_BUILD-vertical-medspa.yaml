@@ -1,0 +1,58 @@
+id: EX-WHAT_WOULD_YOU_BUILD-vertical-medspa
+type: WHAT_WOULD_YOU_BUILD
+title: Bloomwired Med Spa Core — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SCALE-medspa-system
+client: CL-glowhaus-medspa
+advanced_topics:
+  - scale.vertical_medspa
+allowed_features:
+  - GHL-FORM-FORMS
+  - GHL-CAL-CALENDARS
+  - GHL-WF-SEND-SMS
+instructions: Configure and QA a reusable training system where a consultation
+  inquiry becomes a confirmed, attended consultation. Work only from the
+  fictional policy and assets in the named fields. Submit JSON, not prose. Types
+  and array order are checked; property order is ignored. This local
+  contract-repair exercise executes no snapshot, account change, message,
+  deployment or purchase. It is demonstration work, not a client outcome.
+written_fields:
+  - key: manifest
+    label: Repair the med-spa manifest
+    help: Return interest_storage=contact_field, booking_url_source=custom_value,
+      stop_inquiry_nudges_on=appointment_booked,
+      clinical_advice_automated=false.
+    rows: 6
+  - key: qa
+    label: Resolve the cancelled appointment
+    help: Return send_old_reminder=false, check_dnd=true,
+      reusable_assets=[form,calendar,workflows], label=Demonstration Build.
+    rows: 6
+fixture_checks:
+  - key: manifest
+    field: manifest
+    expected_json: '{"interest_storage":"contact_field","booking_url_source":"custom_value","stop_inquiry_nudges_on":"appointment_booked","clinical_advice_automated":false}'
+  - key: qa
+    field: qa
+    expected_json:
+      '{"send_old_reminder":false,"check_dnd":true,"reusable_assets":["form","calendar","workflows"],"label":"Demonstration
+      Build"}'
+expected_outcomes:
+  - id: manifest
+    type: state
+    path: fixture.manifest
+    operator: equals
+    value: true
+    description: Repair the med-spa manifest satisfies the supplied contract.
+  - id: qa
+    type: state
+    path: fixture.qa
+    operator: equals
+    value: true
+    description: Resolve the cancelled appointment satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

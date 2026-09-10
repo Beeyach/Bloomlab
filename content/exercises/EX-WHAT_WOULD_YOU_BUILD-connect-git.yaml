@@ -1,0 +1,57 @@
+id: EX-WHAT_WOULD_YOU_BUILD-connect-git
+type: WHAT_WOULD_YOU_BUILD
+title: Keep a reviewable change and recovery path — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-CONNECT-git
+client: CL-glowhaus-medspa
+advanced_topics:
+  - connect.git
+allowed_features: []
+instructions: >-
+  Read branch and commit relationships, select a pull-request base and recover shared work without
+  destructive history rewriting.
+
+
+  Work from the fictional fixtures below. Submit JSON, not prose, in each named answer. This is a
+  local inspection/repair practical: no DNS lookup, API request, terminal command, cryptographic
+  verification or deployment runs. Never enter actual credentials. Object property order is ignored;
+  types and array order are checked. Read the CONNECT unit for the model and source boundaries.
+written_fields:
+  - key: review
+    label: Choose the comparison
+    help:
+      phase-25 was branched from phase-24, which remains unmerged. Return head, base and merge_now
+      (boolean). No merge is authorised.
+    rows: 6
+  - key: recovery
+    label: Recover shared work
+    help:
+      bad-7 is already shared and has later dependent work. Return operation (revert or reset_hard),
+      preserve_history and retest (booleans).
+    rows: 6
+fixture_checks:
+  - key: review
+    field: review
+    expected_json: '{"head":"phase-25","base":"phase-24","merge_now":false}'
+  - key: recovery
+    field: recovery
+    expected_json: '{"operation":"revert","preserve_history":true,"retest":true}'
+expected_outcomes:
+  - id: review
+    type: state
+    path: fixture.review
+    operator: equals
+    value: true
+    description: Choose the comparison matches the objective fixture contract.
+  - id: recovery
+    type: state
+    path: fixture.recovery
+    operator: equals
+    value: true
+    description: Recover shared work matches the objective fixture contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

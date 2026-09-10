@@ -1,0 +1,19 @@
+id: SK-CONNECT-json
+title: Repair a payload without changing its meaning
+territory: CONNECT
+tier: practitioner
+summary: Inspect objects, arrays and scalar types; repair malformed JSON while preserving false,
+  zero and missing-value distinctions.
+prerequisites:
+  - SK-AUTOMATE-workflow-foundations
+ghl_features: []
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - json
+  - integration
+  - operator

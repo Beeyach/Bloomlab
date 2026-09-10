@@ -1,0 +1,25 @@
+id: SK-SCALE-reusable-templates
+title: Name and release a reusable system
+territory: SCALE
+tier: practitioner
+summary: Separate reusable assets from client configuration and sequence an
+  accountable release checklist.
+prerequisites:
+  - SK-ARCHITECT-custom-values
+  - SK-DELIVER-client-explanation
+ghl_features:
+  - GHL-CRM-CUSTOM-VALUES
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - scale-templates
+  - post-Field-Ready
+  - training

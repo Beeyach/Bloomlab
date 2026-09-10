@@ -1,0 +1,57 @@
+id: EX-WHAT_WOULD_YOU_BUILD-vertical-home-services
+type: WHAT_WOULD_YOU_BUILD
+title: Home Services Follow-Up — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 30
+skills:
+  - SK-SCALE-home-services-system
+client: CL-glowhaus-medspa
+advanced_topics:
+  - scale.vertical_home_services
+allowed_features:
+  - GHL-FORM-FORMS
+  - GHL-CRM-PIPELINES
+  - GHL-WF-SEND-SMS
+instructions: Configure and QA a reusable training system where a service-area
+  inquiry reaches an accountable estimate follow-up. Work only from the
+  fictional policy and assets in the named fields. Submit JSON, not prose. Types
+  and array order are checked; property order is ignored. This local
+  contract-repair exercise executes no snapshot, account change, message,
+  deployment or purchase. It is demonstration work, not a client outcome.
+written_fields:
+  - key: manifest
+    label: Respect the service boundary
+    help: Return dispatch_type=estimate_review, outside_area_auto_booking=false,
+      followup_trigger=estimate_sent, active_requests_per_contact=1.
+    rows: 6
+  - key: qa
+    label: Stop an accepted estimate chase
+    help: Return continue_estimate_chase=false, acceptance_source=staff_verified,
+      missing_phone_action=human_review, label=Demonstration Build.
+    rows: 6
+fixture_checks:
+  - key: manifest
+    field: manifest
+    expected_json: '{"dispatch_type":"estimate_review","outside_area_auto_booking":false,"followup_trigger":"estimate_sent","active_requests_per_contact":1}'
+  - key: qa
+    field: qa
+    expected_json:
+      '{"continue_estimate_chase":false,"acceptance_source":"staff_verified","missing_phone_action":"human_review","label":"Demonstration
+      Build"}'
+expected_outcomes:
+  - id: manifest
+    type: state
+    path: fixture.manifest
+    operator: equals
+    value: true
+    description: Respect the service boundary satisfies the supplied contract.
+  - id: qa
+    type: state
+    path: fixture.qa
+    operator: equals
+    value: true
+    description: Stop an accepted estimate chase satisfies the supplied contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100

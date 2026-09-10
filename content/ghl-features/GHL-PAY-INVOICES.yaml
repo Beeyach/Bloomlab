@@ -1,0 +1,16 @@
+id: GHL-PAY-INVOICES
+official_name: Invoices
+area: Payments
+feature_type: entity
+implementation_type: native_ghl
+status: current
+simulation_fidelity: B
+last_verified: 2026-09-09
+source_url: https://help.gohighlevel.com/support/solutions/articles/155000005075-getting-started-create-and-send-invoices
+skills:
+  - SK-BUILD-payment-lifecycle
+known_limitations:
+  - A local single-line USD invoice names a contact and snapshots its price. Open and paid are simulated; no real sending, taxes, payment plans, recurring templates or full platform invoice lifecycle is reproduced.
+supported_configs: {}
+approximation_note: A local single-line USD invoice names a contact and snapshots its price. Open and paid are simulated; no real sending, taxes, payment plans, recurring templates or full platform invoice lifecycle is reproduced.
+verification_note: Current official article read on 2026-09-09. Lab boundaries are local training approximations, not a real account verification.

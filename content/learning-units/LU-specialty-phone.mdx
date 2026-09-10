@@ -1,0 +1,43 @@
+---
+id: LU-specialty-phone
+title: Trace IVR and phone-routing failures
+territory: AUTOMATE
+tier: advanced
+skills:
+  - SK-AUTOMATE-ivr-phone
+ghl_features:
+  - GHL-PHONE-IVR
+advanced_topics:
+  - specialty.ivr_phone
+estimated_minutes: 15
+summary: Model keypad routing, timeout and fallback behavior separately from
+  conversational Voice AI.
+---
+
+# Trace IVR and phone-routing failures
+
+## A deterministic call tree
+
+Interactive Voice Response uses prompts and keypad choices to route a caller. HighLevel's IVR guide configures this through workflows. It is not synonymous with Voice AI: a fixed “press one for bookings” menu can remain deterministic and may be the simpler system.
+
+Draw the number entry point, menu choices, invalid input, timeout, destination and final fallback. Include opening hours and who owns each destination. A prompt that names a department does not establish that anyone will answer. Test the route through the actual destination before allowing production traffic.
+
+## Failure paths are part of the service
+
+A caller may press an unsupported key, provide no input, disconnect or reach a busy line. Bound menu repetition and provide a useful alternative. Under this training policy, one invalid retry is allowed, then the call routes to a callback capture path; it never loops indefinitely.
+
+Phone numbers, usage charges, recording and consent obligations depend on the business and jurisdiction. Keep these outside a casual template assumption. The authorised owner must verify the applicable policy before a live change. Do not add an unsolicited outbound campaign merely because a phone workflow can initiate one.
+
+## Diagnose from the first missing transition
+
+Use the call record and workflow trace to locate whether the entry trigger, menu, branch or transfer failed. A successful workflow action may not mean a human conversation occurred. Distinguish ringing, answered, voicemail and completed business work when the evidence supports those states.
+
+Rehearse valid routing, invalid input, timeout, closed hours and an unavailable destination. Capture the expected path and observed outcome without exposing a real caller's recording. This local practical repairs the supplied routing table and timeout behavior. No number is purchased, call placed, recording created or live routing changed; the specialty is instruction and deterministic contract work rather than a fake telephone Lab.
+
+## Official sources
+
+- [Interactive Voice Response (IVR)](https://help.gohighlevel.com/support/solutions/articles/155000001200)
+
+Checked 9 September 2026. Feature records state the local boundary and current naming/rollout qualifications. Recheck before real work.
+
+<Exercise id="EX-WHAT_WOULD_YOU_BUILD-specialty-phone" />

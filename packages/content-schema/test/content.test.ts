@@ -121,7 +121,10 @@ describe('the repository content', () => {
   it('verifies every registry record against official documentation (GHL-006)', async () => {
     const bundle = await compileContentDir(CONTENT_DIR, { now: NOW });
     for (const feature of bundle.ghl_features) {
-      expect(new URL(feature.source_url).hostname).toBe('help.gohighlevel.com');
+      // API contracts live on the official developer Marketplace, not the help centre.
+      expect(['help.gohighlevel.com', 'marketplace.gohighlevel.com']).toContain(
+        new URL(feature.source_url).hostname,
+      );
       expect(feature.verification_note, feature.id).toBeTruthy();
     }
   });

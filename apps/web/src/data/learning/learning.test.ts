@@ -60,10 +60,18 @@ describe('learner records on the local-first path (DATA-001, DATA-002, MAS-003)'
     });
     expect(progress?.rules_version).toBe(MASTERY_RULES_VERSION);
 
+    // One shared capability can now advance several curated paths. Each gets its own
+    // derived campaign row, while the evidence/attempt/skill records above stay singular.
+    const touched = content.campaigns
+      .filter((campaign) => campaign.gates.some((gate) => gate.skills.includes(SKILL)))
+      .map((campaign) => campaign.id);
+    expect(
+      (await database.campaign_progress.toArray()).map((row) => row.campaign_id).sort(),
+    ).toEqual([...touched].sort());
     const queued = await listOperations(database);
     expect(queued.map((op) => op.entity).sort()).toEqual(
       [
-        'campaign_progress',
+        ...touched.map(() => 'campaign_progress'),
         'exercise_attempts',
         'review_queue',
         'skill_evidence',

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { advancedTopics } from './advanced.ts';
 
 /**
  * `content/content.yaml`: the release stamp of the curriculum (spec §101, CNT-007, INF-013).
@@ -11,6 +12,8 @@ export const ManifestSchema = z.strictObject({
   content_version: z.string().regex(CONTENT_VERSION_PATTERN, 'Expected YYYY.MM.DD or YYYY.MM.DD.n'),
   /** Bumped when the schemas change shape in a way that invalidates older bundles. */
   schema_version: z.number().int().min(1),
+  advanced_coverage: advancedTopics,
+  advanced_paths_enforced: z.boolean().default(false),
   notes: z.string().optional(),
 });
 

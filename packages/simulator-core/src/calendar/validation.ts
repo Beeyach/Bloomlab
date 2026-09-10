@@ -17,6 +17,8 @@ import { isValidTimeZone } from '../time.ts';
  */
 
 export type CalendarIssueCode =
+  | 'CLASS_NEEDS_ONE_HOST'
+  | 'CLASS_CAPACITY'
   | 'NO_NAME'
   | 'INVALID_TIMEZONE'
   | 'DURATION_NOT_POSITIVE'
@@ -81,6 +83,14 @@ export const serviceDuration = (calendar: Calendar, service: CalendarService | n
 
 export function validateCalendar(calendar: Calendar, account: AccountState): CalendarIssue[] {
   const issues: CalendarIssue[] = [];
+
+  if (calendar.type === 'class' && calendar.staff_ids.length !== 1)
+    issues.push(error('CLASS_NEEDS_ONE_HOST', 'A class needs exactly one host.'));
+  if (
+    calendar.type === 'class' &&
+    (!Number.isInteger(calendar.seats_per_class) || (calendar.seats_per_class ?? 0) < 1)
+  )
+    issues.push(error('CLASS_CAPACITY', 'A class needs a positive whole-number seat capacity.'));
 
   if (!calendar.name.trim()) issues.push(error('NO_NAME', 'This calendar needs a name.'));
   if (calendar.timezone !== null && !isValidTimeZone(calendar.timezone)) {

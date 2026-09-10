@@ -1,0 +1,19 @@
+id: SK-CONNECT-git
+title: Keep a reviewable change and recovery path
+territory: CONNECT
+tier: practitioner
+summary: Read branch and commit relationships, select a pull-request base and recover shared work
+  without destructive history rewriting.
+prerequisites:
+  - SK-CONNECT-json
+ghl_features: []
+identities:
+  - Technical GHL Specialist
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+keywords:
+  - git
+  - integration
+  - operator

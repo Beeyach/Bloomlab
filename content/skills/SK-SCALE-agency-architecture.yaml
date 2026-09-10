@@ -1,0 +1,24 @@
+id: SK-SCALE-agency-architecture
+title: Separate agency operations from client accounts
+territory: SCALE
+tier: advanced
+summary: Assign account ownership, least-privilege access, usage responsibility
+  and change authority.
+prerequisites:
+  - SK-DELIVER-client-explanation
+ghl_features:
+  - GHL-AGENCY-SUBACCOUNTS
+judgment_competencies:
+  - what_could_break
+  - complexity_justified
+mastery_requirements:
+  independent_evidence: 2
+  pressure_test: false
+  fieldwork_required: false
+identities:
+  - GHL Systems Builder
+  - Technical GHL Specialist
+keywords:
+  - scale-agency
+  - post-Field-Ready
+  - training

@@ -1,0 +1,57 @@
+id: EX-WHAT_WOULD_YOU_BUILD-connect-javascript
+type: WHAT_WOULD_YOU_BUILD
+title: Transform a payload defensively — local practical
+mode: independent
+difficulty: 3
+estimated_minutes: 25
+skills:
+  - SK-CONNECT-javascript
+client: CL-glowhaus-medspa
+advanced_topics:
+  - connect.javascript
+allowed_features: []
+instructions: >-
+  Trace small JavaScript transforms, preserve meaningful values and test missing or wrongly typed
+  inputs before adding custom code.
+
+
+  Work from the fictional fixtures below. Submit JSON, not prose, in each named answer. This is a
+  local inspection/repair practical: no DNS lookup, API request, terminal command, cryptographic
+  verification or deployment runs. Never enter actual credentials. Object property order is ignored;
+  types and array order are checked. Read the CONNECT unit for the model and source boundaries.
+written_fields:
+  - key: transform
+    label: Trace two inputs
+    help:
+      Use project from the unit with A={"active":"false","budget":0,"tags":["consult",3]} and B={}.
+      Return {"a":resultA,"b":resultB}.
+    rows: 6
+  - key: condition
+    label: Repair the branch
+    help:
+      Return condition (strict_boolean or truthy), send_for_string_false and send_for_boolean_true
+      (booleans) for safe consent checking.
+    rows: 6
+fixture_checks:
+  - key: transform
+    field: transform
+    expected_json: '{"a":{"active":false,"budget":0,"tags":["consult"]},"b":{"active":false,"budget":null,"tags":[]}}'
+  - key: condition
+    field: condition
+    expected_json: '{"condition":"strict_boolean","send_for_string_false":false,"send_for_boolean_true":true}'
+expected_outcomes:
+  - id: transform
+    type: state
+    path: fixture.transform
+    operator: equals
+    value: true
+    description: Trace two inputs matches the objective fixture contract.
+  - id: condition
+    type: state
+    path: fixture.condition
+    operator: equals
+    value: true
+    description: Repair the branch matches the objective fixture contract.
+grading:
+  mode: deterministic
+  pass_threshold: 100
