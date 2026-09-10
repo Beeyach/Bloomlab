@@ -147,4 +147,3 @@ INSERT INTO portfolio_assets_v7 (id, learner_id, created_at, updated_at, revisio
 DROP TABLE portfolio_assets;
 ALTER TABLE portfolio_assets_v7 RENAME TO portfolio_assets;
 CREATE INDEX portfolio_assets_learner ON portfolio_assets(learner_id, updated_at);
-
