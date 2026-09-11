@@ -47,6 +47,13 @@ is fixed and manual-sync probes now await the requested pull and derived progres
 deployed reports lack timing detail to attribute both sync failures conclusively. Artifact
 `10189378968` remains failed evidence; final exact-head verification is still required.
 
+Run `34577143186` passed all 35 browser probes and all 16 AI-Off groups but failed C5's manual
+sync completion during the pull-failure case. A reproduced abandoned-outbox defect is corrected
+under browser locks, and the pointer helper now checks stable geometry before its native click.
+The prior timeout is not conclusively attributed to one cause. Additional local-driven deployed
+C5 diagnostics retained a Call-route error boundary and an incomplete browser run without an
+identified cause. These failed attempts remain disclosed even if a later full run passes.
+
 Unallocated legacy quotes change scope without automatic price subtraction; the interface says so.
 Playback snapshots and unfinished workflow drafts are local workspace data, not synced. Unvisited
 Labs require an online first visit; this is not blanket offline availability. Historical failed

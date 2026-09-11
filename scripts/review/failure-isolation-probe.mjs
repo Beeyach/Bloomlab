@@ -14,19 +14,29 @@ const { waitFor, click, typeInto, createKeyAndLink, device, requestSync } = prob
 const browser = await device('Field-Ready failure isolation');
 const { page } = browser;
 const report = { base, head: head ?? null, matrix: [], ok: false };
+const browserErrors = [];
+page.on('Runtime.exceptionThrown', (event) => {
+  if (browserErrors.length < 50) browserErrors.push(event.exceptionDetails);
+});
+page.on('Runtime.consoleAPICalled', (event) => {
+  if (event.type === 'error' && browserErrors.length < 50)
+    browserErrors.push(event.args.map((arg) => arg.description ?? arg.value));
+});
 
 await page.send('Page.addScriptToEvaluateOnNewDocument', {
   source: `(() => {
     const mode = sessionStorage.getItem('__bloomlab_controlled_failure');
-    if (mode === 'call' || mode === 'ai' || mode === 'sync' || mode === 'sync-pull') {
+    if (mode === 'call' || mode === 'ai' || mode === 'sync' || mode === 'sync-pull' || mode === 'sync-interrupted') {
       const original = globalThis.fetch.bind(globalThis);
       globalThis.fetch = (input, init) => {
         const path = new URL(typeof input === 'string' ? input : input.url, location.href).pathname;
         if ((mode === 'call' && path.startsWith('/api/call/')) ||
             (mode === 'ai' && path.startsWith('/api/ai/')) ||
             (mode === 'sync' && path === '/api/sync/push') ||
+            (mode === 'sync-interrupted' && path === '/api/sync/push') ||
             (mode === 'sync-pull' && path === '/api/sync/pull')) {
           sessionStorage.setItem('__bloomlab_failed_' + mode, String(Number(sessionStorage.getItem('__bloomlab_failed_' + mode) || 0) + 1));
+          if (mode === 'sync-interrupted') return new Promise(() => {});
           return Promise.resolve(Response.json({ error: 'controlled_' + mode + '_failure' }, { status: 503 }));
         }
         return original(input, init);
@@ -344,6 +354,45 @@ try {
     newerBody,
     'Retry overwrote newer local work',
   );
+  for (let attempt = 0; attempt < 160 && (await rows('sync_queue')).length; attempt += 1)
+    await new Promise((resolve) => setTimeout(resolve, 125));
+  assert.equal(
+    (await rows('sync_queue')).length,
+    0,
+    'Recovery left other work stranded in the outbox',
+  );
+
+  // A document can close after claiming a push, before the transport returns. No confirmation
+  // reached this browser; the next document must safely reclaim and send that same work.
+  await setFailure('sync-interrupted');
+  await openPage(page, base + '/system');
+  assert(await waitFor(page, `!!document.querySelector('textarea')`));
+  const interruptedBody = 'Local work survives an interrupted push and reload';
+  await typeInto(page, 'textarea', interruptedBody);
+  await click(page, 'Save note');
+  assert(
+    await waitFor(page, `Number(sessionStorage.getItem('__bloomlab_failed_sync-interrupted')) > 0`),
+  );
+  assert(
+    (await rows('sync_queue')).some(
+      (operation) => operation.entity_id === retryNote.id && operation.status === 'syncing',
+    ),
+  );
+  await setFailure(null);
+  await openPage(page, base + '/system');
+  await requestSync(page);
+  for (let attempt = 0; attempt < 160 && (await rows('sync_queue')).length; attempt += 1)
+    await new Promise((resolve) => setTimeout(resolve, 125));
+  assert.equal(
+    (await rows('sync_queue')).length,
+    0,
+    'Interrupted push did not recover after reload',
+  );
+  assert.equal((await rows('notes')).length, failedNotes.length);
+  assert.equal(
+    (await rows('notes')).find((note) => note.id === retryNote.id)?.body,
+    interruptedBody,
+  );
   matrix('Sync push', pushUnaffected, {
     reload: true,
     local: true,
@@ -351,6 +400,8 @@ try {
     failureHeldDuringOtherRoutes: true,
     duplicateNotes: false,
     newerLocalWorkPreserved: true,
+    interruptedPushRecovered: true,
+    wholeOutboxDrained: true,
   });
 
   // Pull failure is separate: a rejected push never reaches pullChanges, so one transport
@@ -368,6 +419,9 @@ try {
   assert.equal(beforePullReload.body, pullBody);
   await openPage(page, base + '/system');
   assert.equal((await rows('notes')).find((note) => note.id === retryNote.id)?.body, pullBody);
+  for (let attempt = 0; attempt < 160 && (await rows('sync_queue')).length; attempt += 1)
+    await new Promise((resolve) => setTimeout(resolve, 125));
+  assert.equal((await rows('sync_queue')).length, 0, 'Pull retry left other queued work behind');
   const pullUnaffected = await unaffected([workflow, crm, academy, call]);
   await setFailure(null);
   await openPage(page, base + '/system');
@@ -414,6 +468,7 @@ try {
     .catch(() => null);
   await screenshot(page, resolve(out, 'probe-failure.png'), undefined, false).catch(() => {});
 } finally {
+  report.browserErrors = browserErrors;
   await setFailure(null).catch(() => {});
   await page
     .evaluate(

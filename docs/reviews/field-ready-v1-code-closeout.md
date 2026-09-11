@@ -181,6 +181,38 @@ No performance assertion, accessibility threshold, provider boundary or producti
 
 ## Failed attempts retained
 
+- Run `34577143186` at `1b0e65814974879d11aa11bc55899165db5866d8` passed Checks:
+  2,155 tests / 169 files, all 15 adversarial cases and 89 axe scans with the negative control
+  and no serious/critical violations. Preview passed all 35 browser probes, all 16 AI-Off
+  positive groups and the negative control, binary recovery, terminology and screen-state
+  generation. Both Workflow samples passed (24.4/23.9 ms p95, 48/39 ms maximum, no long tasks).
+  C5 alone failed while awaiting manual sync during the separate pull-failure case. Its retained
+  page showed 12 stranded `syncing` outbox rows and a zero manual-completion counter. Worker
+  `b3a3a841-9ac8-46e7-9cb7-a4a35f226212` and all before/after browser/Worker identities matched
+  `1b0e658`; no migrations were pending and Production was skipped. Artifact `10191561644`
+  is retained (SHA-256 `a8b8703094f8d1083710b1af70fd42ec36cb567a860fdc553ee05625d4fbd1ad`).
+- A direct reopen regression confirmed that interrupted pushes leave rows permanently `syncing`;
+  ordinary retry skipped them. Sync now holds a per-database browser lock across the round trip
+  and reclaims abandoned in-flight rows only after acquiring it, preserving newer edits and
+  explicit rejected-work status. This follows the [Web Locks lifecycle](https://w3c.github.io/web-locks/#lock-termination)
+  so an active cooperating tab is not reset. C5 now interrupts a held push by reloading and
+  requires the whole outbox to drain, in addition to every existing note/ownership/retry assertion.
+  The regression fails on the old engine and passes with the fix.
+- A controlled moving-button check also confirmed that the pointer helper could miss its target:
+  it measured before hover and pressed at stale coordinates after the control moved. It now
+  verifies stable geometry and hit testing before one native press/release sequence; no action
+  is retried after sending it. The old helper misses the controlled button and the corrected
+  helper clicks it. Existing acceptance assertions and performance ceilings remain unchanged.
+  Manual-sync failures retain input targets and the button's completion/disabled state. These
+  reproduced defects do not conclusively attribute the old CI timeout to one sole cause.
+- Additional deployed C5 diagnostics at `1b0e658` retained an unrelated Call-route error boundary
+  while Workflow failure was held, then an incomplete browser run at that route. The first lacked
+  the underlying exception; the second was terminated after it stopped responding to evaluation.
+  Neither is treated as a pass or an identified application fix. The isolated local C5 run after
+  the changes passes all five held faults, interrupted-push recovery and the full-outbox checks
+  with no captured browser errors. The local two-device learning and full sync/conflict/revocation
+  probes also pass, alongside 29 focused tests, type checking and scoped lint. Final deployed
+  verification remains required.
 - Run `34576407456` at `2075a4990cf65b244d4457887142db31da8fe182` passed 2,154 tests
   and failed the private-media review-heading focus assertion; Preview and Production were
   skipped. The heading had rendered but its post-commit focus effect had not yet run. The test

@@ -241,11 +241,30 @@ export function syncNow(
     active.next ??= active.current.then(() => syncNow(database, api));
     return active.next;
   }
-  const current = run(database, api).finally(() => {
+  const current = runWithLock(database, api).finally(() => {
     running.delete(database);
   });
   running.set(database, { current });
   return current;
+}
+
+async function runWithLock(database: BloomlabDatabase, api: SyncApi): Promise<SyncRunResult> {
+  const locks = globalThis.navigator?.locks;
+  if (!locks) return run(database, api);
+  // Web Locks serialize same-origin tabs and are released when their document goes away.
+  // Once acquired, an in-flight row cannot belong to another active sync in this database.
+  return locks.request(`bloomlab-sync:${database.name}`, async () => {
+    const device = await ensureDevice(database);
+    if (isLinked(device)) {
+      await database.sync_queue
+        .where('status')
+        .equals('syncing')
+        .filter((row) => row.learner_id === device.learner_id)
+        .modify({ status: 'pending' });
+    }
+    // Rejected operations remain failed until the learner explicitly retries them.
+    return run(database, api);
+  });
 }
 
 async function run(database: BloomlabDatabase, api: SyncApi): Promise<SyncRunResult> {

@@ -11,6 +11,10 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ### Fixed — independent closeout continuation
 
+- Recover abandoned in-flight sync rows after reload under a per-database browser lock, retaining
+  newer edits and explicit rejected work. Strengthen C5 with interrupted-push and whole-outbox
+  recovery checks. Stabilize native pointer targeting before press/release and retain run
+  `34577143186` plus its diagnostic limitations; no acceptance or performance threshold is relaxed.
 - Await private-media review focus and completion/cancellation DOM effects in the UI test using
   the existing timeout. Retain failed run `34576407456`; all original assertions remain.
 - Queue a fresh sync round trip when a manual/background request overlaps an older pull; scope

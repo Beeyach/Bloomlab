@@ -1,9 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { freshDatabase } from '../testing';
 import { ensureDevice } from '../device';
 import { createNotesStore } from '../notes';
-import { listOperations } from '../syncQueue';
+import { listOperations, takeOperations, failOperation } from '../syncQueue';
+import { BloomlabDatabase } from '../db';
 import { saveWorkspace } from '../workspace';
 import { SYNC_STATE_KEY, resolveConflict, syncNow } from './engine';
 import { FakeSyncServer } from './fakeServer';
@@ -88,6 +89,35 @@ describe('linking (SYNC-001, SYNC-004, D-027)', () => {
 });
 
 describe('syncNow (DATA-001, SYNC-007, SYNC-010)', () => {
+  it('recovers an abandoned push after reopening without losing a newer edit or retrying rejected work', async () => {
+    const { a, b, notesA, notesB, server } = await twoDevices();
+    const note = await notesA.create(draft('before interrupted push'));
+    await takeOperations(100, a);
+    await notesA.patch(note.id, { body: 'newer local edit' });
+    const rejected = await notesA.create(draft('rejected work stays explicit'));
+    const rejectedOperation = (await listOperations(a)).find(
+      (row) => row.entity_id === rejected.id,
+    )!;
+    await failOperation(rejectedOperation.seq!, 'controlled rejection', a);
+    const reopened = new BloomlabDatabase(a.name);
+    a.close();
+    const request = vi.fn(async (_name: string, callback: () => Promise<unknown>) => callback());
+    vi.stubGlobal('navigator', { locks: { request } });
+    try {
+      expect(await syncNow(reopened, server)).toMatchObject({ status: 'synced', pushed: 2 });
+      expect(request).toHaveBeenCalledWith(`bloomlab-sync:${a.name}`, expect.any(Function));
+      expect(await listOperations(reopened)).toMatchObject([
+        { entity_id: rejected.id, status: 'failed', last_error: 'controlled rejection' },
+      ]);
+      await syncNow(b, server);
+      expect((await notesB.get(note.id))?.body).toBe('newer local edit');
+      expect((await createNotesStore(reopened).get(note.id))?.body).toBe('newer local edit');
+    } finally {
+      vi.unstubAllGlobals();
+      reopened.close();
+    }
+  });
+
   it('sends a write requested while an older sync is already pulling', async () => {
     const { a, b, notesA, notesB, server } = await twoDevices();
     let enter!: () => void;
