@@ -136,7 +136,7 @@ before and after. Production remains skipped.
 Because a commit cannot contain its own hash, the immutable values are not guessed into this file.
 The canonical exact-head record is the `field-ready-preview-<SHA>` artifact's
 `.review/field-ready/attestation.{json,md}`, the captured Wrangler migration/deployment logs and the
-final evidence comment on draft PR #32. Those records contain the final SHA, CI run, Preview Worker
+final evidence description on draft PR #32. Those records contain the final SHA, CI run, Preview Worker
 version and before/after browser/Worker identities without changing the verified source head.
 
 ## Preserved acceptance boundaries
@@ -181,6 +181,25 @@ No performance assertion, accessibility threshold, provider boundary or producti
 
 ## Failed attempts retained
 
+- Run `34567088346` at `6f612660b91c33d8af42986b771fa8c5ee4efa21` passed Checks:
+  2,153 tests / 169 files, 15 adversarial cases and 89 axe scans with the negative control and
+  zero serious/critical violations. Preview passed 34/35 browser probes. Navigation failed at
+  the `768x900-collapsed-normal` route reset after its wheel assertion; the retained screenshot
+  is a blank application page, and the report lacks the browser exception/network data needed
+  to identify the cause. Screen-state generation then failed on that required probe. All 16
+  C1 positive paths and the injected negative control passed, as did binary recovery, all five
+  held faults and terminology. Both Workflow samples passed (24.4/26.1 ms p95, 41/52 ms maximum
+  frame, no long tasks). Worker `5d5bba45-59df-460e-b8c7-301e23d4dde5` and before/after browser
+  and Worker identities matched `6f61266`; no Preview migrations were pending and Production
+  was skipped. Artifact `10187511170` is retained.
+- The blank-page navigation failure did not reproduce in 500 focused reloads each with Chrome
+  153.0.8010.12 and GitHub's exact Chrome 152.0.7977.82, or in either browser's full 38-case navigation
+  sequence. A deliberately blocked startup script verifies that the new diagnostic capture retains
+  the failed request and empty root while the unchanged readiness gate fails. The navigation probe
+  now captures bounded browser exceptions, failed requests and
+  current navigation response/page details. This is diagnostic instrumentation, not a claimed
+  product fix; all readiness, layout, scrolling, input and identity assertions/timeouts remain
+  unchanged. The failed run remains a disclosed verification concern even if a later run passes.
 - Run `34563212145` at `9623217a6e67d99e319ad41a398c0e0970e1b4d3` passed Checks:
   2,152 tests / 168 files, 15 adversarial cases and 89 axe scans with the negative control and
   zero serious/critical violations. Preview browser probes passed 34/35; Calendar booking failed

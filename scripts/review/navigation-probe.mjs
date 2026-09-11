@@ -11,6 +11,48 @@ const HEAD = process.env.REVIEW_HEAD;
 mkdirSync(OUT, { recursive: true });
 const report = { base: BASE, head: HEAD ?? 'working-tree', cases: [], status: 'RUNNING' };
 const { page, close } = await session();
+// A readiness failure can precede the whole React shell. Preserve the browser's actual
+// exceptions and current navigation requests, without recording headers or request bodies.
+const browserErrors = [];
+const requests = new Map();
+let lastReset;
+let resetCount = 0;
+const recordError = (kind, details) => {
+  browserErrors.push({ at: new Date().toISOString(), kind, details });
+  if (browserErrors.length > 100) browserErrors.shift();
+};
+const stopDiagnostics = [
+  page.on('Runtime.exceptionThrown', (details) => recordError('exception', details)),
+  page.on('Log.entryAdded', ({ entry }) => {
+    if (entry.level === 'error') recordError('browser-log', entry);
+  }),
+  page.on('Network.requestWillBeSent', ({ requestId, loaderId, type, request, timestamp }) => {
+    requests.set(requestId, { loaderId, type, url: request.url, startedAt: timestamp });
+    if (requests.size > 300) requests.delete(requests.keys().next().value);
+  }),
+  page.on('Network.responseReceived', ({ requestId, response }) => {
+    const request = requests.get(requestId);
+    if (request)
+      Object.assign(request, {
+        status: response.status,
+        mimeType: response.mimeType,
+        fromServiceWorker: response.fromServiceWorker,
+        fromDiskCache: response.fromDiskCache,
+      });
+  }),
+  page.on('Network.loadingFinished', ({ requestId, encodedDataLength, timestamp }) => {
+    const request = requests.get(requestId);
+    if (request)
+      Object.assign(request, { finished: true, finishedAt: timestamp, encodedDataLength });
+  }),
+  page.on('Network.loadingFailed', ({ requestId, errorText, canceled, blockedReason }) => {
+    const request = requests.get(requestId);
+    if (request) Object.assign(request, { errorText, canceled, blockedReason });
+    recordError('request-failed', { url: request?.url, errorText, canceled, blockedReason });
+  }),
+];
+await page.send('Network.enable');
+await page.send('Log.enable');
 const save = () =>
   writeFileSync(resolve(OUT, 'navigation-probe.json'), JSON.stringify(report, null, 2));
 const key = async (key, modifiers = 0) => {
@@ -71,6 +113,13 @@ const state = () =>
     })()};
 })()`);
 const reset = async () => {
+  requests.clear();
+  lastReset = {
+    number: ++resetCount,
+    startedAt: new Date().toISOString(),
+    url: BASE + '/skills',
+    case: report.cases.at(-1)?.name,
+  };
   await openPage(page, BASE + '/skills');
   for (let attempt = 0; attempt < 100; attempt += 1) {
     if (await page.evaluate(`Boolean(document.querySelector('[data-testid="rail-destinations"]'))`))
@@ -471,10 +520,33 @@ try {
 } catch (error) {
   report.status = 'FAILED';
   report.error = String(error);
+  report.failureContext = {
+    reset: lastReset,
+    browserErrors,
+    requests: [...requests.values()],
+    page: await page
+      .evaluate(
+        `({
+        url: location.href,
+        readyState: document.readyState,
+        title: document.title,
+        build: document.querySelector('[data-build-id]')?.dataset.buildId,
+        rootElements: document.querySelector('#root')?.childElementCount,
+        main: document.querySelector('main')?.textContent,
+        body: document.body.textContent,
+        controller: navigator.serviceWorker?.controller?.scriptURL,
+        scripts: [...document.scripts].map(script => ({ src: script.src, type: script.type }))
+      })`,
+      )
+      .catch((failure) => ({ error: String(failure) })),
+  };
   console.error(error);
   await screenshot(page, resolve(OUT, 'failure.png'), null, false).catch(() => {});
   process.exitCode = 1;
 } finally {
+  report.browserErrors = browserErrors;
+  report.navigationResets = resetCount;
   save();
+  stopDiagnostics.forEach((stop) => stop());
   await close();
 }

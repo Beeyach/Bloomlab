@@ -34,6 +34,12 @@ migration 0008 to `bloomlab-dev` only, spends $0 with providers, performs no liv
 production. Exact final-head CI and Preview identity are external PR/artifact evidence because a
 commit cannot contain its own SHA.
 
+Run `34567088346` retained a blank-page navigation reload failure whose cause is not identified.
+The other 34 browser probes and all C1/C4/C5 checks passed; local diagnostic reloads did not
+reproduce it. Navigation now retains browser exceptions and request/page context with unchanged
+assertions and timeouts. A subsequent passing run does not establish that this prior failure was
+fixed. See the closeout review and retained artifact `10187511170` for the exact boundary.
+
 Unallocated legacy quotes change scope without automatic price subtraction; the interface says so.
 Playback snapshots and unfinished workflow drafts are local workspace data, not synced. Unvisited
 Labs require an online first visit; this is not blanket offline availability. Historical failed

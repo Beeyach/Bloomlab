@@ -11,6 +11,9 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ### Fixed — independent closeout continuation
 
+- Retain the blank-page navigation failure from run `34567088346` and capture bounded browser
+  exceptions plus request/page context for diagnosis. No application fix is inferred from an
+  unreproduced failure, and all navigation assertions and timeouts remain unchanged.
 - Keep Calendar mutations out of an unfinished account reset; verify the committed generation and
   selected calendar before booking. Unload Pricing's previous document before resetting its test
   storage and require the actual work area to render. Retain the failed deployed evidence.

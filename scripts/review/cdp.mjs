@@ -106,6 +106,13 @@ export function connect(url) {
       };
       listeners.add(l);
     });
+  const on = (method, listener) => {
+    const receive = (message) => {
+      if (message.method === method) listener(message.params);
+    };
+    listeners.add(receive);
+    return () => listeners.delete(receive);
+  };
   const evaluate = async (expression) => {
     let r;
     try {
@@ -128,7 +135,7 @@ export function connect(url) {
     }
     return r.result.value;
   };
-  return { ready, send, once, evaluate, close: () => ws.close() };
+  return { ready, send, once, on, evaluate, close: () => ws.close() };
 }
 
 /** Navigates and waits for the lazy route chunk and the fonts. */
