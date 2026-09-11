@@ -11,6 +11,10 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ### Fixed — independent closeout continuation
 
+- Reserve prediction-checkpoint writes for the explicit commit operation. Ordinary answer saves
+  refuse checkpoint injection/replacement/removal and clearing an already committed prediction;
+  four direct regressions fail before the fix. Preserve the failed first attempt of run
+  `34588323537` and the supplemental C5 recovery-timing failure without weakening their gates.
 - Return keyboard focus after JSON/private-media recovery only after the chooser is enabled in
   the committed UI. Retain failed run `34583523251` and three reproduced focus regressions;
   no restore assertion or timeout is relaxed.

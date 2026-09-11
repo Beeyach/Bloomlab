@@ -34,6 +34,24 @@ migration 0008 to `bloomlab-dev` only, spends $0 with providers, performs no liv
 production. Exact final-head CI and Preview identity are external PR/artifact evidence because a
 commit cannot contain its own SHA.
 
+Run `34588323537` attempt 1 at `8a6acbc` failed initial exact-head reads that returned the
+preceding deployment and a later navigation reload whose required React module was canceled
+(`net::ERR_ABORTED`). The cancellation's underlying cause remains unknown. Its failed artifact
+`10196031040` is retained; a settled-deployment rerun is not proof that the cancellation was fixed.
+
+An independent C5 supplement performed nine real unrelated-screen operations while Call,
+Workflow and AI failures stayed held, and four more under push failure. Those operations passed,
+but the expanded 44-operation push exceeded the unchanged ten-second manual-sync gate: the
+response arrived after about 12.1 seconds and the full round trip finished around 15.6 seconds,
+with all queued work applied. This is eventual recovery with a failed timing check, not a complete
+supplemental pass. Earlier local setup failures included confirmed Chrome resource exhaustion
+and a too-long temporary socket path; they do not explain historical GitHub failures.
+
+The continuation also found that ordinary answer saves could clear/replace a RUN THE LEAD
+checkpoint or fabricate one before commitment. The explicit commit operation is now its sole
+writer; direct regressions refuse all three paths plus clearing an already committed answer.
+This corrects the persistence contract; final exact-head verification remains required.
+
 Run `34567088346` retained a blank-page navigation reload failure whose cause is not identified.
 The other 34 browser probes and all C1/C4/C5 checks passed; local diagnostic reloads did not
 reproduce it. Navigation now retains browser exceptions and request/page context with unchanged

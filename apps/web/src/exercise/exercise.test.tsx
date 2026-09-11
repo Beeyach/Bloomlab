@@ -232,6 +232,58 @@ describe('what cannot be graded yet is not graded (EXR-024)', () => {
 });
 
 describe('attempt lifecycle and idempotency (D-068)', () => {
+  it.each(['remove', 'replace', 'clear-answer'] as const)(
+    'refuses to %s committed prediction data through an ordinary response save',
+    async (operation) => {
+      const exercise = byId(RUN_THE_LEAD);
+      await startAttempt(exercise, NORMAL_RUN, {}, db);
+      await saveResponse(RUN_THE_LEAD, NORMAL_RUN, { prediction: { tag: 'booked' } }, db);
+      await commitRunPrediction(exercise, NORMAL_RUN, db);
+      const before = await loadAttempt(RUN_THE_LEAD, NORMAL_RUN, db);
+      const checkpoint = before!.response.run_prediction!;
+      await expect(
+        saveResponse(
+          RUN_THE_LEAD,
+          NORMAL_RUN,
+          operation === 'clear-answer'
+            ? { prediction: undefined }
+            : {
+                run_prediction:
+                  operation === 'remove'
+                    ? undefined
+                    : { ...checkpoint, through_event_index: checkpoint.through_event_index + 100 },
+              },
+          db,
+        ),
+      ).rejects.toThrow(/checkpoint|committed/);
+      expect(await loadAttempt(RUN_THE_LEAD, NORMAL_RUN, db)).toEqual(before);
+    },
+  );
+
+  it('refuses a fabricated prediction checkpoint before the learner commits', async () => {
+    await startAttempt(byId(RUN_THE_LEAD), NORMAL_RUN, {}, db);
+    await expect(
+      saveResponse(
+        RUN_THE_LEAD,
+        NORMAL_RUN,
+        {
+          run_prediction: {
+            committed_at: '2026-09-11T00:00:00.000Z',
+            prediction: { tag: 'booked' },
+            scenario_id: 'SC-glowhaus-no-show',
+            run_id: null,
+            run_generation: null,
+            through_event_index: -1,
+          },
+        },
+        db,
+      ),
+    ).rejects.toThrow(/checkpoint/);
+    expect(
+      (await loadAttempt(RUN_THE_LEAD, NORMAL_RUN, db))?.response.run_prediction,
+    ).toBeUndefined();
+  });
+
   it('persists and locks the RUN THE LEAD checkpoint; a new attempt starts unlocked', async () => {
     const exercise = byId(RUN_THE_LEAD);
     const started = await startAttempt(exercise, NORMAL_RUN, {}, db);

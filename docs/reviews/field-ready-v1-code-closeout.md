@@ -181,6 +181,42 @@ No performance assertion, accessibility threshold, provider boundary or producti
 
 ## Failed attempts retained
 
+- Independent re-audit of C3 at `8a6acbc` found a persistence gap hidden by the disabled prediction
+  input: `saveResponse` refused changed nonempty predictions but still accepted a cleared answer,
+  a removed/replaced checkpoint, or a fabricated checkpoint before commitment. All four direct
+  refusal regressions failed on that source. Ordinary saves now reject any checkpoint property,
+  including explicit `undefined`, and detect an explicitly cleared committed prediction. Only
+  `commitRunPrediction` can establish the boundary. Existing prediction/reload/new-attempt and
+  actual-execution assertions remain unchanged; the full final source must be verified again.
+
+- Run `34588323537` attempt 1 at `8a6acbcde6f723777d8d78e0ff10bdcb44d652cb` passed Checks
+  (2,156 tests / 169 files, 15 adversarial cases, 89 axe scans, negative control and zero
+  serious/critical violations), 32/35 browser probes, all 16 AI-Off groups and negative control,
+  binary recovery, all five C5 faults and terminology. Initial polish/axe identity reads returned
+  the preceding `67a1b02` deployment; their strict assertions correctly failed. Later navigation
+  captured a blank Workflow page whose required React module request was canceled with
+  `net::ERR_ABORTED`; the underlying cancellation cause is not identified. Screen-state generation
+  failed downstream. Artifact `10196031040` is retained (SHA-256
+  `16b52884768dac91605ff67c3ca759f12cd1f36da4b5d18edfac2e6d02b2ce87`), with Worker
+  `9117f5cf-8da9-49ff-8b16-d657a559ee9a`. Overall before/after identities matched `8a6acbc`, no
+  migrations were pending, and Production was skipped. Attempt 2 runs unchanged source after the
+  deployment settled; it cannot be treated as a product fix for the canceled module request.
+
+- An independent copy of the C5 harness strengthens unrelated-route readiness into real
+  operations while preserving every original assertion and timeout: Workflow execution writes
+  simulator events, CRM contact creation survives reload, Academy's calculator responds to
+  native keyboard input, and Call notes save/reload. Nine operations under held Call/Workflow/AI
+  faults passed; four additional operations under held push failure also passed. The expanded
+  44-operation burst then failed the unchanged ten-second manual-sync gate. Retained fetch/lock
+  traces show a 12.1-second push and about 15.6 seconds through the final pull, after which all
+  outcomes were applied, the outbox was empty, the completion counter advanced and the lock
+  released. This proves eventual recovery, not a complete supplemental pass or compliance with
+  that timing gate. The standard five-fault CI matrix passed at the same source. Earlier local
+  attempts include a blank reload without definitive cause, confirmed Chrome
+  `ERR_INSUFFICIENT_RESOURCES` with `/tmp` 99% full, and a confirmed too-long temporary socket
+  path. Evidence was moved intact to persistent workspace storage and a short persistent browser
+  temp path was used. Those setup diagnoses do not retrospectively explain GitHub failures.
+
 - Run `34583523251` at `67a1b02375e829d04c964a094a7c90fa1633ad55` passed Checks:
   2,156 tests / 169 files, all 15 adversarial cases and 89 axe scans with the negative control
   and no serious/critical violations. Preview passed 34/35 browser probes, all 16 AI-Off groups

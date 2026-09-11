@@ -241,10 +241,14 @@ export const saveResponse = (
     exerciseId,
     context,
     (attempt) => {
+      // Only commitRunPrediction may create the execution boundary. Ordinary answer saves must
+      // not manufacture, replace or clear it, including an explicitly undefined property.
+      if ('run_prediction' in response)
+        throw new Error('Use Commit prediction to create the prediction checkpoint.');
       const checkpoint = attempt.response.run_prediction;
       if (
         checkpoint &&
-        response.prediction &&
+        'prediction' in response &&
         JSON.stringify(response.prediction) !== JSON.stringify(checkpoint.prediction)
       )
         throw new Error('This prediction is committed. Start a new attempt to change it.');
