@@ -11,6 +11,8 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ### Fixed — independent closeout continuation
 
+- Await the negotiation reply's rendered dialogue after confirming its persisted turn, retaining
+  the same assertion/default timeout and failed run `34582745175`.
 - Recover abandoned in-flight sync rows after reload under a per-database browser lock, retaining
   newer edits and explicit rejected work. Strengthen C5 with interrupted-push and whole-outbox
   recovery checks. Stabilize native pointer targeting before press/release and retain run

@@ -181,6 +181,12 @@ No performance assertion, accessibility threshold, provider boundary or producti
 
 ## Failed attempts retained
 
+- Run `34582745175` at `eedec645f2fa10b1ad60a8d5b3b55bb93473271d` passed 2,155 tests
+  and failed one negotiation dialogue assertion. The saved turn already matched the required
+  action/text, but the assertion ran before the async send handler rendered its returned state.
+  The test now awaits that same required dialogue with the existing default timeout. All
+  persistence assertions remain; Preview and Production were skipped. This is a test lifecycle
+  correction, not a claimed negotiation product fix.
 - Run `34577143186` at `1b0e65814974879d11aa11bc55899165db5866d8` passed Checks:
   2,155 tests / 169 files, all 15 adversarial cases and 89 axe scans with the negative control
   and no serious/critical violations. Preview passed all 35 browser probes, all 16 AI-Off
