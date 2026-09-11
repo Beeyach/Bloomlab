@@ -11,6 +11,8 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ### Fixed — independent closeout continuation
 
+- Await private-media review focus and completion/cancellation DOM effects in the UI test using
+  the existing timeout. Retain failed run `34576407456`; all original assertions remain.
 - Queue a fresh sync round trip when a manual/background request overlaps an older pull; scope
   coordination per local database. Await actual manual completion in learning and fault probes.
   Retain run `34571510149`, including its unreproduced CRM touch failure, and add CRM failure

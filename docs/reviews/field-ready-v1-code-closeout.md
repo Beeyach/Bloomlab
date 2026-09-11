@@ -181,6 +181,12 @@ No performance assertion, accessibility threshold, provider boundary or producti
 
 ## Failed attempts retained
 
+- Run `34576407456` at `2075a4990cf65b244d4457887142db31da8fe182` passed 2,154 tests
+  and failed the private-media review-heading focus assertion; Preview and Production were
+  skipped. The heading had rendered but its post-commit focus effect had not yet run. The test
+  now awaits the same required focus with Testing Library's unchanged default timeout, as well
+  as the actual completion/cancellation DOM updates after their API callbacks. Focus, staging,
+  explicit-confirmation and cancellation assertions are retained; no product change is inferred.
 - Run `34571510149` at `71bf952bf4d757bb76e99de285a0f56d9a2e4cb6` passed Checks:
   2,153 tests / 169 files, 15 adversarial cases and 89 axe scans with the negative control and
   zero serious/critical violations. Preview passed 34/35 browser probes; CRM's touch sample had

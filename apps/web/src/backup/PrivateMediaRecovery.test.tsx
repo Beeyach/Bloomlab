@@ -46,14 +46,13 @@ describe('DATA-006 private-media recovery UI', () => {
     fireEvent.change(screen.getByLabelText('Choose private-media archive'), {
       target: { files: [file] },
     });
-    expect(
-      await screen.findByRole('heading', { name: 'Review private-media restore' }),
-    ).toHaveFocus();
+    const heading = await screen.findByRole('heading', { name: 'Review private-media restore' });
+    await waitFor(() => expect(heading).toHaveFocus());
     expect(screen.getByText(/Add 1; repair 1; keep 2; deleted 1/)).toBeInTheDocument();
     expect(api.confirmPrivateMedia).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Confirm media restore' }));
     await waitFor(() => expect(api.confirmPrivateMedia).toHaveBeenCalledWith(preview.stage_id));
-    expect(screen.getByRole('status')).toHaveTextContent('recovery completed');
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('recovery completed'));
   });
 
   it('cancels a stage and exposes a retryable error', async () => {
@@ -62,7 +61,9 @@ describe('DATA-006 private-media recovery UI', () => {
     fireEvent.change(input, { target: { files: [new File(['binary'], 'media.blb')] } });
     fireEvent.click(await screen.findByRole('button', { name: 'Cancel media restore' }));
     await waitFor(() => expect(api.cancelPrivateMedia).toHaveBeenCalledWith(preview.stage_id));
-    expect(screen.queryByRole('heading', { name: 'Review private-media restore' })).toBeNull();
+    await waitFor(() =>
+      expect(screen.queryByRole('heading', { name: 'Review private-media restore' })).toBeNull(),
+    );
     api.previewPrivateMedia.mockRejectedValueOnce(new Error('Checksum mismatch. Choose it again.'));
     fireEvent.change(input, { target: { files: [new File(['bad'], 'bad.blb')] } });
     expect(await screen.findByRole('alert')).toHaveTextContent('Checksum mismatch');
