@@ -54,6 +54,12 @@ The prior timeout is not conclusively attributed to one cause. Additional local-
 C5 diagnostics retained a Call-route error boundary and an incomplete browser run without an
 identified cause. These failed attempts remain disclosed even if a later full run passes.
 
+Run `34583523251` passed the strengthened C5 recovery matrix but failed JSON restore's return
+focus after successful data restoration. A controlled regression reproduces the focus-before-enable
+ordering; JSON and private-media recovery now return focus after the enabled chooser is committed.
+All three added focus assertions fail before their fixes and pass afterward. The failed artifact
+`10194319542` is retained; final exact-head deployed verification remains required.
+
 Unallocated legacy quotes change scope without automatic price subtraction; the interface says so.
 Playback snapshots and unfinished workflow drafts are local workspace data, not synced. Unvisited
 Labs require an online first visit; this is not blanket offline availability. Historical failed

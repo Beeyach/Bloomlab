@@ -19,14 +19,20 @@ export function PrivateMediaRecovery() {
   const input = useRef<HTMLInputElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const pending = useRef(false);
+  const returnFocus = useRef(false);
   const [preview, setPreview] = useState<PrivateMediaPreview | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if (busy) return;
     if (preview) heading.current?.focus();
-  }, [preview]);
+    else if (returnFocus.current) {
+      returnFocus.current = false;
+      input.current?.focus();
+    }
+  }, [busy, preview]);
 
   async function run(task: () => Promise<void>, progress: string, done: string) {
     if (pending.current) return;
@@ -64,6 +70,7 @@ export function PrivateMediaRecovery() {
     await run(
       async () => {
         await confirmPrivateMedia(preview.stage_id);
+        returnFocus.current = true;
         setPreview(null);
       },
       'Restoring missing private media…',
@@ -140,8 +147,8 @@ export function PrivateMediaRecovery() {
                 void run(
                   async () => {
                     await cancelPrivateMedia(preview.stage_id);
+                    returnFocus.current = true;
                     setPreview(null);
-                    input.current?.focus();
                   },
                   'Cancelling recovery preview…',
                   'Recovery preview cancelled. Saved media is unchanged.',

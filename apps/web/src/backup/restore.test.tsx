@@ -248,10 +248,25 @@ describe('DATA-009 staged, owned, non-destructive backup restore', () => {
     fireEvent.change(screen.getByLabelText('Choose Bloomlab backup'), {
       target: { files: [file] },
     });
-    fireEvent.click(await screen.findByRole('button', { name: 'Confirm restore' }));
+    const confirm = await screen.findByRole('button', { name: 'Confirm restore' });
     await waitFor(() =>
-      expect(screen.getByRole('status')).toHaveTextContent('Restored 1 missing records'),
+      expect(screen.getByRole('heading', { name: 'Review restore' })).toHaveFocus(),
     );
-    expect(await db.evidence_assets.count()).toBe(0);
+    // A browser frame can run before React commits the async restore's enabled input.
+    const frame = vi.spyOn(globalThis, 'requestAnimationFrame').mockImplementation((callback) => {
+      callback(performance.now());
+      return 0;
+    });
+    try {
+      fireEvent.click(confirm);
+      await waitFor(() =>
+        expect(screen.getByRole('status')).toHaveTextContent('Restored 1 missing records'),
+      );
+      await waitFor(() => expect(screen.getByLabelText('Choose Bloomlab backup')).toHaveFocus());
+      expect(screen.getByLabelText('Choose Bloomlab backup')).toBeEnabled();
+      expect(await db.evidence_assets.count()).toBe(0);
+    } finally {
+      frame.mockRestore();
+    }
   });
 });

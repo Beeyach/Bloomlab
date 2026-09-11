@@ -53,6 +53,10 @@ describe('DATA-006 private-media recovery UI', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Confirm media restore' }));
     await waitFor(() => expect(api.confirmPrivateMedia).toHaveBeenCalledWith(preview.stage_id));
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('recovery completed'));
+    await waitFor(() =>
+      expect(screen.getByLabelText('Choose private-media archive')).toHaveFocus(),
+    );
+    expect(screen.getByLabelText('Choose private-media archive')).toBeEnabled();
   });
 
   it('cancels a stage and exposes a retryable error', async () => {
@@ -64,6 +68,8 @@ describe('DATA-006 private-media recovery UI', () => {
     await waitFor(() =>
       expect(screen.queryByRole('heading', { name: 'Review private-media restore' })).toBeNull(),
     );
+    await waitFor(() => expect(input).toHaveFocus());
+    expect(input).toBeEnabled();
     api.previewPrivateMedia.mockRejectedValueOnce(new Error('Checksum mismatch. Choose it again.'));
     fireEvent.change(input, { target: { files: [new File(['bad'], 'bad.blb')] } });
     expect(await screen.findByRole('alert')).toHaveTextContent('Checksum mismatch');

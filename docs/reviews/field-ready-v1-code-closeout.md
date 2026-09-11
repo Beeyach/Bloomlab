@@ -181,6 +181,25 @@ No performance assertion, accessibility threshold, provider boundary or producti
 
 ## Failed attempts retained
 
+- Run `34583523251` at `67a1b02375e829d04c964a094a7c90fa1633ad55` passed Checks:
+  2,156 tests / 169 files, all 15 adversarial cases and 89 axe scans with the negative control
+  and no serious/critical violations. Preview passed 34/35 browser probes, all 16 AI-Off groups
+  and the negative control, binary recovery, all five held C5 faults including interrupted-push
+  recovery and whole-outbox drainage, and terminology. JSON restore alone failed after successful
+  data restoration because focus stayed on the page body instead of returning to the enabled
+  file chooser; screen-state generation failed downstream. Both Workflow samples passed
+  (25.4/25 ms p95, 48/41 ms maximum, no long tasks). Artifact `10194319542` is retained
+  (SHA-256 `8421e490e7f9528916184505d5d267265cced5e10a8212869eca368e39cf72e6`). Worker
+  `25c7ffa4-609e-4307-a137-334e4da6eb74` and all before/after browser/Worker identities matched
+  `67a1b02`; no migrations were pending and Production was skipped.
+- A controlled frame-before-commit regression reproduces JSON restore's lost focus. Scheduling a
+  frame from the async handler did not guarantee that React had re-enabled the chooser. Focus now
+  returns from an effect after the enabled input is committed. Related regressions also proved
+  lost chooser focus after private-media confirmation/cancellation; those transitions use the same
+  committed-state boundary. All three focus checks fail on the old code and pass after the fixes,
+  alongside all 23 focused restore tests, type checking and scoped lint. The local browser restore
+  probe also passes all five short-height widths, offline restore, reload, keyboard/focus and touch.
+  Existing assertions and timeouts are unchanged. Final deployed exact-head verification remains required.
 - Run `34582745175` at `eedec645f2fa10b1ad60a8d5b3b55bb93473271d` passed 2,155 tests
   and failed one negotiation dialogue assertion. The saved turn already matched the required
   action/text, but the assertion ran before the async send handler rendered its returned state.

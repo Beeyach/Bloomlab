@@ -11,6 +11,9 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ### Fixed — independent closeout continuation
 
+- Return keyboard focus after JSON/private-media recovery only after the chooser is enabled in
+  the committed UI. Retain failed run `34583523251` and three reproduced focus regressions;
+  no restore assertion or timeout is relaxed.
 - Await the negotiation reply's rendered dialogue after confirming its persisted turn, retaining
   the same assertion/default timeout and failed run `34582745175`.
 - Recover abandoned in-flight sync rows after reload under a per-database browser lock, retaining

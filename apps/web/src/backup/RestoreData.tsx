@@ -18,6 +18,7 @@ export function RestoreData() {
   const input = useRef<HTMLInputElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const pending = useRef(false);
+  const returnFocus = useRef(false);
   const [busy, setBusy] = useState(false);
   const [preview, setPreview] = useState<RestorePreview | null>(null);
   const [message, setMessage] = useState('');
@@ -28,6 +29,12 @@ export function RestoreData() {
     const frame = requestAnimationFrame(() => heading.current?.focus());
     return () => cancelAnimationFrame(frame);
   }, [preview]);
+  useEffect(() => {
+    if (busy || preview || !returnFocus.current) return;
+    // The chooser must be enabled in the committed DOM before it can receive focus.
+    returnFocus.current = false;
+    input.current?.focus();
+  }, [busy, preview]);
   async function read(file?: File) {
     if (!file || pending.current) return;
     if (preview) cancelRestore(preview);
@@ -58,11 +65,11 @@ export function RestoreData() {
     setMessage('Restoring on this device…');
     try {
       const count = await confirmRestore(preview);
+      returnFocus.current = true;
       setPreview(null);
       setMessage(
         `Restored ${count} missing records on this device. Existing records were kept. Progress was recalculated; changes are queued for normal sync. Restore private media separately below.`,
       );
-      requestAnimationFrame(() => input.current?.focus());
     } catch (e) {
       setError(true);
       setMessage(
