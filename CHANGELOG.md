@@ -11,6 +11,9 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ### Fixed — independent closeout continuation
 
+- Keep Calendar mutations out of an unfinished account reset; verify the committed generation and
+  selected calendar before booking. Unload Pricing's previous document before resetting its test
+  storage and require the actual work area to render. Retain the failed deployed evidence.
 - Diagnosed the retained exact-head Workflow failures with a Chrome trace: sync status/scheduling
   now use the existing IndexedDB status index instead of repeatedly cloning queued snapshot payloads.
   Performance ceilings remain unchanged; failed-work indicator behavior is preserved.

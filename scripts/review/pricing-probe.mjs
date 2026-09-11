@@ -5,10 +5,18 @@
 // review widths, the keyboard path and reduced motion. Writes pricing-probe.json and
 // pricing-*.png to .review/ (override with REVIEW_OUT).
 //   BASE=http://localhost:4173 node scripts/review/pricing-probe.mjs
+import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { openPage, screenshot, session, setViewport, sleep } from './cdp.mjs';
+import {
+  openPage,
+  resetIndexedDbFixture,
+  screenshot,
+  session,
+  setViewport,
+  sleep,
+} from './cdp.mjs';
 
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review');
 const BASE = process.env.BASE ?? 'http://localhost:4173';
@@ -121,15 +129,23 @@ async function tabUntil(page, predicate, limit = 200) {
 async function open(page, id, readyTestId) {
   await openPage(page, `${BASE}/exercise/${id}`);
   const ready = await waitFor(page, `Boolean(${at(readyTestId)})`);
+  if (!ready) {
+    const context = await page.evaluate(
+      `({path:location.pathname, main:document.querySelector('main')?.innerText.slice(0,2000), alerts:[...document.querySelectorAll('[role=alert]')].map(el=>el.textContent)})`,
+    );
+    writeFileSync(
+      resolve(OUT, 'readiness-failure.json'),
+      JSON.stringify({ id, readyTestId, ...context }, null, 2),
+    );
+    await screenshot(page, resolve(OUT, 'readiness-failure.png'), null, false);
+  }
+  assert(ready, `${id} did not render ${readyTestId}`);
   await sleep(300);
   return ready;
 }
 
 async function reset(page) {
-  await page.send('Storage.clearDataForOrigin', {
-    origin: new URL(BASE).origin,
-    storageTypes: 'indexeddb',
-  });
+  await resetIndexedDbFixture(page, BASE);
   await sleep(250);
 }
 

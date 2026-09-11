@@ -160,6 +160,30 @@ export async function openPage(page, url) {
   );
 }
 
+/** Clear only a synthetic probe fixture after its old document has stopped writing to it. */
+export async function resetIndexedDbFixture(page, base) {
+  const unloaded = page.once('Page.loadEventFired');
+  const navigation = await page.send('Page.navigate', { url: 'about:blank' });
+  if (navigation.errorText) throw new Error('Fixture unload failed: ' + navigation.errorText);
+  if (navigation.loaderId) {
+    let timer;
+    try {
+      await Promise.race([
+        unloaded,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => reject(new Error('Fixture unload timed out')), 30_000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  await page.send('Storage.clearDataForOrigin', {
+    origin: new URL(base).origin,
+    storageTypes: 'indexeddb',
+  });
+}
+
 /** Below 768 px the page is emulated as a touch device (coarse pointer, 5 touch points). */
 export async function setViewport(page, width, height, { mobile = width < 768 } = {}) {
   await page.send('Emulation.setDeviceMetricsOverride', {
@@ -202,6 +226,7 @@ export async function session() {
     // probes deliberately clear IndexedDB while testing reset/recovery behavior.
     await page.send('Page.addScriptToEvaluateOnNewDocument', {
       source: `(() => {
+        if (!/^https?:$/.test(location.protocol)) return;
         const key = '__bloomlab_ai_off_attempts';
         const originalFetch = globalThis.fetch.bind(globalThis);
         globalThis.fetch = (input, init) => {

@@ -113,15 +113,18 @@ export function useCalendarRun(scenarioId: string = DEFAULT_CALENDAR_SCENARIO_ID
   );
 
   const reset = useCallback(async () => {
-    if (!run || !scenario) return;
+    if (!run || !scenario || busy) return;
     setProblem(null);
     setRefusal(null);
+    setBusy(true);
     try {
       setRun(await resetCalendarRun(scenario, run.state.run_id));
     } catch (error) {
       setProblem(error instanceof Error ? error.message : 'The account could not be reset.');
+    } finally {
+      setBusy(false);
     }
-  }, [run, scenario]);
+  }, [run, scenario, busy]);
 
   const switchRun = useCallback(
     async (runId: string) => {

@@ -2,7 +2,14 @@
 // and hidden transitions. No component mock, engine injected into the page or fabricated state.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { openPage, screenshot, session, setViewport, sleep } from './cdp.mjs';
+import {
+  openPage,
+  resetIndexedDbFixture,
+  screenshot,
+  session,
+  setViewport,
+  sleep,
+} from './cdp.mjs';
 import { probeHelpers } from './probe-lib.mjs';
 const BASE = process.env.BASE ?? 'http://localhost:4173';
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review');
@@ -27,10 +34,7 @@ const saved = async (page, table = 'workspace') =>
   );
 const state = async (page) => (await saved(page))?.response?.negotiation;
 async function fresh(page) {
-  await page.send('Storage.clearDataForOrigin', {
-    origin: new URL(BASE).origin,
-    storageTypes: 'indexeddb',
-  });
+  await resetIndexedDbFixture(page, BASE);
   await openPage(page, `${BASE}/exercise/${ID}`);
   if (!(await waitFor(page, exists('neg-reply'))))
     throw new Error('Real NEGOTIATE IT did not open');

@@ -6,6 +6,7 @@
 // keyboard, the five review widths with touch, and reduced motion. Writes calendar-probe.json and
 // calendar-*.png to .review/ (override with REVIEW_OUT).
 //   BASE=http://localhost:4173 node scripts/review/calendar-probe.mjs
+import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -124,11 +125,32 @@ async function save(page) {
 
 /** Resets the account so a section starts from the scenario's own beginning. */
 async function resetAccount(page) {
+  const generation = await page.evaluate(
+    `document.querySelector('[data-testid="calendar-lab"]')?.dataset.runGeneration`,
+  );
+  assert(generation, 'Reset requires the rendered run generation');
   await click(page, '[data-testid="calendar-reset"]');
   await waitFor(page, `Boolean(${q('[data-testid="calendar-reset-confirm"]')})`, { timeout: 4000 });
   await click(page, '[data-testid="calendar-reset-confirm"]');
-  await sleep(600);
-  return waitFor(page, READY, { timeout: 8000 });
+  const ready = await waitFor(
+    page,
+    `document.querySelector('[data-testid="calendar-lab"]')?.dataset.runGeneration !== ${JSON.stringify(generation)} && document.querySelector('[data-testid="calendar-lab"]')?.getAttribute('aria-busy') === 'false' && (${READY})`,
+    { timeout: 8000 },
+  );
+  assert(ready, 'Account reset did not commit and render its new generation');
+  return ready;
+}
+
+async function chooseCalendar(page, id, title) {
+  await setSelect(page, '[data-testid="calendar-picker"]', id);
+  assert(
+    await waitFor(
+      page,
+      `new URL(location.href).searchParams.get('calendar') === ${JSON.stringify(id)} && [...document.querySelectorAll('main h2')].some(el => el.textContent === ${JSON.stringify(title + ' — the next 7 days')})`,
+      { timeout: 6000 },
+    ),
+    'Requested calendar did not render',
+  );
 }
 
 const { page, close } = await session();
@@ -300,7 +322,7 @@ try {
 
   /* ---- 9. a service is behaviour, not a label (CAL-001) ---------------------------------- */
   await resetAccount(page);
-  await setSelect(page, '[data-testid="calendar-picker"]', 'treatments');
+  await chooseCalendar(page, 'treatments', 'Treatments');
   await waitFor(page, `Boolean(${q('[data-testid="booking-service"]')})`, { timeout: 6000 });
   await click(page, '[data-testid="group-service"]');
   await waitFor(page, `Boolean(${q('[data-testid="service-duration-signature-facial"]')})`, {
@@ -332,13 +354,21 @@ try {
 
   /* ---- 10. booking puts a real event through the shared engine (CAL-003) ----------------- */
   await resetAccount(page);
-  await setSelect(page, '[data-testid="calendar-picker"]', 'consultation');
+  await chooseCalendar(page, 'consultation', 'Consultation');
   await waitFor(page, `Boolean(${q('[data-testid="slot-2026-09-10T13:00:00-05:00"]')})`, {
     timeout: 6000,
   });
   await click(page, '[data-testid="slot-2026-09-10T13:00:00-05:00"]');
   await setSelect(page, '[data-testid="booking-contact"]', 'soraya');
   await sleep(200);
+  assert(
+    await waitFor(
+      page,
+      `${q('[data-testid="booking-book"]')}?.disabled === false && (${q('[data-testid="booking-what"]')}?.textContent ?? '').includes('Theo Marsh')`,
+      { timeout: 6000 },
+    ),
+    'Chosen consultation slot did not reach the booking panel',
+  );
   const bookingWhat = await text(page, '[data-testid="booking-what"]');
   await click(page, '[data-testid="booking-book"]');
   const booked = await waitFor(

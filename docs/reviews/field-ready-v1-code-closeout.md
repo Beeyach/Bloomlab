@@ -181,6 +181,26 @@ No performance assertion, accessibility threshold, provider boundary or producti
 
 ## Failed attempts retained
 
+- Run `34563212145` at `9623217a6e67d99e319ad41a398c0e0970e1b4d3` passed Checks:
+  2,152 tests / 168 files, 15 adversarial cases and 89 axe scans with the negative control and
+  zero serious/critical violations. Preview browser probes passed 34/35; Calendar booking failed
+  and confirmation/reschedule/cancellation then failed downstream. C1 passed 15/16 positive paths
+  and correctly rejected its injected dependency; Pricing's 1440px sample lacked the whole work
+  area. The artifact `10186093695` and screenshots are retained. Both Workflow samples now passed
+  (23/23.5 ms p95, 31/37 ms maximum frame, no long tasks), all 215 polish cells passed, and binary
+  recovery plus all five held-fault cases passed. Screen-state generation failed on Calendar.
+  Preview Worker `7cceedc5-8b4b-495d-a9c9-fcae3ddc36d7` and all before/after identities matched
+  `9623217`; Production was skipped.
+- Calendar reset did not mark the account busy while its asynchronous save was unfinished. A
+  delayed real-reset regression failed against that implementation; reset now excludes other
+  mutations until its committed generation is rendered. The Calendar probe now waits for that
+  generation and for the requested calendar's actual title before selecting a slot, instead of
+  accepting a slot still present from the previous calendar. Booking/lifecycle assertions remain.
+- Pricing cleared IndexedDB while its previous document and AI-Off timer were still active. Its
+  reset fixture now unloads that document before clearing storage; Sales, Negotiation and the AI
+  probe use the same helper for their identical fresh-fixture boundary. Each open must render its work
+  area within the existing timeout; failure retains text and a screenshot. The seven-area check,
+  widths, amounts, keyboard and motion assertions are unchanged.
 - Run `34562613755` at `ddd432343ecbc9fa2ca19e0e3f9a83e688633389` passed 2,151 tests and
   failed the initial hint-drawer assertion. The test waited for an IndexedDB row then immediately
   queried React's DOM; the live-query notification had not rendered `Independent` yet. It now
