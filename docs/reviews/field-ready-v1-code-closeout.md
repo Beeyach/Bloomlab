@@ -172,6 +172,17 @@ checks and disposable synthetic learner/media data. Provider spend is $0.
   Failure isolation now returns a boolean rather than a DOM graph over CDP and proves retry for the
   deliberately failed note plus its confirmed server shadow, rather than requiring unrelated queued
   fixture records to disappear. This failing run and its downstream cascade are not evidence.
+- Exact-head run `34552435861` passed all Node 22 Checks, 31/35 browser probes, exact before/after
+  identities, binary recovery, failure isolation and terminology, then correctly failed its Preview
+  attestation. Navigation queried before one reduced-motion route shell had committed; restore
+  scheduled focus before its preview heading had committed; and the phone fieldwork fixture could
+  release its held upload before the request registered the gate. Those lifecycle boundaries now
+  wait for the actual shell, committed heading and registered request respectively. The 504-event
+  Worker sample retained a 38.8 ms p95 but one 115 ms frame and one 105 ms long task after repeated
+  visible-history reconciliation and date-formatter allocation; the recent list is bounded to 12,
+  unchanged rows and timezone formatters are reused, and older runs remain available on demand.
+  Displayed time and the 100 ms ceiling are unchanged. This failing run and its downstream AI-off /
+  screen-state cascade are not evidence.
 - The first local browser launch lacked shared libraries. Temporary local runtime libraries allowed
   focused reproduction of the three failures, but those diagnostic runs are not browser/a11y
   evidence; the GitHub Ubuntu Chrome run remains canonical.
@@ -181,7 +192,13 @@ checks and disposable synthetic learner/media data. Provider spend is $0.
   The corrected files passed 40/40; the zero-test command is not evidence.
 - One local full-suite run shared the host with concurrent TypeScript and ESLint processes and
   timed out two unrelated async UI assertions. The two files passed 45/45 immediately when rerun
-  alone; only the sequential exact-head CI result is canonical.
+  alone. A later patched-tree aggregate run passed 2,149 tests and timed out one Funnel preview
+  assertion under load; that file passed 16/16 immediately alone. Only the sequential exact-head
+  CI result is canonical.
+- A local two-width axe pass completed 79 scans before one client-detail readiness wait expired
+  without an axe violation. The unchanged 390 px sequence then passed every screen, including that
+  detail route, with zero serious/critical violations and the live unnamed-control negative
+  control. The interrupted pass is not evidence; exact-head CI remains canonical.
 - Targeted C7 lint found an undefined `assert` in the new Inbox probe and was fixed before commit.
   Full lint then exposed the C3 `context` dependency warning; a stable `useMemo` context removed it,
   with runner regressions rerun.

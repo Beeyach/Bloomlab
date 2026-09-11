@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Cluster, Field, Input } from '@bloomlab/design-system';
 import { cancelRestore, confirmRestore, previewRestore, type RestorePreview } from './restore';
 import { MAX_BACKUP_BYTES } from './restoreSchema';
@@ -22,6 +22,12 @@ export function RestoreData() {
   const [preview, setPreview] = useState<RestorePreview | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(false);
+  useEffect(() => {
+    if (!preview) return;
+    // Focus only after React has committed the newly mounted review heading.
+    const frame = requestAnimationFrame(() => heading.current?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [preview]);
   async function read(file?: File) {
     if (!file || pending.current) return;
     if (preview) cancelRestore(preview);
@@ -35,7 +41,6 @@ export function RestoreData() {
       const next = await previewRestore(await file.text());
       setPreview(next);
       setMessage('Backup validated. Review before confirming.');
-      requestAnimationFrame(() => heading.current?.focus());
     } catch (e) {
       setError(true);
       setMessage(e instanceof Error ? e.message : 'Backup could not be read. No data was changed.');

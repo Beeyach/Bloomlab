@@ -19,7 +19,21 @@ export function fieldworkFixtures(live, png) {
     list.getEntries().forEach((entry) => recordOrigin(entry.name)),
   ).observe({ type: 'resource', buffered: true });
   let release;
-  p.release = () => release?.();
+  p.release = async () => {
+    // The busy label commits before uploadEvidence reaches fetch. On a recomposed phone viewport
+    // the review driver can therefore ask to release the controlled request a frame too early.
+    // Wait for the request to register its gate so the fixture cannot lose that release signal.
+    for (let attempt = 0; attempt < 100; attempt += 1) {
+      if (release) {
+        const ready = release;
+        release = undefined;
+        ready();
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+    throw new Error('Controlled fieldwork upload did not reach its hold point');
+  };
   p.rows = (name) =>
     new Promise((resolve, reject) => {
       const req = indexedDB.open('bloomlab');

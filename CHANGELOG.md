@@ -31,6 +31,10 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
   all semantic/human/device/provider/real-GHL boundaries, and the independent-audit/no-merge gate.
   Draft PR #32 targets `codex/navigation-shell-redesign`; exact-head Preview evidence is attached to
   the PR rather than self-referenced inside the source commit.
+- Bounded and memoized recent Workflow history while keeping older runs available, removed repeated
+  date-formatter allocation, and hardened deployed navigation, restore-focus and controlled
+  fieldwork-upload verification against commit-time races; the strict 500-event performance and
+  five-width interaction thresholds remain unchanged.
 
 ### Changed — Field-Ready v1 independent-audit remediation
 

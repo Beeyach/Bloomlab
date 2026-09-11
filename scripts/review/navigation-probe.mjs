@@ -72,7 +72,12 @@ const state = () =>
 })()`);
 const reset = async () => {
   await openPage(page, BASE + '/skills');
-  await sleep(100);
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    if (await page.evaluate(`Boolean(document.querySelector('[data-testid="rail-destinations"]'))`))
+      return;
+    await sleep(50);
+  }
+  throw new Error('Navigation shell did not become ready after route reset');
 };
 const swipe = async (s) => {
   await page.send('Input.dispatchTouchEvent', {

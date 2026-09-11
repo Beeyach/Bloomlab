@@ -239,6 +239,9 @@ describe('DATA-009 staged, owned, non-destructive backup restore', () => {
       target: { files: [file] },
     });
     expect(await screen.findByRole('button', { name: 'Confirm restore' })).toBeEnabled();
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: 'Review restore' })).toHaveFocus(),
+    );
     expect(await db.notes.count()).toBe(0);
     fireEvent.click(screen.getByRole('button', { name: 'Cancel restore' }));
     expect(screen.getByRole('status')).toHaveTextContent('cancelled');
