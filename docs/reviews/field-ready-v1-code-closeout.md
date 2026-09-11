@@ -181,6 +181,11 @@ No performance assertion, accessibility threshold, provider boundary or producti
 
 ## Failed attempts retained
 
+- Run `34562613755` at `ddd432343ecbc9fa2ca19e0e3f9a83e688633389` passed 2,151 tests and
+  failed the initial hint-drawer assertion. The test waited for an IndexedDB row then immediately
+  queried React's DOM; the live-query notification had not rendered `Independent` yet. It now
+  waits for that same required visible text, using the existing Testing Library timeout. No
+  assistance, persistence or reload assertion is removed. Preview and Production were skipped.
 - Continuation run `34561969517` at `9c360d2cc5a86b6a9af034608f62bdf8efe5f4ea` passed
   2,150 tests but failed two CRM screen assertions that still expected the old `Custom fields`
   heading. They now require the corrected exact `Custom Fields` label; both heading assertions

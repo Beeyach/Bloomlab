@@ -368,7 +368,8 @@ describe('hints and assistance (EXR-022, MAS-007)', () => {
   it('reveals one level at a time, records it, and survives a reload', async () => {
     await openRunner();
     await waitFor(async () => expect(await loadAttempt(DECISION, NORMAL_RUN, db)).toBeDefined());
-    expect(screen.getByText('Independent')).toBeInTheDocument();
+    // The IndexedDB commit can complete before its live-query notification renders the drawer.
+    expect(await screen.findByText('Independent')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Show the nudge' }));
     await screen.findByText(/Is "interested in Laser" something that happened/);
