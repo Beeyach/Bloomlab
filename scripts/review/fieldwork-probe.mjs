@@ -166,7 +166,7 @@ try {
     for (const key of ['assets_loaded', 'references_checked', 'safe_draft'])
       await selectTest(key, key === 'assets_loaded' ? 'failed' : 'passed');
     await wait(
-      `window.__fieldworkProbe.rows('workspace').then(rows=>rows.find(r=>r.key==='exercise.attempt.${exercise}')?.value.response.fieldwork.tests.assets_loaded.status==='failed')`,
+      `window.__fieldworkProbe.rows('workspace').then(rows=>rows.find(r=>r.key==='exercise.attempt.${exercise}')?.value?.response?.fieldwork?.tests?.assets_loaded?.status==='failed')`,
     );
     await selectImage();
     const before = await page.evaluate(

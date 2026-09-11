@@ -46,12 +46,17 @@ const setFailure = (mode) =>
       ? `sessionStorage.setItem('__bloomlab_controlled_failure',${JSON.stringify(mode)})`
       : `sessionStorage.removeItem('__bloomlab_controlled_failure')`,
   );
-const rows = (table) =>
-  page.evaluate(`new Promise((resolve,reject)=>{
+const rows = async (table) => {
+  // Serialize inside the page. Returning a deeply nested IndexedDB object graph directly makes
+  // CDP walk every reference and Chrome eventually rejects it as "Object reference chain is too
+  // long". The probes only assert persisted JSON data, so a JSON boundary is also more exact.
+  const encoded = await page.evaluate(`new Promise((resolve,reject)=>{
     const request=indexedDB.open('bloomlab'); request.onerror=()=>reject(request.error);
     request.onsuccess=()=>{const database=request.result,tx=database.transaction(${JSON.stringify(table)}),read=tx.objectStore(${JSON.stringify(table)}).getAll();
-      read.onsuccess=()=>resolve(read.result);read.onerror=()=>reject(read.error);tx.oncomplete=()=>database.close();};
+      read.onsuccess=()=>resolve(JSON.stringify(read.result));read.onerror=()=>reject(read.error);tx.oncomplete=()=>database.close();};
   })`);
+  return JSON.parse(encoded);
+};
 const localEvidence = async () => {
   const notes = await rows('notes');
   const sentinel = notes.find((note) => note.body === 'Field-Ready failure sentinel');

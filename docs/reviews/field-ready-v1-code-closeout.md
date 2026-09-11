@@ -154,6 +154,15 @@ checks and disposable synthetic learner/media data. Provider spend is $0.
   propagation even though Wrangler had published the new version; subsequent live health reads
   converged to the deployed SHA. The attestation now waits within a bounded window for exact Worker
   and browser equality rather than accepting either stale identity.
+- Exact-head run `34542916287` passed all Node 22 Checks and exact before/after deployed identities,
+  then correctly failed its Preview attestation. Its isolated Preview job had not regenerated the
+  ignored `.content/bundle.json`; Chrome reset the page document's `navigator.onLine` signal across
+  service-worker-backed reloads; two probes assumed programmatic focus or a fixed initial Skill Map
+  territory; a transient fieldwork read dereferenced an incomplete saved draft; and one deep
+  IndexedDB result exceeded CDP's object-reference serialization limit. The Preview preflight and
+  probes now test the intended boundaries explicitly. Its separate 504-event sample retained the
+  existing 100 ms hard ceiling after recording a 38.7 ms p95 but two over-limit spikes; the ceiling
+  was not weakened, and the failing run is not evidence.
 - Local browser launch was attempted but the available Chrome binary lacks required shared
   libraries. It is not counted as browser/a11y evidence; the GitHub Ubuntu Chrome run is canonical.
 - `vitest --project simulator-core` named a project that is not configured. The corrected direct

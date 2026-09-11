@@ -85,6 +85,9 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      # Browser probes derive authoritative routes and fixtures from the compiled content bundle.
+      # Jobs are isolated, so regenerate it here instead of assuming the Checks workspace survives.
+      - run: npm run content:check
       # Read configuration only. Fail before deployment if either private-media bucket is public.
       - run: npm run security:cloud
         env:
