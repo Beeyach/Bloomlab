@@ -83,7 +83,7 @@ describe('the CRM Lab opens on the real account (CRM-001)', () => {
     await openLab();
     const nav = screen.getByRole('navigation', { name: 'CRM areas' });
     fireEvent.click(within(nav).getByRole('button', { name: 'Setup' }));
-    expect(await screen.findByRole('heading', { name: 'Custom fields' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Custom Fields' })).toBeInTheDocument();
     fireEvent.click(within(nav).getByRole('button', { name: 'Pipeline' }));
     expect(await screen.findByRole('list', { name: /Consultations stages/ })).toBeInTheDocument();
   });
@@ -114,7 +114,7 @@ describe('editing goes through the event path (CRM-001)', () => {
     expect(screen.getByRole('button', { name: 'Notes' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Tasks' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Tags' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Custom fields' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Custom Fields' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Opportunities' })).toBeInTheDocument();
   });
 

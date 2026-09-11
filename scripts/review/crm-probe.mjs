@@ -99,7 +99,7 @@ try {
 
   // 7–8. Define a custom field in Setup, then set its value back on the contact.
   await openCrm('?area=setup');
-  await waitFor("document.body.innerText.includes('Custom fields')");
+  await waitFor("document.body.innerText.includes('Custom Fields')");
   await page.evaluate(`(() => {
     const inputs = [...document.querySelectorAll('form input')];
     const set = (el, v) => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(el, v); el.dispatchEvent(new Event('input', { bubbles: true })); };

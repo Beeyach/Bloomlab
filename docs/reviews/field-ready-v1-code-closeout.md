@@ -181,6 +181,11 @@ No performance assertion, accessibility threshold, provider boundary or producti
 
 ## Failed attempts retained
 
+- Continuation run `34561969517` at `9c360d2cc5a86b6a9af034608f62bdf8efe5f4ea` passed
+  2,150 tests but failed two CRM screen assertions that still expected the old `Custom fields`
+  heading. They now require the corrected exact `Custom Fields` label; both heading assertions
+  remain. The deployed CRM probe now waits for that same corrected heading. Preview and Production were skipped. This failed run is retained, not accepted as final
+  verification.
 - Starting-head GitHub run `34558116726` at `13ae175916757ce4876d7ed548417e28fa9d570b`
   failed despite Checks passing (2,150 tests / 168 files, 15 adversarial cases). Its full artifact
   `10184328117` is retained: browser 33/35, with polish stopping at Explain It readiness after 184
