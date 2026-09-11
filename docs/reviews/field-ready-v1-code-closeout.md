@@ -19,7 +19,7 @@ A11Y-001.
 
 | Requirement | Disposition | Evidence or remaining boundary |
 | --- | --- | --- |
-| PRD-004 | PASSED | C1 AI-Off harness holds the local setting Off, blocks Worker AI routes, and completes eleven whole-product path groups. |
+| PRD-004 | PASSED | C1 AI-Off harness holds the local setting Off, blocks Worker AI routes, and completes real learner route groups plus supporting learning/sync diagnostics and an injected negative control. |
 | PRD-009 | PASSED | C2 ownership inventory and IndexedDB v9 migration cover all 20 persisted tables and the sync boundary. |
 | EXR-006 | PASSED | C3 prediction is immutably committed before Lab access; actual observed execution is replayed and mismatch is shown. |
 | EXR-008 | PARTIAL | Two authored architectures and no-feature prompt are deterministic; broad open-design semantic quality still needs non-fixture judgment. |
@@ -27,12 +27,12 @@ A11Y-001.
 | NEG-003 | PARTIAL | All seven strategies/reactions and low-confidence routing are covered; broad natural-language classification quality is not established. |
 | DATA-006 | PASSED | C4 private R2 bytes, D1 metadata, scenario attachments and staged checksum-verified binary recovery are implemented and probed. |
 | INF-011 | PASSED | C5 Call/Workflow/AI/sync failure injection preserves local work and proves unrelated environments remain usable. |
-| GHL-005 | PASSED | C6 exhaustive learner-facing terminology audit rejects missing registry coverage and unclassified native feature-like strings. |
-| GHL-010 | PASSED | C6 exact official-name/alias audit corrected standard Webhook versus distinct Custom Webhook naming. |
+| GHL-005 | PARTIAL | Known vocabulary and branded phrases are checked; arbitrary unprefixed feature names and contextual generic-name exceptions are not exhaustively classified. |
+| GHL-010 | PARTIAL | Webhook distinction and two CRM heading case defects are fixed; exhaustive native naming coverage remains unproven. |
 | DES-006 | IN_PROGRESS | Rendered §70 signals and objective fabricated-number guards are automated; whole-product aesthetic/slop judgment remains human. |
 | DES-008 | IN_PROGRESS | Per-screen rendered density proxies are recorded; intended hierarchy and long-session density remain human judgment. |
 | DES-017 | IN_PROGRESS | Five-width screenshots exist for the authoritative inventory; hierarchy/material/restraint/comfort review is deliberately not auto-passed. |
-| DES-018 | PASSED | C7 machine-readable matrix covers 43 learner screens, all 17 exercise families, five widths and applicable state/input cells. |
+| DES-018 | IN_PROGRESS | The 43-screen/five-width inventory is retained; family-level probe references do not prove every exact semantic/input cell. |
 | RSP-002 | IN_PROGRESS | Objective reflow/overflow/touch evidence is broad; “deliberate first-class composition” across the whole product remains visual judgment. |
 | RSP-003 | IN_PROGRESS | Automated routes retain controls and named actions on phones; whole-product desktop/mobile capability equivalence still requires human review. |
 | RSP-004 | PASSED | All six named recompositions have 390/320 source and browser evidence, including new Skill Map touch and Inbox-flow assertions. |
@@ -43,8 +43,11 @@ A11Y-001.
 ### C1 — whole-product AI Off
 
 `scripts/review/ai-off-suite.mjs` runs real browser paths for Command Center/session, Academy,
-Skill Map/mastery, CRM, Workflow/Inbox, Funnel, Calendar, Reporting, Pricing, Negotiation,
-Portfolio and offline recovery. `REVIEW_AI_OFF=1` repeatedly holds the actual IndexedDB setting at
+Skill Map/mastery, CRM, Workflow/Inbox, Funnel, Calendar, Payments, Incident, Reporting, Pricing,
+Negotiation, Portfolio and offline recovery. The original `learning-probe` exercises `/system`
+diagnostics; it remains supporting sync evidence. Academy and Skill Map now have their actual
+learner probes in C1, plus a saved/pending open-ended fallback and a real injected AI dependency
+that must fail the same deterministic-path classifier. `REVIEW_AI_OFF=1` repeatedly holds the actual IndexedDB setting at
 Off and refuses `/api/ai/*` before transport. A deterministic path fails the suite if it attempts
 AI; open-ended fallback is classified separately rather than treated as a deterministic success.
 
@@ -81,12 +84,15 @@ other major environments. These are controlled failures, not live provider outag
 
 ### C6 — HighLevel terminology
 
-The audit parses TS/TSX strings, YAML and MDX across every configured learner-facing surface. It
-validates IDs, official names, stale aliases, singular drift and branded feature-like phrases while
+The audit parses TS/TSX strings, YAML and MDX across the configured learner-facing surfaces. It
+validates known IDs/names, stale aliases, standalone native heading case drift and branded phrases while
 explicitly classifying native configuration terms, Bloomlab teaching terms, generic/instance nouns
 and historical references. It found one concrete defect: standard **Webhook** and the current,
 distinct **Custom Webhook** action had been conflated. The registry/content/runtime now distinguish
-them. This verifies naming coverage only, never native behavioral parity or a real GHL account.
+them. Independent continuation found two CRM headings whose `Custom fields` casing bypassed the
+checker; they now use registry-backed `Custom Fields`, with a negative control. Arbitrary unprefixed
+native names and context-free generic-term exceptions remain uncovered. GHL-005/GHL-010 are PARTIAL;
+a zero-problem vocabulary report is not exhaustive naming or native behavioral parity.
 
 ### C7 — design, responsive and objective accessibility
 
@@ -97,8 +103,10 @@ five developer-only routes are listed separately.
 
 The deployed polish sweep records 215 default-layout cells at 1440/1024/768/390/320, density
 metrics, touch target/input size, overflow, prohibited §70 rendered signals and reduced-motion
-animation state. The state matrix joins those to route-specific probes or explicitly labeled shared
-loading/error contracts and genuine N/A reasons. Every row retains `human_visual_review: REQUIRED`.
+animation state. The state matrix retains related browser references, explicitly labeled shared loading/error
+contracts and genuine N/A reasons. Its prior family-level references were overstated as proof of
+every state. They now say `RELATED_BROWSER_EVIDENCE`; exact screen/state/input assertion mapping
+and missing execution remain open, so DES-018 is IN_PROGRESS. Every row retains `human_visual_review: REQUIRED`.
 
 Specialized 390/320 evidence covers Workflow's vertical editor/sheets, CRM's stage
 switcher/scroller/non-drag picker, Academy's editorial flow, Call Room's retained voice/recovery
@@ -112,8 +120,8 @@ work or DES-009 status change occurred.
 
 ### C8 — reconciliation and immutable verification
 
-Ten objective rows are promoted: PRD-004, PRD-009, EXR-006, DATA-006, INF-011, GHL-005, GHL-010,
-DES-018, RSP-004 and A11Y-001. Eight targets remain non-PASSED with the exact boundaries in the
+Seven objective promotions are retained: PRD-004, PRD-009, EXR-006, DATA-006, INF-011, RSP-004
+and A11Y-001. Eleven targets remain non-PASSED with the exact boundaries in the
 table above; inherited regression row DES-009 separately remains IN_PROGRESS. All P2/P3/deferred
 rows are outside scope.
 
@@ -142,7 +150,64 @@ No provider request, real-GHL request, live fieldwork submission, production mig
 deployment is part of the closeout. Preview activity is limited to read-only bucket-configuration
 checks and disposable synthetic learner/media data. Provider spend is $0.
 
+## Independent continuation audit
+
+Continuation starting head: `13ae175916757ce4876d7ed548417e28fa9d570b`, clean worktree, draft PR #32
+against `codex/navigation-shell-redesign`. The previous source commits and failed-run artifacts
+were preserved. Run `34552435861` was checked directly: navigation, restore, Workflow performance
+and Fieldwork failed. C1 independently failed its own Workflow sample (202 ms maximum frame,
+199 ms long task); the state generator failed downstream on the required browser results. The following `13ae175`
+changes are legitimate lifecycle/performance fixes: wait for the mounted shell/heading/request gate,
+reuse timezone formatters, memoize history rows, and bound recent rows while retaining older history.
+The 50 ms p95 and 100 ms maximum frame/task assertions remain unchanged.
+
+The continuation independently compared all eighteen target requirements with the authoritative
+acceptance criteria and implementation, without accepting the prior ten-promotion summary:
+
+| Checkpoint | Independent disposition |
+| --- | --- |
+| C1 | Strengthened: actual Academy/Skill Map, Payments and Incident learner probes, saved/pending AI-Off fallback, and an injected request that the deterministic verdict must reject. The developer learning probe is explicitly supporting evidence. |
+| C2 | Retained: explicit learner IDs in the 20-table local inventory, D1/sync ownership and migrations, local-media ownership rejection, and pure engine inputs. One learner per device/sync key is the retained application boundary; no commercial infrastructure added. |
+| C3 | Retained: immutable prediction/checkpoint, reload and actual simulator replay. Open architecture, pricing reasoning and negotiation language remain PARTIAL; no fixture-to-semantic promotion. |
+| C4 | Strengthened: deployed archive restore now adds a missing synthetic file and verifies downloaded bytes/original preservation. Worker tests repair all four private binary classes. Asynchronous export storage errors now reach the sanitized retryable response. |
+| C5 | Strengthened: the fault remains enabled during unrelated-route checks; push and pull fail separately, and sync retry must preserve a newer local note edit. |
+| C6 | PARTIAL: fixed real CRM heading drift and added a negative control. Known-term scanning does not exhaustively classify arbitrary unprefixed native terms or context-free generic-name exceptions. |
+| C7 | PARTIAL: retained five-width layouts, named mobile compositions and native keyboard core flow, adding native Workflow execution and Funnel Preview activation. DES-018 reopened because whole-probe success was incorrectly promoted to screen/state proof. Human visual/density/mobile-equivalence boundaries remain. |
+| C8 | Reconciled to seven supported promotions, eleven non-PASSED targets, unchanged twelve human rows and 24 open P0/P1 requirements. Final source must pass the complete immutable CI/Preview path before stopping for audit. |
+
+The corrected matrix preserves passing browser references and screenshots; it does not relabel
+missing semantic states as N/A or pass. The unchanged acceptance criteria still require those cells.
+No performance assertion, accessibility threshold, provider boundary or production gate is relaxed.
+
 ## Failed attempts retained
+
+- Starting-head GitHub run `34558116726` at `13ae175916757ce4876d7ed548417e28fa9d570b`
+  failed despite Checks passing (2,150 tests / 168 files, 15 adversarial cases). Its full artifact
+  `10184328117` is retained: browser 33/35, with polish stopping at Explain It readiness after 184
+  layout cells (zero recorded layout violations), and Workflow failing at 225 ms maximum frame /
+  216 ms long task. The separate C1 Workflow sample failed at 122 ms / 98 ms. Failure isolation
+  failed its pending-outbox assertion; the artifact did not capture the transient row. Source review
+  found that existing error text can precede completion of the current retry, so it did not establish
+  that the current attempt had returned the outbox row. Screen-state generation failed downstream.
+  Browser/Worker before and after both matched `13ae175`; Worker version was
+  `ae8eba9a-3600-481b-a1fa-6cbd68672248`; Preview had no pending migrations; Production was skipped.
+- A diagnostic Chrome trace isolated repeated IndexedDB full payload reads in the sync status and
+  scheduler. Simulator snapshots made those reads increasingly expensive. Both now count through
+  the existing status index, with consistent indicator reads in one transaction; no data or sync
+  behavior is removed. The unchanged local 504-event probe then took 5.1 seconds (26.9 ms p95,
+  42 ms maximum frame, no long tasks), versus roughly 34 seconds before. Sixteen sync tests pass,
+  including preservation of failed work in the pending indicator. Final GitHub Chrome remains the
+  required verification authority. The subsequent local polish sweep passed all 215 cells; the
+  starting-head Explain It readiness failure was not reproduced locally and remains retained.
+- Sync failure evidence now waits for the actual outbox rollback rather than an earlier error
+  banner, and holds both push/pull failures during unrelated navigation. The polish failure path
+  now retains its current route, status/alert text and screenshot for diagnosis; its readiness,
+  layout, motion and size assertions are unchanged.
+- The continuation reproduced the asynchronous export failure against the original handler
+  (one expected failing test), then verified the sanitized retry response with the fix.
+- The expanded local C1 diagnostic retained a 103 ms maximum Workflow frame against the unchanged
+  100 ms ceiling (46.7 ms p95; no long task over 100 ms). Local diagnostic timing is not substituted
+  for the required final GitHub Ubuntu Chrome verification.
 
 - The first closeout exact-head Node 22 run exposed an auto-resubscribed draft-read error, recovery
   transport in the wrong source boundary and render-timing focus assertion. Those three failures
@@ -181,8 +246,10 @@ checks and disposable synthetic learner/media data. Provider spend is $0.
   Worker sample retained a 38.8 ms p95 but one 115 ms frame and one 105 ms long task after repeated
   visible-history reconciliation and date-formatter allocation; the recent list is bounded to 12,
   unchanged rows and timezone formatters are reused, and older runs remain available on demand.
-  Displayed time and the 100 ms ceiling are unchanged. This failing run and its downstream AI-off /
-  screen-state cascade are not evidence.
+  Displayed time and the 100 ms ceiling are unchanged. The separate AI-Off Workflow sample also
+  failed (202 ms maximum frame / 199 ms long task); this was an independent failure, not merely a
+  downstream cascade. The screen-state generator then failed on missing passing probes. None is
+  accepted as successful closeout evidence.
 - The first local browser launch lacked shared libraries. Temporary local runtime libraries allowed
   focused reproduction of the three failures, but those diagnostic runs are not browser/a11y
   evidence; the GitHub Ubuntu Chrome run remains canonical.

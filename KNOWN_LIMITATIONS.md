@@ -4,10 +4,17 @@
 
 `docs/reviews/field-ready-v1-code-closeout.md` records checkpoints C1–C8. The closeout resolves
 the provable AI-Off, learner-ownership, immutable-prediction, private binary recovery,
-failure-isolation, HighLevel terminology, screen-matrix, named mobile recomposition and keyboard
-core-flow gaps. It is not a Field-Ready Complete or human design/learning certification.
+failure-isolation, named mobile recomposition and keyboard core-flow gaps. The continuation
+audit reopens exhaustive terminology and semantic screen-state coverage. It is not a Field-Ready Complete or human design/learning certification.
 
 Still open among targeted rows:
+
+- GHL-005/GHL-010 remain PARTIAL: the bounded known-vocabulary/branded-phrase checker cannot
+  establish arbitrary unprefixed native names or contextual generic-name exceptions. Two concrete
+  CRM heading case defects are fixed; remaining exhaustive coverage is not certified.
+- DES-018 remains IN_PROGRESS: 215 default layouts are retained, but family-level successful
+  probes were incorrectly treated as proof for every screen/state/input. Exact state assertion
+  mapping and execution of the missing cells remain open.
 
 - EXR-008, PRI-002 and NEG-003 need broad semantic/reasoning/language-quality evidence. Multiple
   authored deterministic passes and provider routing do not establish that quality.

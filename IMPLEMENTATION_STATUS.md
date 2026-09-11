@@ -10,7 +10,7 @@ Field-Ready v1 code/audit closeout — checkpoints C1–C8 on
 `codex/field-ready-v1-code-closeout`, based on `codex/navigation-shell-redesign` at
 `6a1ea64081e42a0dd6ea7efd3b78c0ee4abbd685`. This closeout adds whole-product AI-Off,
 learner-ownership, prediction, private binary recovery, failure-isolation, terminology and
-router/content-derived screen-state evidence. Ten objectively complete P0/P1 rows are promoted.
+router/content-derived screen-state evidence. Seven objectively evidenced P0/P1 promotions are retained; three unsupported promotions are reopened.
 Semantic quality, subjective visual/density/composition judgment, physical-device/provider and
 real-GHL evidence remain open. All twelve IMPLEMENTED_UNVERIFIED rows and DES-009 are unchanged.
 Evidence: `docs/reviews/field-ready-v1-code-closeout.md`; exact-head identities are in draft PR #32
@@ -80,13 +80,11 @@ Phase 21 update-check recovery: a failed update/build check is visible even when
 
 ## PASSED
 
-- PRD-004 — C1: the explicit AI-Off harness holds the product setting Off, rejects Worker AI routes and completes Command Center/session, Academy/Skill Map/mastery, CRM, Workflow/Inbox, Funnel, Calendar, Reporting, Pricing, Negotiation fallback, Portfolio and offline/saved-progress paths. Deterministic paths fail if they attempt AI.
+- PRD-004 — C1: the explicit AI-Off harness holds the product setting Off, rejects Worker AI routes and completes Command Center/session, real Academy/Skill Map/mastery routes, CRM, Workflow/Inbox, Funnel, Calendar, Reporting, Pricing, Negotiation fallback, Portfolio and offline/saved-progress paths. Payments and Incident are included. A real injected AI request on CRM must fail the same deterministic-path verdict. Developer learning diagnostics remain supporting sync evidence only.
 - PRD-009 — C2: IndexedDB v9 gives every persisted record learner ownership, migrates legacy keys without cross-learner collision and keeps the one-learner-per-sync-key boundary; the inventory covers all 20 local tables and every sync envelope.
 - EXR-006 — C3: RUN THE LEAD stores an immutable prediction before opening the Lab, executes from actual observed simulator events, then returns to a read-only replay that highlights prediction/observation mismatches. Mutation and reload regressions pin the boundary.
 - DATA-006 — C4: private learner/scenario media bytes live in R2 with D1 metadata only. Bounded checksum-verified `.blb` export and staged same-owner recovery cover audio, fieldwork media and scenario attachments without credentials or overwrite.
 - INF-011 — C5: controlled Call API, Workflow Worker, AI gateway and sync failures each preserve local evidence and leave the other major environments usable; exact-head identity is checked after recovery.
-- GHL-005, GHL-010 — C6: an AST/YAML/MDX audit covers all learner-facing feature-bearing surfaces, resolves native names to the registry, rejects stale aliases/unclassified feature-like strings and distinguishes standard Webhook from current Custom Webhook. This is terminology coverage, not live GHL parity.
-- DES-018 — C7: the router/content-derived machine-readable matrix covers 43 learner screens, all 17 exercise families and 215 five-width layout cells plus default/empty/loading/error/completed/keyboard/touch/reduced-motion evidence. Shared contracts and genuine N/A cells are labeled; human visual rows remain REQUIRED.
 - RSP-004 — C7: the six named phone recompositions are source- and browser-proven at 390/320: Workflow vertical editor/sheets, CRM stage switcher/scroller, Academy editorial flow, Call voice flow, Inbox single-conversation flow and Skill Map territory-first touch flow.
 - A11Y-001 — C7: native Tab/Shift+Tab/Enter/Space/arrow input completes session start, exercise opening/submission and representative Lab operations with visible focus. Axe is corroborating evidence only; screen-reader, physical Safari and broader assistive-tech certification are not claimed.
 
@@ -414,6 +412,8 @@ Phase 21 accepted interface/provider paths:
 
 ## IN PROGRESS
 
+- DES-018 — C7 retains 43 learner screens and 215 five-width layout cells, but the family-level state mappings did not prove the exact screen/state/input cells. The matrix now labels related browser evidence explicitly; exact assertion mapping and missing state execution remain open.
+
 - DES-009 — D-202 supersedes the fixed-104 px D-117/Phase 26 attestation. Original-device scrolling is HUMAN PASS; after the prior visual FAIL, the learner now calls horizontal expanded/icon-only collapsed composition materially better and requests adjustable width. Expanded defaults to 200 px, resizes from 176–280 px with constrained-tablet protection, and restores the saved local width after collapse; collapsed stays 76 px. DES-009 remains IN_PROGRESS pending independent audit and learner confirmation of this refinement. See `docs/reviews/navigation-shell-redesign.md`. The twelve human/real-GHL rows remain unchanged.
 
 - DES-006 — C7 audits the actual rendered router/content inventory for §70 signals at five widths and retains existing source guards against fabricated analytics. Zero objective findings is not a human whole-product aesthetic/slop verdict, so the row remains IN_PROGRESS.
@@ -424,6 +424,8 @@ Phase 21 accepted interface/provider paths:
 - RSP-003 — C7 inventories all routes and exercises, checks phone controls/touch states and proves the six named complex recompositions. A human desktop/mobile capability comparison over the entire product is still required; objective subsets do not certify universal equivalence.
 
 ## PARTIAL
+
+- GHL-005, GHL-010 — C6 checks known registry IDs/names/aliases and branded phrases; arbitrary unprefixed feature names and contextual generic-name exceptions remain unclassified. The continuation fixed two CRM Custom Fields headings and added a native-heading case-drift negative control. This bounded checker cannot support exhaustive naming acceptance.
 
 - NEG-003 — Phase 19 now routes unstructured prose through the cheap classifier, with ≥0.8 confidence required for an authored strategy and deterministic fallback otherwise. Explicit actions remain authoritative. One real preview hold classification at confidence 0.95 verifies the path and authored consequences; broad language quality is not established, so status stays PARTIAL.
 - EXR-008 — WHAT WOULD YOU BUILD retains its open response and authored objective marker. Phase 19 now evaluates the exact SYSTEM_DESIGN_RUBRIC_V1 through the Worker and requires objective and rubric halves to pass independently. Status remains PARTIAL pending live open-ended judgment verification; the later-level content scope is not promoted by fixture tests.
@@ -484,4 +486,4 @@ The proposal feedback blocker is remediated and the saved human call recovered w
 
 ## ROLL-UP
 
-313 requirements registered · 287 PASSED · 7 IN_PROGRESS · 3 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 2 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 284 PASSED · 8 IN_PROGRESS · 5 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 2 NOT_STARTED. Run the validator for the live count by status and priority.

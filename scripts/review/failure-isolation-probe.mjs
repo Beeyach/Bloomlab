@@ -18,13 +18,15 @@ const report = { base, head: head ?? null, matrix: [], ok: false };
 await page.send('Page.addScriptToEvaluateOnNewDocument', {
   source: `(() => {
     const mode = sessionStorage.getItem('__bloomlab_controlled_failure');
-    if (mode === 'call' || mode === 'ai' || mode === 'sync') {
+    if (mode === 'call' || mode === 'ai' || mode === 'sync' || mode === 'sync-pull') {
       const original = globalThis.fetch.bind(globalThis);
       globalThis.fetch = (input, init) => {
         const path = new URL(typeof input === 'string' ? input : input.url, location.href).pathname;
         if ((mode === 'call' && path.startsWith('/api/call/')) ||
             (mode === 'ai' && path.startsWith('/api/ai/')) ||
-            (mode === 'sync' && path.startsWith('/api/sync/'))) {
+            (mode === 'sync' && path === '/api/sync/push') ||
+            (mode === 'sync-pull' && path === '/api/sync/pull')) {
+          sessionStorage.setItem('__bloomlab_failed_' + mode, String(Number(sessionStorage.getItem('__bloomlab_failed_' + mode) || 0) + 1));
           return Promise.resolve(Response.json({ error: 'controlled_' + mode + '_failure' }, { status: 503 }));
         }
         return original(input, init);
@@ -140,10 +142,10 @@ try {
   await openPage(page, base + call[0]);
   assert(await waitFor(page, call[1]));
   assert((await localEvidence()).present);
-  await setFailure(null);
   matrix('Call Room API', await unaffected([workflow, crm, academy]), {
     reload: true,
     local: true,
+    failureHeldDuringOtherRoutes: true,
   });
 
   // A real Workflow operation reaches a browser Worker that crashes before returning an outcome.
@@ -177,10 +179,10 @@ try {
     ),
   );
   assert.equal(JSON.stringify(await rows('sim_projects')), runBefore);
-  await setFailure(null);
   matrix('Workflow engine Worker', await unaffected([call, crm, academy]), {
     reload: true,
     local: true,
+    failureHeldDuringOtherRoutes: true,
     noPartialRun: true,
   });
 
@@ -240,7 +242,6 @@ try {
     ).length,
     0,
   );
-  await setFailure(null);
   const deterministic = '/exercise/EX-WHAT_WOULD_YOU_BUILD-connect-json';
   await openPage(page, base + deterministic);
   assert(await waitFor(page, `!!document.querySelector('[data-testid="write-repair"]')`));
@@ -259,6 +260,7 @@ try {
   matrix('AI client/gateway', await unaffected([workflow, crm, academy]), {
     reload: true,
     local: true,
+    failureHeldDuringOtherRoutes: true,
     sameAttemptOnRetry: true,
     deterministicCompletion: true,
   });
@@ -284,19 +286,35 @@ try {
   await click(page, 'Sync now');
   assert(await waitFor(page, `document.body.textContent.includes('controlled_sync_failure')`));
   const failedNotes = await rows('notes');
-  const failedQueue = await rows('sync_queue');
   const retryNote = failedNotes.find((note) => !priorNoteIds.has(note.id));
-  assert(
-    retryNote &&
-      failedQueue.some(
-        (operation) =>
-          operation.entity === 'notes' &&
-          operation.entity_id === retryNote.id &&
-          operation.status === 'pending',
-      ),
-  );
+  assert(retryNote, 'Add test note did not persist a new note');
+  // The screen can still show the previous scheduled attempt's error while the explicit
+  // retry owns this row as syncing. Wait for the actual outbox rollback, not stale error text.
+  const pendingRetry = async () =>
+    (await rows('sync_queue')).some(
+      (operation) =>
+        operation.entity === 'notes' &&
+        operation.entity_id === retryNote.id &&
+        operation.status === 'pending',
+    );
+  for (let attempt = 0; attempt < 80 && !(await pendingRetry()); attempt += 1)
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  assert(await pendingRetry(), 'Failed push did not return the new note to pending');
   await openPage(page, base + '/system');
   assert.equal((await rows('notes')).length, failedNotes.length);
+  const newerBody = 'Newer local work written while sync is unavailable';
+  assert(await waitFor(page, `!!document.querySelector('textarea')`));
+  await typeInto(page, 'textarea', newerBody);
+  await click(page, 'Save note');
+  for (
+    let attempt = 0;
+    attempt < 80 &&
+    (await rows('notes')).find((note) => note.id === retryNote.id)?.body !== newerBody;
+    attempt += 1
+  )
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  assert.equal((await rows('notes')).find((note) => note.id === retryNote.id)?.body, newerBody);
+  const pushUnaffected = await unaffected([workflow, crm, academy, call]);
   await setFailure(null);
   await openPage(page, base + '/system');
   await waitFor(
@@ -321,10 +339,56 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 125));
   assert.equal((await rows('sync_state'))[0]?.last_error ?? null, null);
   assert.equal((await rows('notes')).length, failedNotes.length);
-  matrix('Sync push/pull', await unaffected([workflow, crm, academy, call]), {
+  assert.equal(
+    (await rows('notes')).find((note) => note.id === retryNote.id)?.body,
+    newerBody,
+    'Retry overwrote newer local work',
+  );
+  matrix('Sync push', pushUnaffected, {
     reload: true,
     local: true,
     pendingRetried: true,
+    failureHeldDuringOtherRoutes: true,
+    duplicateNotes: false,
+    newerLocalWorkPreserved: true,
+  });
+
+  // Pull failure is separate: a rejected push never reaches pullChanges, so one transport
+  // failure cannot stand in for both boundaries.
+  await setFailure('sync-pull');
+  await openPage(page, base + '/system');
+  assert(await waitFor(page, `!!document.querySelector('textarea')`));
+  const pullBody = 'Local edit retained through a separately failed pull';
+  await typeInto(page, 'textarea', pullBody);
+  await click(page, 'Save note');
+  await click(page, 'Sync now');
+  assert(await waitFor(page, `document.body.textContent.includes('controlled_sync-pull_failure')`));
+  assert(await page.evaluate(`Number(sessionStorage.getItem('__bloomlab_failed_sync-pull')) > 0`));
+  const beforePullReload = (await rows('notes')).find((note) => note.id === retryNote.id);
+  assert.equal(beforePullReload.body, pullBody);
+  await openPage(page, base + '/system');
+  assert.equal((await rows('notes')).find((note) => note.id === retryNote.id)?.body, pullBody);
+  const pullUnaffected = await unaffected([workflow, crm, academy, call]);
+  await setFailure(null);
+  await openPage(page, base + '/system');
+  assert(
+    await waitFor(
+      page,
+      `[...document.querySelectorAll('button')].some(b => b.textContent.trim() === 'Sync now')`,
+    ),
+  );
+  await click(page, 'Sync now');
+  for (let attempt = 0; attempt < 160 && (await rows('sync_state'))[0]?.last_error; attempt += 1)
+    await new Promise((resolve) => setTimeout(resolve, 125));
+  assert.equal((await rows('sync_state'))[0]?.last_error ?? null, null);
+  assert.equal((await rows('notes')).length, failedNotes.length);
+  assert.equal((await rows('notes')).find((note) => note.id === retryNote.id)?.body, pullBody);
+  matrix('Sync pull', pullUnaffected, {
+    reload: true,
+    local: true,
+    failureHeldDuringOtherRoutes: true,
+    separatePullFailureObserved: true,
+    newerLocalWorkPreserved: true,
     duplicateNotes: false,
   });
 
@@ -335,7 +399,7 @@ try {
   assert.equal(health.build_id, browserHead);
   if (head) assert.equal(health.build_id, head);
   report.identity = { browser: browserHead, worker: health.build_id };
-  report.ok = report.matrix.length === 4;
+  report.ok = report.matrix.length === 5;
 } catch (error) {
   report.error = String(error?.stack ?? error);
 } finally {

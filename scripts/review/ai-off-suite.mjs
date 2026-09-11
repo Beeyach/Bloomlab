@@ -21,15 +21,49 @@ const paths = [
     ai: 'none',
   },
   {
-    id: 'academy-skill-mastery',
+    id: 'learning-sync-diagnostics',
     script: 'learning-probe.mjs',
     covers: [
-      'Academy',
-      'Skill Map',
-      'deterministic completion',
+      'Developer learning diagnostics (supporting evidence)',
       'mastery update',
       'saved progress',
     ],
+    ai: 'none',
+  },
+  {
+    id: 'academy',
+    script: 'academy-probe.mjs',
+    covers: ['Academy reading and embeds', 'unit completion', 'offline completion and reload'],
+    ai: 'none',
+  },
+  {
+    id: 'skill-map-campaign',
+    script: 'advanced-paths-probe.mjs',
+    covers: [
+      'Skill Map and detail',
+      'Campaign',
+      'deterministic exercise',
+      'mastery update',
+      'offline progress',
+    ],
+    ai: 'none',
+  },
+  {
+    id: 'advanced-labs',
+    script: 'advanced-labs-probe.mjs',
+    covers: ['Payments', 'advanced CRM and Calendar', 'deterministic save and simulation'],
+    ai: 'none',
+  },
+  {
+    id: 'incident',
+    script: 'incident-probe.mjs',
+    covers: ['Incident Lab', 'deterministic diagnosis and completion'],
+    ai: 'none',
+  },
+  {
+    id: 'open-ended-ai-off',
+    script: 'ai-off-control-probe.mjs',
+    covers: ['Open-ended saved/pending fallback', 'reload', 'continued deterministic Lab access'],
     ai: 'none',
   },
   {
@@ -99,7 +133,7 @@ const report = {
   paths: [],
 };
 
-async function run(entry) {
+async function run(entry, extraEnv = {}) {
   const started = Date.now();
   const child = spawn(process.execPath, [resolve('scripts/review', entry.script)], {
     cwd: process.cwd(),
@@ -108,6 +142,7 @@ async function run(entry) {
       BASE,
       REVIEW_AI_OFF: '1',
       REVIEW_OUT: resolve(OUT, entry.id),
+      ...extraEnv,
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -136,20 +171,40 @@ async function run(entry) {
     ai_policy: entry.ai,
     duration_ms: Date.now() - started,
   };
-  report.paths.push(row);
   console.log(`AI_OFF_PATH ${JSON.stringify(row)}`);
+  return row;
 }
 
-for (const entry of paths) await run(entry);
+for (const entry of paths) report.paths.push(await run(entry));
+
+const negative = await run(
+  {
+    id: 'negative-control',
+    script: 'ai-off-control-probe.mjs',
+    covers: ['Deliberately introduced AI dependency on CRM'],
+    ai: 'none',
+  },
+  { REVIEW_AI_OFF_NEGATIVE: '1' },
+);
+const detected =
+  negative.exit_code === 0 &&
+  negative.ai_mode_verified &&
+  negative.outcome === 'FAILED' &&
+  negative.ai_route_attempts.some(
+    (attempt) => attempt.url === '/api/ai/field-ready-negative-control',
+  );
 
 report.negative_control = {
   rule: 'A deterministic-only path fails if it attempts /api/ai/*.',
-  exercised: true,
+  exercised: detected,
+  detected,
+  result: negative,
   deterministic_attempts: report.paths
     .filter((entry) => entry.ai_policy === 'none')
     .flatMap((entry) => entry.ai_route_attempts),
 };
-report.verdict = report.paths.every((entry) => entry.outcome === 'PASSED') ? 'PASSED' : 'FAILED';
+report.verdict =
+  detected && report.paths.every((entry) => entry.outcome === 'PASSED') ? 'PASSED' : 'FAILED';
 writeFileSync(resolve(OUT, 'ai-off-suite.json'), JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify(report, null, 2));
 if (report.verdict !== 'PASSED') process.exitCode = 1;

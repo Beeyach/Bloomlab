@@ -44,6 +44,7 @@ const request = (path, identity, init = {}) =>
 let owner;
 let foreign;
 let attachmentId;
+let restoredId;
 try {
   const before = await (await fetch(`${base}/api/health`, { cache: 'no-store' })).json();
   assert.equal(before.build_id, head);
@@ -108,6 +109,63 @@ try {
   assert.equal((await confirmed.json()).status, 'restored');
   report.checks.push('restore preview is explicit; confirmation keeps matching current media');
 
+  // Restore the exported bytes under a fresh synthetic asset ID, proving a missing binary is
+  // actually written by confirmation. The already-present/keep path alone cannot prove recovery.
+  restoredId = crypto.randomUUID();
+  const missingHeader = structuredClone(header);
+  missingHeader.backup_id = crypto.randomUUID();
+  missingHeader.assets[0].id = restoredId;
+  const missingHeaderBytes = Buffer.from(JSON.stringify(missingHeader));
+  const prefix = Buffer.alloc(12);
+  archive.copy(prefix, 0, 0, 8);
+  prefix.writeUInt32BE(missingHeaderBytes.length, 8);
+  const missingArchive = Buffer.concat([
+    prefix,
+    missingHeaderBytes,
+    archive.subarray(12 + headerLength),
+  ]);
+  const restoredPath = `/api/attachments/${restoredId}`;
+  assert.equal((await request(restoredPath, owner)).status, 404);
+  const missingPreview = await request('/api/recovery/preview', owner, {
+    method: 'POST',
+    headers: { 'content-type': 'application/vnd.bloomlab.recovery-v1' },
+    body: missingArchive,
+  });
+  assert.equal(missingPreview.status, 200);
+  const missingStage = await missingPreview.json();
+  assert.deepEqual(missingStage.counts, { add: 1, repair: 0, keep: 0, deleted: 0 });
+  assert.equal(
+    (await request(`${restoredPath}/file`, owner)).status,
+    404,
+    'Preview must not write the missing file',
+  );
+  const restoreResponse = await request(
+    `/api/recovery/stages/${missingStage.stage_id}/confirm`,
+    owner,
+    { method: 'POST' },
+  );
+  assert.equal(restoreResponse.status, 200);
+  assert.equal((await restoreResponse.json()).applied.add, 1);
+  const restoredFile = await request(`${restoredPath}/file`, owner);
+  assert.equal(restoredFile.status, 200);
+  assert.deepEqual(Buffer.from(await restoredFile.arrayBuffer()), bytes);
+  assert.equal((await request(`${restoredPath}/file`, foreign)).status, 403);
+  assert.deepEqual(
+    Buffer.from(await (await request(`${assetPath}/file`, owner)).arrayBuffer()),
+    bytes,
+  );
+  assert.equal(
+    (
+      await request(`/api/recovery/stages/${missingStage.stage_id}/confirm`, owner, {
+        method: 'POST',
+      })
+    ).status,
+    409,
+  );
+  report.checks.push(
+    'missing synthetic binary absent before confirmation; restored bytes match export; original preserved; repeat confirmation rejected',
+  );
+
   const cancellable = await request('/api/recovery/preview', owner, {
     method: 'POST',
     headers: { 'content-type': 'application/vnd.bloomlab.recovery-v1' },
@@ -161,6 +219,8 @@ try {
 } finally {
   if (owner && attachmentId)
     await request(`/api/attachments/${attachmentId}`, owner, { method: 'DELETE' }).catch(() => {});
+  if (owner && restoredId)
+    await request(`/api/attachments/${restoredId}`, owner, { method: 'DELETE' }).catch(() => {});
   for (const identity of [owner, foreign]) {
     if (!identity) continue;
     await request('/api/sync/devices/revoke', identity, {

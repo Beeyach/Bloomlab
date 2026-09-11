@@ -51,8 +51,9 @@ const assertRegistryIds = (entry, kind) => {
 for (const entry of NATIVE_CONFIGURATION_TERMS) assertRegistryIds(entry, 'configuration term');
 
 const segments = [];
-const push = (file, location, text) => {
-  if (typeof text === 'string' && text.trim()) segments.push({ file, location, text });
+const push = (file, location, text, visibleLabel = false) => {
+  if (typeof text === 'string' && text.trim())
+    segments.push({ file, location, text, visibleLabel });
 };
 const flattenYaml = (file, value, pointer = '$') => {
   if (typeof value === 'string') push(file, pointer, value);
@@ -61,11 +62,11 @@ const flattenYaml = (file, value, pointer = '$') => {
   else if (value && typeof value === 'object')
     Object.entries(value).forEach(([key, item]) => flattenYaml(file, item, `${pointer}.${key}`));
 };
-const extractTypeScript = (path) => {
+const extractTypeScript = (path, sourceText = readFileSync(path, 'utf8')) => {
   const file = relativePath(path);
   const source = ts.createSourceFile(
     file,
-    readFileSync(path, 'utf8'),
+    sourceText,
     ts.ScriptTarget.Latest,
     true,
     extname(path) === '.tsx' ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
@@ -80,7 +81,15 @@ const extractTypeScript = (path) => {
       ts.isTemplateTail(node)
     ) {
       const { line } = source.getLineAndCharacterOfPosition(node.getStart(source));
-      push(file, `line ${line + 1}`, node.text ?? node.getText(source));
+      const parent = node.parent;
+      const visibleLabel =
+        ts.isJsxText(node) &&
+        ts.isJsxElement(parent) &&
+        parent.children.every(ts.isJsxText) &&
+        /^(h[1-6]|label|legend|button|option|summary)$/.test(
+          parent.openingElement.tagName.getText(source),
+        );
+      push(file, `line ${line + 1}`, node.text ?? node.getText(source), visibleLabel);
     }
     ts.forEachChild(node, visit);
   };
@@ -122,6 +131,9 @@ for (const file of [...scopedFiles].sort()) {
   else extractTypeScript(path);
 }
 
+if (process.argv.includes('--negative-control'))
+  extractTypeScript(resolve(ROOT, 'negative-control.tsx'), '<h2>Custom fields</h2>');
+
 const hits = {
   registry_ids: [],
   official_names: [],
@@ -152,6 +164,11 @@ for (const segment of segments) {
   }
   for (const [name, feature] of officialByName) {
     if (containsTerm(segment.text, name)) record('official_names', segment, name, [feature.id]);
+    const label = segment.text.trim().replace(/\s+/g, ' ');
+    if (segment.visibleLabel && label !== name && label.toLowerCase() === name.toLowerCase())
+      problems.push(
+        `${segment.file} ${segment.location}: native label ${JSON.stringify(label)} must use official_name ${JSON.stringify(name)} (${feature.id})`,
+      );
   }
   for (const [alias, target] of aliasByName) {
     if (!containsTerm(segment.text, alias)) continue;
@@ -242,7 +259,9 @@ const surfaceReport = SURFACES.map((surface) => {
   return { id: surface.id, files: files.length, classified_occurrences: allHits.length };
 });
 const report = {
-  schema_version: 1,
+  schema_version: 2,
+  coverage_boundary:
+    'Known registry IDs, names, aliases, native heading casing and branded phrases are checked. Arbitrary unprefixed feature names and contextual generic-name exceptions are not exhaustively classified; GHL-005/GHL-010 remain PARTIAL.',
   registry_records: registry.length,
   scoped_files: scopedFiles.size,
   text_segments: segments.length,
@@ -252,14 +271,17 @@ const report = {
   inventory: hits,
 };
 const outputDirectory = resolve(ROOT, '.content');
+const negativeControl = process.argv.includes('--negative-control');
 mkdirSync(outputDirectory, { recursive: true });
-writeFileSync(
-  resolve(outputDirectory, 'ghl-terminology.json'),
-  `${JSON.stringify(report, null, 2)}\n`,
-);
+if (!negativeControl)
+  writeFileSync(
+    resolve(outputDirectory, 'ghl-terminology.json'),
+    `${JSON.stringify(report, null, 2)}\n`,
+  );
 const markdown = [
   '# HighLevel terminology audit',
   '',
+  report.coverage_boundary,
   `Registry records: ${report.registry_records}`,
   `Learner-facing source files: ${report.scoped_files}`,
   `Extracted text segments: ${report.text_segments}`,
@@ -280,7 +302,7 @@ const markdown = [
   ...report.problems.map((problem) => `- ${problem}`),
   '',
 ].join('\n');
-writeFileSync(resolve(outputDirectory, 'ghl-terminology.md'), markdown);
+if (!negativeControl) writeFileSync(resolve(outputDirectory, 'ghl-terminology.md'), markdown);
 
 if (report.problems.length) {
   console.error(`GHL-005/GHL-010: ${report.problems.length} terminology problem(s).`);
@@ -288,7 +310,7 @@ if (report.problems.length) {
   process.exitCode = 1;
 } else {
   console.log(
-    `GHL-005/GHL-010: ${registry.length} registry records; ${scopedFiles.size} learner-facing files; ${segments.length} text segments; no unresolved ids, stale aliases or unclassified native terms.`,
+    `GHL-005/GHL-010: ${registry.length} registry records; ${scopedFiles.size} learner-facing files; ${segments.length} text segments; no detected ID, alias, native-heading or branded-phrase problems (bounded coverage).`,
   );
   console.log('Reports: .content/ghl-terminology.json and .content/ghl-terminology.md');
 }

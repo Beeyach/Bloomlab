@@ -34,7 +34,7 @@ export function startSyncScheduler(
   };
 
   const pending = liveQuery(() =>
-    database.sync_queue.filter((row) => row.status === 'pending').count(),
+    database.sync_queue.where('status').equals('pending').count(),
   ).subscribe({ next: (count) => count > 0 && navigator.onLine && soon() });
   const interval = setInterval(onVisible, INTERVAL_MS);
   window.addEventListener('online', kick);

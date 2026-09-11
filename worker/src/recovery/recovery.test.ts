@@ -72,6 +72,25 @@ async function attachmentArchive(learnerId: string, id = crypto.randomUUID()) {
 }
 
 describe('DATA-006 staged private-media recovery', () => {
+  it('returns a sanitized retryable response when export storage rejects asynchronously', async () => {
+    const a = await setup();
+    const archive = await attachmentArchive(a.linked.learner_id);
+    const stage = (await (await a.request('preview', 'POST', archive.bytes)).json()) as {
+      stage_id: string;
+    };
+    expect((await a.request(`stages/${stage.stage_id}/confirm`)).status).toBe(200);
+    const failure = vi
+      .spyOn(env.MEDIA, 'get')
+      .mockRejectedValueOnce(new Error('private storage detail'));
+    try {
+      const response = await a.request('export');
+      expect(response.status).toBe(503);
+      expect(await response.text()).not.toContain('private storage detail');
+    } finally {
+      failure.mockRestore();
+    }
+  });
+
   it('previews without mutation, confirms add, then classifies keep/repair/deleted without overwrite', async () => {
     const a = await setup();
     const archive = await attachmentArchive(a.linked.learner_id);
@@ -167,7 +186,7 @@ describe('DATA-006 staged private-media recovery', () => {
     );
   });
 
-  it('exports every learner-private binary class and excludes reusable authored voice', async () => {
+  it('exports and repairs every learner-private binary class while excluding reusable authored voice', async () => {
     const a = await setup();
     const learner = a.linked.learner_id;
     const fieldAttempt = crypto.randomUUID();
@@ -287,6 +306,26 @@ describe('DATA-006 staged private-media recovery', () => {
       'scenario_attachment',
     ]);
     expect(decoded.header.assets.some((asset) => asset.id === authoredId)).toBe(false);
+    const privateFiles: [string, Uint8Array][] = [
+      [evidenceKey, png],
+      [recordingKey, webm],
+      [callVoiceKey, mp3],
+      [attachmentKey, pdf],
+    ];
+    for (const [key] of privateFiles) await env.MEDIA.delete(key);
+    const previewResponse = await a.request('preview', 'POST', archive);
+    expect(previewResponse.status).toBe(200);
+    const repair = (await previewResponse.json()) as {
+      stage_id: string;
+      counts: Record<string, number>;
+    };
+    expect(repair.counts).toEqual({ add: 0, repair: 4, keep: 0, deleted: 0 });
+    for (const [key] of privateFiles) expect(await env.MEDIA.get(key)).toBeNull();
+    expect((await a.request(`stages/${repair.stage_id}/confirm`)).status).toBe(200);
+    for (const [key, original] of privateFiles)
+      expect(new Uint8Array(await (await env.MEDIA.get(key))!.arrayBuffer())).toEqual(original);
+    expect(new Uint8Array(await (await env.MEDIA.get(authoredKey))!.arrayBuffer())).toEqual(mp3);
+
     expect(await env.MEDIA.list({ prefix: `recovery/backups/v1/${learner}/` })).toMatchObject({
       objects: [],
     });

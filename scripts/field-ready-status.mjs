@@ -17,21 +17,13 @@ const byId = new Map(rows.map((row) => [row.id, row]));
 const expect = (id, status) =>
   assert.equal(byId.get(id)?.status, status, `${id} must be ${status}`);
 
-for (const id of [
-  'PRD-004',
-  'PRD-009',
-  'EXR-006',
-  'DATA-006',
-  'INF-011',
-  'GHL-005',
-  'GHL-010',
-  'DES-018',
-  'RSP-004',
-  'A11Y-001',
-])
+for (const id of ['PRD-004', 'PRD-009', 'EXR-006', 'DATA-006', 'INF-011', 'RSP-004', 'A11Y-001'])
   expect(id, 'PASSED');
 
 for (const [id, status] of [
+  ['GHL-005', 'PARTIAL'],
+  ['GHL-010', 'PARTIAL'],
+  ['DES-018', 'IN_PROGRESS'],
   ['EXR-008', 'PARTIAL'],
   ['PRI-002', 'PARTIAL'],
   ['NEG-003', 'PARTIAL'],
@@ -69,7 +61,7 @@ assert.deepEqual(
 const openP0P1 = rows.filter(
   (row) => ['P0', 'P1'].includes(row.priority) && row.status !== 'PASSED',
 );
-assert.equal(openP0P1.length, 21);
+assert.equal(openP0P1.length, 24);
 console.log(
-  `Field-Ready status guard: 10 promoted; 8 target rows retained; 12 human/real-GHL rows unchanged; DES-009 IN_PROGRESS; ${openP0P1.length} P0/P1 rows open.`,
+  `Field-Ready status guard: 7 promoted; 11 target rows retained; 12 human/real-GHL rows unchanged; DES-009 IN_PROGRESS; ${openP0P1.length} P0/P1 rows open.`,
 );

@@ -62,6 +62,15 @@ const report = {
   base,
   head,
   node: process.version,
+  ci: {
+    run_id: process.env.GITHUB_RUN_ID ?? null,
+    attempt: process.env.GITHUB_RUN_ATTEMPT ?? null,
+    url: process.env.GITHUB_RUN_ID
+      ? `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+      : null,
+  },
+  acceptance_boundary:
+    'Verification success is not full C1-C8 acceptance. GHL-005/GHL-010 remain PARTIAL and DES-018 remains IN_PROGRESS; see the source requirement ledger for all retained boundaries.',
   fieldwork_live: false,
   production: 'SKIPPED',
   identities: {},
@@ -189,6 +198,11 @@ report.terminology = {
   text_segments: terminology.text_segments,
   problems: terminology.problems.length,
 };
+const statePath = resolve(out, 'screen-states', 'screen-state-matrix.json');
+if (existsSync(statePath)) {
+  const states = JSON.parse(readFileSync(statePath, 'utf8'));
+  report.screen_state_coverage = { requirement: states.requirement, summary: states.summary };
+}
 const deployLogPath = resolve(out, 'deploy.log');
 assert(existsSync(deployLogPath), 'Missing captured Wrangler deployment log');
 const deployLog = readFileSync(deployLogPath, 'utf8');
@@ -218,6 +232,8 @@ writeFileSync(
     `- Status: ${report.status}`,
     `- Git head: \`${head}\``,
     `- Node: \`${report.node}\``,
+    `- CI: ${report.ci.url ?? 'local diagnostic'} (attempt ${report.ci.attempt ?? 'n/a'})`,
+    `- Acceptance boundary: ${report.acceptance_boundary}`,
     `- Preview: ${base}`,
     `- Worker version: \`${workerVersion}\``,
     `- Browser / Worker before: \`${report.identities.before.browser}\` / \`${report.identities.before.worker}\``,

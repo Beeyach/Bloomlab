@@ -14,12 +14,19 @@ mkdirSync(out, { recursive: true });
 const suitePath = resolve(evidenceRoot, 'suite.json');
 assert(existsSync(suitePath), `Missing exact-head browser suite: ${suitePath}`);
 const suite = JSON.parse(readFileSync(suitePath, 'utf8'));
+assert.equal(
+  suite.head,
+  process.env.REVIEW_HEAD,
+  'Screen evidence must match the requested exact head',
+);
 const probeRows = new Map(suite.probes.map((probe) => [probe.name, probe]));
 const evidence = (...probes) => {
   for (const probe of probes)
     assert.equal(probeRows.get(probe)?.status, 'PASSED', `Required ${probe} evidence did not pass`);
   return {
-    status: 'PROVEN_BROWSER',
+    status: 'RELATED_BROWSER_EVIDENCE',
+    limitation:
+      'The referenced probe passed, but this family-level mapping does not establish this exact screen/state/input cell. State-specific assertion mapping remains required.',
     probes,
     artifacts: probes.map((probe) =>
       relative(process.cwd(), resolve(evidenceRoot, probe, 'run.log')).replaceAll('\\', '/'),
@@ -289,6 +296,10 @@ const rows = SCREEN_INVENTORY.map((screen) => {
         observed && observed.failures.length === 0,
         `Missing clean ${screen.name} ${width} layout`,
       );
+      assert(
+        existsSync(resolve(evidenceRoot, 'polish', `${screen.name}-${width}.png`)),
+        `Missing screenshot for ${screen.name} ${width}`,
+      );
       return [
         width,
         {
@@ -379,7 +390,12 @@ const mobileRecompositions = [
 });
 
 const report = {
-  schema_version: 1,
+  schema_version: 2,
+  requirement: {
+    id: 'DES-018',
+    status: 'IN_PROGRESS',
+    reason: 'Family-level probe references still need exact screen/state/input assertion mapping.',
+  },
   head: suite.head,
   base: suite.base,
   generated_from: [
@@ -400,6 +416,9 @@ const report = {
     shared_contract_cells: rows
       .flatMap((row) => Object.values(row.states))
       .filter((cell) => cell.status === 'PROVEN_SHARED_ROUTE_CONTRACT').length,
+    unverified_state_cells: rows
+      .flatMap((row) => Object.values(row.states))
+      .filter((cell) => cell.status === 'RELATED_BROWSER_EVIDENCE').length,
     human_visual_rows_required: rows.length,
   },
 };
@@ -414,6 +433,8 @@ writeFileSync(
     '# Field-Ready screen/state evidence matrix',
     '',
     `Exact head: \`${report.head}\``,
+    'DES-018: IN_PROGRESS. Related probe references are not proof of every semantic/input cell.',
+    `Unverified semantic/input cells: ${report.summary.unverified_state_cells}`,
     `Learner screens: ${report.summary.screens}`,
     `Five-width layout cells: ${report.summary.layout_cells}`,
     `State/input cells: ${report.summary.state_cells}`,

@@ -9,6 +9,17 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Fixed — independent closeout continuation
+
+- Diagnosed the retained exact-head Workflow failures with a Chrome trace: sync status/scheduling
+  now use the existing IndexedDB status index instead of repeatedly cloning queued snapshot payloads.
+  Performance ceilings remain unchanged; failed-work indicator behavior is preserved.
+- Corrected CRM Custom Fields headings and sanitized asynchronous private-media export failures.
+- Added real AI-Off learner routes and a failing dependency control, missing-binary Preview restore,
+  held-fault isolation and newer-local-work retry assertions, and native keyboard Lab operations.
+- Reopened GHL-005/GHL-010 and DES-018 where prior evidence overstated exhaustive naming/state
+  coverage. Preserved all prior failed runs, the twelve human rows, and all performance thresholds.
+
 ### Changed — Field-Ready v1 code/audit closeout
 
 - Added a whole-product AI-Off harness and learner-owned v9 local migration/inventory; every
@@ -27,7 +38,7 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
   all 17 exercise families, 215 five-width layout cells and explicit state/input/reduced-motion
   evidence. Added real phone assertions for Skill Map territory selection and Inbox composition.
   Human hierarchy/density/material/long-session review stays open; DES-009 is regression-only.
-- Reconciled ten objectively complete P0/P1 rows. Preserved all twelve IMPLEMENTED_UNVERIFIED rows,
+- Retained seven objectively evidenced P0/P1 promotions after independently reopening three unsupported claims. Preserved all twelve IMPLEMENTED_UNVERIFIED rows,
   all semantic/human/device/provider/real-GHL boundaries, and the independent-audit/no-merge gate.
   Draft PR #32 targets `codex/navigation-shell-redesign`; exact-head Preview evidence is attached to
   the PR rather than self-referenced inside the source commit.

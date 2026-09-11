@@ -302,7 +302,7 @@ Validate this file with `node scripts/validate-requirements.mjs`.
 | DES-015 | Visual primitives: HoloMaterial, Surface, InkSurface, ToolPanel, Sheet, Inspector, Popover, Field, Button, IconButton. | P0 | 2 | PASSED | TA§3 |
 | DES-016 | Styling via CSS variables + CSS Modules / component CSS; Tailwind only selectively for layout utilities; product must not look like a standard Tailwind component library. | P1 | 2 | PASSED | TA§3 |
 | DES-017 | Visual review of major screens at 1440 / 1024 / 768 / 390 / 320 checking hierarchy, density, material, interaction, holo restraint, slop patterns, responsive composition, long-session comfort. | P1 | all | IN_PROGRESS | §135 |
-| DES-018 | Screen coverage matrix maintained: Screen × Desktop / Tablet / Mobile / Empty / Loading / Error / Keyboard / Touch. No major screen complete with desktop only. | P1 | all | PASSED | §136 |
+| DES-018 | Screen coverage matrix maintained: Screen × Desktop / Tablet / Mobile / Empty / Loading / Error / Keyboard / Touch. No major screen complete with desktop only. | P1 | all | IN_PROGRESS | §136 |
 | DES-019 | Visual language exists early; product is never built with generic temporary UI to be "styled later". | P0 | 2 | PASSED | PHASE 2 |
 | DES-020 | Academy visual design is editorial (strong typography, diagrams, inline simulation embeds). | P1 | 8 | PASSED | §76 |
 | DES-021 | No eyebrows, kickers or overlines in user-facing product UI: no tiny, widely tracked upper-case label above a heading, and no pre-title category label used as decoration. Information such as exercise type, mode, duration, campaign or module context is recomposed into a subtitle, a normal metadata row, nearby body copy, a status treatment or navigation context — never dropped. The primary navigation rail keeps its own labels. | P1 | 10 | PASSED | §70, D-084 |
@@ -487,9 +487,9 @@ AI-002 audit correction: canonical refresh now reconciles the local mode before 
 | GHL-002 | `implementation_type` ∈ native_ghl, integration, custom_code, external_service. | P0 | 5 | PASSED | §25 |
 | GHL-003 | `status` ∈ current, needs_review, deprecated, removed. | P0 | 5 | PASSED | §25 |
 | GHL-004 | `simulation_fidelity` ∈ A, B, C, REAL_GHL; approximations clearly labelled; fictional native functionality never taught. | P0 | 5 | PASSED | §26, TA§30 |
-| GHL-005 | No supposed native GHL feature is ever exposed in Bloomlab without a registry entry. | P0 | all | PASSED | §25 |
+| GHL-005 | No supposed native GHL feature is ever exposed in Bloomlab without a registry entry. | P0 | all | PARTIAL | §25 |
 | GHL-006 | Trigger, action and product names verified against official current GHL documentation before entering the registry; obsolete API patterns never taught as current; old YouTube tutorials never blindly reproduced. | P0 | 5 | PASSED | §16, §23, §151 |
 | GHL-007 | GHL coverage matrix generated: GHL Feature × Skill / Simulator / Fidelity / Exercise / Fieldwork / Last Verified. | P1 | 5 | PASSED | §138 |
 | GHL-008 | Freshness: features not verified recently are flagged; a maintenance script generates a review list. | P2 | 26 | PASSED | TA§83 |
 | GHL-009 | Simulator approximations and mismatches with real GHL recorded honestly in KNOWN_LIMITATIONS.md. | P0 | all | PASSED | §140 |
-| GHL-010 | Exact real GHL terminology used in UI wherever a real feature is represented. | P0 | all | PASSED | §44, §51 |
+| GHL-010 | Exact real GHL terminology used in UI wherever a real feature is represented. | P0 | all | PARTIAL | §44, §51 |

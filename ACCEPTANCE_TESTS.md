@@ -17,7 +17,7 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **REP-003 / DES-006** Audit of every screen finds no fabricated numbers and no item from the §70 slop list.
 - **RSP-001 / RSP-002 / RSP-003** Every major screen reviewed at all widths; tablet layouts are deliberate; no critical desktop capability is absent on mobile.
 - **DES-017 / DES-018** Screen coverage matrix has every cell for every major screen filled with evidence; visual review notes exist per width.
-  - **DES-018 PASSED / DES-017 IN_PROGRESS (Field-Ready C7).** The generated matrix derives 43 learner screens from the router/content, covers all 17 exercise types, five widths and applicable semantic/input states, and labels shared contracts/N/A explicitly. Its `human_visual_review` field remains `REQUIRED` for every row, so the matrix is complete without manufacturing DES-017's subjective sign-off.
+  - **DES-018 IN_PROGRESS / DES-017 IN_PROGRESS (continuation audit).** The generated matrix retains 43 learner screens, all 17 exercise types and five-width layout evidence. Family-level probe references do not prove every semantic/input cell; they are now labeled RELATED_BROWSER_EVIDENCE. Exact screen/state assertions and per-width visual review remain required.
 - **INF-006 / INF-007 / INF-008** `wrangler` config and package manifests contain no Durable Object, Queue, Redis, Supabase, Firebase, Kubernetes or vector-database dependency.
 - **SEC-001** Secret scan of repo and built client bundle finds no key material; Worker reads secrets only from bindings; D1 schema has no secret columns.
 - **SEC-002** Development uses `bloomlab-dev`; no script points local/preview at production D1.

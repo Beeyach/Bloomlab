@@ -139,6 +139,17 @@ try {
 } catch (error) {
   report.status = 'FAILED';
   report.error = String(error);
+  report.failureContext = await page
+    .evaluate(
+      `(() => ({
+    path: location.pathname, width: innerWidth, title: document.querySelector('main h1')?.textContent,
+    status: [...document.querySelectorAll('[role=status]')].map(e=>e.textContent.trim()),
+    alerts: [...document.querySelectorAll('[role=alert]')].map(e=>e.textContent.trim()),
+    main: document.querySelector('main')?.innerText.slice(0,2000),
+  }))()`,
+    )
+    .catch((error) => ({ diagnosticError: String(error) }));
+  await screenshot(page, resolve(out, 'failed-screen.png'), undefined, false).catch(() => {});
   throw error;
 } finally {
   writeFileSync(resolve(out, 'polish-probe.json'), JSON.stringify(report, null, 2));

@@ -60,16 +60,27 @@ export function useSyncStatus(database: BloomlabDatabase = db): SyncStatusView {
   const online = useOnline();
   const signals = useLiveQuery(
     async () => {
-      const rows = await database.sync_queue.toArray();
-      const states = await database.sync_state.toArray();
+      // Queue payloads include whole simulator snapshots. Read the existing status index
+      // inside one transaction so updating the shell never clones every pending payload.
+      const [total, inFlight, states] = await database.transaction(
+        'r',
+        database.sync_queue,
+        database.sync_state,
+        () =>
+          Promise.all([
+            database.sync_queue.count(),
+            database.sync_queue.where('status').equals('syncing').count(),
+            database.sync_state.toArray(),
+          ]),
+      );
       const lastSyncedAt = states
         .map((state) => state.last_synced_at)
         .filter((value): value is string => value !== null)
         .sort()
         .at(-1);
       return {
-        pending: rows.filter((row) => row.status !== 'syncing').length,
-        inFlight: rows.filter((row) => row.status === 'syncing').length,
+        pending: total - inFlight,
+        inFlight,
         lastSyncedAt: lastSyncedAt ?? null,
       };
     },

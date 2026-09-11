@@ -872,7 +872,7 @@ export async function handleRecovery(request: Request, env: Storage): Promise<Re
       throw new RecoveryError(401, 'Link this device before using private-media recovery.');
     const url = new URL(request.url);
     if (url.pathname === '/api/recovery/export' && request.method === 'POST')
-      return exportArchive(env, session);
+      return await exportArchive(env, session);
     if (url.pathname === '/api/recovery/preview' && request.method === 'POST')
       return json(await previewArchive(request, env, session));
     const match = /^\/api\/recovery\/stages\/([a-f0-9-]{36})\/(confirm|cancel)$/.exec(url.pathname);
