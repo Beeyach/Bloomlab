@@ -107,11 +107,20 @@ export function connect(url) {
       listeners.add(l);
     });
   const evaluate = async (expression) => {
-    const r = await send('Runtime.evaluate', {
-      expression,
-      returnByValue: true,
-      awaitPromise: true,
-    });
+    let r;
+    try {
+      r = await send('Runtime.evaluate', {
+        expression,
+        returnByValue: true,
+        awaitPromise: true,
+      });
+    } catch (error) {
+      const preview = expression.replace(/\s+/g, ' ').trim().slice(0, 180);
+      throw new Error(
+        `${error instanceof Error ? error.message : String(error)} [evaluate: ${preview}]`,
+        { cause: error },
+      );
+    }
     if (r.exceptionDetails) {
       throw new Error(
         `${r.exceptionDetails.text} ${r.exceptionDetails.exception?.description ?? ''}`,

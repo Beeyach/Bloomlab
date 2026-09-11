@@ -67,11 +67,11 @@ const transformOf = (page, selector) =>
 
 const startFrames = (page) =>
   page.evaluate(`(() => {
-    window.__frames = []; window.__long = []; window.__sampling = true;
+    window.__frames = []; window.__slowFrames = []; window.__long = []; window.__longDetails = []; window.__sampling = true;
     let last = performance.now();
-    const loop = () => { const now = performance.now(); window.__frames.push(now - last); last = now; if (window.__sampling) requestAnimationFrame(loop); };
+    const loop = () => { const now = performance.now(); const duration = now - last; window.__frames.push(duration); if (duration > 50) window.__slowFrames.push({ duration: Math.round(duration), iteration: window.__stressIteration ?? null }); last = now; if (window.__sampling) requestAnimationFrame(loop); };
     requestAnimationFrame(loop);
-    try { window.__po = new PerformanceObserver((list) => { for (const e of list.getEntries()) window.__long.push(Math.round(e.duration)); }); window.__po.observe({ type: 'longtask', buffered: false }); } catch {}
+    try { window.__po = new PerformanceObserver((list) => { for (const e of list.getEntries()) { window.__long.push(Math.round(e.duration)); window.__longDetails.push({ duration: Math.round(e.duration), start: Math.round(e.startTime), iteration: window.__stressIteration ?? null }); } }); window.__po.observe({ type: 'longtask', buffered: false }); } catch {}
     return true;
   })()`);
 const stopFrames = (page) =>
@@ -79,7 +79,7 @@ const stopFrames = (page) =>
     window.__sampling = false; try { window.__po?.disconnect(); } catch {}
     const f = window.__frames.slice(1); const sorted = [...f].sort((a, b) => a - b);
     const p = (k) => sorted.length ? sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * k))] : null;
-    return { frames: f.length, mean: f.length ? +(f.reduce((a, b) => a + b, 0) / f.length).toFixed(1) : null, p95: p(0.95), max: f.length ? Math.round(Math.max(...f)) : null, over50ms: f.filter((x) => x > 50).length, longTasks: window.__long };
+    return { frames: f.length, mean: f.length ? +(f.reduce((a, b) => a + b, 0) / f.length).toFixed(1) : null, p95: p(0.95), max: f.length ? Math.round(Math.max(...f)) : null, over50ms: f.filter((x) => x > 50).length, slowFrames: window.__slowFrames, longTasks: window.__long, longTaskDetails: window.__longDetails };
   })()`);
 
 const mouse = (page, type, x, y, extra = {}) =>
@@ -367,12 +367,18 @@ try {
   let ranIn = null;
   const started = Date.now();
   for (let i = 0; i < 90 && eventsAdded < 500; i += 1) {
-    const runsBefore = await count(page, '[data-testid="timeline"] [data-run]');
+    await page.evaluate(`window.__stressIteration=${i}`);
+    const runsBefore = Number(
+      await page.evaluate(`${q('[data-testid="timeline"]')}.dataset.runCount`),
+    );
     await click(page, '[data-testid="run-test"]');
-    await waitFor(
-      page,
-      `document.querySelectorAll('[data-testid="timeline"] [data-run]').length > ${runsBefore}`,
-      { timeout: 8000, every: 20 },
+    assert(
+      await waitFor(
+        page,
+        `Number(${q('[data-testid="timeline"]')}.dataset.runCount) > ${runsBefore}`,
+        { timeout: 8000, every: 20 },
+      ),
+      `Run count did not advance after stress iteration ${i}`,
     );
     const timing = await text(page, '[data-testid="timing"]');
     const m = timing.match(
@@ -388,6 +394,12 @@ try {
   const stateSize = await page.evaluate(
     `document.querySelectorAll('[data-testid="timeline"] [data-run]').length`,
   );
+  const totalRuns = Number(
+    await page.evaluate(`${q('[data-testid="timeline"]')}.dataset.runCount`),
+  );
+  const olderRuns = await page.evaluate(
+    `${q('[data-testid="older-runs"]')}?.textContent.trim() ?? null`,
+  );
   section(
     'five-hundred-events',
     {
@@ -398,6 +410,8 @@ try {
       p95Under50ms: busyFrames.p95 !== null && busyFrames.p95 < 50,
       noFrameOver100ms: busyFrames.max !== null && busyFrames.max < 100,
       noLongTaskOver100ms: !busyFrames.longTasks.some((duration) => duration > 100),
+      boundedRunDom: stateSize <= 25,
+      earlierRunsReachable: totalRuns <= 24 || /^Show \d+ earlier runs$/.test(olderRuns ?? ''),
     },
     {
       eventsAdded,
@@ -405,6 +419,7 @@ try {
       ranIn,
       elapsedMs: Date.now() - started,
       runsListed: stateSize,
+      totalRuns,
       frames: busyFrames,
     },
   );

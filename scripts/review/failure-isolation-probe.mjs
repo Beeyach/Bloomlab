@@ -255,7 +255,7 @@ try {
       `(()=>{const input=document.querySelector(${JSON.stringify(selector)}),set=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set;set.call(input,${JSON.stringify(value)});input.dispatchEvent(new Event('input',{bubbles:true}));})()`,
     );
   await click(page, 'Run it');
-  assert(await waitFor(page, `document.querySelector('[data-outcome="passed"]')`));
+  assert(await waitFor(page, `!!document.querySelector('[data-outcome="passed"]')`));
   matrix('AI client/gateway', await unaffected([workflow, crm, academy]), {
     reload: true,
     local: true,
@@ -272,15 +272,28 @@ try {
       `[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Add test note')`,
     ),
   );
+  const notesBeforeFailure = await rows('notes');
+  const priorNoteIds = new Set(notesBeforeFailure.map((note) => note.id));
   await click(page, 'Add test note');
-  for (let attempt = 0; attempt < 40 && (await rows('notes')).length < 2; attempt += 1)
+  for (
+    let attempt = 0;
+    attempt < 40 && (await rows('notes')).length <= notesBeforeFailure.length;
+    attempt += 1
+  )
     await new Promise((resolve) => setTimeout(resolve, 100));
   await click(page, 'Sync now');
-  assert(await waitFor(page, `document.body.textContent.includes('Controlled sync failure')`));
+  assert(await waitFor(page, `document.body.textContent.includes('controlled_sync_failure')`));
   const failedNotes = await rows('notes');
   const failedQueue = await rows('sync_queue');
+  const retryNote = failedNotes.find((note) => !priorNoteIds.has(note.id));
   assert(
-    failedNotes.length >= 2 && failedQueue.some((operation) => operation.status === 'pending'),
+    retryNote &&
+      failedQueue.some(
+        (operation) =>
+          operation.entity === 'notes' &&
+          operation.entity_id === retryNote.id &&
+          operation.status === 'pending',
+      ),
   );
   await openPage(page, base + '/system');
   assert.equal((await rows('notes')).length, failedNotes.length);
@@ -291,7 +304,22 @@ try {
     `[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Sync now')`,
   );
   await click(page, 'Sync now');
-  assert(await waitFor(page, `document.body.textContent.includes('sync_queue 0')`, 24));
+  const retryStillQueued = async () =>
+    (await rows('sync_queue')).some(
+      (operation) => operation.entity === 'notes' && operation.entity_id === retryNote.id,
+    );
+  for (let attempt = 0; attempt < 160 && (await retryStillQueued()); attempt += 1)
+    await new Promise((resolve) => setTimeout(resolve, 125));
+  assert.equal(await retryStillQueued(), false, 'Failed note did not drain on retry');
+  assert(
+    (await rows('sync_shadow')).some(
+      (shadow) => shadow.entity === 'notes' && shadow.entity_id === retryNote.id,
+    ),
+    'Recovered note has no confirmed server shadow',
+  );
+  for (let attempt = 0; attempt < 160 && (await rows('sync_state'))[0]?.last_error; attempt += 1)
+    await new Promise((resolve) => setTimeout(resolve, 125));
+  assert.equal((await rows('sync_state'))[0]?.last_error ?? null, null);
   assert.equal((await rows('notes')).length, failedNotes.length);
   matrix('Sync push/pull', await unaffected([workflow, crm, academy, call]), {
     reload: true,

@@ -163,12 +163,25 @@ checks and disposable synthetic learner/media data. Provider spend is $0.
   probes now test the intended boundaries explicitly. Its separate 504-event sample retained the
   existing 100 ms hard ceiling after recording a 38.7 ms p95 but two over-limit spikes; the ceiling
   was not weakened, and the failing run is not evidence.
-- Local browser launch was attempted but the available Chrome binary lacks required shared
-  libraries. It is not counted as browser/a11y evidence; the GitHub Ubuntu Chrome run is canonical.
+- Exact-head run `34546706774` passed all Node 22 Checks, 33/35 browser probes, exact before/after
+  identities, binary recovery and terminology, then correctly failed its Preview attestation. The
+  504-event Worker sample kept a 43 ms p95 but mounted run-history growth produced 180–250 ms long
+  tasks and a 256 ms maximum frame. Workflow now mounts the 24 most recent runs and exposes older
+  history on demand; the unchanged ceiling also records slow-frame/long-task iteration details. The
+  Run-the-Lead probe now follows the actual commit → linked Workflow execution → grade sequence.
+  Failure isolation now returns a boolean rather than a DOM graph over CDP and proves retry for the
+  deliberately failed note plus its confirmed server shadow, rather than requiring unrelated queued
+  fixture records to disappear. This failing run and its downstream cascade are not evidence.
+- The first local browser launch lacked shared libraries. Temporary local runtime libraries allowed
+  focused reproduction of the three failures, but those diagnostic runs are not browser/a11y
+  evidence; the GitHub Ubuntu Chrome run remains canonical.
 - `vitest --project simulator-core` named a project that is not configured. The corrected direct
   simulator invocation passed 39/39; the invalid filter remains disclosed.
 - A targeted runner command initially named two nonexistent test files and executed zero tests.
   The corrected files passed 40/40; the zero-test command is not evidence.
+- One local full-suite run shared the host with concurrent TypeScript and ESLint processes and
+  timed out two unrelated async UI assertions. The two files passed 45/45 immediately when rerun
+  alone; only the sequential exact-head CI result is canonical.
 - Targeted C7 lint found an undefined `assert` in the new Inbox probe and was fixed before commit.
   Full lint then exposed the C3 `context` dependency warning; a stable `useMemo` context removed it,
   with runner regressions rerun.

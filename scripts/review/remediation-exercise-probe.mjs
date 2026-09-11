@@ -106,7 +106,17 @@ for (const width of [1440, 1024, 768, 390, 320])
         'main textarea',
         'The booking workflow sends one confirmation and then adds booked.',
       );
-      await openPage(page, BASE + '/workflow');
+      await activate(
+        page,
+        `[...document.querySelectorAll('button')].find(el=>el.textContent.trim()==='Commit prediction')`,
+        touch,
+      );
+      await wait(page, `${q('main input[type="text"]')}.disabled`);
+      const workflowPath = await page.evaluate(
+        `[...document.querySelectorAll('a')].find(el=>el.textContent.includes('Open Workflow Lab'))?.getAttribute('href')`,
+      );
+      assert(workflowPath?.startsWith('/workflow?'), 'Committed attempt must link to Workflow Lab');
+      await openPage(page, BASE + workflowPath);
       await wait(page, q(id('run-test')));
       await page.evaluate(
         `(() => {const el=document.querySelector('[data-testid="test-panel"] select'); el.value='maria'; el.dispatchEvent(new Event('change',{bubbles:true}));})()`,
@@ -120,7 +130,10 @@ for (const width of [1440, 1024, 768, 390, 320])
           : `${q(id('trigger-outcome'))}?.dataset.outcome === 'enrolled'`,
       );
       await openPage(page, BASE + route);
-      await wait(page, `${q('main input[type="text"]')}?.value === 'booked'`);
+      await wait(
+        page,
+        `${q('main input[type="text"]')}?.value === 'booked' && ${q('main input[type="text"]')}.disabled && [...document.querySelectorAll('button')].some(el=>el.textContent.trim()==='Run it'&&!el.disabled)`,
+      );
       await activate(
         page,
         `[...document.querySelectorAll('button')].find(el=>el.textContent.trim()==='Run it')`,
