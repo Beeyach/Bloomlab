@@ -88,11 +88,33 @@ export function probeHelpers({ base }) {
       "[...document.querySelectorAll('dd')].map((d) => d.textContent.trim()).filter((t) => /^(device \\d|linked|not linked|Synced|Saved|Offline|Syncing)/.test(t))",
     );
 
-  /** Clicks "Sync now" on /system and waits until the outbox is empty. */
-  async function syncNow(page) {
-    await waitFor(page, hasButton('Sync now'));
+  /** Waits for this manual round trip and derived progress, including an empty-outbox pull. */
+  async function requestSync(page) {
+    const selector = '[data-sync-completed]';
+    if (!(await waitFor(page, `!!document.querySelector('${selector}:not(:disabled)')`))) {
+      throw new Error('Manual sync did not become available');
+    }
+    const before = await page.evaluate(
+      `Number(document.querySelector('${selector}').dataset.syncCompleted)`,
+    );
     await click(page, 'Sync now');
-    return waitFor(page, bodyHas('sync_queue 0'));
+    if (
+      !(await waitFor(
+        page,
+        `Number(document.querySelector('${selector}')?.dataset.syncCompleted) > ${before}`,
+      ))
+    ) {
+      throw new Error('Manual sync round trip did not complete');
+    }
+  }
+
+  /** An empty queue alone does not establish that the remote pull completed. */
+  async function syncNow(page) {
+    await requestSync(page);
+    if (!(await waitFor(page, bodyHas('sync_queue 0')))) {
+      throw new Error('Manual sync completed with queued work remaining');
+    }
+    return true;
   }
 
   async function device(name) {
@@ -171,6 +193,7 @@ export function probeHelpers({ base }) {
     indicator,
     diag,
     syncNow,
+    requestSync,
     device,
     createKeyAndLink,
     linkWithKey,

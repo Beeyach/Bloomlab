@@ -181,6 +181,35 @@ No performance assertion, accessibility threshold, provider boundary or producti
 
 ## Failed attempts retained
 
+- Run `34571510149` at `71bf952bf4d757bb76e99de285a0f56d9a2e4cb6` passed Checks:
+  2,153 tests / 169 files, 15 adversarial cases and 89 axe scans with the negative control and
+  zero serious/critical violations. Preview passed 34/35 browser probes; CRM's touch sample had
+  no board/card, while its five-width and keyboard checks passed. Navigation passed with no
+  captured browser errors. C1 passed 15/16 positive groups and its negative control; the learning
+  sync diagnostic failed to converge after offline evidence. Binary recovery and terminology
+  passed; C5 stopped before observing its controlled sync-push error. Screen-state generation
+  failed downstream on CRM. Worker `c3cece58-f36c-4c36-a215-afaf112aff81` and all before/after
+  browser/Worker identities matched `71bf952`; no migrations were pending and Production was
+  skipped. Artifact `10189378968` is retained (SHA-256
+  `9eaa031695e711ad195206d2f47350c685e89717ddad74fcd2bdc496aada1f42`).
+- A deterministic regression exposed a real sync overlap defect: a manual request during a
+  background pull returned the old round trip, missing a write made after its push phase. Sync
+  now coalesces overlapping requests into a following round trip per local database. Separate
+  databases no longer share a module-wide running promise. Both regressions fail on the old
+  engine and pass after the fix. This explains a possible sync failure mechanism; the deployed
+  failed report did not retain enough timing data to establish it as the sole cause.
+- The learning helper also accepted an already-empty outbox before its requested pull and
+  derived progress completed. Diagnostics now expose completed manual rounds; the probes await
+  that completion and still require an empty outbox, identical cross-device rows and all original
+  held-fault/local-state assertions. The existing per-wait timeout is unchanged.
+- The deployed CRM failure did not repeat in the full original five-width/keyboard/touch sequence
+  with Chrome 152.0.7977.82. CRM now retains bounded exception/request/page context and failure
+  screenshots, without changing readiness, touch, layout or motion assertions. Its cause remains
+  unknown; a later pass must not be described as proof of a CRM application fix.
+- The screen-state audit also found two invalid shared-contract claims for the wildcard NotFound
+  screen. It is imported synchronously and sits outside the per-screen error boundary. Its
+  nonexistent data-loading lifecycle is now explicitly N/A; error behavior is UNVERIFIED and
+  included in the unresolved count. DES-018 remains IN_PROGRESS.
 - Run `34567088346` at `6f612660b91c33d8af42986b771fa8c5ee4efa21` passed Checks:
   2,153 tests / 169 files, 15 adversarial cases and 89 axe scans with the negative control and
   zero serious/critical violations. Preview passed 34/35 browser probes. Navigation failed at

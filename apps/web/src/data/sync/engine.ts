@@ -220,22 +220,32 @@ async function pullChanges(
   }
 }
 
-let running: Promise<SyncRunResult> | null = null;
+interface RunningSync {
+  current: Promise<SyncRunResult>;
+  next?: Promise<SyncRunResult>;
+}
+const running = new WeakMap<BloomlabDatabase, RunningSync>();
 
 /**
  * One sync round trip (spec §86, SYNC-010): push what this device changed, then pull what
  * other devices changed. Never throws; the result and `sync_state` say what happened. Calls
- * overlap-safe: a second call while one runs returns the running one.
+ * overlap-safe per database. Calls during a round trip share one following round trip,
+ * so work written after the running push (or remote work after its pull) is not missed.
  */
 export function syncNow(
   database: BloomlabDatabase = db,
   api: SyncApi = syncApi,
 ): Promise<SyncRunResult> {
-  if (running) return running;
-  running = run(database, api).finally(() => {
-    running = null;
+  const active = running.get(database);
+  if (active) {
+    active.next ??= active.current.then(() => syncNow(database, api));
+    return active.next;
+  }
+  const current = run(database, api).finally(() => {
+    running.delete(database);
   });
-  return running;
+  running.set(database, { current });
+  return current;
 }
 
 async function run(database: BloomlabDatabase, api: SyncApi): Promise<SyncRunResult> {

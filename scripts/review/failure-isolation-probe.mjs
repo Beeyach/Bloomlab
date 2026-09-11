@@ -10,7 +10,7 @@ const base = process.env.BASE ?? 'http://localhost:4173';
 const head = process.env.REVIEW_HEAD;
 const out = resolve(process.env.REVIEW_OUT ?? '.review/failure-isolation');
 mkdirSync(out, { recursive: true });
-const { waitFor, click, typeInto, createKeyAndLink, device } = probeHelpers({ base });
+const { waitFor, click, typeInto, createKeyAndLink, device, requestSync } = probeHelpers({ base });
 const browser = await device('Field-Ready failure isolation');
 const { page } = browser;
 const report = { base, head: head ?? null, matrix: [], ok: false };
@@ -283,7 +283,7 @@ try {
     attempt += 1
   )
     await new Promise((resolve) => setTimeout(resolve, 100));
-  await click(page, 'Sync now');
+  await requestSync(page);
   assert(await waitFor(page, `document.body.textContent.includes('controlled_sync_failure')`));
   const failedNotes = await rows('notes');
   const retryNote = failedNotes.find((note) => !priorNoteIds.has(note.id));
@@ -321,7 +321,7 @@ try {
     page,
     `[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Sync now')`,
   );
-  await click(page, 'Sync now');
+  await requestSync(page);
   const retryStillQueued = async () =>
     (await rows('sync_queue')).some(
       (operation) => operation.entity === 'notes' && operation.entity_id === retryNote.id,
@@ -361,7 +361,7 @@ try {
   const pullBody = 'Local edit retained through a separately failed pull';
   await typeInto(page, 'textarea', pullBody);
   await click(page, 'Save note');
-  await click(page, 'Sync now');
+  await requestSync(page);
   assert(await waitFor(page, `document.body.textContent.includes('controlled_sync-pull_failure')`));
   assert(await page.evaluate(`Number(sessionStorage.getItem('__bloomlab_failed_sync-pull')) > 0`));
   const beforePullReload = (await rows('notes')).find((note) => note.id === retryNote.id);
@@ -377,7 +377,7 @@ try {
       `[...document.querySelectorAll('button')].some(b => b.textContent.trim() === 'Sync now')`,
     ),
   );
-  await click(page, 'Sync now');
+  await requestSync(page);
   for (let attempt = 0; attempt < 160 && (await rows('sync_state'))[0]?.last_error; attempt += 1)
     await new Promise((resolve) => setTimeout(resolve, 125));
   assert.equal((await rows('sync_state'))[0]?.last_error ?? null, null);
@@ -402,6 +402,17 @@ try {
   report.ok = report.matrix.length === 5;
 } catch (error) {
   report.error = String(error?.stack ?? error);
+  report.failureContext = await page
+    .evaluate(
+      `({
+    url: location.href, readyState: document.readyState,
+    body: document.body.innerText.slice(0, 12000),
+    injectedRequests: Object.fromEntries(Object.entries(sessionStorage).filter(([key]) => key.startsWith('__bloomlab_failed_'))),
+    syncCompleted: document.querySelector('[data-sync-completed]')?.dataset.syncCompleted ?? null
+  })`,
+    )
+    .catch(() => null);
+  await screenshot(page, resolve(out, 'probe-failure.png'), undefined, false).catch(() => {});
 } finally {
   await setFailure(null).catch(() => {});
   await page

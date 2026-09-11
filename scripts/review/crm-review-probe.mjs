@@ -25,6 +25,42 @@ const report = { base: BASE, widths: {}, keyboard: {}, touch: {}, reducedMotion:
 const fail = (what) => report.failures.push(what);
 
 const { page, close } = await session();
+const browserErrors = [];
+const requests = new Map();
+page.on('Runtime.exceptionThrown', (event) => {
+  if (browserErrors.length < 100) browserErrors.push(event.exceptionDetails);
+});
+page.on('Network.requestWillBeSent', ({ requestId, request, type }) => {
+  requests.set(requestId, { url: request.url, type });
+  if (requests.size > 300) requests.delete(requests.keys().next().value);
+});
+page.on('Network.responseReceived', ({ requestId, response }) => {
+  const request = requests.get(requestId);
+  if (request)
+    Object.assign(request, {
+      status: response.status,
+      mimeType: response.mimeType,
+      fromServiceWorker: response.fromServiceWorker,
+    });
+});
+page.on('Network.loadingFailed', ({ requestId, errorText, canceled }) => {
+  const request = requests.get(requestId);
+  if (request) Object.assign(request, { errorText, canceled });
+});
+await page.send('Network.enable');
+
+async function captureFailure(context) {
+  report.failureContexts ??= [];
+  const state = await page.evaluate(`({
+    url: location.href, readyState: document.readyState,
+    rootChildren: document.getElementById('root')?.childElementCount ?? null,
+    main: document.querySelector('main')?.innerText.slice(0, 8000) ?? null,
+    body: document.body.innerText.slice(0, 12000)
+  })`);
+  const capture = `failure-${report.failureContexts.length}.png`;
+  await screenshot(page, `${OUT}/${capture}`, undefined, false);
+  report.failureContexts.push({ context, ...state, requests: [...requests.values()], capture });
+}
 
 const waitFor = async (expression, tries = 80) => {
   for (let i = 0; i < tries; i += 1) {
@@ -102,8 +138,10 @@ const AUDIT = `(() => {
 })()`;
 
 const openCrm = async (query = '') => {
+  requests.clear();
   await openPage(page, `${BASE}/crm${query}`);
   const ready = await waitFor("document.body.innerText.includes('Account time')");
+  if (!ready) await captureFailure(`CRM did not become ready: ${query}`);
   await settle();
   return ready;
 };
@@ -423,7 +461,10 @@ try {
   t.tappedCard = await tap('[data-opportunity="opp-maria"]');
   await sleep(500);
   t.inspectorOpened = await waitFor("document.body.innerText.includes('Opportunity owner')", 20);
-  if (!t.tappedCard || !t.inspectorOpened) fail('touch: tapping a deal did not open it');
+  if (!t.tappedCard || !t.inspectorOpened) {
+    await captureFailure('Touch card did not open');
+    fail('touch: tapping a deal did not open it');
+  }
   t.moved = await page.evaluate(`(() => {
     const sel = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'Consult Done'));
     if (!sel) return false;
@@ -477,8 +518,10 @@ try {
   if (rm.longTransitions.length)
     fail(`reduced motion: transitions remain ${rm.longTransitions.join(', ')}`);
 } catch (error) {
+  await captureFailure('Probe exception').catch(() => {});
   fail(`threw: ${error instanceof Error ? (error.stack ?? error.message) : String(error)}`);
 } finally {
+  report.browserErrors = browserErrors;
   await close();
 }
 

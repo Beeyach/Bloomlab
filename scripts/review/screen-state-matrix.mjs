@@ -268,8 +268,14 @@ const FAMILY = {
       notApplicable(
         'The screen is itself the explicit unknown-route state and contains recovery navigation.',
       ),
-    loading: sharedLoading,
-    error: sharedError,
+    loading: () =>
+      notApplicable('NotFound is imported synchronously and has no data-loading lifecycle.'),
+    error: () => ({
+      status: 'UNVERIFIED',
+      sources: ['apps/web/src/app/App.tsx'],
+      limitation:
+        'The wildcard NotFound route is outside the shared per-screen error boundary; the lazy-route evidence does not prove its failure behavior.',
+    }),
     completed: () => notApplicable('An unknown route has no completion/result lifecycle.'),
     keyboard: () => evidence('a11y'),
     touch: () => evidence('polish'),
@@ -418,7 +424,7 @@ const report = {
       .filter((cell) => cell.status === 'PROVEN_SHARED_ROUTE_CONTRACT').length,
     unverified_state_cells: rows
       .flatMap((row) => Object.values(row.states))
-      .filter((cell) => cell.status === 'RELATED_BROWSER_EVIDENCE').length,
+      .filter((cell) => ['RELATED_BROWSER_EVIDENCE', 'UNVERIFIED'].includes(cell.status)).length,
     human_visual_rows_required: rows.length,
   },
 };

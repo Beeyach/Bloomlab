@@ -40,6 +40,13 @@ reproduce it. Navigation now retains browser exceptions and request/page context
 assertions and timeouts. A subsequent passing run does not establish that this prior failure was
 fixed. See the closeout review and retained artifact `10187511170` for the exact boundary.
 
+Run `34571510149` also retained a CRM touch sample without its board and two sync failures.
+The CRM failure did not repeat locally against the same deployed head; its cause remains unknown
+and new failure diagnostics do not constitute a product fix. A reproduced sync overlap defect
+is fixed and manual-sync probes now await the requested pull and derived progress, but the old
+deployed reports lack timing detail to attribute both sync failures conclusively. Artifact
+`10189378968` remains failed evidence; final exact-head verification is still required.
+
 Unallocated legacy quotes change scope without automatic price subtraction; the interface says so.
 Playback snapshots and unfinished workflow drafts are local workspace data, not synced. Unvisited
 Labs require an online first visit; this is not blanket offline availability. Historical failed

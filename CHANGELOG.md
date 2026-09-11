@@ -11,6 +11,10 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ### Fixed — independent closeout continuation
 
+- Queue a fresh sync round trip when a manual/background request overlaps an older pull; scope
+  coordination per local database. Await actual manual completion in learning and fault probes.
+  Retain run `34571510149`, including its unreproduced CRM touch failure, and add CRM failure
+  diagnostics without relaxing assertions. Correct NotFound's overstated shared-state evidence.
 - Retain the blank-page navigation failure from run `34567088346` and capture bounded browser
   exceptions plus request/page context for diagnosis. No application fix is inferred from an
   unreproduced failure, and all navigation assertions and timeouts remain unchanged.

@@ -88,6 +88,56 @@ describe('linking (SYNC-001, SYNC-004, D-027)', () => {
 });
 
 describe('syncNow (DATA-001, SYNC-007, SYNC-010)', () => {
+  it('sends a write requested while an older sync is already pulling', async () => {
+    const { a, b, notesA, notesB, server } = await twoDevices();
+    let enter!: () => void;
+    let release!: () => void;
+    const entered = new Promise<void>((resolve) => {
+      enter = resolve;
+    });
+    const released = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const pull = server.pull.bind(server);
+    let held = false;
+    server.pull = async (...args) => {
+      const response = await pull(...args);
+      if (!held) {
+        held = true;
+        enter();
+        await released;
+      }
+      return response;
+    };
+    const background = syncNow(a, server);
+    await entered;
+    const note = await notesA.create(draft('written during the older pull'));
+    const manual = syncNow(a, server);
+    expect(syncNow(a, server)).toBe(manual);
+    expect(syncNow(a, server)).toBe(manual);
+    release();
+    await background;
+    expect(await manual).toMatchObject({ status: 'synced', pushed: 1 });
+    expect(server.calls.pull).toBe(2);
+    expect(await listOperations(a)).toHaveLength(0);
+    await syncNow(b, server);
+    expect((await notesB.get(note.id))?.body).toBe(note.body);
+  });
+
+  it('keeps concurrent sync requests for separate local databases independent', async () => {
+    const { a, b, notesA, notesB, server } = await twoDevices();
+    const first = await notesA.create(draft('from A'));
+    const second = await notesB.create(draft('from B'));
+    const results = await Promise.all([syncNow(a, server), syncNow(b, server)]);
+    expect(results.every((result) => result.status === 'synced')).toBe(true);
+    expect(await listOperations(a)).toHaveLength(0);
+    expect(await listOperations(b)).toHaveLength(0);
+    await syncNow(a, server);
+    await syncNow(b, server);
+    expect((await notesA.get(second.id))?.body).toBe(second.body);
+    expect((await notesB.get(first.id))?.body).toBe(first.body);
+  });
+
   it('does nothing until the device is linked', async () => {
     const database = freshDatabase();
     const result = await syncNow(database, new FakeSyncServer());
