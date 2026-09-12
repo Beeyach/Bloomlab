@@ -799,14 +799,14 @@ const ACTION_CAPABILITIES: ActionCapability[] = [
   },
   {
     kind: 'action',
-    feature: 'GHL-WF-WEBHOOK',
+    feature: 'GHL-WF-CUSTOM-WEBHOOK',
     nodeType: 'action',
     validate: (config) => {
       const problems: string[] = [];
       const url = text(config, 'url');
       if (!url || !/^https?:\/\/\S+$/.test(url)) problems.push('Webhook needs an http(s) URL');
       const method = text(config, 'method');
-      if (method && !['POST', 'GET', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase())) {
+      if (method && !['POST', 'GET', 'PUT', 'DELETE'].includes(method.toUpperCase())) {
         problems.push(`${method} is not a webhook method`);
       }
       const headers = config.headers;
@@ -976,6 +976,24 @@ export const triggerCapabilityFor = (
 export const actionCapabilityFor = (
   featureId: string | null | undefined,
 ): ActionCapability | null => {
+  // Before the registry split, saved Custom Webhook simulations used this ID and allowed
+  // PATCH. Preserve their execution/replay contract without advertising the standard
+  // Webhook as a currently runnable native feature in capabilityFor or RUNNABLE_FEATURES.
+  if (featureId === 'GHL-WF-WEBHOOK') {
+    const current = actionCapabilityFor('GHL-WF-CUSTOM-WEBHOOK');
+    if (!current) return null;
+    return {
+      ...current,
+      feature: featureId,
+      validate: (config, account) =>
+        current.validate(
+          text(config, 'method')?.toUpperCase() === 'PATCH'
+            ? { ...config, method: 'POST' }
+            : config,
+          account,
+        ),
+    };
+  }
   const found = capabilityFor(featureId);
   return found && found.kind === 'action' ? found : null;
 };

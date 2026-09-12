@@ -2,21 +2,91 @@
 
 Concise roll-up in the spec §139 format. `REQUIREMENTS_MATRIX.md` is the source of truth for statuses; this file must agree with it. `node scripts/validate-requirements.mjs` enforces that agreement.
 
-Last updated: 2026-09-10
+Last updated: 2026-09-12
 
 ## CURRENT PHASE
 
-Field-Ready v1 remediation — R1–R10 implementation and final verification on `codex/field-ready-v1-remediation`,
-based on independent audit `a2466d3651ac5544f6baa113c46ae472385fa8f5`.
-The independent `AUDIT_REPORT.md` now exists and explicitly satisfies INF-015. Historical
-Phase 26 statements below describe its pre-audit checkpoint, not a current missing report.
-Only audit group A P0/P1 fixes/reconciliation are in scope. All twelve group-B statuses stay
-unchanged; no Field-Ready Complete claim or merge. Evidence: `docs/reviews/field-ready-v1-remediation.md`.
+Diagnostic source `936c5776b82185591dc20f8a8bccedb1e018343a` is pushed to draft PR #32.
+Run `34677225506` finished: Checks PASSED (2,168 tests / 172 files, 15 adversarial cases,
+89 axe scans); Preview FAILED. All 215 polish cells passed, but navigation reset 101 at
+1024×720 left `/skills` empty after three required startup scripts were canceled with
+`net::ERR_ABORTED`. Other 34 browser probes passed; dependent screen-state generation failed.
+The cancellation cause remains unproven. Exact identities and SHA-256-verified artifact
+`10293950546` are retained in `.review/polish-startup-936c577/`. C8 remains open.
+Continuation (2026-09-12): existing retained libraries make Chrome 152/153 usable without
+installation. Baseline Chrome 152 navigation (38 cases / 252 resets) and 500 reloads passed
+without reproducing cancellation. A deterministic old-document event sequence demonstrates
+a separate driver defect: the global load event can release navigation/fixture clearing too
+early. Local correction matches the returned frame and loader, retains the 30-second timeout
+and all UI assertions, and cleans listeners up on every exit. It is not a claimed historical
+cancellation fix. 430 focused/simulator tests pass; typecheck, scoped lint, content and build
+pass. Real Chrome navigation/hash/fixture reset smoke passes. The scoped Sol High review has no actionable findings; corrected polish passed all 215 cells.
+Corrected navigation passed 38 cases / 252 resets with zero browser errors; evidence: `.review/startup-cancellation-936c577/`.
 
-Current reconciliation supersedes historical phase summaries below: 20 directly evidenced rows
-are promoted including the four R1 audit/negative-constraint rows. Remaining code/audit and
-human gaps are separately listed in the remediation review. Exact-head CI/Preview verification
-must be recorded in the remediation PR before independent re-audit; older phase SHAs are not proof.
+Verification continuation (2026-09-11): public run `34673325444` attempts 2 and 3 both
+failed polish startup readiness on different exercise routes (320 px after 189 cells; 768 px
+after 94 cells). Neither recorded layout violations. Each passed the other 34 browser probes,
+AI-Off, recovery, failure isolation and terminology; dependent screen-state generation failed.
+Both private artifacts/digests and exact browser/Worker identities are retained. No further
+blind retry is planned. New local polish instrumentation records bounded startup-resource
+outcomes and exception locations while excluding request bodies/headers/API traffic, query
+strings, credentials and exception messages. Assertions/timeouts stay unchanged; this is
+not a claimed application fix. Its 429 focused/simulator tests, typecheck, scoped lint and
+content checks, build/browser-secret scan and source-secret scan pass. The single scoped
+Sol High review of this new public-artifact logging change has no material findings.
+C8 and all requirement statuses remain open/unchanged.
+
+Continuation (2026-09-11): PR #32 source `77d063a` passed its recorded CI/Preview
+prerequisite, verified against GitHub and the retained artifact digests. One Sol High review
+found a saved-webhook compatibility regression and missing content/simulator version bumps.
+Local corrections preserve legacy execution/editing/replay and introduce content `2026.09.28.1`
+and simulator `2026.09.23-r2`. The single focused re-review has no remaining actionable findings.
+All 2,166 tests / 170 files pass with two workers after one default-run terminology timeout;
+typecheck, source lint excluding retained `.review` artifacts, content/terminology, build,
+secret scans, scoped formatting and status guards pass. Default lint still encounters retained
+evidence scripts; no local Chrome/browser/a11y rerun was available. Correction verification is
+recorded in `docs/reviews/field-ready-v1-code-closeout.md`. C8 remains open: the old exact-head evidence
+cannot certify these corrections. The owner authorized publication and Preview verification;
+commit `6fe6147709a149601792dba019052c8ad3532d52` is pushed to draft PR #32. GitHub run
+`34671395103` attempts 1 and 2 were blocked before Checks started: its annotation reports failed account payments
+or an Actions spending limit requiring adjustment. Preview and Production were skipped; no
+new deployment or migration occurred. The subsequent public-visibility preparation below supersedes rerunning this unmasked source. All requirement statuses and parked acceptance remain unchanged.
+
+Public-visibility preparation (2026-09-11): the owner wants public Bloomlab Actions to
+preserve the private allowance for separate `Beeyach/bloomops`. Bloomlab is now PUBLIC;
+BloomOps remains PRIVATE.
+A Sol High privacy review confirmed retained synthetic Preview screenshots expose reusable
+Sync Keys; device-session revocation does not invalidate those keys. Local screenshot masking
+now hides key text, QR, key-entry fields and marked private descendants, fails closed if
+masking fails, and restores the DOM after capture. Privacy regression plus simulator checks
+pass (428 tests / 15 files); typecheck, scoped lint, content validation and build pass.
+The single focused Sol High re-review has no material findings. Existing Linux Chrome cannot
+launch, so actual browser masking remains unverified locally.
+All 70 retained artifacts are privately archived and independently rehashed against GitHub
+digests under `.review/public-readiness-j28iglne/`. Thirteen contain unmasked Sync Key screenshots;
+The owner approved deletion and publication; all 13 targeted GitHub copies were deleted and
+verified absent, leaving 57 artifacts. The reviewed masking correction is pushed as `aaa850c1e294b97af44d585422e6a2822c116da6`.
+Public CI run `34673325444` attempt 2 passed Checks: 2,167 tests / 171 files, 15 adversarial
+cases and 89 accessibility scans. The adversarial/accessibility artifacts match the exact
+source and GitHub digests. Preview attempt 2 failed: polish reached 189 layout cells with
+no layout violations, then found a blank negotiation exercise at 320 px. The dependent
+screen-state stage also failed. The other 34 browser probes, 16 AI-Off paths, binary recovery,
+failure isolation and terminology passed; before/after browser and Worker identities match.
+The actual sync-key screenshot is correctly masked. Artifact `10292425742` is privately
+retained with its verified GitHub digest. One unchanged-source Preview retry follows; the
+blank-page cause remains unproven and no product fix is claimed. Production is skipped. Attempt 1 was triggered while private and blocked before steps. Do not rerun old unmasked heads. No credentials or remote learner
+data were changed by publication. C8 and all requirement statuses
+remain unchanged. Detailed evidence: `docs/reviews/field-ready-v1-code-closeout.md`.
+
+Field-Ready v1 code/audit closeout — checkpoints C1–C8 on
+`codex/field-ready-v1-code-closeout`, based on `codex/navigation-shell-redesign` at
+`6a1ea64081e42a0dd6ea7efd3b78c0ee4abbd685`. This closeout adds whole-product AI-Off,
+learner-ownership, prediction, private binary recovery, failure-isolation, terminology and
+router/content-derived screen-state evidence. Seven objectively evidenced P0/P1 promotions are retained; three unsupported promotions are reopened.
+Semantic quality, subjective visual/density/composition judgment, physical-device/provider and
+real-GHL evidence remain open. All twelve IMPLEMENTED_UNVERIFIED rows and DES-009 are unchanged.
+Evidence: `docs/reviews/field-ready-v1-code-closeout.md`; exact-head identities are in draft PR #32
+and its uploaded attestation because a commit cannot contain its own SHA.
 
 Resumed from `20b6129` with all partial work preserved. R10's deployed client/portfolio checks
 reopened R5: the global D1 record key could overwrite another learner using the same curriculum ID.
@@ -81,6 +151,14 @@ Phase 21 update-check recovery: a failed update/build check is visible even when
 - exercise grader: 2026.09.28 (`EXERCISE_GRADER_VERSION`, stored on every graded attempt)
 
 ## PASSED
+
+- PRD-004 — C1: the explicit AI-Off harness holds the product setting Off, rejects Worker AI routes and completes Command Center/session, real Academy/Skill Map/mastery routes, CRM, Workflow/Inbox, Funnel, Calendar, Reporting, Pricing, Negotiation fallback, Portfolio and offline/saved-progress paths. Payments and Incident are included. A real injected AI request on CRM must fail the same deterministic-path verdict. Developer learning diagnostics remain supporting sync evidence only.
+- PRD-009 — C2: IndexedDB v9 gives every persisted record learner ownership, migrates legacy keys without cross-learner collision and keeps the one-learner-per-sync-key boundary; the inventory covers all 20 local tables and every sync envelope.
+- EXR-006 — C3: RUN THE LEAD stores an immutable prediction before opening the Lab, executes from actual observed simulator events, then returns to a read-only replay that highlights prediction/observation mismatches. Mutation and reload regressions pin the boundary, including refusal of checkpoint injection/replacement/removal and explicit answer clearing through ordinary saves.
+- DATA-006 — C4: private learner/scenario media bytes live in R2 with D1 metadata only. Bounded checksum-verified `.blb` export and staged same-owner recovery cover audio, fieldwork media and scenario attachments without credentials or overwrite.
+- INF-011 — C5: controlled Call API, Workflow Worker, AI gateway and sync failures each preserve local evidence and leave the other major environments usable; exact-head identity is checked after recovery.
+- RSP-004 — C7: the six named phone recompositions are source- and browser-proven at 390/320: Workflow vertical editor/sheets, CRM stage switcher/scroller, Academy editorial flow, Call voice flow, Inbox single-conversation flow and Skill Map territory-first touch flow.
+- A11Y-001 — C7: native Tab/Shift+Tab/Enter/Space/arrow input completes session start, exercise opening/submission and representative Lab operations with visible focus. Axe is corroborating evidence only; screen-reader, physical Safari and broader assistive-tech certification are not claimed.
 
 - SEC-003 — Remediation R6/R10: authenticated private-media ownership/refusal tests plus actual read-only cloud configuration gate on CI 34457590942 prove both dev/prod media buckets have r2.dev disabled and no custom domains. No learner objects were listed or read. Exact final-head gate is required again before independent re-audit; evidence is in the remediation review and final PR attestation.
 
@@ -406,25 +484,22 @@ Phase 21 accepted interface/provider paths:
 
 ## IN PROGRESS
 
+- DES-018 — C7 retains 43 learner screens and 215 five-width layout cells, but the family-level state mappings did not prove the exact screen/state/input cells. The matrix now labels related browser evidence explicitly; exact assertion mapping and missing state execution remain open.
+
 - DES-009 — D-202 supersedes the fixed-104 px D-117/Phase 26 attestation. Original-device scrolling is HUMAN PASS; after the prior visual FAIL, the learner now calls horizontal expanded/icon-only collapsed composition materially better and requests adjustable width. Expanded defaults to 200 px, resizes from 176–280 px with constrained-tablet protection, and restores the saved local width after collapse; collapsed stays 76 px. DES-009 remains IN_PROGRESS pending independent audit and learner confirmation of this refinement. See `docs/reviews/navigation-shell-redesign.md`. The twelve human/real-GHL rows remain unchanged.
 
-- DES-006 — cross-cutting: Phase 2 gallery reviewed against the §70 list (no gradient heroes, gradient text, glassmorphism, blobs, icon-per-heading, card-everything, fake stats, emoji nav, trophies, huge shadows, confetti); re-checked every phase.
-- DES-008 — density mechanism (`data-density`, `--bl-density-row`) implemented in ToolPanel and rows; Phase 7 assigns the Skill Map its high-visual / low-text density (typographic territory objects, one line of scope, one count) and the Command Center a low-medium content density; the Academy, labs, Call Room and Pricing Arena take theirs with their phases.
+- DES-006 — C7 audits the actual rendered router/content inventory for §70 signals at five widths and retains existing source guards against fabricated analytics. Zero objective findings is not a human whole-product aesthetic/slop verdict, so the row remains IN_PROGRESS.
+- DES-008 — C7 records rendered words/headings/sections/controls and normalized density per screen at five widths for Academy, Workflow, CRM, Call Room, Pricing and Skill Map. Whether each environment's hierarchy feels appropriately dense through a long session remains human judgment.
 - DES-012 — ClientCaseCover with the abstract IdentityMark exists; three persistent clients are seeded as content (Phase 5); the Clients environment is Phase 24.
-- DES-017 — cross-cutting: Phase 2 review at 1440 / 1024 / 768 / 390 / 320 done for every gallery section and the Phase 1 screens with `npm run review:capture` (sixty page audits; one SkillCard badge overflow found and fixed); log in `docs/reviews/phase-2-visual-review.md`; the Phase 5 `/system` Content section checked at 1440 / 390 / 320. Phase 7: the Command Center, Campaign, Skill Map and capability sheet captured and audited at all five widths (`docs/reviews/phase-7-command-center-skill-map.md`); one overlap (the sync pill over the page eyebrow on phones) and one overflow (five rail items at 320 px with developer flags) found and fixed. Phase 8: the three Academy units captured and audited at all five widths; one sub-44 px control (the interactive's reset button) found and fixed. Phase 9: the four runner states (decision, build with its runtime dependency, pressure, incident) captured and audited at all five widths; one sub-44 px control (the decision radios) found and fixed.
-- DES-018 — cross-cutting: the §136 matrix for the four Phase 1–2 screens (desktop, tablet, mobile, empty, loading, error, keyboard, touch) is recorded in `docs/reviews/phase-2-visual-review.md`; extended as screens arrive. Phase 7 adds the Command Center, Campaign, Skill Map and capability sheet rows. Phase 8 adds the Academy unit row. Phase 9 adds the exercise runner row.
-- RSP-002 — cross-cutting: tablet compositions are deliberate (three-column skill cards, two-column panels and forms at 768); ContactRow, ExecutionEvent, SkillCard headers, CallParticipant and Sheet recompose on mobile; more recompositions come with the labs. Phase 7: the Skill Map is a two-column grid with JUDGMENT spanning at 768–1023 px, the Command Center stacks its columns below 1024 px, the capability sheet is a side sheet from 768 px and a bottom sheet below. Phase 8: the Academy keeps its contents list above the text below 1024 px and beside it from 1024 px; the workflow path runs as a row from 768 px and a column below; the interactive's controls and results sit side by side from 768 px. Phase 9: the runner puts the brief beside the work area from 1024 px and stacks brief → work → assistance → submit → result below it.
-- RSP-003 — Phase 11: every CRM edit, panel and action is present at 320 px, with the inspector as a sheet and the board as a switcher plus scroller. Earlier: cross-cutting: nothing removed on mobile so far. Phase 7: every Command Center section, every gate and every territory, capability and sheet action is present at 320 px. Phase 8: every section, embed, control and the finish action of a unit is present at 320 px. Phase 9: every part of an attempt — brief, options, prediction fields, response, hints, submit, result, retry — is present at 320 px.
+- DES-017 — C7 captures all 43 router/content-derived learner screens at 1440/1024/768/390/320 and joins semantic state artifacts. Each machine-readable row still says `human_visual_review: REQUIRED`; hierarchy, material, restraint and long-session comfort are not auto-passed.
+- RSP-002 — C7 adds five-width reflow/overflow/touch evidence for every learner screen and specialized tablet/phone Lab states. The subjective “first-class/deliberate” whole-product composition judgment remains IN_PROGRESS.
+- RSP-003 — C7 inventories all routes and exercises, checks phone controls/touch states and proves the six named complex recompositions. A human desktop/mobile capability comparison over the entire product is still required; objective subsets do not certify universal equivalence.
 
 ## PARTIAL
 
-- DATA-006 — Phase 20 audio bytes live in private R2; media_assets and voice_generation_jobs contain metadata only, with no BLOB/base64 audio. Generated binaries are excluded from Git. The full matrix additionally names screenshots, portfolio/fieldwork media, recovery backups and attachments; Phase 22 adds private fieldwork screenshot storage; Phase 23 adds private portfolio references and local metadata export; the remaining recovery/attachment storage flows are not implemented.
+- GHL-005, GHL-010 — C6 checks known registry IDs/names/aliases and branded phrases; arbitrary unprefixed feature names and contextual generic-name exceptions remain unclassified. The continuation fixed two CRM Custom Fields headings and added a native-heading case-drift negative control. This bounded checker cannot support exhaustive naming acceptance.
 
 - NEG-003 — Phase 19 now routes unstructured prose through the cheap classifier, with ≥0.8 confidence required for an authored strategy and deterministic fallback otherwise. Explicit actions remain authoritative. One real preview hold classification at confidence 0.95 verifies the path and authored consequences; broad language quality is not established, so status stays PARTIAL.
-- INF-011 — Phase 12: `/workflow`, `/conversations` and `/playground` sit inside `ScreenErrorBoundary` like every route, and an engine crash in the Worker is a structured refusal that leaves the run untouched (D-109). every route sits inside `ScreenErrorBoundary`: a throwing screen shows a plain message with Try again while the rail, sync status and IndexedDB carry on (tests); sync failures already leave local state intact (Phase 4). The Phase 19 AI client preserves submitted work on provider failure; Call Room coverage remains with its later environment. Phase 20 media/provider errors preserve the authored transcript and existing local study data; live revoked-session fallback and sync regression pass.
-- RSP-004 — Phase 12: Workflow → vertical step editor with sheets and a Timeline tab, verified at 390 and 320 by the workflow probe. Skill Map → territory-first: a single column of territory objects with JUDGMENT central, the selected territory's capabilities beneath, a bottom sheet for the capability, verified at 390 / 320 by the capture audit and the touch probe. The other five recompositions belong to Phases 11–21. Phase 8: Academy → editorial reading: a single 44 rem measure on phones with the contents list above the text, diagrams and the interactive reflowed to one column, 16 px inputs, no horizontal scroll (audited at 390 / 320; touch probe at 390).
-- A11Y-001 — Phase 12: the Workflow Lab is fully keyboard-operable with its non-drag alternatives (probe `keyboard-move`), Conversations and the Playground use native controls. Phase 11: every primary CRM action (area switch, open a deal, stage move from the picker, open a contact, owner, DND, tags, notes, tasks, reset confirmation) is reached and operated by keyboard with a visible ring (`crm-review-probe`). Earlier: proven for every flow that exists: every interactive element is a native button, link, input, select, textarea or dialog; keyboard tests for Button, SkillCard, Popover (Escape), Sheet (cancel); Tab reaches controls in the running app. Phase 7: the keyboard probe tabs through the rail, sync status, continuation object, session chips, plan links and rows on the Command Center, every gate link on the Campaign, every territory object and card on the Skill Map, and the sheet (focus trapped, Escape closes it and focus returns to the card). Remaining before PASSED (the acceptance names flows that do not exist yet): starting a session and running its first item from the keyboard (the unit and exercise runtimes, Phases 8–9), opening an exercise and submitting it (the exercise runner, Phase 9), and navigating the labs — CRM Lab (Phase 11), Workflow Lab with its non-drag alternatives (Phase 12), Funnel Lab (13), Calendar Lab (14), Pricing Arena (17) and the Call Room (21). Each of those phases must add its keyboard probe and tests before the requirement can be marked PASSED globally. Phase 8 adds its share: in Chrome, arrow keys move the funnel-math slider and the results update, Enter opens the depth disclosure, Enter on the focused Finish button records the unit, the contents list is plain anchor links, and every stop shows a focus ring (`scripts/review/academy-probe.mjs`, `review:keyboard` on the unit). Phase 9 adds its share: in Chrome the runner tabs rail → sync → capability → decision options (one stop, arrows within) → response → hint control → Run it → lesson link, every stop with a visible ring; the hint ladder, submit, result and retry all work by keyboard, and the same flow works by tap at 390 px with 44 px controls and a 16 px response field.
-- EXR-006 — R9 fixes saved actual contact-event playback inside the runner, with pause/replay/full view, reduced motion and read-only/reload checks. PARTIAL remains: no immutable pre-Lab prediction checkpoint is enforced. Historical/other-device attempts may lack the explicitly local playback; no expected outcome is fabricated.
 - EXR-008 — WHAT WOULD YOU BUILD retains its open response and authored objective marker. Phase 19 now evaluates the exact SYSTEM_DESIGN_RUBRIC_V1 through the Worker and requires objective and rubric halves to pass independently. Status remains PARTIAL pending live open-ended judgment verification; the later-level content scope is not promoted by fixture tests.
 - PRI-002 — The nine economics fields and deterministic price/margin/scope/risk evaluation remain verified, including multiple defensible prices and critical floor failure. Phase 19 now executes PRICING_REASONING_RUBRIC_V1 and preserves recoverable work on failure. Status remains PARTIAL until live reasoning judgment is verified.
 
@@ -443,12 +518,17 @@ None
 
 ## NEXT
 
-Stop for independent ChatGPT re-audit of draft PR #30 after final exact-head CI/Preview verification.
-Its base remains `audit/field-ready-v1` at `a2466d3651ac5544f6baa113c46ae472385fa8f5`.
-INF-015 is PASSED solely from the unchanged existing independent AUDIT_REPORT.md.
-Do not merge or retarget PR #24–#29 or merge #30. Preserve the twelve parked human
-rows and the acceptance checklists in `docs/operations/{call-room,fieldwork,field-ready}.md`.
-No new GHL inspection, media publication, production deployment or paid provider work is authorized.
+Next product task: publish the verified document-specific navigation correction under existing
+commit/push/Preview authorization and obtain fresh exact-head CI/Preview evidence. Retain the historical cancellation as unexplained
+unless causal evidence establishes it; no blind unchanged-source retry or weakened readiness
+gates. Existing Linux Chrome now works with retained command-local libraries, with no install.
+Production, paid providers and live fieldwork remain excluded. C8, 24 open P0/P1 rows and all
+acceptance boundaries remain unchanged; completed product/privacy reviews are not repeated.
+
+Its base remains `codex/navigation-shell-redesign` at
+`6a1ea64081e42a0dd6ea7efd3b78c0ee4abbd685`. Do not merge. Preserve the twelve parked
+human/real-GHL rows and DES-009. Production deployment, paid provider calls and live fieldwork are
+outside this closeout.
 
 The proposal feedback blocker is remediated and the saved human call recovered without re-recording. Continue independent review and only the outstanding human phone-touch, desktop-keyboard, retention/recovery and privacy checks using `docs/operations/call-room.md` and `docs/reviews/phase-21-feedback-reliability.md`. Do not ask for another four-turn proposal to reproduce the resolved feedback failure. Do not reinstall or expose the working Google credential. PR #23 is merged; its historical review evidence and seven unverified rows remain unchanged. Production secrets/gates and independent acceptance remain prerequisites for production readiness; Phase 24 does not replace any of that human acceptance.
 
@@ -484,4 +564,4 @@ The proposal feedback blocker is remediated and the saved human call recovered w
 
 ## ROLL-UP
 
-313 requirements registered · 278 PASSED · 7 IN_PROGRESS · 8 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 6 NOT_STARTED. Run the validator for the live count by status and priority.
+313 requirements registered · 284 PASSED · 8 IN_PROGRESS · 5 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 2 NOT_STARTED. Run the validator for the live count by status and priority.

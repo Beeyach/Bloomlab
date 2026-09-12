@@ -60,7 +60,7 @@ export async function readPortfolio(database: BloomlabDatabase = db): Promise<Po
     database.portfolio_assets.filter(mine).toArray(),
     database.exercise_attempts.filter(mine).toArray(),
     database.skill_evidence.filter(mine).toArray(),
-    database.evidence_assets.toArray(),
+    database.evidence_assets.filter((row) => row.learner_id === device.learner_id).toArray(),
   ]);
   return records
     .map((raw) => {

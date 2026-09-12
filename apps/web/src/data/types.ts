@@ -203,6 +203,7 @@ export interface DeviceRecord {
 
 /** The last server-confirmed state of a record: what a push declares as its base (TA§14). */
 export interface SyncShadowRecord {
+  learner_id: string;
   entity: SyncEntity;
   entity_id: string;
   revision: number;
@@ -211,6 +212,7 @@ export interface SyncShadowRecord {
 
 /** A divergence the server refused to merge silently (SYNC-009): both versions, until chosen. */
 export interface SyncConflictRecord {
+  learner_id: string;
   entity: SyncEntity;
   entity_id: string;
   local: SyncEnvelope & Record<string, unknown>;
@@ -224,6 +226,7 @@ export type SyncOperationStatus = 'pending' | 'syncing' | 'failed';
 /** One row of the outbox (spec §86 "sync queue"). Phase 4 drains it to the Worker. */
 export interface SyncOperation {
   seq?: number;
+  learner_id: string;
   entity: SyncEntity;
   entity_id: string;
   op: SyncOperationKind;
@@ -242,6 +245,7 @@ export interface SyncOperation {
 /** Sync bookkeeping. One row, keyed `all`: the learner's change log is a single sequence. */
 export interface SyncStateRecord {
   entity: string;
+  learner_id: string;
   last_synced_at: string | null;
   server_cursor: number | null;
   last_error?: string | null;
@@ -250,6 +254,8 @@ export interface SyncStateRecord {
 /** Local-only checkpoint of in-progress work (TA§7: simulator session, unfinished exercise…). */
 export interface WorkspaceRecord {
   key: string;
+  learner_id: string;
+  device_id: string;
   value: unknown;
   updated_at: string;
 }

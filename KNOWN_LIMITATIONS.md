@@ -1,41 +1,111 @@
 # KNOWN LIMITATIONS
 
-## Current remediation boundary (2026-09-10)
+Review corrections are now included in pushed masking source `aaa850c`. Bloomlab is public
+and GitHub run `34673325444` attempt 2 passed Checks after the previous private-repo
+billing/spending-limit failures. Preview attempt 2 failed on a blank negotiation exercise at
+320 px in polish (189 cells reached, no layout violations). Screen-state generation failed
+downstream; the other 34 browser probes passed. The unchanged-source retry (attempt 3) failed polish again, now on a blank architecture
+exercise at 768 px after 94 cells. Artifacts `10292425742` and `10292323377` are retained.
+Bounded startup diagnostics were published in `936c577` without changing assertions/timeouts.
+Run `34677225506` passed Checks and all 215 polish cells, but navigation reset 101 at
+1024×720 recorded three required startup scripts canceled with `net::ERR_ABORTED`, leaving
+`/skills` with an empty root. The other 34 browser probes passed; screen-state generation
+failed downstream. Artifact `10293950546` is privately retained and digest verified. The
+cause remains unproven; service-worker control/cache flags do not establish causation.
+Chrome152 baseline navigation and 500 reloads did not reproduce cancellation. A separate
+stale-document event defect is demonstrated and corrected locally in the probe driver; its
+relation to the historical cancellation is unproven. Retained libraries now support local
+Chrome without installation. Corrected Chrome navigation (38 cases / 252 resets), polish (215 cells), and the scoped review
+passed. Fresh exact-head CI/Preview remains pending. No further blind retry is planned. Production is skipped.
+Saved pre-split webhook steps retain their earlier simulation, including PATCH, under an explicit
+legacy label. This compatibility path is not current native Webhook fidelity and is not offered
+for new steps. Current Custom Webhook keeps its existing method restrictions.
+Existing JSON restore still rejects backups containing simulator `2026.09.23-r1` projects
+under r2; those require the original engine. In-place saved-run compatibility does not establish
+cross-version JSON restore support.
 
-`docs/reviews/field-ready-v1-remediation.md` records the current independent-audit remediation,
-not a Field-Ready Complete certification. The exact human/real-GHL rows remain unchanged.
-R9 fixes actual in-runner event playback, the late-booking `after:` comparison, later-level
-no-choice architecture evidence and learner-authored scope price reductions. R5 retains unsaved
-Workflow drafts locally; R8 excludes unvisited Labs from stable precache and retains visited
-hashed assets for offline reload. R10's deployed sync failures reopened R5: migration 0007 and the
-matching writer now scope all 13 server sync primary keys to `(learner_id, id)`. Existing rows,
-payload bytes and cursor history are preserved; transactional failure/retry is tested. This prevents
-future same-ID collisions but cannot reconstruct earlier overwritten payloads. Preview CI applies
-the schema before code; the old writer cannot run against it during that brief interval or via a
-Worker-only rollback. Production migration/deployment remains skipped. Provider spend stays $0.
+## Current Field-Ready code/audit closeout boundary (2026-09-10)
 
-Verification caveat: intermediate head `61a54d2` had one CI phone Field Ready readiness timeout
-after 67 successful axe scans; the artifact did not capture the failing DOM. Same-head local
-production checks, 40 repeated phone navigations and CI attempt 2 passed unchanged assertions.
-The cause remains unexplained and the failed artifact is retained; this is not manual accessibility
-acceptance. The general sync probe's separate exact-one-queue assumption was disproved by a valid
-two-operation outbox and replaced with a direct saved-note/payload check plus negative regressions.
+`docs/reviews/field-ready-v1-code-closeout.md` records checkpoints C1–C8. The closeout resolves
+the provable AI-Off, learner-ownership, immutable-prediction, private binary recovery,
+failure-isolation, named mobile recomposition and keyboard core-flow gaps. The continuation
+audit reopens exhaustive terminology and semantic screen-state coverage. It is not a Field-Ready Complete or human design/learning certification.
 
-Still open: immutable prediction-before-Lab enforcement (EXR-006); R2 recovery-backup/scenario
-attachment coverage (DATA-006); broad semantic quality (EXR-008/PRI-002/NEG-003); whole-product
-AI-Off/engine-record/naming reconciliation; per-screen state/design/mobile/manual evidence and
-the exact cross-environment failure matrix. These are not silently relabelled as human-only gaps.
-SEC-003's real read-only cloud configuration gate passed on CI 34457590942 and is required on
-the final source head again. See the review's
-complete remaining P0/P1 ledger and final PR attestation before interpreting any status.
+Still open among targeted rows:
+
+- GHL-005/GHL-010 remain PARTIAL: the bounded known-vocabulary/branded-phrase checker cannot
+  establish arbitrary unprefixed native names or contextual generic-name exceptions. Two concrete
+  CRM heading case defects are fixed; remaining exhaustive coverage is not certified.
+- DES-018 remains IN_PROGRESS: 215 default layouts are retained, but family-level successful
+  probes were incorrectly treated as proof for every screen/state/input. Exact state assertion
+  mapping and execution of the missing cells remain open.
+
+- EXR-008, PRI-002 and NEG-003 need broad semantic/reasoning/language-quality evidence. Multiple
+  authored deterministic passes and provider routing do not establish that quality.
+- DES-006, DES-008 and DES-017 retain subjective whole-product hierarchy, density, material and
+  long-session review. The rendered §70 checks, density measurements and screenshots are evidence,
+  not an automated visual judgment.
+- RSP-002 and RSP-003 retain deliberate-composition/capability-equivalence human review across the
+  whole product. RSP-004's six named recompositions are separately objective and complete.
+- Physical Safari, screen readers and broader assistive-technology acceptance are not inferred from
+  Chromium keyboard input or axe. A11Y-001 is limited to its objective keyboard core-flow criterion.
+
+The exact twelve IMPLEMENTED_UNVERIFIED human/real-GHL rows remain unchanged: PRD-005, CUR-015,
+CUR-031, FLD-001, EXR-020, CALL-002, CALL-005, CALL-006, EXR-015, VOI-006, VOI-007 and SEC-005.
+DES-009 remains IN_PROGRESS as inherited regression coverage only; this closeout neither redesigns
+nor reopens it. Preview uses synthetic learners/media and controlled provider failures. It applies
+migration 0008 to `bloomlab-dev` only, spends $0 with providers, performs no live GHL work and skips
+production. Exact final-head CI and Preview identity are external PR/artifact evidence because a
+commit cannot contain its own SHA.
+
+Run `34588323537` attempt 1 at `8a6acbc` failed initial exact-head reads that returned the
+preceding deployment and a later navigation reload whose required React module was canceled
+(`net::ERR_ABORTED`). The cancellation's underlying cause remains unknown. Its failed artifact
+`10196031040` is retained; a settled-deployment rerun is not proof that the cancellation was fixed.
+
+An independent C5 supplement performed nine real unrelated-screen operations while Call,
+Workflow and AI failures stayed held, and four more under push failure. Those operations passed,
+but the expanded 44-operation push exceeded the unchanged ten-second manual-sync gate: the
+response arrived after about 12.1 seconds and the full round trip finished around 15.6 seconds,
+with all queued work applied. This is eventual recovery with a failed timing check, not a complete
+supplemental pass. Earlier local setup failures included confirmed Chrome resource exhaustion
+and a too-long temporary socket path; they do not explain historical GitHub failures.
+
+The continuation also found that ordinary answer saves could clear/replace a RUN THE LEAD
+checkpoint or fabricate one before commitment. The explicit commit operation is now its sole
+writer; direct regressions refuse all three paths plus clearing an already committed answer.
+This corrects the persistence contract; final exact-head verification remains required.
+
+Run `34567088346` retained a blank-page navigation reload failure whose cause is not identified.
+The other 34 browser probes and all C1/C4/C5 checks passed; local diagnostic reloads did not
+reproduce it. Navigation now retains browser exceptions and request/page context with unchanged
+assertions and timeouts. A subsequent passing run does not establish that this prior failure was
+fixed. See the closeout review and retained artifact `10187511170` for the exact boundary.
+
+Run `34571510149` also retained a CRM touch sample without its board and two sync failures.
+The CRM failure did not repeat locally against the same deployed head; its cause remains unknown
+and new failure diagnostics do not constitute a product fix. A reproduced sync overlap defect
+is fixed and manual-sync probes now await the requested pull and derived progress, but the old
+deployed reports lack timing detail to attribute both sync failures conclusively. Artifact
+`10189378968` remains failed evidence; final exact-head verification is still required.
+
+Run `34577143186` passed all 35 browser probes and all 16 AI-Off groups but failed C5's manual
+sync completion during the pull-failure case. A reproduced abandoned-outbox defect is corrected
+under browser locks, and the pointer helper now checks stable geometry before its native click.
+The prior timeout is not conclusively attributed to one cause. Additional local-driven deployed
+C5 diagnostics retained a Call-route error boundary and an incomplete browser run without an
+identified cause. These failed attempts remain disclosed even if a later full run passes.
+
+Run `34583523251` passed the strengthened C5 recovery matrix but failed JSON restore's return
+focus after successful data restoration. A controlled regression reproduces the focus-before-enable
+ordering; JSON and private-media recovery now return focus after the enabled chooser is committed.
+All three added focus assertions fail before their fixes and pass afterward. The failed artifact
+`10194319542` is retained; final exact-head deployed verification remains required.
 
 Unallocated legacy quotes change scope without automatic price subtraction; the interface says so.
-Playback snapshots and unfinished workflow drafts are local workspace data, not synced/exported
-media. Historical or other-device attempts may have no playback and explicitly retain their grade.
-Unvisited Labs require an online first visit; this is not blanket offline availability. Physical
-Safari/device, assistive-technology, long-session comfort and real-GHL acceptance are not established
-by Chromium fixtures. `npm ci` also reports five high dependency advisories; no forced upgrade or
-new dependency-audit claim is made in this scoped remediation.
+Playback snapshots and unfinished workflow drafts are local workspace data, not synced. Unvisited
+Labs require an online first visit; this is not blanket offline availability. Historical failed
+attempts in the remediation report remain retained and are not converted into passes.
 
 All phase-labelled narratives after the generated registry section are historical closure records.
 Their pre-remediation statuses/missing-feature descriptions are superseded only where the current
@@ -108,6 +178,7 @@ and training-only event injectors are teaching tools, not invented native HighLe
 | GHL-SITE-BLOGS — [Blogs](https://help.gohighlevel.com/support/solutions/articles/48001220286-getting-started-with-blogs-and-blog-posts) | C | Local contract reasoning only, not a full Lab or real-GHL acceptance. Conceptual instruction and objective local policy/trace fixtures only. No live product execution, external account, paid provider, publishing, calling or autonomous action is simulated. Only the explicitly described product boundary is taught; entitlements, live permissions and rollout must be verified in the intended account. | 2026-09-09: Current official HighLevel documentation read on 2026-09-09. Only the explicitly described product boundary is taught; entitlements, live permissions and rollout must be verified in the intended account. |
 | GHL-SITE-SEO — [SEO](https://help.gohighlevel.com/support/solutions/articles/155000004723-seo-a-guide-to-boosting-your-search-rankings) | C | Local contract reasoning only, not a full Lab or real-GHL acceptance. Conceptual instruction and objective local policy/trace fixtures only. No live product execution, external account, paid provider, publishing, calling or autonomous action is simulated. Integrated Search Atlas service; entitlement, quotas and billing require verification. Not a native local SEO engine. | 2026-09-09: Current official HighLevel documentation read on 2026-09-09. Integrated Search Atlas service; entitlement, quotas and billing require verification. Not a native local SEO engine. |
 | GHL-STORE-ECOMMERCE — [Online Store](https://help.gohighlevel.com/support/solutions/articles/155000005071) | C | Local contract reasoning only, not a full Lab or real-GHL acceptance. Conceptual instruction and objective local policy/trace fixtures only. No live product execution, external account, paid provider, publishing, calling or autonomous action is simulated. Only the explicitly described product boundary is taught; entitlements, live permissions and rollout must be verified in the intended account. | 2026-09-09: Current official HighLevel documentation read on 2026-09-09. Only the explicitly described product boundary is taught; entitlements, live permissions and rollout must be verified in the intended account. |
+| GHL-WF-CUSTOM-WEBHOOK — [Custom Webhook](https://help.gohighlevel.com/support/solutions/articles/155000003305/) | B | Training approximation. The simulator renders a bounded request, sends nothing, and receives the deterministic response authored for that synthetic endpoint. It demonstrates method, custom data, authentication failure and service outage without claiming live-provider behavior. No request leaves Bloomlab; the scenario supplies the response for an exact synthetic endpoint. The native authorization modes, credential storage, query-parameter editor, content-type behavior and response capture are not reproduced as complete HighLevel controls. Bloomlab records header names but never records secret header values in its execution history. | 2026-09-10: Read the official HighLevel support reference on 2026-09-10. It names Custom Webhook as a distinct workflow action with GET, POST, PUT and DELETE methods, authorization, headers, query parameters and JSON/form request bodies. This record deliberately remains fidelity B. |
 | GHL-WF-CUSTOMER-REPLIED — [Customer Replied](https://help.gohighlevel.com/support/solutions/articles/155000002677-workflow-trigger-customer-replied) | B | Training approximation — replies arrive on SMS or email in the simulator; other channels are practised in GHL. The simulator models SMS and email replies only; social and chat channels are not simulated. The Intent Type and tag filters the article lists are not offered; Reply Channel and Contains Phrase are. An inbound reply also releases a "wait for the contact to reply" step in any run that contact has; the trigger and the release are two different things and both are recorded. | 2026-09-04: Name confirmed on the triggers list page, 2026-09-02. "Contains Phrase" ("runs only when the reply includes specific words or phrases") and "Reply Channel" ("runs only when the reply came from a selected channel") confirmed from search summaries of the dedicated article on 2026-09-04; the article could not be opened directly from the build environment. |
 | GHL-WF-GOAL-EVENT — [Goal Event](https://help.gohighlevel.com/support/solutions/articles/155000003328-workflow-action-goal-event) | C | Conceptual demonstration — goal jumps are explained and practised in GHL, not simulated. Taught as a concept (skip ahead when the goal is met); the simulator does not yet jump contacts between steps. | 2026-09-02: Name confirmed on the help-center article, 2026-09-02; goal options not individually verified. |
 | GHL-WF-INBOUND-WEBHOOK — [Inbound Webhook](https://help.gohighlevel.com/support/solutions/articles/48001237383-how-to-use-the-inbound-webhook-workflow-premium-trigger) | C | Conceptual demonstration — payload mapping and premium-usage billing are practised in GHL, not simulated. A premium (paid-usage) trigger in GHL; the simulator shows the concept — a URL that starts a workflow with a JSON payload — without the mapping UI. | 2026-09-02: Name and premium status confirmed on the help-center article, 2026-09-02. |
@@ -116,7 +187,7 @@ and training-only event injectors are teaching tools, not invented native HighLe
 | GHL-WF-SEND-INTERNAL-NOTIFICATION — [Send Internal Notification](https://help.gohighlevel.com/support/solutions/articles/155000003202-workflow-action-internal-notification) | B | Training approximation — internal notifications are logged, not delivered. WhatsApp is a fourth notification type in HighLevel and is not offered here; the simulator delivers email, SMS and in-app only. The simulator records the notification in the log; it does not deliver to a user's email, SMS or app. | 2026-09-04: Name confirmed on the actions list page, 2026-09-02; channel list not individually verified. Re-checked 2026-09-04 through search summaries of the official article (the build environment's proxy blocks the help centre): the notification types are Email, In-App Notification, SMS and WhatsApp, sent to a user, a role or a team. |
 | GHL-WF-SURVEY-SUBMITTED — [Survey Submitted](https://help.gohighlevel.com/support/solutions/articles/155000003259-workflow-trigger-survey-submitted) | B | Training approximation — the simulator treats a survey as a single submission with its answers; real survey branching is practised in GHL. Multi-page survey logic, scoring and disqualification pages are not simulated; the trigger delivers the final answers only. | 2026-09-04: Name confirmed on the triggers list page, 2026-09-02; filters not individually verified. Re-checked 2026-09-04 through search summaries of the official article (the build environment's proxy blocks the help centre): the trigger fires when a contact submits a survey; the "Survey is" filter may be left blank for any survey; answers are not evaluated by the trigger itself. |
 | GHL-WF-WAIT — [Wait](https://help.gohighlevel.com/support/solutions/articles/155000002470-workflow-action-wait) | B | Training approximation — five of the eight wait types run in the simulator; recurring schedules, contact actions and user replies are practised in GHL. Simulated wait types — a set period of time, a specific date and time, an upcoming appointment or booking (at / before / after), the contact to reply, specific conditions to be met. Not simulated — a recurring schedule, the contact to take an action, a user to reply, the Advance Window; these are practised in GHL. An appointment wait measures from the appointment the run is about — the one that enrolled the contact, else their next live appointment. When that appointment is cancelled, marked invalid or no-show, or rescheduled, a run the appointment's own trigger started is pulled out of the workflow (see GHL-WF-APPOINTMENT-STATUS); a run started by anything else keeps waiting and wakes as scheduled. A wait whose target has already passed when the contact reaches it (a booking forty minutes out meeting "24 hours before") is over at once: the run proceeds and the record says the target had passed. Business hours are not a wait type. They are the workflow's Time Window setting (GHL-WF-WORKFLOW-SETTINGS), applied to outbound messages. | 2026-09-04: Name and the eight wait types confirmed on the help-center article, 2026-09-02. Cancellation and reschedule behaviour taken from search summaries of "Appointment scenarios in Workflow" on 2026-09-04 (the article could not be opened directly from the build environment). |
-| GHL-WF-WEBHOOK — [Webhook](https://help.gohighlevel.com/support/solutions/articles/155000003299-workflow-action-webhook-outbound-) | B | Training approximation. The simulator shows the outgoing payload it would send, the header names it would send with it, and the response code it got back; no request leaves the sandbox. The response comes from an endpoint the scenario configures — a URL, an expected credential, and an optional outage — so a wrong token answers 401 and a failing service answers its own status, deterministically and on demand. Header values are never recorded, only their names. Cannot send files or images. The payload only carries data related to the triggering event. Execution logs confirm the call but do not show the payload. GHL's own authorization pickers (Bearer, API key, Basic, OAuth2) are not offered. The simulator has the header row a learner would use for the first two; Basic and OAuth2, including token refresh through Global Workflow Settings, are practised in GHL. Query parameters are not offered as their own rows; a learner puts them in the URL. The simulator answers from an endpoint the scenario configures, so the responses a learner meets are the ones the scenario authored, not whatever a live service would return. | 2026-09-06: Name, default method, custom data and the first three limitations confirmed on the help-center article, 2026-09-02. Re-checked 2026-09-04 through search summaries of the official article (the build environment's proxy blocks the help centre): the outbound webhook posts a context-dependent payload to a URL with optional Custom Data key/value rows. Headers and authorization re-checked the same way on 2026-09-06 against the Custom Webhook article (help.gohighlevel.com/support/solutions/articles/155000003305): GET, POST, PUT and DELETE, an authorization picker offering Bearer token, API key, Basic and OAuth2, and a Headers section where a bespoke header row is added under No auth. Not read directly; the proxy still returns 403 for the help centre. |
+| GHL-WF-WEBHOOK — [Webhook](https://help.gohighlevel.com/support/solutions/articles/155000003299-workflow-action-webhook-outbound-) | B | Registry-backed comparison only. The standard action is not executed in Bloomlab; the separate Custom Webhook record owns the deterministic request-contract simulation. Cannot send files or images. The payload only carries data related to the triggering event. Execution logs confirm the call but do not show the payload. The standard Webhook action is represented for comparison, but Bloomlab's runnable HTTP-method, header and authentication exercise uses the separately registered Custom Webhook action. | 2026-09-06: Name, default method, custom data and the first three limitations confirmed on the help-center article, 2026-09-02. Re-checked 2026-09-04 through search summaries of the official article (the build environment's proxy blocks the help centre): the outbound webhook posts a context-dependent payload to a URL with optional Custom Data key/value rows. The distinct Custom Webhook contract is no longer conflated with this record. |
 | GHL-WF-WORKFLOW-SETTINGS — [Workflow Settings](https://help.gohighlevel.com/support/solutions/articles/48001239875-workflow-settings-overview) | B | Training approximation — Allow Re-Entry, Time Window and the workflow timezone run in the simulator; Stop on Response, Contact Timezone and Allow Multiple Opportunity are practised in GHL. Simulated — Allow Re-Entry (a contact already active in the workflow is refused a second run when it is off), Time Window (an outbound message outside the window is held and sent when the window next opens), Timezone as the workflow's own zone. Not simulated — Contact Timezone (the simulator always uses the workflow's or the account's zone), Stop on Response, Allow Multiple Opportunity, Sender Details, Mark as Read. These are practised in GHL. | 2026-09-04: Setting names and the Time Window rule ("if a message is set to be sent outside the specified Time Window … it will wait and be sent at the start of the next Time Window") confirmed from search summaries of the help-center article, 2026-09-04. The article could not be opened directly from the build environment. |
 <!-- registry-limitations:end -->
 
@@ -430,7 +501,7 @@ Last updated: 2026-09-09 (Phase 24 Field Ready)
 | `GHL-WF-SEND-SMS` and `GHL-WF-SEND-EMAIL` | A | Recorded with rendered body and subject; no delivery, templates, attachments or tracking. Skipped for no phone, no email or do-not-disturb. | Deliverability is Phase 15. |
 | `GHL-WF-ASSIGN-TO-USER` | A | One user, or equal rotation by current load among the listed users with an only-if-unassigned option. No percentage split. | Enough to teach assignment. |
 | `GHL-WF-SEND-INTERNAL-NOTIFICATION` | B | Email, SMS and in-app, recorded as `NOTIFICATION_SENT`; no WhatsApp, no delivery. | The log is what the learner reads. |
-| `GHL-WF-WEBHOOK` | B | Recorded with a simulated 200 response; nothing is sent. | The build environment has no egress and a learner's sandbox should not either. |
+| `GHL-WF-CUSTOM-WEBHOOK` | B | Recorded with a synthetic response; nothing is sent. | The scenario owns the exact response, and a learner's sandbox makes no outbound request. |
 | `GHL-WF-CREATE-UPDATE-OPPORTUNITY` | A | Creates or moves the contact's opportunity in a pipeline and stage. HighLevel is phasing the combined action out. | The name learners still see. |
 | `GHL-WF-REMOVE-FROM-WORKFLOW` | A | This workflow, all workflows, or a named one. The exact option labels could not be confirmed. | Stated in the record. |
 
@@ -571,7 +642,8 @@ Last updated: 2026-09-09 (Phase 24 Field Ready)
   its authored profile: a URL, an expected credential, an ok status and an optional outage. There
   is no latency, no retry policy, no rate limit, no partial response and no flapping service. A
   learner meets the failure the scenario configured, on demand, every time.
-- **The webhook action carries headers but not GHL's authorization pickers.** `GHL-WF-WEBHOOK`
+- **The Custom Webhook approximation carries headers but not GHL's authorization pickers.**
+  `GHL-WF-CUSTOM-WEBHOOK`
   stays fidelity B. A learner writes an `Authorization` or `X-API-Key` header row, which is how a
   Bearer token or an API key is actually sent, but Basic auth and OAuth2 — including token refresh
   through Global Workflow Settings — are practised in GHL, not here. Query parameters are typed
@@ -582,11 +654,10 @@ Last updated: 2026-09-09 (Phase 24 Field Ready)
   It does not name the pair of workflows as a cycle before running them: static detection across
   workflow definitions (this one's tag trigger matches that one's tag action) is not implemented,
   so a learner who builds the same loop in the Workflow Lab meets it at run time.
-- **Registry verification was indirect for the fifth phase running.** `GHL-WF-WEBHOOK` was
-  re-checked on 2026-09-06 through search-result summaries of the official Custom Webhook article,
-  because the build environment's egress proxy still rejects `help.gohighlevel.com` with a 403 at
-  the CONNECT. The record's `verification_note` says exactly that rather than claiming the article
-  was read.
+- **The two outbound actions are kept separate.** `GHL-WF-WEBHOOK` is the standard comparison
+  record. `GHL-WF-CUSTOM-WEBHOOK` owns Bloomlab's bounded method/header/authentication simulation;
+  its current official source was read on 2026-09-10. Neither record claims network egress or live
+  service behavior.
 - **The Workflow Lab frame-timing probe still misses its ceiling in this container.** Unchanged
   again, and unrelated to Phase 15: `review:workflow` → `five-hundred-events` reported mean 18.5 ms,
   p95 55 ms, maximum frame 130 ms and engine compute 79 ms for 504 events, against ceilings of

@@ -9,6 +9,7 @@ import {
   type AttemptContext,
 } from '../exercise/attempt';
 import { callFetch, callRequest, CallServiceError } from './client';
+import { localRecordingsForAttempt } from './local';
 
 /** The confirmation explicitly includes retained recordings. A failed deletion leaves the
  * active attempt and remaining local audio available for retry; remote deletion is idempotent. */
@@ -37,10 +38,7 @@ export async function restartCall(
     ].includes(current.response.call?.phase ?? '')
   )
     throw new Error('This call has changed. Review the current call before restarting.');
-  const local = await database.call_recordings
-    .where('attempt_id')
-    .equals(current.attempt_id)
-    .toArray();
+  const local = await localRecordingsForAttempt(current.attempt_id, database);
   const call = current.response.call;
   const ids = new Set(local.map((row) => row.recording_id));
   if (call?.recording_id) ids.add(call.recording_id);

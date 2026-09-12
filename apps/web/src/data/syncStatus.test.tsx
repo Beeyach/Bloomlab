@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { freshDatabase } from './testing';
-import { enqueueOperation, takeOperations } from './syncQueue';
+import { enqueueOperation, failOperation, takeOperations } from './syncQueue';
 import { SYNC_STATUS_LABELS, deriveSyncStatus, useSyncStatus } from './syncStatus';
 
 function setOnline(value: boolean) {
@@ -42,6 +42,14 @@ describe('sync status', () => {
     });
     await waitFor(() => expect(result.current.status).toBe('syncing'));
 
+    // A failed operation is still local work; it must remain in the pending indicator.
+    const operation = await database.sync_queue.toCollection().first();
+    await act(async () => {
+      await failOperation(operation!.seq!, 'controlled transport error', database);
+    });
+    await waitFor(() => expect(result.current.status).toBe('saved-locally'));
+    expect(result.current.pending).toBe(1);
+
     act(() => setOnline(false));
     expect(result.current.status).toBe('offline');
     expect(result.current.label).toBe('Offline · saved on this device');
@@ -51,6 +59,7 @@ describe('sync status', () => {
       await database.sync_queue.clear();
       await database.sync_state.put({
         entity: 'notes',
+        learner_id: (await database.device.toCollection().first())!.learner_id,
         last_synced_at: '2026-09-02T00:00:00.000Z',
         server_cursor: null,
       });

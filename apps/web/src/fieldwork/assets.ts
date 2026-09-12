@@ -1,8 +1,11 @@
 import { EVIDENCE_LIMITS, inspectEvidenceImage, type EvidenceAsset } from '@bloomlab/shared';
 import { db, type BloomlabDatabase } from '../data/db';
+import { currentDevice, ensureDevice } from '../data/device';
 
 export interface LocalEvidenceAsset {
   asset_id: string;
+  learner_id: string;
+  device_id: string;
   attempt_id: string;
   exercise_id: string;
   item_key: string;
@@ -17,6 +20,26 @@ export class EvidenceRequestError extends Error {
   ) {
     super(message);
   }
+}
+export async function localEvidence(
+  id: string,
+  database: BloomlabDatabase = db,
+): Promise<LocalEvidenceAsset | undefined> {
+  const owner = await currentDevice(database);
+  const row = await database.evidence_assets.get(id);
+  return owner && row?.learner_id === owner.learner_id ? row : undefined;
+}
+export async function localEvidenceForAttempt(
+  attemptId: string,
+  database: BloomlabDatabase = db,
+): Promise<LocalEvidenceAsset[]> {
+  const owner = await currentDevice(database);
+  if (!owner) return [];
+  return database.evidence_assets
+    .where('attempt_id')
+    .equals(attemptId)
+    .filter((row) => row.learner_id === owner.learner_id)
+    .toArray();
 }
 export async function evidenceFetch(
   id: string,
@@ -59,13 +82,19 @@ export async function evidenceFetch(
 }
 export async function selectEvidence(
   file: Blob,
-  identity: Omit<LocalEvidenceAsset, 'blob' | 'status' | 'upload_started'>,
+  identity: Omit<
+    LocalEvidenceAsset,
+    'learner_id' | 'device_id' | 'blob' | 'status' | 'upload_started'
+  >,
   database: BloomlabDatabase = db,
 ) {
   if (file.size > EVIDENCE_LIMITS.maxBytes) throw new Error('Choose an image up to 8 MB.');
   inspectEvidenceImage(new Uint8Array(await file.arrayBuffer()), file.type);
+  const owner = await ensureDevice(database);
   const row: LocalEvidenceAsset = {
     ...identity,
+    learner_id: owner.learner_id,
+    device_id: owner.device_id,
     blob: file,
     status: 'local',
     upload_started: false,
@@ -77,8 +106,15 @@ export async function uploadEvidence(
   id: string,
   database: BloomlabDatabase = db,
 ): Promise<EvidenceAsset> {
-  const row = await database.evidence_assets.get(id);
-  if (!row || !row.blob || row.status === 'deleting' || row.status === 'deleted')
+  const owner = await ensureDevice(database);
+  const row = await localEvidence(id, database);
+  if (
+    !row ||
+    row.learner_id !== owner.learner_id ||
+    !row.blob ||
+    row.status === 'deleting' ||
+    row.status === 'deleted'
+  )
     throw new Error('Select a screenshot to upload.');
   if (row.status === 'uploaded') return readEvidence(id, database);
   // Written before fetch: a lost response must still be deleted remotely if the learner removes it.
@@ -108,7 +144,8 @@ export async function readEvidence(
   return (await evidenceFetch(id, {}, false, database)).json() as Promise<EvidenceAsset>;
 }
 export async function deleteEvidence(id: string, database: BloomlabDatabase = db) {
-  const row = await database.evidence_assets.get(id);
+  const owner = await ensureDevice(database);
+  const row = await localEvidence(id, database);
   await database.evidence_assets.update(id, { status: 'deleting' });
   if (!row || row.upload_started) {
     // DELETE also retries a response lost after R2 succeeded; server tombstones are idempotent.
@@ -123,6 +160,8 @@ export async function deleteEvidence(id: string, database: BloomlabDatabase = db
   await database.evidence_assets.put({
     ...(row ?? {
       asset_id: id,
+      learner_id: owner.learner_id,
+      device_id: owner.device_id,
       attempt_id: '',
       exercise_id: '',
       item_key: '',

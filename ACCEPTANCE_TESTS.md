@@ -10,17 +10,21 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 
 - **PRD-001** No route, table, component or setting exists for billing, subscriptions, instructor dashboards, student management, teams, public profiles, marketplace, classrooms or social feed.
 - **PRD-004** With AI setting Off and the Worker's AI routes disabled: Academy, Skill Map, Command Center, all Labs, deterministic exercises, mastery updates, portfolio and saved progress function; only AI-graded families report "AI coaching is off".
+  - **PASSED (Field-Ready C1).** One real-browser harness holds both boundaries for eleven path groups, fails deterministic paths that attempt `/api/ai/*`, and retains the truthful negotiation/open-grading fallback. Exact deployed evidence is `ai-off/ai-off-suite.json` in the final Preview artifact.
 - **PRD-009** Learning-engine packages expose learner ID on every record and no single-learner assumption is baked into schemas beyond "one learner per sync key".
+  - **PASSED (Field-Ready C2).** IndexedDB v9 and its legacy migration require learner ownership across all 20 persisted tables; every sync envelope is owned and same curriculum IDs remain isolated between learners. No commercial account/team model was introduced.
 - **EXR-024** Audit finds no console-only behavior, hardcoded success, placeholder, "coming soon", screenshot-only path or nonfunctional modal marked as anything other than PARTIAL; no interactive requirement replaced by a static artefact.
 - **REP-003 / DES-006** Audit of every screen finds no fabricated numbers and no item from the §70 slop list.
 - **RSP-001 / RSP-002 / RSP-003** Every major screen reviewed at all widths; tablet layouts are deliberate; no critical desktop capability is absent on mobile.
 - **DES-017 / DES-018** Screen coverage matrix has every cell for every major screen filled with evidence; visual review notes exist per width.
+  - **DES-018 IN_PROGRESS / DES-017 IN_PROGRESS (continuation audit).** The generated matrix retains 43 learner screens, all 17 exercise types and five-width layout evidence. Family-level probe references do not prove every semantic/input cell; they are now labeled RELATED_BROWSER_EVIDENCE. Exact screen/state assertions and per-width visual review remain required.
 - **INF-006 / INF-007 / INF-008** `wrangler` config and package manifests contain no Durable Object, Queue, Redis, Supabase, Firebase, Kubernetes or vector-database dependency.
 - **SEC-001** Secret scan of repo and built client bundle finds no key material; Worker reads secrets only from bindings; D1 schema has no secret columns.
 - **SEC-002** Development uses `bloomlab-dev`; no script points local/preview at production D1.
 - **SEC-003** No public route or public R2 bucket serves fieldwork/portfolio screenshots.
 - **FLD-002** Bloomlab runs end-to-end with no GHL credentials configured; no code path requires a GHL API token.
 - **GHL-005 / GHL-010** Every UI label that names a GHL feature resolves to a registry `official_name`; grep for feature-like strings outside the registry returns none.
+  - **PASSED (Field-Ready C6).** The deterministic AST/YAML/MDX audit scans every non-test learner-facing feature-bearing source, validates registry IDs and official names, rejects stale aliases/singular drift/unclassified branded phrases, and reports every configured surface. It does not claim native behavioral parity or inspect a live GHL account.
 - **GHL-009** `KNOWN_LIMITATIONS.md` lists every registry feature with fidelity B or C and describes the difference from real GHL.
 - **INF-015** `AUDIT_REPORT.md` exists at each milestone covering the ten §141 categories.
 
@@ -61,6 +65,7 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **MOT-004** No animation runs while its element is off-screen (IntersectionObserver check); idle CPU on the Skill Map is near zero.
 - **PERF-003** Same as MOT-004 plus a visual review confirming richness does not impede reading or clicking.
 - **A11Y-001** Every core flow (start session, open exercise, submit, navigate labs) completes with keyboard only.
+  - **PASSED (Field-Ready C7 objective scope).** The deployed Chromium probe uses native Tab/Shift+Tab/Enter/Space/arrows, verifies visible focus, starts a session, opens and submits a deterministic exercise, and operates representative Labs. Axe remains a separate gate; physical Safari, screen readers and universal assistive-tech certification are not inferred.
 - **A11Y-002** Focus ring visible on every interactive element in light and dark surfaces.
 - **A11Y-003** Automated audit reports zero unlabeled controls/inputs.
 - **A11Y-004** Contrast checks pass for text on every surface including holo variants.
@@ -154,7 +159,7 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **EXR-004** BUILD IT: objective shown; learner constructs in the Lab; deterministic assertions grade it.
 - **EXR-005** FIX IT: symptom text shown; faulty node hidden until diagnosed; repair graded.
 - **EXR-006** RUN THE LEAD: prediction captured before execution; execution animates; mismatch highlighted.
-  - Remediation R9: actual saved contact-event playback, controls, reduced motion and reload are directly tested in `runReplay.test.tsx` and `remediation-exercise-probe.mjs`. PARTIAL remains because an immutable pre-Lab prediction checkpoint is not enforced; a predict-first happy path alone does not prove it.
+  - **PASSED (Field-Ready C3).** The runner requires and atomically commits a prediction before exposing the Lab link; later writes cannot mutate it. Ordinary answer saves also refuse checkpoint creation/replacement/removal and an explicitly cleared committed answer. Execution and replay use actual observed simulator events, with predicted/observed mismatch called out. Direct mutation/reload tests and the deployed exercise probe cover the contract.
 - **EXR-007** EDGE CASE: variable change applied to a passing system; learner verdict graded against actual simulator outcome.
   - Remediation R9: `after.test.ts` and `workflow/exerciseRuntime.test.ts` prove the actual late-booking reference boundary, immediate confirmation success, delayed post-start critical failure and missing/invalid-time refusal. Existing cancelled/missing-phone cases remain. The historical Phase 12 `after:` limitation is resolved.
 - **EXR-008** WHAT WOULD YOU BUILD?: no feature named in the prompt; at least two authored valid architectures accepted; AI invoked only for unmatched designs.
@@ -211,6 +216,7 @@ Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine a
 - **SIM-015** Playground exposes every unlocked feature without an exercise.
 - **CONV-001** Simulated SMS/email appear in Conversations; an injected reply enrolls/exits a workflow.
 - **RSP-004** Each of the six mobile recompositions reviewed at 390/320.
+  - **PASSED (Field-Ready C7).** Specialized probes and the generated matrix cover Workflow vertical editor/sheets, CRM stage switcher/scroller, Academy editorial reading, Call voice/recovery, Inbox list→conversation composer, and Skill Map territory-first touch selection at both phone widths.
 - **A11Y-006** Every drag interaction in the Lab has a keyboard/menu alternative.
 - **PERF-002** Frame timing during node drag and execution ≥ 55 fps on the reference desktop.
 
@@ -321,7 +327,7 @@ Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine a
 - **NEG-002 / EXR-017** All six actions available; a walk-away scenario can score high (test).
   - **PASSED.** Multi-turn NEGOTIATE IT executes all six actions. A diagnosed walk-away scores 100 with rubric_pending; an accepted below-cost offer fails critically. Scope removal, two delivery stages and concrete concession trades are separate modeled consequences. Shared-queue tests and real browser probe cover immediate text/action submission, reloads, retry and old saves.
 - **NEG-003** Classifier maps sample responses to the seven strategies; authored reactions exist for each; AI is invoked only when classification confidence is low (test with AI Off shows authored path).
-  - **PARTIAL.** Seven strategies execute from explicit structured moves at confidence 1. Unselected prose has confidence 0 and takes an authored clarification without changing economics. Every node supplies all seven reactions. No actual language interpreter or AI invocation exists until Phase 19, and none is faked.
+  - **PARTIAL.** All seven strategies and authored reactions are exhaustively covered; explicit moves stay authoritative, low-confidence prose alone may enter the AI classifier, and AI-Off returns the authored clarification without changing economics. Broad natural-language classification quality is still not established by fixtures or one prior live `hold` sample.
 - **NEG-004** Scenarios exist for all ten objections.
   - **PASSED.** Ten reachable authored situations execute through real UI turns; a missing category or branch fails schema validation. See `docs/reviews/phase-18-negotiation.md` for the situation map.
 - **NEG-005** Dialogue actions change hidden state per rules (tests for the three examples).
@@ -352,7 +358,7 @@ Evidence (Phase 11, additive): CRM-001 — `npm run review:crm` works all nine a
 
 - **VOI-005** Reusable audio is generated with current account credits and promoted as exact bytes; subsequent playback and production deployment require no TTS purchase.
 
-Phase 20 evidence (2026-09-07/08): `docs/reviews/phase-20-voice-assets.md`, `docs/operations/voice-assets.json` and the focused content/Worker tests. All five client references resolve to verified account-catalog voices. Every character has eight lines spanning the six kinds. Live preview generation, repeated generation, two media reads and anonymous 401 are verified per asset against D1 metadata and R2 checksums. Browser decoding uses the real Worker and bucket at 1440/1024/768/390/320; identity persists across reload and no playback request goes to ElevenLabs. Unit integration also plays through the real router with an absent key and failing global fetch, exercises private-owner 403, correct ranges and recoverable metadata failure. Production R2 bytes are checked before and after promotion; the production Worker and D1 rollout remain post-merge. DATA-006's Phase 20 audio acceptance is demonstrated, but its full matrix scope stays PARTIAL for later non-audio media flows. Existing sync/auth and navigation probes pass.
+Phase 20 evidence (2026-09-07/08): `docs/reviews/phase-20-voice-assets.md`, `docs/operations/voice-assets.json` and the focused content/Worker tests. Field-Ready C4 closes the later binary matrix: scenario attachments and recoverable learner media use private R2 bytes with D1 metadata, and bounded checksum-verified `.blb` export plus staged same-owner confirmation restores missing/corrupt media without overwriting current bytes. The deployed Preview probe covers anonymous/foreign refusal, download, keep/repair, corruption, cancel and deletion. No public bucket, provider call or production data is involved.
 
 ## Phase 21 — Call Room
 

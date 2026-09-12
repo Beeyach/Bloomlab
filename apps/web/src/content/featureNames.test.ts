@@ -14,6 +14,15 @@ describe('native terminology and registry limitations (GHL-005/009/010)', () => 
     expect(NATIVE_LABELS.conversations).toBe('Conversations');
     expect(() => nativeFeatureName('GHL-NOT-A-REAL-FEATURE')).toThrow('Missing HighLevel registry');
   });
+  it('rejects native heading case drift that previously escaped the terminology audit', () => {
+    const root = execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
+    expect(() =>
+      execFileSync(process.execPath, ['scripts/ghl-terminology.mjs', '--negative-control'], {
+        cwd: root,
+        stdio: 'pipe',
+      }),
+    ).toThrow(/native label.*Custom fields.*official_name.*Custom Fields/);
+  });
   it('keeps every B/C limitation and its original source/verification boundary in the control document', () => {
     const root = execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
     expect(() =>

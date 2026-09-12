@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Cluster, Field, Input } from '@bloomlab/design-system';
 import { cancelRestore, confirmRestore, previewRestore, type RestorePreview } from './restore';
 import { MAX_BACKUP_BYTES } from './restoreSchema';
@@ -18,10 +18,23 @@ export function RestoreData() {
   const input = useRef<HTMLInputElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const pending = useRef(false);
+  const returnFocus = useRef(false);
   const [busy, setBusy] = useState(false);
   const [preview, setPreview] = useState<RestorePreview | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(false);
+  useEffect(() => {
+    if (!preview) return;
+    // Focus only after React has committed the newly mounted review heading.
+    const frame = requestAnimationFrame(() => heading.current?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [preview]);
+  useEffect(() => {
+    if (busy || preview || !returnFocus.current) return;
+    // The chooser must be enabled in the committed DOM before it can receive focus.
+    returnFocus.current = false;
+    input.current?.focus();
+  }, [busy, preview]);
   async function read(file?: File) {
     if (!file || pending.current) return;
     if (preview) cancelRestore(preview);
@@ -35,7 +48,6 @@ export function RestoreData() {
       const next = await previewRestore(await file.text());
       setPreview(next);
       setMessage('Backup validated. Review before confirming.');
-      requestAnimationFrame(() => heading.current?.focus());
     } catch (e) {
       setError(true);
       setMessage(e instanceof Error ? e.message : 'Backup could not be read. No data was changed.');
@@ -53,11 +65,11 @@ export function RestoreData() {
     setMessage('Restoring on this device…');
     try {
       const count = await confirmRestore(preview);
+      returnFocus.current = true;
       setPreview(null);
       setMessage(
-        `Restored ${count} missing records on this device. Existing records were kept. Progress was recalculated; changes are queued for normal sync. Private media was not restored.`,
+        `Restored ${count} missing records on this device. Existing records were kept. Progress was recalculated; changes are queued for normal sync. Restore private media separately below.`,
       );
-      requestAnimationFrame(() => input.current?.focus());
     } catch (e) {
       setError(true);
       setMessage(
@@ -77,9 +89,9 @@ export function RestoreData() {
         Key first.
       </p>
       <p>
-        Progress is recalculated from evidence. Private images, raw audio, connection keys and
-        unfinished drafts are not restored. Old simulator saves must still match the available
-        simulator and content.
+        Progress is recalculated from evidence. This JSON restore does not include private media,
+        connection keys or unfinished drafts; private files use the separate archive below. Old
+        simulator saves must still match the available simulator and content.
       </p>
       <Field
         label="Choose Bloomlab backup"

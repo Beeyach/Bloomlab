@@ -286,7 +286,12 @@ export default function CalendarLab() {
   );
 
   return (
-    <div className={styles.screen}>
+    <div
+      className={styles.screen}
+      data-testid="calendar-lab"
+      data-run-generation={run.generation}
+      aria-busy={busy}
+    >
       <header className={styles.header}>
         <h1 className={styles.title}>Calendar Lab</h1>
         <p className={styles.lead}>
@@ -338,6 +343,7 @@ export default function CalendarLab() {
                   setWatermark(null);
                   void reset();
                 }}
+                disabled={busy}
                 data-testid="calendar-reset-confirm"
               >
                 Reset
@@ -350,6 +356,7 @@ export default function CalendarLab() {
             <Button
               variant="ghost"
               onClick={() => setConfirmingReset(true)}
+              disabled={busy}
               data-testid="calendar-reset"
             >
               Reset the account

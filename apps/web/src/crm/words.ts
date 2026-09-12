@@ -30,6 +30,21 @@ export const contactName = (account: AccountState, id: string | null | undefined
   return contact ? fullName(contact) : 'Unknown contact';
 };
 
+const timeFormatters = new Map<string, Intl.DateTimeFormat>();
+const dayFormatters = new Map<string, Intl.DateTimeFormat>();
+
+function formatter(
+  cache: Map<string, Intl.DateTimeFormat>,
+  timezone: string,
+  options: Intl.DateTimeFormatOptions,
+): Intl.DateTimeFormat {
+  const cached = cache.get(timezone);
+  if (cached) return cached;
+  const created = new Intl.DateTimeFormat('en-GB', { timeZone: timezone, ...options });
+  cache.set(timezone, created);
+  return created;
+}
+
 const text = (value: unknown): string | null =>
   typeof value === 'string' && value.length > 0 ? value : null;
 
@@ -40,8 +55,7 @@ const text = (value: unknown): string | null =>
  */
 export function simulatorTime(at: string, timezone: string): string {
   try {
-    return new Intl.DateTimeFormat('en-GB', {
-      timeZone: timezone,
+    return formatter(timeFormatters, timezone, {
       day: 'numeric',
       month: 'short',
       hour: 'numeric',
@@ -56,8 +70,7 @@ export function simulatorTime(at: string, timezone: string): string {
 /** Just the day, for a due date where the minute is noise. */
 export function simulatorDay(at: string, timezone: string): string {
   try {
-    return new Intl.DateTimeFormat('en-GB', {
-      timeZone: timezone,
+    return formatter(dayFormatters, timezone, {
       weekday: 'short',
       day: 'numeric',
       month: 'short',

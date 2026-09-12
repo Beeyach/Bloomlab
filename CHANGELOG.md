@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-09-12 — Document-specific browser navigation (INF-005, DES-018)
+
+- Wait for the requested document’s frame and loader before browser-probe reads or synthetic
+  fixture clearing. Reject stale load events while preserving the original timeout and gates.
+- Reproduce the stale-event defect with a regression; retain historical canceled-module
+  failures as unexplained rather than claiming this driver correction establishes their cause.
+
+## 2026-09-11 — Polish startup diagnostics (DES-017, DES-018, SEC-001)
+
+- Preserve bounded startup request outcomes and exception locations when polish encounters a
+  blank page. Exclude private payloads and retain all existing assertions/timeouts.
+- Retain both failed public Preview attempts; the cause is unproven and no app fix is claimed.
+
+
+## 2026-09-11 — Private values in review screenshots (SEC-001, SYNC-002)
+
+- Mask Sync Key text, QR images, key-entry fields and explicitly private content during
+  automated review screenshots; refuse capture when masking cannot be established and
+  restore the page afterward. Product key display, recovery and linking behavior are unchanged.
+- Public-repository preparation found reusable synthetic Preview keys in retained CI artifacts.
+  Privately backed up all 70 retained CI artifacts and removed the 13 affected GitHub copies
+  with owner approval before the authorized public visibility change.
+
+
 Phase 22 — Fieldwork (2026-09-08): enriched the existing fieldwork schema compatibly and made the authored Snapshot portability task usable through the exercise runner. Added durable keyed proof, private PNG/JPEG/WebP screenshot recovery/deletion, a proof checkpoint before reasoning, explicit manual GHL confirmation and idempotent fieldwork mastery evidence. Added Dexie v6 and D1 migration 0006 without changing older schemas, direct FLD-004 regression, private asset security tests, sync/persistence/UI tests and a five-width browser probe. FLD-001/EXR-020 remain human-unverified; GHL API verification stays deferred and the PR remains draft for independent audit.
 
 
@@ -8,6 +32,77 @@ Phase 21 closure (2026-09-08): PR #23 merged as `59ec678910cb51559d84af3c4200590
 All notable changes to Bloomlab. Format follows Keep a Changelog; versions follow `app_version` (spec §101).
 
 ## [Unreleased]
+
+### Fixed — internal closeout review (2026-09-11)
+
+- Preserve saved pre-split webhook execution, PATCH, editing and replay while keeping new
+  workflow actions on the distinct Custom Webhook contract. Label legacy steps explicitly and
+  edit header maps without turning them into strings. Regression fixtures: WEBHOOK-LEGACY-001–003.
+- Advance content to `2026.09.28.1` with a generated lock and simulator to `2026.09.23-r2`;
+  existing saved versions/history are preserved. Fresh exact-head CI/Preview remains required.
+
+### Fixed — independent closeout continuation
+
+- Reserve prediction-checkpoint writes for the explicit commit operation. Ordinary answer saves
+  refuse checkpoint injection/replacement/removal and clearing an already committed prediction;
+  four direct regressions fail before the fix. Preserve the failed first attempt of run
+  `34588323537` and the supplemental C5 recovery-timing failure without weakening their gates.
+- Return keyboard focus after JSON/private-media recovery only after the chooser is enabled in
+  the committed UI. Retain failed run `34583523251` and three reproduced focus regressions;
+  no restore assertion or timeout is relaxed.
+- Await the negotiation reply's rendered dialogue after confirming its persisted turn, retaining
+  the same assertion/default timeout and failed run `34582745175`.
+- Recover abandoned in-flight sync rows after reload under a per-database browser lock, retaining
+  newer edits and explicit rejected work. Strengthen C5 with interrupted-push and whole-outbox
+  recovery checks. Stabilize native pointer targeting before press/release and retain run
+  `34577143186` plus its diagnostic limitations; no acceptance or performance threshold is relaxed.
+- Await private-media review focus and completion/cancellation DOM effects in the UI test using
+  the existing timeout. Retain failed run `34576407456`; all original assertions remain.
+- Queue a fresh sync round trip when a manual/background request overlaps an older pull; scope
+  coordination per local database. Await actual manual completion in learning and fault probes.
+  Retain run `34571510149`, including its unreproduced CRM touch failure, and add CRM failure
+  diagnostics without relaxing assertions. Correct NotFound's overstated shared-state evidence.
+- Retain the blank-page navigation failure from run `34567088346` and capture bounded browser
+  exceptions plus request/page context for diagnosis. No application fix is inferred from an
+  unreproduced failure, and all navigation assertions and timeouts remain unchanged.
+- Keep Calendar mutations out of an unfinished account reset; verify the committed generation and
+  selected calendar before booking. Unload Pricing's previous document before resetting its test
+  storage and require the actual work area to render. Retain the failed deployed evidence.
+- Diagnosed the retained exact-head Workflow failures with a Chrome trace: sync status/scheduling
+  now use the existing IndexedDB status index instead of repeatedly cloning queued snapshot payloads.
+  Performance ceilings remain unchanged; failed-work indicator behavior is preserved.
+- Corrected CRM Custom Fields headings and sanitized asynchronous private-media export failures.
+- Added real AI-Off learner routes and a failing dependency control, missing-binary Preview restore,
+  held-fault isolation and newer-local-work retry assertions, and native keyboard Lab operations.
+- Reopened GHL-005/GHL-010 and DES-018 where prior evidence overstated exhaustive naming/state
+  coverage. Preserved all prior failed runs, the twelve human rows, and all performance thresholds.
+
+### Changed — Field-Ready v1 code/audit closeout
+
+- Added a whole-product AI-Off harness and learner-owned v9 local migration/inventory; every
+  deterministic learning/Lab/save path is exercised without Worker AI, and every persisted record
+  is scoped to its learner without adding commercial account infrastructure.
+- Enforced immutable RUN THE LEAD predictions before Lab execution and replayed actual observed
+  events with mismatch evidence. Exhaustive open-architecture, pricing and negotiation fixtures
+  expanded, while broad semantic-quality rows remain PARTIAL.
+- Added private R2 scenario attachments and checksum-verified staged `.blb` binary recovery with D1
+  metadata only, plus controlled Call/Workflow/AI/sync failure-isolation probes. Preview-only
+  migration 0008; no production action or provider spend.
+- Added an AST/YAML/MDX HighLevel terminology registry audit. Corrected the previously conflated
+  standard Webhook and distinct Custom Webhook records from current official sources without
+  claiming live GHL parity.
+- Replaced hand-picked screen lists with a router/content-derived inventory: 43 learner screens,
+  all 17 exercise families, 215 five-width layout cells and explicit state/input/reduced-motion
+  evidence. Added real phone assertions for Skill Map territory selection and Inbox composition.
+  Human hierarchy/density/material/long-session review stays open; DES-009 is regression-only.
+- Retained seven objectively evidenced P0/P1 promotions after independently reopening three unsupported claims. Preserved all twelve IMPLEMENTED_UNVERIFIED rows,
+  all semantic/human/device/provider/real-GHL boundaries, and the independent-audit/no-merge gate.
+  Draft PR #32 targets `codex/navigation-shell-redesign`; exact-head Preview evidence is attached to
+  the PR rather than self-referenced inside the source commit.
+- Bounded and memoized recent Workflow history while keeping older runs available, removed repeated
+  date-formatter allocation, and hardened deployed navigation, restore-focus and controlled
+  fieldwork-upload verification against commit-time races; the strict 500-event performance and
+  five-width interaction thresholds remain unchanged.
 
 ### Changed — Field-Ready v1 independent-audit remediation
 

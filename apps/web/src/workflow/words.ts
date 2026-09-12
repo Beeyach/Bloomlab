@@ -12,7 +12,7 @@ import type {
 } from '@bloomlab/design-system';
 
 import { simulatorTime } from '../crm/words';
-import { featureName } from './palette';
+import { featureName, savedNodeEntry } from './palette';
 
 /**
  * Words for the Workflow Lab (D-095 applied to workflows).
@@ -28,7 +28,7 @@ export const nodeKind = (node: WorkflowNode): WorkflowNodeKind =>
 
 /** The node's real feature name, or what the type is called when no feature is chosen yet. */
 export const nodeName = (node: WorkflowNode): string =>
-  node.type === 'end' ? 'End' : featureName(node.ghl_feature_id);
+  node.type === 'end' ? 'End' : (savedNodeEntry(node)?.name ?? featureName(node.ghl_feature_id));
 
 const text = (value: unknown): string => (typeof value === 'string' ? value : '');
 const num = (value: unknown): number => (typeof value === 'number' ? value : Number(value) || 0);
@@ -74,6 +74,7 @@ export function configSummary(node: WorkflowNode, account: AccountState): string
       return text(c.recipient)
         ? `${account.users[text(c.recipient)]?.name ?? text(c.recipient)} · ${text(c.channel) || 'in-app'}`
         : 'No recipient yet';
+    case 'GHL-WF-CUSTOM-WEBHOOK':
     case 'GHL-WF-WEBHOOK':
       return text(c.url) || 'No URL yet';
     case 'GHL-WF-WAIT':

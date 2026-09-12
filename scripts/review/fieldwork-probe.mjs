@@ -129,7 +129,7 @@ try {
     identity = await r.json();
   }
   await page.evaluate(
-    `(async()=>{const p=window.__fieldworkProbe;const d=(await p.rows('device'))[0];await p.put('device',{...d,${identity ? `learner_id:${JSON.stringify(identity.learner_id)},session_token:${JSON.stringify(identity.session_token)}` : 'session_token:"controlled-fieldwork-session"'}});await p.put('workspace',{key:'ai.mode',value:'Off',updated_at:new Date().toISOString()});})()`,
+    `(async()=>{const p=window.__fieldworkProbe;const d=(await p.rows('device'))[0],owner={...d,${identity ? `learner_id:${JSON.stringify(identity.learner_id)},session_token:${JSON.stringify(identity.session_token)}` : 'session_token:"controlled-fieldwork-session"'}};await p.put('device',owner);await p.put('workspace',{key:'ai.mode',learner_id:owner.learner_id,device_id:owner.device_id,value:'Off',updated_at:new Date().toISOString()});})()`,
   );
   const widths = [1440, 1024, 768, 390, 320];
   for (const [index, width] of widths.entries()) {
@@ -166,7 +166,7 @@ try {
     for (const key of ['assets_loaded', 'references_checked', 'safe_draft'])
       await selectTest(key, key === 'assets_loaded' ? 'failed' : 'passed');
     await wait(
-      `window.__fieldworkProbe.rows('workspace').then(rows=>rows.find(r=>r.key==='exercise.attempt.${exercise}')?.value.response.fieldwork.tests.assets_loaded.status==='failed')`,
+      `window.__fieldworkProbe.rows('workspace').then(rows=>rows.find(r=>r.key==='exercise.attempt.${exercise}')?.value?.response?.fieldwork?.tests?.assets_loaded?.status==='failed')`,
     );
     await selectImage();
     const before = await page.evaluate(

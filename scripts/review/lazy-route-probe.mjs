@@ -66,16 +66,26 @@ try {
   await workers.send('Network.emulateNetworkConditions', offline);
   await page.send('Network.emulateNetworkConditions', offline);
   await openPage(page, base + '/workflow');
+  // Chromium can reset the page target's navigator.onLine signal during a service-worker-backed
+  // navigation. Keep the Worker offline for the actual reload, then reassert the page signal in
+  // the new document before inspecting the rendered state.
+  await workers.send('Network.emulateNetworkConditions', offline);
+  await page.send('Network.emulateNetworkConditions', offline);
   for (
     let i = 0;
     i < 100 && !(await page.evaluate(`Boolean(document.querySelector('[data-node="n1"]'))`));
     i++
   )
     await sleep(100);
+  const apiFetch = await page.evaluate(
+    `fetch('/api/health').then((r) => 'served ' + r.status).catch((error) => 'failed: ' + error.message)`,
+  );
   assert(
     await page.evaluate(`!navigator.onLine && Boolean(document.querySelector('[data-node="n1"]'))`),
   );
+  assert.match(apiFetch, /^failed:/);
   report.workflowOfflineReload = true;
+  report.workflowOfflineApiFetch = apiFetch;
   report.status = 'PASSED';
   console.log(
     'Academy neither loads nor precaches Workflow. Explicit navigation loads it; offline reload retains it.',

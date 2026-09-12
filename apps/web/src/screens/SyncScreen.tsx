@@ -98,7 +98,7 @@ function KeyPanel({ canonical }: { canonical: string }) {
   return (
     <div className={styles.keyPanel}>
       <p className={styles.keyLabel}>Bloomlab Sync Key</p>
-      <p className={styles.key} data-testid="sync-key">
+      <p className={styles.key} data-testid="sync-key" data-review-private>
         {display}
       </p>
       <Cluster gap={2}>
@@ -112,7 +112,14 @@ function KeyPanel({ canonical }: { canonical: string }) {
           {qr ? 'Hide QR' : 'Show QR'}
         </Button>
       </Cluster>
-      {qr && <img className={styles.qr} src={qr} alt="QR code of your Bloomlab Sync Key" />}
+      {qr && (
+        <img
+          data-review-private
+          className={styles.qr}
+          src={qr}
+          alt="QR code of your Bloomlab Sync Key"
+        />
+      )}
     </div>
   );
 }
@@ -196,6 +203,7 @@ function EnterKey({ onLinked }: { onLinked: () => void }) {
         error={error ?? undefined}
       >
         <Input
+          data-review-private
           value={value}
           autoComplete="off"
           spellCheck={false}

@@ -88,10 +88,13 @@ describe('PORT-001 canonical portfolio', () => {
   });
   it('preserves deleted source state and never resurrects a portfolio tombstone', async () => {
     const saved = await savedWork(db, { fieldwork: true });
+    const device = await ensureDevice();
     await collectPortfolio();
     const asset = saved.attempt!.response!.fieldwork!.screenshots.destination_workflow!;
     await db.evidence_assets.put({
       asset_id: asset,
+      learner_id: device.learner_id,
+      device_id: device.device_id,
       attempt_id: saved.attempt!.id,
       exercise_id: saved.attempt!.exercise_id!,
       item_key: 'destination_workflow',
@@ -218,9 +221,12 @@ describe('PORT-002 truthful archive UI', () => {
   });
   it('shows deleted private images truthfully without a read request', async () => {
     const saved = await savedWork(db, { fieldwork: true });
+    const device = await ensureDevice();
     const id = saved.attempt!.response!.fieldwork!.screenshots.destination_workflow!;
     await db.evidence_assets.put({
       asset_id: id,
+      learner_id: device.learner_id,
+      device_id: device.device_id,
       attempt_id: saved.attempt!.id,
       exercise_id: saved.attempt!.exercise_id!,
       item_key: 'destination_workflow',

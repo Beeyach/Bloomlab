@@ -35,11 +35,13 @@ export function WorkSurface({
   attempt,
   context,
   disabled,
+  predictionLocked = false,
 }: {
   exercise: Exercise;
   attempt: ActiveAttempt;
   context: AttemptContext;
   disabled: boolean;
+  predictionLocked?: boolean;
 }) {
   const treatment = treatmentFor(exercise);
   const fields = useMemo(() => predictionFields(exercise), [exercise]);
@@ -117,7 +119,7 @@ export function WorkSurface({
               <input
                 type="text"
                 value={draft.prediction[field.key] ?? ''}
-                disabled={disabled}
+                disabled={disabled || predictionLocked}
                 onChange={(event) =>
                   update({ prediction: { ...draft.prediction, [field.key]: event.target.value } })
                 }

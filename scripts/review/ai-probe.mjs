@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
-import { openPage, session, setViewport, screenshot } from './cdp.mjs';
+import { openPage, resetIndexedDbFixture, session, setViewport, screenshot } from './cdp.mjs';
 import { probeHelpers } from './probe-lib.mjs';
 const base = process.env.BASE ?? 'http://localhost:4173';
 const out = process.env.REVIEW_OUT ?? '.review';
@@ -42,10 +42,7 @@ try {
     },
   };
   for (const width of [1440, 1024, 768, 390, 320]) {
-    await page.send('Storage.clearDataForOrigin', {
-      origin: new URL(base).origin,
-      storageTypes: 'indexeddb',
-    });
+    await resetIndexedDbFixture(page, base);
     await setViewport(page, width, 900, { mobile: width < 500 });
     await openPage(page, `${base}/exercise/EX-ARCHITECTURE_DECISION-treatment-interest`);
     await waitFor(page, "!!document.querySelector('textarea')");

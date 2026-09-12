@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { instantForDay, type Contact } from '@bloomlab/simulator-core';
 import { Button, Field, Input, Select, Stack, StatusPill, Textarea } from '@bloomlab/design-system';
 
+import { NATIVE_LABELS } from '../content/featureNames';
 import type { StoredRun } from '../simulator/store';
 import { fullActivityFor } from './activity';
 import {
@@ -196,7 +197,7 @@ function RecordPanel({ run, contact, apply }: ContactDetailProps) {
 
       <section aria-labelledby={`fields-${contact.id}`} className={styles.section}>
         <h3 id={`fields-${contact.id}`} className={styles.stageName}>
-          Custom fields
+          {NATIVE_LABELS.customFields}
         </h3>
         {contactFields.length === 0 && (
           <p className={styles.muted}>No contact fields are defined. Setup is where they live.</p>

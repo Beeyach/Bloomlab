@@ -55,6 +55,11 @@ export async function ensureDevice(database: BloomlabDatabase = db): Promise<Dev
   });
 }
 
+/** Reads the current owner without creating or refreshing identity inside a reactive query. */
+export function currentDevice(database: BloomlabDatabase = db): Promise<DeviceRecord | undefined> {
+  return database.device.toCollection().first();
+}
+
 export async function renameDevice(
   label: string,
   database: BloomlabDatabase = db,

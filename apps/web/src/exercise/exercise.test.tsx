@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { EXERCISE_GRADER_VERSION } from '@bloomlab/exercise-engine';
 import { getFeatureFlags } from '@bloomlab/shared';
+import type { SimulatorScenario } from '@bloomlab/simulator-core';
 
 import { App } from '../app/App';
 import { content } from '../content/bundle';
@@ -18,7 +19,15 @@ import { FakeSyncServer } from '../data/sync/fakeServer';
 import { createSyncKey, linkThisDevice } from '../data/sync/link';
 import { listOperations } from '../data/syncQueue';
 import { freshDatabase } from '../data/testing';
-import { NORMAL_RUN, loadAttempt, revealHint, saveResponse, startAttempt } from './attempt';
+import {
+  NORMAL_RUN,
+  commitRunPrediction,
+  discardAttempt,
+  loadAttempt,
+  revealHint,
+  saveResponse,
+  startAttempt,
+} from './attempt';
 import {
   evidenceKindFor,
   finalizeAttempt,
@@ -26,6 +35,10 @@ import {
   RuntimeUnavailableError,
 } from './finalize';
 import { canGradeNow, missingSources } from './runtime';
+import { startRun, type StoredRun } from '../simulator/store';
+import { bookAppointment, resetWorkflowRun } from '../workflow/commands';
+import { loadWorkspace } from '../data/workspace';
+import { runReplayKey, type RunReplay } from './runReplay';
 
 const flags = getFeatureFlags('production');
 const DECISION = 'EX-ARCHITECTURE_DECISION-treatment-interest';
@@ -204,11 +217,134 @@ describe('what cannot be graded yet is not graded (EXR-024)', () => {
     expect(document.body.textContent).not.toContain('The learner predicted the booked tag');
     // The run comes from the Workflow Lab's account now; the runner offers it rather than a wait.
     expect(screen.queryByText('This one is not runnable yet.')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Run it' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Run it' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Commit prediction' }));
+    const lab = await screen.findByRole('link', { name: 'Open Workflow Lab to execute it' });
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Run it' })).toBeEnabled());
+    expect(tag).toBeDisabled();
+    expect(lab).toHaveAttribute(
+      'href',
+      expect.stringMatching(
+        /^\/workflow\?scenario=SC-glowhaus-no-show&exercise=EX-RUN_THE_LEAD-booking-confirmation&attempt=/,
+      ),
+    );
   });
 });
 
 describe('attempt lifecycle and idempotency (D-068)', () => {
+  it.each(['remove', 'replace', 'clear-answer'] as const)(
+    'refuses to %s committed prediction data through an ordinary response save',
+    async (operation) => {
+      const exercise = byId(RUN_THE_LEAD);
+      await startAttempt(exercise, NORMAL_RUN, {}, db);
+      await saveResponse(RUN_THE_LEAD, NORMAL_RUN, { prediction: { tag: 'booked' } }, db);
+      await commitRunPrediction(exercise, NORMAL_RUN, db);
+      const before = await loadAttempt(RUN_THE_LEAD, NORMAL_RUN, db);
+      const checkpoint = before!.response.run_prediction!;
+      await expect(
+        saveResponse(
+          RUN_THE_LEAD,
+          NORMAL_RUN,
+          operation === 'clear-answer'
+            ? { prediction: undefined }
+            : {
+                run_prediction:
+                  operation === 'remove'
+                    ? undefined
+                    : { ...checkpoint, through_event_index: checkpoint.through_event_index + 100 },
+              },
+          db,
+        ),
+      ).rejects.toThrow(/checkpoint|committed/);
+      expect(await loadAttempt(RUN_THE_LEAD, NORMAL_RUN, db)).toEqual(before);
+    },
+  );
+
+  it('refuses a fabricated prediction checkpoint before the learner commits', async () => {
+    await startAttempt(byId(RUN_THE_LEAD), NORMAL_RUN, {}, db);
+    await expect(
+      saveResponse(
+        RUN_THE_LEAD,
+        NORMAL_RUN,
+        {
+          run_prediction: {
+            committed_at: '2026-09-11T00:00:00.000Z',
+            prediction: { tag: 'booked' },
+            scenario_id: 'SC-glowhaus-no-show',
+            run_id: null,
+            run_generation: null,
+            through_event_index: -1,
+          },
+        },
+        db,
+      ),
+    ).rejects.toThrow(/checkpoint/);
+    expect(
+      (await loadAttempt(RUN_THE_LEAD, NORMAL_RUN, db))?.response.run_prediction,
+    ).toBeUndefined();
+  });
+
+  it('persists and locks the RUN THE LEAD checkpoint; a new attempt starts unlocked', async () => {
+    const exercise = byId(RUN_THE_LEAD);
+    const started = await startAttempt(exercise, NORMAL_RUN, {}, db);
+    await saveResponse(RUN_THE_LEAD, NORMAL_RUN, { prediction: { tag: 'booked' } }, db);
+    await commitRunPrediction(exercise, NORMAL_RUN, db, new Date('2026-09-10T12:00:00Z'));
+    const committed = await loadAttempt(RUN_THE_LEAD, NORMAL_RUN, db);
+    expect(committed?.attempt_id).toBe(started.attempt_id);
+    expect(committed?.response.run_prediction).toMatchObject({
+      committed_at: '2026-09-10T12:00:00.000Z',
+      prediction: { tag: 'booked' },
+      scenario_id: 'SC-glowhaus-no-show',
+      run_id: null,
+      run_generation: null,
+      through_event_index: -1,
+    });
+    await expect(
+      saveResponse(RUN_THE_LEAD, NORMAL_RUN, { prediction: { tag: 'changed later' } }, db),
+    ).rejects.toThrow(/committed/);
+    expect((await loadAttempt(RUN_THE_LEAD, NORMAL_RUN, db))?.response.prediction.tag).toBe(
+      'booked',
+    );
+
+    await discardAttempt(RUN_THE_LEAD, NORMAL_RUN, db);
+    const fresh = await startAttempt(exercise, NORMAL_RUN, {}, db);
+    expect(fresh.attempt_id).not.toBe(started.attempt_id);
+    expect(fresh.response.run_prediction).toBeUndefined();
+    expect(fresh.response.prediction).toEqual({});
+  });
+
+  it('refuses pre-commit execution and accepts execution after a same-run reset generation', async () => {
+    const exercise = byId(RUN_THE_LEAD);
+    const scenario = content.scenarios.find(
+      (row) => row.id === exercise.scenario,
+    ) as unknown as SimulatorScenario;
+    const direct = { database: db, createWorker: null };
+    const executed = async (pending: ReturnType<typeof bookAppointment>): Promise<StoredRun> => {
+      const result = await pending;
+      if (!result.ok) throw new Error(result.refusal.message);
+      return result.run;
+    };
+    let run = await startRun(scenario, db);
+    run = await executed(
+      bookAppointment(run, scenario, 'maria', 'consultation', '2026-09-05T15:00:00-05:00', direct),
+    );
+    const attempt = await startAttempt(exercise, NORMAL_RUN, {}, db);
+    await saveResponse(RUN_THE_LEAD, NORMAL_RUN, { prediction: { tag: 'booked' } }, db);
+    await commitRunPrediction(exercise, NORMAL_RUN, db);
+    await expect(finalizeAttempt(exercise, attempt, db)).rejects.toThrow(
+      /after committing the prediction/,
+    );
+
+    run = await resetWorkflowRun(scenario, run.state.run_id, db);
+    await executed(
+      bookAppointment(run, scenario, 'maria', 'consultation', '2026-09-05T16:00:00-05:00', direct),
+    );
+    const result = await finalizeAttempt(exercise, attempt, db);
+    expect(result.report.outcome).toBe('passed');
+    const replay = await loadWorkspace<RunReplay>(runReplayKey(attempt.attempt_id), db);
+    expect(replay?.prediction).toEqual({ tag: 'booked' });
+    expect(replay?.events.some((event) => event.type === 'sms.sent')).toBe(true);
+  });
   it('opening records nothing and a reload resumes the same attempt', async () => {
     await openRunner();
     await waitFor(async () => expect(await loadAttempt(DECISION, NORMAL_RUN, db)).toBeDefined());
@@ -284,7 +420,8 @@ describe('hints and assistance (EXR-022, MAS-007)', () => {
   it('reveals one level at a time, records it, and survives a reload', async () => {
     await openRunner();
     await waitFor(async () => expect(await loadAttempt(DECISION, NORMAL_RUN, db)).toBeDefined());
-    expect(screen.getByText('Independent')).toBeInTheDocument();
+    // The IndexedDB commit can complete before its live-query notification renders the drawer.
+    expect(await screen.findByText('Independent')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Show the nudge' }));
     await screen.findByText(/Is "interested in Laser" something that happened/);

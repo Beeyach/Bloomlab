@@ -18,7 +18,7 @@ import {
 } from '../exercise/attempt';
 import { callFetch, callRequest, startRemoteCall } from './client';
 import { captureAudio, recordingMime, type Capture } from './recording';
-import { storeLocalRecording } from './local';
+import { localRecording, localRecordingsForAttempt, storeLocalRecording } from './local';
 import { cleanConfirmedAudio, confirmTurn, transcribeSaved } from './pipeline';
 import { NegotiationTerms } from './NegotiationTerms';
 import { Recordings } from './Recordings';
@@ -205,7 +205,7 @@ export default function CallRoom({
           }
         }
         if (recovered.recording_id) {
-          const local = await db.call_recordings.get(recovered.recording_id);
+          const local = await localRecording(recovered.recording_id, db);
           if (local && ['recording', 'microphone_permission'].includes(recovered.phase))
             recovered = { ...recovered, phase: 'locally_saved' };
           if (!local && ['recording', 'microphone_permission'].includes(recovered.phase)) {
@@ -401,7 +401,7 @@ export default function CallRoom({
   async function retention(keep: boolean) {
     if (!attemptId) return;
     await patch({ retain_audio: keep });
-    const rows = await db.call_recordings.where('attempt_id').equals(attemptId).toArray();
+    const rows = await localRecordingsForAttempt(attemptId, db);
     for (const row of rows) await db.call_recordings.update(row.recording_id, { retain: keep });
     if (snapshot) {
       const remote = await callRequest<CallRecording[]>(`attempts/${attemptId}/recordings`);

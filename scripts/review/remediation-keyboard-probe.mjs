@@ -144,6 +144,25 @@ for (const width of [1440, 390]) {
       await focus('main button:not(:disabled), main a, main input, main select');
       assert(await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'));
       report.flows.push({ width, flow: 'navigate-lab-reach-control', path });
+      if (path === '/workflow') {
+        await wait(
+          `document.querySelector('[data-testid="start-first-step"]')?.disabled === false`,
+        );
+        await focus('[data-testid="start-first-step"]');
+        await key('Enter');
+        await wait(
+          `(document.querySelector('[data-testid="trigger-outcome"]')?.dataset.outcome === 'direct' || document.querySelector('[data-testid="timeline"] button[data-run]'))`,
+        );
+        report.flows.push({ width, flow: 'keyboard-execute-workflow' });
+      }
+      if (path === '/funnel') {
+        await focus('[data-testid="funnel-mode-preview"]');
+        await key('Enter');
+        await wait(
+          `document.querySelector('[data-testid="funnel-mode-preview"]')?.getAttribute('aria-pressed') === 'true'`,
+        );
+        report.flows.push({ width, flow: 'keyboard-open-funnel-preview' });
+      }
     }
   } finally {
     await close();

@@ -8,6 +8,7 @@ prerequisites:
   - SK-AUTOMATE-workflow-foundations
 ghl_features:
   - GHL-WF-WEBHOOK
+  - GHL-WF-CUSTOM-WEBHOOK
   - GHL-WF-INBOUND-WEBHOOK
   - GHL-API-WEBHOOKS
 judgment_competencies:

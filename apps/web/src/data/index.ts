@@ -3,6 +3,7 @@ export { nowIso, randomId, stampCreate, stampDelete, stampUpdate } from './envel
 export {
   DEVICE_LABEL_MAX,
   defaultDeviceLabel,
+  currentDevice,
   ensureDevice,
   renameDevice,
   requestPersistentStorage,

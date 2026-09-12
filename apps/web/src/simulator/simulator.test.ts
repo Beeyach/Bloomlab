@@ -227,6 +227,34 @@ describe('simulator → grading adapter', () => {
 });
 
 describe('persistence across a reload (DATA-002, SIM-013)', () => {
+  it.each(['SC-glowhaus-incident-webhook-auth', 'SC-glowhaus-incident-integration'])(
+    'WEBHOOK-LEGACY-002 preserves and executes a pre-split saved %s run',
+    async (id) => {
+      const legacy = structuredClone(
+        content.scenarios.find((row) => row.id === id),
+      ) as unknown as SimulatorScenario;
+      // Reconstruct the previous release's authored node IDs before creating its saved account.
+      const source = JSON.stringify(legacy).replaceAll('GHL-WF-CUSTOM-WEBHOOK', 'GHL-WF-WEBHOOK');
+      const oldScenario = JSON.parse(source) as SimulatorScenario;
+      const started = await startRun(oldScenario, database);
+      started.state.version = '2026.09.23-r1';
+      await commitRun(started, database);
+      const before = await database.sim_projects.get(started.state.run_id);
+      const loaded = (await loadRun(started.state.run_id, database)) as StoredRun;
+      expect(await database.sim_projects.get(started.state.run_id)).toEqual(before);
+      expect(loaded.state.version).toBe('2026.09.23-r1');
+      expect(JSON.stringify(loaded.state.account)).toContain('GHL-WF-WEBHOOK');
+      const resumed = advanceTo(loaded.state, '2026-09-08T09:00:00-05:00');
+      expect(resumed.log.some((row) => row.type === 'WEBHOOK_RESPONSE')).toBe(true);
+      expect(resumed.execution.some((row) => row.reason === 'unsupported_feature')).toBe(false);
+      await commitRun({ ...loaded, state: resumed }, database);
+      const reloaded = (await loadRun(started.state.run_id, database)) as StoredRun;
+      expect(historyHash(reloaded.state)).toBe(historyHash(resumed));
+      const replayed = replay(oldScenario, resumed.log, { run_id: resumed.run_id });
+      expect(replayed.log).toEqual(resumed.log);
+      expect(replayed.account).toEqual(resumed.account);
+    },
+  );
   it('brings back the run, its history, its clock and its queue', async () => {
     const started = await startRun(scenario, database);
     let state = started.state;

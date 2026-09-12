@@ -28,21 +28,36 @@ export function probeHelpers({ base }) {
     `(document.querySelector('[data-testid=${JSON.stringify(testid)}]')?.textContent?.trim() ?? null)`;
 
   async function click(page, selectorOrText) {
-    const box = await page.evaluate(`(() => {
+    const point = (stable = false) =>
+      page.evaluate(`(async () => {
       const wanted = ${JSON.stringify(selectorOrText)};
       const el = wanted.startsWith('#') || wanted.includes('[')
         ? document.querySelector(wanted)
         : [...document.querySelectorAll('button, a')].find((b) => b.textContent.trim() === wanted);
       if (!el) return null;
       el.scrollIntoView({ block: 'center' });
+      const before = el.getBoundingClientRect();
+      if (${stable}) {
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      }
       const r = el.getBoundingClientRect();
+      if (${stable} && (!el.isConnected || el.disabled || !r.width || !r.height ||
+          ['left','top','width','height'].some(key => Math.abs(r[key] - before[key]) > 0.25))) return null;
       const x = r.left + r.width / 2, y = r.top + r.height / 2;
       const at = document.elementFromPoint(x, y);
       return { x, y, hit: at ? at.tagName + ' ' + (at.textContent || '').trim().slice(0, 30) : null, sameElement: !!at && (at === el || el.contains(at)) };
     })()`);
+    let box = await point();
     if (!box) throw new Error(`Nothing to click for ${selectorOrText}`);
-    if (!box.sameElement) console.log(`click ${selectorOrText}: point hits ${box.hit}`);
     await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...box });
+    // Hover and async queue updates can move a control after its first measurement. Recheck
+    // stable geometry and hit testing before sending the one real press/release sequence.
+    for (let attempt = 0; attempt < 80; attempt++) {
+      box = await point(true);
+      if (box?.sameElement) break;
+      await sleep(125);
+    }
+    if (!box?.sameElement) throw new Error(`Click target did not settle for ${selectorOrText}`);
     await page.send('Input.dispatchMouseEvent', {
       type: 'mousePressed',
       ...box,
@@ -88,11 +103,49 @@ export function probeHelpers({ base }) {
       "[...document.querySelectorAll('dd')].map((d) => d.textContent.trim()).filter((t) => /^(device \\d|linked|not linked|Synced|Saved|Offline|Syncing)/.test(t))",
     );
 
-  /** Clicks "Sync now" on /system and waits until the outbox is empty. */
-  async function syncNow(page) {
-    await waitFor(page, hasButton('Sync now'));
+  /** Waits for this manual round trip and derived progress, including an empty-outbox pull. */
+  async function requestSync(page) {
+    const selector = '[data-sync-completed]';
+    if (!(await waitFor(page, `!!document.querySelector('${selector}:not(:disabled)')`))) {
+      throw new Error('Manual sync did not become available');
+    }
+    const before = await page.evaluate(
+      `Number(document.querySelector('${selector}').dataset.syncCompleted)`,
+    );
+    await page.evaluate(`(() => {
+      globalThis.__manualSyncInput = [];
+      for (const type of ['mousedown', 'mouseup', 'click']) {
+        document.addEventListener(type, (event) => {
+          if (globalThis.__manualSyncInput.length < 12) globalThis.__manualSyncInput.push({
+            type, target: event.target.closest('button')?.textContent.trim() ?? event.target.tagName,
+            x: event.clientX, y: event.clientY,
+          });
+        }, { once: true, capture: true });
+      }
+    })()`);
     await click(page, 'Sync now');
-    return waitFor(page, bodyHas('sync_queue 0'));
+    if (
+      !(await waitFor(
+        page,
+        `Number(document.querySelector('${selector}')?.dataset.syncCompleted) > ${before}`,
+      ))
+    ) {
+      const input = await page.evaluate(`({
+        events: globalThis.__manualSyncInput,
+        disabled: document.querySelector('${selector}')?.disabled,
+        completed: document.querySelector('${selector}')?.dataset.syncCompleted,
+      })`);
+      throw new Error('Manual sync round trip did not complete: ' + JSON.stringify(input));
+    }
+  }
+
+  /** An empty queue alone does not establish that the remote pull completed. */
+  async function syncNow(page) {
+    await requestSync(page);
+    if (!(await waitFor(page, bodyHas('sync_queue 0')))) {
+      throw new Error('Manual sync completed with queued work remaining');
+    }
+    return true;
   }
 
   async function device(name) {
@@ -171,6 +224,7 @@ export function probeHelpers({ base }) {
     indicator,
     diag,
     syncNow,
+    requestSync,
     device,
     createKeyAndLink,
     linkWithKey,

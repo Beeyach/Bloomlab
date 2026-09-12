@@ -299,7 +299,7 @@ export function defaultConfig(
     };
   }
   switch (featureId) {
-    case 'GHL-WF-WEBHOOK':
+    case 'GHL-WF-CUSTOM-WEBHOOK':
       return { method: 'POST' };
     case 'GHL-WF-SEND-INTERNAL-NOTIFICATION':
       return { channel: 'in-app' };

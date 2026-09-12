@@ -238,6 +238,8 @@ try {
   await page.send('Network.emulateNetworkConditions', conditions(true));
   await sleep(400);
   await page.send('Page.reload', { ignoreCache: false });
+  await workers.send('Network.emulateNetworkConditions', conditions(true));
+  await page.send('Network.emulateNetworkConditions', conditions(true));
   await sleep(1200);
   const openedOffline = await waitFor(page, "document.querySelector('input[type=radio]')");
   // Recorded before any interaction, so a failure here still says what the page looked like.
@@ -272,6 +274,8 @@ try {
     queued: await rows(page, 'sync_queue'),
   });
   await page.send('Page.reload', { ignoreCache: false });
+  await workers.send('Network.emulateNetworkConditions', conditions(true));
+  await page.send('Network.emulateNetworkConditions', conditions(true));
   await sleep(1000);
   await waitFor(page, "document.querySelector('[class*=resultTitle]')");
   report.offline.afterOfflineReload = await text(page, '[class*=resultTitle]');

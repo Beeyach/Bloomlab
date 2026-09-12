@@ -111,6 +111,11 @@ try {
 
   // The shell must come from the precache; the API must not come from any cache.
   await page.send('Page.reload', { ignoreCache: false });
+  // Page reload creates a new document whose navigator.onLine signal can reset even though the
+  // service worker remained network-disabled for the actual navigation. Reassert both targets
+  // before reading the user-visible state and attempting the uncached API request.
+  await workers.send('Network.emulateNetworkConditions', conditions(true));
+  await page.send('Network.emulateNetworkConditions', conditions(true));
   await sleep(1000);
   await waitFor(page, "!!document.querySelector('main h1')");
   report.offline.heading = await page.evaluate("document.querySelector('h1')?.textContent ?? null");
@@ -137,6 +142,8 @@ try {
   await sleep(500);
   report.offline.labelAfterSave = await mainIncludes(page, LABEL);
   await page.send('Page.reload', { ignoreCache: false });
+  await workers.send('Network.emulateNetworkConditions', conditions(true));
+  await page.send('Network.emulateNetworkConditions', conditions(true));
   await sleep(1000);
   await waitFor(
     page,

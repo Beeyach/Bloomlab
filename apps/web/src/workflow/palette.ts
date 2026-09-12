@@ -90,6 +90,33 @@ export const featureName = (id: string | null | undefined): string =>
 export const configFields = (id: string | null | undefined) =>
   paletteEntry(id)?.feature.supported_configs.config_fields ?? [];
 
+/** Saved pre-split steps keep their old simulation and editable configuration. This entry
+ * is never included in the palette or used to offer a new native Webhook action. */
+export function savedNodeEntry(node: WorkflowNode): PaletteEntry | null {
+  if (node.type !== 'action' || node.ghl_feature_id !== 'GHL-WF-WEBHOOK')
+    return paletteEntry(node.ghl_feature_id);
+  const current = paletteEntry('GHL-WF-CUSTOM-WEBHOOK');
+  if (!current) return null;
+  return {
+    ...current,
+    id: node.ghl_feature_id,
+    name: 'Saved webhook (legacy simulation)',
+    approximation:
+      'This saved step keeps the earlier Bloomlab simulation, including PATCH. New workflows use Custom Webhook.',
+    feature: {
+      ...current.feature,
+      supported_configs: {
+        ...current.feature.supported_configs,
+        config_fields: configFields(current.id).map((field) =>
+          field.name === 'method'
+            ? { ...field, options: [...(field.options ?? []), 'PATCH'] }
+            : field,
+        ),
+      },
+    },
+  };
+}
+
 /** The engine's filter fields for a trigger, for the inspector. */
 export function triggerFilters(id: string | null | undefined): readonly TriggerFilterField[] {
   const capability = capabilityFor(id);

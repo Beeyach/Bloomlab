@@ -2,7 +2,7 @@ import { Fieldwork } from '../fieldwork/Fieldwork';
 import { lazy, Suspense } from 'react';
 import { useFeatureFlags } from '../app/featureFlagsContext';
 const CallRoom = lazy(() => import('../call/CallRoom'));
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 
 import { Button, Stack, Surface, cx } from '@bloomlab/design-system';
@@ -15,6 +15,7 @@ import { useLearnerSnapshot } from '../data/learning';
 import { joinWords, skillTitle } from '../screens/learningCopy';
 import {
   discardAttempt,
+  commitRunPrediction,
   resolveRunContext,
   revealHint,
   startAttempt,
@@ -95,10 +96,16 @@ export default function ExerciseRunner() {
   const exercise = content.exercises.find((candidate) => candidate.id === exerciseId) ?? null;
   // A retrieval is honoured only when it names a capability the exercise teaches; the context
   // then keeps this run's draft and result apart from an ordinary run of the same exercise.
-  const context = resolveRunContext(exercise ?? { skills: [] }, {
-    run: search.get('run'),
-    skill: search.get('skill'),
-  });
+  const requestedRun = search.get('run');
+  const requestedSkill = search.get('skill');
+  const context = useMemo(
+    () =>
+      resolveRunContext(exercise ?? { skills: [] }, {
+        run: requestedRun,
+        skill: requestedSkill,
+      }),
+    [exercise, requestedRun, requestedSkill],
+  );
   const run = context.run;
   const skillId = context.skill_id;
 
@@ -125,7 +132,7 @@ export default function ExerciseRunner() {
     if (attempt === null && history.length === 0) {
       void startAttempt(exercise, context);
     }
-  }, [exercise, attempt, history, context.run, context.skill_id, flags.voice_calls]);
+  }, [exercise, attempt, history, context, flags.voice_calls]);
 
   if (!exercise) {
     return (
@@ -162,6 +169,19 @@ export default function ExerciseRunner() {
             ? error.message
             : 'This attempt could not be saved on this device. Your work is still here.',
       );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function commitPrediction() {
+    if (!attempt || !exercise) return;
+    setBusy(true);
+    setFailure(null);
+    try {
+      await commitRunPrediction(exercise, context, db);
+    } catch (error) {
+      setFailure(error instanceof Error ? error.message : 'The prediction could not be committed.');
     } finally {
       setBusy(false);
     }
@@ -283,6 +303,7 @@ export default function ExerciseRunner() {
                 attempt={attempt}
                 context={context}
                 disabled={busy || Boolean(attempt.submitted)}
+                predictionLocked={Boolean(attempt.response.run_prediction)}
               />
             )
           )}
@@ -298,15 +319,38 @@ export default function ExerciseRunner() {
               <h2 id="submit-title" className={styles.sectionTitle}>
                 Submit
               </h2>
+              {exercise.type === 'RUN_THE_LEAD' && !attempt.response.run_prediction && (
+                <>
+                  <Button loading={busy} onClick={() => void commitPrediction()}>
+                    Commit prediction
+                  </Button>
+                  <p className={styles.help}>
+                    Commit before executing. Your prediction then locks for this attempt.
+                  </p>
+                </>
+              )}
+              {exercise.type === 'RUN_THE_LEAD' && attempt.response.run_prediction && (
+                <p className={styles.help}>
+                  Prediction committed and locked.{' '}
+                  <Link
+                    className={styles.inlineLink}
+                    to={`/workflow?scenario=${exercise.scenario}&exercise=${exercise.id}&attempt=${attempt.attempt_id}`}
+                  >
+                    Open Workflow Lab to execute it
+                  </Link>
+                  .
+                </p>
+              )}
               {gradable ? (
                 <>
                   <Button
                     variant="primary"
                     loading={busy}
                     disabled={Boolean(
-                      exercise.negotiation &&
-                      (!attempt.response.negotiation ||
-                        attempt.response.negotiation.status === 'open'),
+                      (exercise.type === 'RUN_THE_LEAD' && !attempt.response.run_prediction) ||
+                      (exercise.negotiation &&
+                        (!attempt.response.negotiation ||
+                          attempt.response.negotiation.status === 'open')),
                     )}
                     onClick={() => void submit()}
                   >

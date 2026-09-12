@@ -61,6 +61,7 @@ export interface TimelineProps {
 }
 
 const CADENCE_MS = 650;
+const RECENT_RUN_LIMIT = 12;
 
 function TimelineInner({
   workflow,
@@ -226,6 +227,7 @@ function TimelineInner({
       }
       data-testid="timeline"
       data-playing={playing || undefined}
+      data-run-count={runs.length}
     >
       {runs.length === 0 ? (
         <p className={styles.muted}>No run yet. Choose a test contact and run the workflow.</p>
@@ -274,30 +276,85 @@ const RunList = memo(function RunList({
   watchedId: string | null;
   onWatch: (id: string | null) => void;
 }) {
+  const [showAll, setShowAll] = useState(false);
+  const visibleRuns = useMemo(() => {
+    if (showAll || runs.length <= RECENT_RUN_LIMIT) return runs;
+    const recent = runs.slice(0, RECENT_RUN_LIMIT);
+    const watched = runs.find((run) => run.id === watchedId);
+    return watched && !recent.includes(watched) ? [...recent, watched] : recent;
+  }, [runs, showAll, watchedId]);
+  const hidden = runs.length - visibleRuns.length;
   return (
-    <ul className={styles.runList} aria-label="Runs of this workflow">
-      {runs.map((run) => (
-        <li key={run.id}>
-          <button
-            type="button"
-            className={styles.runItem}
-            aria-pressed={run.id === watchedId}
-            onClick={() => onWatch(run.id === watchedId ? null : run.id)}
-            data-run={run.id}
-          >
-            <span>
-              {contacts[run.contact_id]
-                ? `${contacts[run.contact_id]?.first_name} ${contacts[run.contact_id]?.last_name ?? ''}`.trim()
-                : run.contact_id}
-            </span>
-            <span className={styles.small}>
-              {RUN_STATUS_WORDS[run.status]} · v{run.definition_version} ·{' '}
-              {simulatorTime(run.enrolled_at, timezone)}
-            </span>
-          </button>
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul className={styles.runList} aria-label="Runs of this workflow">
+        {visibleRuns.map((run) => {
+          const contact = contacts[run.contact_id];
+          return (
+            <RunListItem
+              key={run.id}
+              id={run.id}
+              contact={
+                contact ? `${contact.first_name} ${contact.last_name ?? ''}`.trim() : run.contact_id
+              }
+              status={run.status}
+              version={run.definition_version}
+              enrolledAt={run.enrolled_at}
+              timezone={timezone}
+              watched={run.id === watchedId}
+              onWatch={onWatch}
+            />
+          );
+        })}
+      </ul>
+      {runs.length > RECENT_RUN_LIMIT && (
+        <Button
+          size="sm"
+          variant="ghost"
+          data-testid="older-runs"
+          onClick={() => setShowAll((current) => !current)}
+        >
+          {showAll ? `Show recent ${RECENT_RUN_LIMIT}` : `Show ${hidden} earlier runs`}
+        </Button>
+      )}
+    </>
+  );
+});
+
+/** Existing history rows do not change when a new run is prepended; keep their DOM work bounded. */
+const RunListItem = memo(function RunListItem({
+  id,
+  contact,
+  status,
+  version,
+  enrolledAt,
+  timezone,
+  watched,
+  onWatch,
+}: {
+  id: string;
+  contact: string;
+  status: WorkflowRun['status'];
+  version: number;
+  enrolledAt: string;
+  timezone: string;
+  watched: boolean;
+  onWatch: (id: string | null) => void;
+}) {
+  return (
+    <li>
+      <button
+        type="button"
+        className={styles.runItem}
+        aria-pressed={watched}
+        onClick={() => onWatch(watched ? null : id)}
+        data-run={id}
+      >
+        <span>{contact}</span>
+        <span className={styles.small}>
+          {RUN_STATUS_WORDS[status]} · v{version} · {simulatorTime(enrolledAt, timezone)}
+        </span>
+      </button>
+    </li>
   );
 });
 

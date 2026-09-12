@@ -54,7 +54,7 @@ initial_account_state:
       nodes:
         - id: n1
           type: action
-          ghl_feature_id: GHL-WF-WEBHOOK
+          ghl_feature_id: GHL-WF-CUSTOM-WEBHOOK
           label: Push the booking to the rota
           config:
             url: 'https://rota.glowhaus.example/hooks/bookings'

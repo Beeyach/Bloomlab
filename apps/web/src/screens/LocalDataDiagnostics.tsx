@@ -91,6 +91,7 @@ export function LocalDataDiagnostics() {
   const { label, pending } = useSyncStatus();
   const [estimate, setEstimate] = useState<StorageEstimate | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const [completedSyncs, setCompletedSyncs] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -117,6 +118,7 @@ export function LocalDataDiagnostics() {
     const result = await syncNow();
     // What the other device demonstrated changes this device's derived progress (Phase 6).
     if (result.status === 'synced' && result.pulled + result.adopted > 0) await recomputeProgress();
+    setCompletedSyncs((count) => count + 1);
     setSyncing(false);
   }
 
@@ -168,7 +170,13 @@ export function LocalDataDiagnostics() {
           <p className={styles.muted}>Nothing waiting.</p>
         )}
         <Cluster gap={2}>
-          <Button size="sm" variant="primary" loading={syncing} onClick={() => void sync()}>
+          <Button
+            size="sm"
+            variant="primary"
+            loading={syncing}
+            data-sync-completed={completedSyncs}
+            onClick={() => void sync()}
+          >
             Sync now
           </Button>
           <Button
