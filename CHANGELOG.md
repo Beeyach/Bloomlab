@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-11 — Private values in review screenshots (SEC-001, SYNC-002)
+
+- Mask Sync Key text, QR images, key-entry fields and explicitly private content during
+  automated review screenshots; refuse capture when masking cannot be established and
+  restore the page afterward. Product key display, recovery and linking behavior are unchanged.
+- Public-repository preparation found reusable synthetic Preview keys in retained CI artifacts.
+  Privately backed up all 70 retained CI artifacts and removed the 13 affected GitHub copies
+  with owner approval before the authorized public visibility change.
+
+
 Phase 22 — Fieldwork (2026-09-08): enriched the existing fieldwork schema compatibly and made the authored Snapshot portability task usable through the exercise runner. Added durable keyed proof, private PNG/JPEG/WebP screenshot recovery/deletion, a proof checkpoint before reasoning, explicit manual GHL confirmation and idempotent fieldwork mastery evidence. Added Dexie v6 and D1 migration 0006 without changing older schemas, direct FLD-004 regression, private asset security tests, sync/persistence/UI tests and a five-width browser probe. FLD-001/EXR-020 remain human-unverified; GHL API verification stays deferred and the PR remains draft for independent audit.
 
 

@@ -16,10 +16,28 @@ typecheck, source lint excluding retained `.review` artifacts, content/terminolo
 secret scans, scoped formatting and status guards pass. Default lint still encounters retained
 evidence scripts; no local Chrome/browser/a11y rerun was available. Correction verification is
 recorded in `docs/reviews/field-ready-v1-code-closeout.md`. C8 remains open: the old exact-head evidence
-cannot certify these corrections. The owner authorized the product commit/push and existing
-Preview deployment, migration checks and synthetic probes. Publication/verification is now
-in progress. All requirement statuses and parked acceptance remain unchanged; production and
-merge remain outside scope.
+cannot certify these corrections. The owner authorized publication and Preview verification;
+commit `6fe6147709a149601792dba019052c8ad3532d52` is pushed to draft PR #32. GitHub run
+`34671395103` attempts 1 and 2 were blocked before Checks started: its annotation reports failed account payments
+or an Actions spending limit requiring adjustment. Preview and Production were skipped; no
+new deployment or migration occurred. The subsequent public-visibility preparation below supersedes rerunning this unmasked source. All requirement statuses and parked acceptance remain unchanged.
+
+Public-visibility preparation (2026-09-11): the owner wants public Bloomlab Actions to
+preserve the private allowance for separate `Beeyach/bloomops`. Bloomlab remains private.
+A Sol High privacy review confirmed retained synthetic Preview screenshots expose reusable
+Sync Keys; device-session revocation does not invalidate those keys. Local screenshot masking
+now hides key text, QR, key-entry fields and marked private descendants, fails closed if
+masking fails, and restores the DOM after capture. Privacy regression plus simulator checks
+pass (428 tests / 15 files); typecheck, scoped lint, content validation and build pass.
+The single focused Sol High re-review has no material findings. Existing Linux Chrome cannot
+launch, so actual browser masking remains unverified locally.
+All 70 retained artifacts are privately archived and independently rehashed against GitHub
+digests under `.review/public-readiness-j28iglne/`. Thirteen contain unmasked Sync Key screenshots;
+The owner approved deletion and publication; all 13 targeted GitHub copies were deleted and
+verified absent, leaving 57 artifacts. The reviewed masking correction is ready to publish
+before public Preview CI; do not rerun old unmasked heads. Visibility is still private at
+this source checkpoint. No credentials or remote learner data changed. C8 and all requirement statuses
+remain unchanged. Detailed evidence: `docs/reviews/field-ready-v1-code-closeout.md`.
 
 Field-Ready v1 code/audit closeout — checkpoints C1–C8 on
 `codex/field-ready-v1-code-closeout`, based on `codex/navigation-shell-redesign` at
@@ -461,13 +479,14 @@ None
 
 ## NEXT
 
-Next product task: obtain fresh exact-head CI/Preview evidence for the reviewed local webhook
-compatibility and version corrections. The earlier prerequisite check and independent review
-have run; do not repeat the initial whole-product audit. The owner has authorized commit/push
-and Preview deployment, including the existing synthetic Preview probes and migration-check
-job. Keep unrelated owner workflow setup edits separate from the product fix.
-No new migration is introduced. Until new evidence exists, C8 is not complete. The unchanged
-human/real-GHL, semantic, visual and exact screen-state acceptance boundaries remain open.
+Next product task: publish the reviewed screenshot-masking correction to PR #32, make
+Bloomlab public under owner authorization, and obtain fresh exact-head CI/Preview evidence.
+The 13 approved key-bearing GitHub artifacts have been removed after verified private backup.
+Do not rerun the previous unmasked source or repeat the completed initial audit. Preview
+migration checks and synthetic probes remain authorized. Verify Checks, Preview artifacts,
+before/after identities and skipped Production. No new migration is introduced; C8 remains
+open until fresh evidence exists. Human/real-GHL, semantic, visual and exact screen-state
+boundaries remain open.
 
 Its base remains `codex/navigation-shell-redesign` at
 `6a1ea64081e42a0dd6ea7efd3b78c0ee4abbd685`. Do not merge. Preserve the twelve parked

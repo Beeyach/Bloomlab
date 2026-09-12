@@ -211,12 +211,26 @@ export async function setViewport(page, width, height, { mobile = width < 768 } 
  * `false` to capture the viewport exactly as a user sees it.
  */
 export async function screenshot(page, file, clip, beyondViewport = true) {
-  const { data } = await page.send('Page.captureScreenshot', {
-    format: 'png',
-    captureBeyondViewport: beyondViewport,
-    ...(clip ? { clip: { ...clip, scale: 1 } } : {}),
-  });
-  writeFileSync(file, Buffer.from(data, 'base64'));
+  const maskId = `review-private-${crypto.randomUUID()}`;
+  try {
+    const masked = await page.evaluate(`(() => {
+      const style = document.createElement('style');
+      style.id = ${JSON.stringify(maskId)};
+      style.textContent = '[data-review-private], [data-review-private] *, [data-testid="sync-key"], input[type="password"], img[alt="QR code of your Bloomlab Sync Key"] { visibility: hidden !important; }';
+      document.head.append(style);
+      return !!style.sheet && [...document.querySelectorAll('[data-review-private], [data-review-private] *, [data-testid="sync-key"], input[type="password"], img[alt="QR code of your Bloomlab Sync Key"]')]
+        .every(element => getComputedStyle(element).visibility === 'hidden');
+    })()`);
+    if (!masked) throw new Error('Screenshot privacy masking failed');
+    const { data } = await page.send('Page.captureScreenshot', {
+      format: 'png',
+      captureBeyondViewport: beyondViewport,
+      ...(clip ? { clip: { ...clip, scale: 1 } } : {}),
+    });
+    writeFileSync(file, Buffer.from(data, 'base64'));
+  } finally {
+    await page.evaluate(`document.getElementById(${JSON.stringify(maskId)})?.remove()`);
+  }
 }
 
 export async function session() {

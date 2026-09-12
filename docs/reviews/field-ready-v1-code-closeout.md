@@ -11,6 +11,26 @@ Field-Ready Complete claim, a new sidebar phase, a live-provider/GHL exercise or
 human visual and physical-device acceptance. DES-009 is inherited regression coverage only and
 remains IN_PROGRESS.
 
+## Authorized publication — 2026-09-11
+
+The owner authorized the product commit/push and existing Preview verification flow. Commit
+`6fe6147709a149601792dba019052c8ad3532d52` is pushed to draft PR #32; unrelated workflow
+setup files/hunks remain local. GitHub run `34671395103` failed before Checks started, with
+zero executed steps. Check-run annotation `103493279736` reports failed recent account payments
+or an Actions spending limit requiring adjustment in Billing & plans. Preview and Production
+jobs were skipped. This is not a failed application test or a new deployed verification result.
+
+PR #32 records the blocker and preserves previous-source evidence as historical. No new Preview
+Worker version, migration result, before/after identity or passing artifact exists for this
+commit. The owner must resolve the GitHub account prerequisite; then rerun the same run under
+the already granted authorization. C8 remains open; all requirement statuses remain unchanged.
+These post-publication notes are local evidence updates, not another source commit.
+
+The owner-requested retry on the same source also failed before executing any steps:
+run `34671395103`, attempt 2, Checks job `103494179909`, with the identical billing/spending-limit
+annotation. Preview and Production remained skipped. Repository visibility remains private;
+no visibility change was requested or performed. No source change accompanied this retry.
+
 ## Internal continuation review — 2026-09-11
 
 The continuation checked PR #32 against local HEAD
@@ -524,3 +544,50 @@ final CI/Preview attestation.
 Internal audit and focused correction re-review are recorded above. The owner authorized the
 product commit/push and fresh exact-head CI/Preview verification on 2026-09-11; results will be
 recorded in the PR and retained artifact. Do not merge.
+
+
+## Public visibility preparation — 2026-09-11
+
+Owner intent: make Bloomlab public so its standard hosted Actions do not consume the
+private allowance needed by separate `Beeyach/bloomops`. Visibility is still private.
+
+Read-only preparation scanned 256 reachable commits / 3,256 blobs with the repository
+credential rules, plus the subsequently fetched missing remote branch head; no rule matches.
+The independent reviewer scanned 1,316 tracked working-tree files with additional Sync Key,
+provider/JWT patterns and reviewed privacy-sensitive documentation; no tracked-source blocker
+was demonstrated. Parent checks covered 40 issue/PR/comment bodies and 210 available completed
+Actions log archives (690 log files), with no known credential-pattern matches. These pattern
+checks cannot certify arbitrary text or image pixels; no actual Sync Key was displayed or used.
+
+A concrete blocker exists in retained Preview artifacts: `sync-probe.mjs` captures
+`sync-a-key.png` after displaying a generated key. Worker device revocation leaves the root
+key usable for a fresh link. Before public visibility, privately archive and remove affected
+GitHub artifacts. Remote learner/key invalidation is optional defense in depth while the
+repository stays private through artifact removal; no prior public exposure is evidenced.
+
+Correction: the shared CDP screenshot helper temporarily hides marked private elements and
+descendants, legacy sync-key/QR selectors and password inputs. It checks computed visibility,
+refuses capture if masking fails, and removes its style in `finally`. SyncScreen marks its
+key display, QR and key-entry input. No learner interaction or credential storage changes.
+Regression uses JSDOM plus a mock CDP capture to assert masking, visible ordinary content,
+DOM/value preservation, cleanup after capture failure, and no capture when masking fails.
+
+Verification: 428 tests / 15 files (privacy regression and simulator core), all-workspace
+typecheck, scoped ESLint, content validation and build/browser-secret scan pass. Existing
+content/build warnings remain. No actual Chrome rerun: retained Linux Chrome lacks
+`libnspr4.so`, and browser installation/repair is outside scope. One Sol High initial review
+confirmed the artifact blocker; its single focused correction re-review found no material correction findings. Reviewer
+shell reads use a read-only Bubblewrap mount; the parent runtime is unrestricted, so no
+runtime-wide reviewer isolation is claimed.
+
+All 70 unexpired Actions artifacts (2,238,335,567 bytes) are privately archived at
+`.review/public-readiness-j28iglne/` (directory permissions 0700). `manifest.json` records all
+70 successful downloads and SHA-256 agreement; a final independent rehash also found zero
+mismatches. Thirteen archives contain `sync-a-key.png`. Exact proposed GitHub artifact deletion
+IDs (also in the private `proposed-deletion.json`): `10178901833`, `10180412246`, `10182290828`, `10184328117`, `10186093695`, `10187511170`, `10189378968`, `10191561644`, `10194319542`, `10196031040`, `10261392666`, `10263267586`, `10265328525`.
+The owner subsequently approved deletion and publication. All 13 targeted artifacts were
+deleted and verified absent from GitHub (57 remain). Preserve local ZIPs, `manifest.json`
+and `deleted-artifacts.json`. Publish the corrected
+probe before new public Preview runs; old unmasked heads must not be rerun publicly.
+At this source checkpoint visibility remains private; no credential mutation or remote
+learner-data change occurred. Publication and exact-head verification follow this commit.

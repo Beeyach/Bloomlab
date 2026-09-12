@@ -1,6 +1,8 @@
 # KNOWN LIMITATIONS
 
-Local review corrections (2026-09-11) are not yet deployed or verified by exact-head CI/Preview.
+Review corrections (2026-09-11) are pushed as `6fe6147`, but GitHub run `34671395103`
+attempts 1 and 2 could not start because of an account payment/spending-limit blocker. Preview and Production were
+skipped; the corrections are not yet deployed or verified by exact-head CI/Preview.
 Saved pre-split webhook steps retain their earlier simulation, including PATCH, under an explicit
 legacy label. This compatibility path is not current native Webhook fidelity and is not offered
 for new steps. Current Custom Webhook keeps its existing method restrictions.
