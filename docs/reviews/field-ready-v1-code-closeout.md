@@ -11,6 +11,75 @@ Field-Ready Complete claim, a new sidebar phase, a live-provider/GHL exercise or
 human visual and physical-device acceptance. DES-009 is inherited regression coverage only and
 remains IN_PROGRESS.
 
+## Internal continuation review — 2026-09-11
+
+The continuation checked PR #32 against local HEAD
+`77d063a3392d1d1e8807a926fc29039960762084` and its unchanged base. GitHub run
+`34595911865`, attempt 2, reports successful Checks/Preview and skipped Production. The retained
+Preview ZIP matches GitHub's SHA-256
+`99b52a29fee6e88e1c40740d073d1b52454aa65aecaa4a221cafdf5f755c198f`; adversarial and
+accessibility ZIP digests also match. Raw reports contain 35 passing browser probes, sixteen
+AI-Off groups with the detected dependency negative control, five binary checks and five held
+fault modes. Before/after browser and Worker identities equal HEAD; Worker version is
+`b8639e5b-a0eb-4610-8ed5-f38e1120cb54`. These are inspected historical artifacts, not new live runs.
+
+One fresh GPT-5.6 Sol High reviewer inspected the committed closeout diff. Three findings:
+
+- High: deleting the old webhook adapter made pre-split saved incident workflows unrunnable.
+- Medium: changed registry/scenario content retained the base content version.
+- Medium: changed simulator capabilities/methods retained the base simulator version.
+
+Corrections retain the old ID only in legacy action execution, preserving PATCH, saved records
+and replay. Current capability inventory/palette still excludes the standard Webhook action;
+new work uses Custom Webhook. Saved-node controls explicitly identify the legacy simulation and
+preserve editable method/header/custom-data fields. Header maps now use the existing key=value
+editor rather than a string input. Content is `2026.09.28.1` with a regenerated lock; simulator
+is `2026.09.23-r2`. D-203 records the compatibility choice.
+
+WEBHOOK-LEGACY-001 failed twice against the original implementation (POST and PATCH; 39 tests
+passed), then passed after correction. WEBHOOK-LEGACY-002 loads both prior incident scenarios,
+proves reads preserve their stored records/version, executes a real response and checks reload
+and replay equality. WEBHOOK-LEGACY-003 checks legacy/current inspector editing and palette
+boundaries. The initial inspector test used an exact label that omitted the required-field
+marker; it was corrected to match the same labeled control, with no assertion removed.
+
+Focused verification passed 567 tests across 23 files (full simulator-core plus affected
+Workflow, persistence, Incident and exercise suites), followed by both expanded inspector
+cases passing. The single focused Sol High re-review found no remaining actionable findings;
+its scoped diff check passed. Parent-run typecheck, source ESLint (excluding retained `.review`
+artifacts), content validation, terminology, build/browser secret scan, scoped formatting and
+both status validators pass. The default aggregate run passed 2,165 tests and timed out the
+terminology negative-control test at its unchanged 15-second limit. That file passed all three
+tests alone. `npm test -- --maxWorkers=2` then passed all 2,166 tests across 170 files in
+122.72 seconds, with unchanged assertions/timeouts. The original timed-out run remains failed
+evidence. Source credential scanning also passes (1,320 repository files). No new local browser,
+axe or full CI-chain pass is claimed.
+
+The default `npm run lint` found 379 errors and eight warnings in retained `.review` artifacts
+plus one new type-only import error. The import was corrected; source ESLint then passed using
+`--ignore-pattern '.review/**'`. Retained evidence was not deleted or edited. Content validation
+retains 35 existing coverage warnings; build retains its chunk-size warning.
+
+Cross-version JSON restore is deliberately unsupported: backups containing `2026.09.23-r1`
+simulator projects require their original engine. The re-review considered and retracted this
+as a defect because C4 permits deliberately versioned compatibility and DATA-009 requires safe
+unsupported-version rejection. A tentative cross-version test used an invalid checkpoint
+fixture, failed before establishing compatibility, and was removed; no restore implementation
+or existing test changed. This is not evidence of cross-version backup recovery.
+
+Review reads were instructed to use a read-only filesystem/network-isolated bwrap subprocess.
+The parent/custom-agent runtime has unrestricted permissions, so enforced agent-wide read-only
+isolation is not claimed. No reviewer mutation was requested. There was one initial reviewer
+and one focused correction re-review; no separate whole-product review loop.
+
+The current correction tree needs new exact-head CI/Preview evidence. The previous passing
+artifact cannot certify it. No browser re-audit was run locally because no working Linux Chrome
+executable was found; no browser installation or live probes were attempted. The unexplained
+navigation cancellation, failed supplemental sync timing gate, 216 unverified state cells and
+all human/device/provider/GHL acceptance remain open. All eighteen parked/inherited/excluded
+matrix rows match the base byte-for-byte. No requirement promotion, commit, push, deployment,
+migration or paid-provider activity occurred in this continuation.
+
 ## Scope and final dispositions
 
 The exact target list was PRD-004, PRD-009, EXR-006, EXR-008, PRI-002, NEG-003, DATA-006,
@@ -452,4 +521,6 @@ tests; C6 web coverage passed 21/21 and simulator coverage 39/39; C7 screen/Lab 
 46/46 and corrected runner coverage 40/40. Final totals and immutable identities come only from the
 final CI/Preview attestation.
 
-Stop for independent ChatGPT audit. Do not merge.
+Internal audit and focused correction re-review are recorded above. The owner authorized the
+product commit/push and fresh exact-head CI/Preview verification on 2026-09-11; results will be
+recorded in the PR and retained artifact. Do not merge.

@@ -616,6 +616,35 @@ describe('actions beyond text and tags run for real (WFL-005)', () => {
     });
   });
 
+  it.each(['POST', 'PATCH'])(
+    'WEBHOOK-LEGACY-001 resumes a saved %s step without offering it for new work',
+    (method) => {
+      const node = {
+        id: 'legacy-hook',
+        type: 'action' as const,
+        ghl_feature_id: 'GHL-WF-WEBHOOK',
+        config: { url: 'https://example.test/hook', method },
+        position: { x: 0, y: 0 },
+      };
+      const state = run([node]);
+      expect(state.log.find((row) => row.type === 'WEBHOOK_RESPONSE')?.payload).toMatchObject({
+        endpoint: 'https://example.test/hook',
+        status: 200,
+      });
+      expect(
+        actionCapabilityFor(node.ghl_feature_id)?.validate(node.config, state.account),
+      ).toEqual([]);
+      expect(capabilityFor(node.ghl_feature_id)).toBeNull();
+      expect(RUNNABLE_FEATURES).not.toContain(node.ghl_feature_id);
+      expect(
+        actionCapabilityFor('GHL-WF-CUSTOM-WEBHOOK')?.validate(
+          { ...node.config, method: 'PATCH' },
+          state.account,
+        ),
+      ).not.toEqual([]);
+    },
+  );
+
   it('fails a run at a goal node, saying the feature is not runnable, instead of pretending', () => {
     const state = run([
       {

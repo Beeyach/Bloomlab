@@ -1,5 +1,13 @@
 # KNOWN LIMITATIONS
 
+Local review corrections (2026-09-11) are not yet deployed or verified by exact-head CI/Preview.
+Saved pre-split webhook steps retain their earlier simulation, including PATCH, under an explicit
+legacy label. This compatibility path is not current native Webhook fidelity and is not offered
+for new steps. Current Custom Webhook keeps its existing method restrictions.
+Existing JSON restore still rejects backups containing simulator `2026.09.23-r1` projects
+under r2; those require the original engine. In-place saved-run compatibility does not establish
+cross-version JSON restore support.
+
 ## Current Field-Ready code/audit closeout boundary (2026-09-10)
 
 `docs/reviews/field-ready-v1-code-closeout.md` records checkpoints C1–C8. The closeout resolves

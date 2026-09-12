@@ -2,9 +2,24 @@
 
 Concise roll-up in the spec §139 format. `REQUIREMENTS_MATRIX.md` is the source of truth for statuses; this file must agree with it. `node scripts/validate-requirements.mjs` enforces that agreement.
 
-Last updated: 2026-09-10
+Last updated: 2026-09-11
 
 ## CURRENT PHASE
+
+Continuation (2026-09-11): PR #32 source `77d063a` passed its recorded CI/Preview
+prerequisite, verified against GitHub and the retained artifact digests. One Sol High review
+found a saved-webhook compatibility regression and missing content/simulator version bumps.
+Local corrections preserve legacy execution/editing/replay and introduce content `2026.09.28.1`
+and simulator `2026.09.23-r2`. The single focused re-review has no remaining actionable findings.
+All 2,166 tests / 170 files pass with two workers after one default-run terminology timeout;
+typecheck, source lint excluding retained `.review` artifacts, content/terminology, build,
+secret scans, scoped formatting and status guards pass. Default lint still encounters retained
+evidence scripts; no local Chrome/browser/a11y rerun was available. Correction verification is
+recorded in `docs/reviews/field-ready-v1-code-closeout.md`. C8 remains open: the old exact-head evidence
+cannot certify these corrections. The owner authorized the product commit/push and existing
+Preview deployment, migration checks and synthetic probes. Publication/verification is now
+in progress. All requirement statuses and parked acceptance remain unchanged; production and
+merge remain outside scope.
 
 Field-Ready v1 code/audit closeout — checkpoints C1–C8 on
 `codex/field-ready-v1-code-closeout`, based on `codex/navigation-shell-redesign` at
@@ -446,7 +461,14 @@ None
 
 ## NEXT
 
-Stop for independent ChatGPT audit of draft PR #32 after final exact-head CI/Preview verification.
+Next product task: obtain fresh exact-head CI/Preview evidence for the reviewed local webhook
+compatibility and version corrections. The earlier prerequisite check and independent review
+have run; do not repeat the initial whole-product audit. The owner has authorized commit/push
+and Preview deployment, including the existing synthetic Preview probes and migration-check
+job. Keep unrelated owner workflow setup edits separate from the product fix.
+No new migration is introduced. Until new evidence exists, C8 is not complete. The unchanged
+human/real-GHL, semantic, visual and exact screen-state acceptance boundaries remain open.
+
 Its base remains `codex/navigation-shell-redesign` at
 `6a1ea64081e42a0dd6ea7efd3b78c0ee4abbd685`. Do not merge. Preserve the twelve parked
 human/real-GHL rows and DES-009. Production deployment, paid provider calls and live fieldwork are

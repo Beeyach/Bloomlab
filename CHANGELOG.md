@@ -9,6 +9,14 @@ All notable changes to Bloomlab. Format follows Keep a Changelog; versions follo
 
 ## [Unreleased]
 
+### Fixed — internal closeout review (2026-09-11)
+
+- Preserve saved pre-split webhook execution, PATCH, editing and replay while keeping new
+  workflow actions on the distinct Custom Webhook contract. Label legacy steps explicitly and
+  edit header maps without turning them into strings. Regression fixtures: WEBHOOK-LEGACY-001–003.
+- Advance content to `2026.09.28.1` with a generated lock and simulator to `2026.09.23-r2`;
+  existing saved versions/history are preserved. Fresh exact-head CI/Preview remains required.
+
 ### Fixed — independent closeout continuation
 
 - Reserve prediction-checkpoint writes for the explicit commit operation. Ordinary answer saves

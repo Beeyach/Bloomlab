@@ -1,6 +1,6 @@
-content_version: 2026.09.28
+content_version: 2026.09.28.1
 schema_version: 1
-notes: Phase 25 CUR-023 audit correction — post-deprecation Ed25519-only webhook guidance.
+notes: Field-Ready closeout — distinct Webhook and Custom Webhook registry and scenario contracts.
 advanced_paths_enforced: true
 advanced_coverage:
   - ai.deterministic_first
