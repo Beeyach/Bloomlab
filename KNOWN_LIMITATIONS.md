@@ -1,8 +1,13 @@
 # KNOWN LIMITATIONS
 
-Review corrections (2026-09-11) are pushed as `6fe6147`, but GitHub run `34671395103`
-attempts 1 and 2 could not start because of an account payment/spending-limit blocker. Preview and Production were
-skipped; the corrections are not yet deployed or verified by exact-head CI/Preview.
+Review corrections are now included in pushed masking source `aaa850c`. Bloomlab is public
+and GitHub run `34673325444` attempt 2 passed Checks after the previous private-repo
+billing/spending-limit failures. Preview attempt 2 failed on a blank negotiation exercise at
+320 px in polish (189 cells reached, no layout violations). Screen-state generation failed
+downstream; the other 34 browser probes passed. The unchanged-source retry (attempt 3) failed polish again, now on a blank architecture
+exercise at 768 px after 94 cells. Artifacts `10292425742` and `10292323377` are retained.
+Cause remains unproven; bounded startup diagnostics are being added without changing
+assertions/timeouts. No further blind retry is planned. Production is skipped.
 Saved pre-split webhook steps retain their earlier simulation, including PATCH, under an explicit
 legacy label. This compatibility path is not current native Webhook fidelity and is not offered
 for new steps. Current Custom Webhook keeps its existing method restrictions.

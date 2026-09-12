@@ -591,3 +591,85 @@ and `deleted-artifacts.json`. Publish the corrected
 probe before new public Preview runs; old unmasked heads must not be rerun publicly.
 At this source checkpoint visibility remains private; no credential mutation or remote
 learner-data change occurred. Publication and exact-head verification follow this commit.
+
+
+## Public publication execution — 2026-09-11
+
+The owner explicitly approved cleanup and publication. Revalidated each of the 13 targeted
+local ZIP hashes against both the private manifest and live GitHub metadata, deleted exactly
+those artifact IDs, and verified absence (57 retained). Local backups remain intact.
+Pushed reviewed masking commit `aaa850c1e294b97af44d585422e6a2822c116da6` to PR #32, then
+changed `Beeyach/Bloomlab` to PUBLIC. `Beeyach/bloomops` remains PRIVATE.
+Run `34673325444` attempt 1 was triggered before the visibility change and failed before
+steps. The authorized retry, attempt 2, is now executing Checks. No upgrade or payment-setting
+change was made. Exact-head Preview results remain pending. Evidence is retained under
+`.review/public-readiness-j28iglne/`; these execution notes are post-commit local status updates.
+
+
+Public run progress: attempt 2 Checks passed all 2,167 tests / 171 files, all 15 adversarial
+cases ($0 provider spend) and 89 accessibility scans (no blocking violations; negative control
+passed). Downloaded artifacts `10291348019` and `10291885704` match GitHub SHA-256 digests and
+exact source `aaa850c1e294b97af44d585422e6a2822c116da6`. Preview job `103499471818` passed
+configuration checks, build, migration checks and deployment, and is running the combined
+closeout probe step. Production job `103499472488` is skipped. A separate local Python health
+request returned HTTP 403; no direct local deployed-identity verification is claimed. The
+final CI Preview identity and screenshot artifact remain pending. The previous successful
+run's combined probe step took approximately 41 minutes; running is not a passing result.
+
+
+## Public Preview attempt 2 — failed evidence retained
+
+Run `34673325444`, source `aaa850c1e294b97af44d585422e6a2822c116da6`, completed with
+Checks passed and Preview failed. Artifact `10292425742` (184,703,729 bytes) is retained
+privately with verified GitHub SHA-256 `684c54c2e7b1e1ea4ac5159eb701ab7d3a783f71cb99236dce4f4548e09caf33`.
+The polish probe reached 189 screen/width cells with zero recorded layout violations, then
+failed `exercise-negotiate-it not ready` at `/exercise/EX-NEGOTIATE_IT-glowhaus-boss`, width 320.
+Its screenshot is a blank application background; no main heading/status/alert was recorded.
+The capture lacks the network/exception evidence required to attribute a cause. Similar blank
+startup failures are retained above; this is not evidence of a new product fix or a proven
+infrastructure-only cause. The dependent screen-state stage correctly refused incomplete polish
+evidence. All other 34 browser probes passed, as did 16 AI-Off paths/negative control,
+binary recovery, failure isolation and terminology.
+
+Browser and Worker identities both match the source before and after. Preview Worker version
+`2be871d9-5b58-4f14-a8af-3a399d371ec8`; Production skipped. Visual inspection of the new
+`browser/sync/sync-a-key.png` confirms the generated key is hidden while the recovery controls
+remain visible. No raw key was displayed in this inspection. Existing local browser tooling
+remains unavailable. Run the failed Preview job once more on the unchanged source, retaining
+all assertions and this failure; do not treat a later pass as proof the blank-page cause was fixed.
+
+
+## Repeated polish startup failure and diagnostic correction
+
+The single unchanged-source retry, run `34673325444` attempt 3, also failed polish with
+`exercise-architecture-decision not ready`: `/exercise/EX-ARCHITECTURE_DECISION-boss-scope`,
+768 px, after 94 successful screen/width cells, zero recorded layout violations. Its context
+again has no main heading/status/alert. The other 34 browser probes and AI-Off/recovery/fault/
+terminology stages passed; screen-state generation correctly failed downstream. Artifact
+`10292323377` (176,716,008 bytes) is privately retained with verified GitHub SHA-256
+`ed18fb983ad94df52eab9148262a25aa9be9c4e546b3036751c6bf26fb9b1439`.
+Before/after browser and Worker identities match `aaa850c1e294b97af44d585422e6a2822c116da6`;
+Preview Worker version `f7bfd1ef-0483-4f4e-8c3d-e9768135c25f`. Production stayed skipped.
+A local Node health request returned HTTP 200 with the same Preview source; the earlier Python
+request returned HTTP 403. Neither establishes the blank-page cause. The existing browser MCP
+connector did not respond within a bounded diagnostic check; no installation/repair occurred.
+
+No third blind retry: the polish probe now retains bounded startup Document/Script/Stylesheet
+request outcomes, cache/service-worker indicators, request failures and exception locations,
+plus document readiness/root-child count. It resets records before each navigation and removes
+listeners in cleanup. Headers, bodies, API fetches, URL credentials/query/hash and exception
+messages are not recorded. Tests inject private sentinels, canceled startup scripts, stale
+request completions, more than the event limits and a setup failure. All original readiness,
+layout, reduced-motion, input and exact-head assertions/timeouts remain unchanged. This change
+adds evidence; it does not claim to fix the underlying blank startup. A fresh scoped Sol review
+covers only this new public-artifact logging change, not the completed product audits.
+
+
+Diagnostic verification: 429 tests / 16 files (startup diagnostics, screenshot privacy and
+simulator core), all-workspace typecheck, scoped ESLint/Prettier, content validation, build/
+browser-secret scan, source-secret scan and status/diff guards pass. One fresh scoped Sol High
+review found no actionable material findings; no correction re-review was needed. The review
+covered only this new logging diff. Reviewer syntax/diff checks used read-only network-isolated
+Bubblewrap; parent runtime remains unrestricted, so runtime-wide isolation is not claimed.
+Actual CDP diagnostic capture remains pending the next CI run. Existing completed product and
+masking reviews were not repeated. No application behavior, versions or assertion gates changed.

@@ -5,6 +5,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { session, openPage, setViewport, screenshot, sleep } from './cdp.mjs';
 import { probeHelpers } from './probe-lib.mjs';
+import { pageLoadDiagnostics } from './page-load-diagnostics.mjs';
 import { REQUIRED_WIDTHS, SCREEN_INVENTORY } from './screen-matrix.mjs';
 const base = process.env.BASE ?? 'http://127.0.0.1:4183';
 const out = resolve(process.env.REVIEW_OUT ?? '.review/phase-26-polish');
@@ -19,7 +20,9 @@ const report = {
   screens: [],
   failures: [],
 };
+let diagnostics;
 try {
+  diagnostics = await pageLoadDiagnostics(page, base);
   if (report.head) {
     report.health = await (await fetch(base + '/api/health')).json();
     assert.equal(report.health.build_id, report.head);
@@ -30,6 +33,7 @@ try {
       await page.send('Emulation.setEmulatedMedia', {
         features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
       });
+      diagnostics.reset();
       await openPage(page, base + path);
       assert(
         await waitFor(
@@ -139,10 +143,12 @@ try {
 } catch (error) {
   report.status = 'FAILED';
   report.error = String(error);
+  report.startupDiagnostics = diagnostics?.snapshot();
   report.failureContext = await page
     .evaluate(
       `(() => ({
-    path: location.pathname, width: innerWidth, title: document.querySelector('main h1')?.textContent,
+    path: location.pathname, width: innerWidth, readyState: document.readyState,
+    rootElements: document.querySelector('#root')?.childElementCount, title: document.querySelector('main h1')?.textContent,
     status: [...document.querySelectorAll('[role=status]')].map(e=>e.textContent.trim()),
     alerts: [...document.querySelectorAll('[role=alert]')].map(e=>e.textContent.trim()),
     main: document.querySelector('main')?.innerText.slice(0,2000),
@@ -152,6 +158,7 @@ try {
   await screenshot(page, resolve(out, 'failed-screen.png'), undefined, false).catch(() => {});
   throw error;
 } finally {
+  diagnostics?.stop();
   writeFileSync(resolve(out, 'polish-probe.json'), JSON.stringify(report, null, 2));
   await close();
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-11 — Polish startup diagnostics (DES-017, DES-018, SEC-001)
+
+- Preserve bounded startup request outcomes and exception locations when polish encounters a
+  blank page. Exclude private payloads and retain all existing assertions/timeouts.
+- Retain both failed public Preview attempts; the cause is unproven and no app fix is claimed.
+
+
 ## 2026-09-11 — Private values in review screenshots (SEC-001, SYNC-002)
 
 - Mask Sync Key text, QR images, key-entry fields and explicitly private content during

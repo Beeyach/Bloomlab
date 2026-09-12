@@ -6,6 +6,19 @@ Last updated: 2026-09-11
 
 ## CURRENT PHASE
 
+Verification continuation (2026-09-11): public run `34673325444` attempts 2 and 3 both
+failed polish startup readiness on different exercise routes (320 px after 189 cells; 768 px
+after 94 cells). Neither recorded layout violations. Each passed the other 34 browser probes,
+AI-Off, recovery, failure isolation and terminology; dependent screen-state generation failed.
+Both private artifacts/digests and exact browser/Worker identities are retained. No further
+blind retry is planned. New local polish instrumentation records bounded startup-resource
+outcomes and exception locations while excluding request bodies/headers/API traffic, query
+strings, credentials and exception messages. Assertions/timeouts stay unchanged; this is
+not a claimed application fix. Its 429 focused/simulator tests, typecheck, scoped lint and
+content checks, build/browser-secret scan and source-secret scan pass. The single scoped
+Sol High review of this new public-artifact logging change has no material findings.
+C8 and all requirement statuses remain open/unchanged.
+
 Continuation (2026-09-11): PR #32 source `77d063a` passed its recorded CI/Preview
 prerequisite, verified against GitHub and the retained artifact digests. One Sol High review
 found a saved-webhook compatibility regression and missing content/simulator version bumps.
@@ -23,7 +36,8 @@ or an Actions spending limit requiring adjustment. Preview and Production were s
 new deployment or migration occurred. The subsequent public-visibility preparation below supersedes rerunning this unmasked source. All requirement statuses and parked acceptance remain unchanged.
 
 Public-visibility preparation (2026-09-11): the owner wants public Bloomlab Actions to
-preserve the private allowance for separate `Beeyach/bloomops`. Bloomlab remains private.
+preserve the private allowance for separate `Beeyach/bloomops`. Bloomlab is now PUBLIC;
+BloomOps remains PRIVATE.
 A Sol High privacy review confirmed retained synthetic Preview screenshots expose reusable
 Sync Keys; device-session revocation does not invalidate those keys. Local screenshot masking
 now hides key text, QR, key-entry fields and marked private descendants, fails closed if
@@ -34,9 +48,17 @@ launch, so actual browser masking remains unverified locally.
 All 70 retained artifacts are privately archived and independently rehashed against GitHub
 digests under `.review/public-readiness-j28iglne/`. Thirteen contain unmasked Sync Key screenshots;
 The owner approved deletion and publication; all 13 targeted GitHub copies were deleted and
-verified absent, leaving 57 artifacts. The reviewed masking correction is ready to publish
-before public Preview CI; do not rerun old unmasked heads. Visibility is still private at
-this source checkpoint. No credentials or remote learner data changed. C8 and all requirement statuses
+verified absent, leaving 57 artifacts. The reviewed masking correction is pushed as `aaa850c1e294b97af44d585422e6a2822c116da6`.
+Public CI run `34673325444` attempt 2 passed Checks: 2,167 tests / 171 files, 15 adversarial
+cases and 89 accessibility scans. The adversarial/accessibility artifacts match the exact
+source and GitHub digests. Preview attempt 2 failed: polish reached 189 layout cells with
+no layout violations, then found a blank negotiation exercise at 320 px. The dependent
+screen-state stage also failed. The other 34 browser probes, 16 AI-Off paths, binary recovery,
+failure isolation and terminology passed; before/after browser and Worker identities match.
+The actual sync-key screenshot is correctly masked. Artifact `10292425742` is privately
+retained with its verified GitHub digest. One unchanged-source Preview retry follows; the
+blank-page cause remains unproven and no product fix is claimed. Production is skipped. Attempt 1 was triggered while private and blocked before steps. Do not rerun old unmasked heads. No credentials or remote learner
+data were changed by publication. C8 and all requirement statuses
 remain unchanged. Detailed evidence: `docs/reviews/field-ready-v1-code-closeout.md`.
 
 Field-Ready v1 code/audit closeout — checkpoints C1–C8 on
@@ -479,14 +501,11 @@ None
 
 ## NEXT
 
-Next product task: publish the reviewed screenshot-masking correction to PR #32, make
-Bloomlab public under owner authorization, and obtain fresh exact-head CI/Preview evidence.
-The 13 approved key-bearing GitHub artifacts have been removed after verified private backup.
-Do not rerun the previous unmasked source or repeat the completed initial audit. Preview
-migration checks and synthetic probes remain authorized. Verify Checks, Preview artifacts,
-before/after identities and skipped Production. No new migration is introduced; C8 remains
-open until fresh evidence exists. Human/real-GHL, semantic, visual and exact screen-state
-boundaries remain open.
+Next product task: publish the reviewed bounded polish startup diagnostics under the existing C8 commit/push/Preview authorization,
+and inspect fresh exact-head CI/Preview evidence. Do not rerun `aaa850c` again blindly or
+weaken readiness/layout gates. Two failed artifacts are retained. The original product and
+masking reviews are complete; only the new diagnostic logging diff receives a scoped review.
+No production, paid provider, live-fieldwork or requirement promotion is authorized.
 
 Its base remains `codex/navigation-shell-redesign` at
 `6a1ea64081e42a0dd6ea7efd3b78c0ee4abbd685`. Do not merge. Preserve the twelve parked
