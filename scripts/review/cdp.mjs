@@ -138,26 +138,44 @@ export function connect(url) {
   return { ready, send, once, on, evaluate, close: () => ws.close() };
 }
 
+/** Wait for the document returned by this navigation, not a previous page's queued load.
+ * Lifecycle events may arrive before Page.navigate replies, so retain them until its loader
+ * is known. Same-document navigation has no loader and needs no document-load event. */
+export async function navigateDocument(page, url) {
+  await page.send('Page.setLifecycleEventsEnabled', { enabled: true });
+  const loads = new Map();
+  let navigation;
+  let resolveLoaded;
+  const loaded = new Promise((resolve) => {
+    resolveLoaded = resolve;
+  });
+  const matches = () => navigation && loads.get(navigation.loaderId)?.has(navigation.frameId);
+  const stop = page.on('Page.lifecycleEvent', ({ name, loaderId, frameId }) => {
+    if (name !== 'load') return;
+    if (!loads.has(loaderId)) loads.set(loaderId, new Set());
+    loads.get(loaderId).add(frameId);
+    if (matches()) resolveLoaded();
+  });
+  let timer;
+  try {
+    navigation = await page.send('Page.navigate', { url });
+    if (navigation.errorText) throw new Error('Navigation failed: ' + navigation.errorText);
+    if (!navigation.loaderId || matches()) return;
+    await Promise.race([
+      loaded,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error('Page load timed out')), 30_000);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+    stop();
+  }
+}
+
 /** Navigates and waits for the lazy route chunk and the fonts. */
 export async function openPage(page, url) {
-  const loaded = page.once('Page.loadEventFired');
-  const navigation = await page.send('Page.navigate', { url });
-  if (navigation.errorText) throw new Error('Navigation failed: ' + navigation.errorText);
-  // Fragment navigation stays in the current document and deliberately has no load event.
-  // The search probe exercises this path; route-specific content still has its own ready check.
-  if (navigation.loaderId) {
-    let timer;
-    try {
-      await Promise.race([
-        loaded,
-        new Promise((_, reject) => {
-          timer = setTimeout(() => reject(new Error('Page load timed out')), 30_000);
-        }),
-      ]);
-    } finally {
-      clearTimeout(timer);
-    }
-  }
+  await navigateDocument(page, url);
   for (let i = 0; i < 60; i++) {
     if (await page.evaluate("!!document.querySelector('main h1, main h2, h1')")) break;
     await sleep(100);
@@ -169,22 +187,7 @@ export async function openPage(page, url) {
 
 /** Clear only a synthetic probe fixture after its old document has stopped writing to it. */
 export async function resetIndexedDbFixture(page, base) {
-  const unloaded = page.once('Page.loadEventFired');
-  const navigation = await page.send('Page.navigate', { url: 'about:blank' });
-  if (navigation.errorText) throw new Error('Fixture unload failed: ' + navigation.errorText);
-  if (navigation.loaderId) {
-    let timer;
-    try {
-      await Promise.race([
-        unloaded,
-        new Promise((_, reject) => {
-          timer = setTimeout(() => reject(new Error('Fixture unload timed out')), 30_000);
-        }),
-      ]);
-    } finally {
-      clearTimeout(timer);
-    }
-  }
+  await navigateDocument(page, 'about:blank');
   await page.send('Storage.clearDataForOrigin', {
     origin: new URL(base).origin,
     storageTypes: 'indexeddb',

@@ -2,9 +2,26 @@
 
 Concise roll-up in the spec §139 format. `REQUIREMENTS_MATRIX.md` is the source of truth for statuses; this file must agree with it. `node scripts/validate-requirements.mjs` enforces that agreement.
 
-Last updated: 2026-09-11
+Last updated: 2026-09-12
 
 ## CURRENT PHASE
+
+Diagnostic source `936c5776b82185591dc20f8a8bccedb1e018343a` is pushed to draft PR #32.
+Run `34677225506` finished: Checks PASSED (2,168 tests / 172 files, 15 adversarial cases,
+89 axe scans); Preview FAILED. All 215 polish cells passed, but navigation reset 101 at
+1024×720 left `/skills` empty after three required startup scripts were canceled with
+`net::ERR_ABORTED`. Other 34 browser probes passed; dependent screen-state generation failed.
+The cancellation cause remains unproven. Exact identities and SHA-256-verified artifact
+`10293950546` are retained in `.review/polish-startup-936c577/`. C8 remains open.
+Continuation (2026-09-12): existing retained libraries make Chrome 152/153 usable without
+installation. Baseline Chrome 152 navigation (38 cases / 252 resets) and 500 reloads passed
+without reproducing cancellation. A deterministic old-document event sequence demonstrates
+a separate driver defect: the global load event can release navigation/fixture clearing too
+early. Local correction matches the returned frame and loader, retains the 30-second timeout
+and all UI assertions, and cleans listeners up on every exit. It is not a claimed historical
+cancellation fix. 430 focused/simulator tests pass; typecheck, scoped lint, content and build
+pass. Real Chrome navigation/hash/fixture reset smoke passes. The scoped Sol High review has no actionable findings; corrected polish passed all 215 cells.
+Corrected navigation passed 38 cases / 252 resets with zero browser errors; evidence: `.review/startup-cancellation-936c577/`.
 
 Verification continuation (2026-09-11): public run `34673325444` attempts 2 and 3 both
 failed polish startup readiness on different exercise routes (320 px after 189 cells; 768 px
@@ -501,11 +518,12 @@ None
 
 ## NEXT
 
-Next product task: publish the reviewed bounded polish startup diagnostics under the existing C8 commit/push/Preview authorization,
-and inspect fresh exact-head CI/Preview evidence. Do not rerun `aaa850c` again blindly or
-weaken readiness/layout gates. Two failed artifacts are retained. The original product and
-masking reviews are complete; only the new diagnostic logging diff receives a scoped review.
-No production, paid provider, live-fieldwork or requirement promotion is authorized.
+Next product task: publish the verified document-specific navigation correction under existing
+commit/push/Preview authorization and obtain fresh exact-head CI/Preview evidence. Retain the historical cancellation as unexplained
+unless causal evidence establishes it; no blind unchanged-source retry or weakened readiness
+gates. Existing Linux Chrome now works with retained command-local libraries, with no install.
+Production, paid providers and live fieldwork remain excluded. C8, 24 open P0/P1 rows and all
+acceptance boundaries remain unchanged; completed product/privacy reviews are not repeated.
 
 Its base remains `codex/navigation-shell-redesign` at
 `6a1ea64081e42a0dd6ea7efd3b78c0ee4abbd685`. Do not merge. Preserve the twelve parked

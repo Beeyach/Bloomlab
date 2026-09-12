@@ -6,8 +6,17 @@ billing/spending-limit failures. Preview attempt 2 failed on a blank negotiation
 320 px in polish (189 cells reached, no layout violations). Screen-state generation failed
 downstream; the other 34 browser probes passed. The unchanged-source retry (attempt 3) failed polish again, now on a blank architecture
 exercise at 768 px after 94 cells. Artifacts `10292425742` and `10292323377` are retained.
-Cause remains unproven; bounded startup diagnostics are being added without changing
-assertions/timeouts. No further blind retry is planned. Production is skipped.
+Bounded startup diagnostics were published in `936c577` without changing assertions/timeouts.
+Run `34677225506` passed Checks and all 215 polish cells, but navigation reset 101 at
+1024×720 recorded three required startup scripts canceled with `net::ERR_ABORTED`, leaving
+`/skills` with an empty root. The other 34 browser probes passed; screen-state generation
+failed downstream. Artifact `10293950546` is privately retained and digest verified. The
+cause remains unproven; service-worker control/cache flags do not establish causation.
+Chrome152 baseline navigation and 500 reloads did not reproduce cancellation. A separate
+stale-document event defect is demonstrated and corrected locally in the probe driver; its
+relation to the historical cancellation is unproven. Retained libraries now support local
+Chrome without installation. Corrected Chrome navigation (38 cases / 252 resets), polish (215 cells), and the scoped review
+passed. Fresh exact-head CI/Preview remains pending. No further blind retry is planned. Production is skipped.
 Saved pre-split webhook steps retain their earlier simulation, including PATCH, under an explicit
 legacy label. This compatibility path is not current native Webhook fidelity and is not offered
 for new steps. Current Custom Webhook keeps its existing method restrictions.

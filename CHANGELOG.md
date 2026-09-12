@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-12 — Document-specific browser navigation (INF-005, DES-018)
+
+- Wait for the requested document’s frame and loader before browser-probe reads or synthetic
+  fixture clearing. Reject stale load events while preserving the original timeout and gates.
+- Reproduce the stale-event defect with a regression; retain historical canceled-module
+  failures as unexplained rather than claiming this driver correction establishes their cause.
+
 ## 2026-09-11 — Polish startup diagnostics (DES-017, DES-018, SEC-001)
 
 - Preserve bounded startup request outcomes and exception locations when polish encounters a

@@ -673,3 +673,75 @@ covered only this new logging diff. Reviewer syntax/diff checks used read-only n
 Bubblewrap; parent runtime remains unrestricted, so runtime-wide isolation is not claimed.
 Actual CDP diagnostic capture remains pending the next CI run. Existing completed product and
 masking reviews were not repeated. No application behavior, versions or assertion gates changed.
+
+
+Published diagnostic source `936c5776b82185591dc20f8a8bccedb1e018343a` to draft PR #32.
+Run `34677225506` has completed with Checks passing and Preview failing; artifact/log evidence
+is retained under `.review/polish-startup-936c577/`. No unrelated owner workflow setup files
+were included. These are local post-commit status updates, preserving exact source identity.
+
+
+## Diagnostic source verification — failed navigation startup
+
+Run `34677225506` attempt 1, source `936c5776b82185591dc20f8a8bccedb1e018343a`:
+Checks passed 2,168 tests / 172 files, 15 adversarial cases and 89 axe scans with the negative
+control and no blocking violations. Artifacts `10292553627` (accessibility) and `10291844713`
+(adversarial) were downloaded and verified against GitHub SHA-256 digests.
+
+Preview passed all 215 polish screen/width cells and 34/35 browser probes. Navigation failed
+at reset 101, `/skills`, `1024x720-expanded-normal`: document readyState complete, rootElements
+zero, no runtime exceptions, and three required Script requests canceled with `net::ERR_ABORTED`
+without HTTP responses: `/assets/src-B96MxdnM.js`, `/assets/src-CZ5kTSUi.js`, and
+`/assets/db-BDz7gSr3.js`. Other startup assets returned 200 with service-worker/disk-cache flags.
+These facts locate the failure before application mounting but do not establish why requests
+were canceled. The dependent screen-state stage correctly failed. AI-Off, binary recovery,
+failure isolation and terminology passed; no readiness, layout or timing gate was weakened.
+
+Before/after browser and Worker identities match the source. Worker version
+`c3e4126d-9102-4a67-a4a8-182f589e8344`; no pending Preview migrations; controlled synthetic
+fixtures and $0 provider spend; Production skipped. Artifact `10293950546` is 168,835,856 bytes,
+SHA-256 `57390de04b75c2a9d57f5c473c7b401b1e9a0f06982fba0127abb16795317616`, verified and
+retained with logs and the extracted navigation report in `.review/polish-startup-936c577/`.
+
+Inspection covered CDP navigation/load-event handling, eager application startup, first-visit
+asset preservation, update/reload guards and Workbox precache/runtime routing. None yet
+establishes a causal fix. Do not substitute speculative cache changes or unchanged full-suite
+retries for a reproduction. Existing Linux Chrome is missing `libnspr4.so`; the browser MCP
+connector did not respond, so no new local browser reproduction is claimed. Escalate this
+recurring cross-system debugging to Astra High per the working agreement. Preserve current
+assertions and user-work-safe update behavior. C8 remains open, with seven retained promotions,
+eleven non-PASSED targets, twelve parked human rows and 24 open P0/P1 rows unchanged. Do not
+merge; the final independent ChatGPT audit still requires passing exact-head evidence.
+
+
+## Document-specific navigation wait — 2026-09-12
+
+Existing retained libraries at `/tmp/bloomlab-chrome-libs/root/usr/lib/x86_64-linux-gnu`
+allow the existing Chrome 152 and 153 binaries to launch with command-local `LD_LIBRARY_PATH`.
+No browser/system installation or repair occurred. This supersedes the previous local tooling
+blocker. On unchanged deployed source `936c577`, Chrome 152 baseline navigation passed 38 cases /
+252 resets, and an independent startup-only loop passed 500 reloads. Neither reproduced the
+three canceled modules from run `34677225506`; no causal application or service-worker fix
+is established. Private diagnostics are in `.review/startup-cancellation-936c577/`.
+
+A bounded mock-CDP event sequence does demonstrate a separate driver defect: a queued prior
+`Page.loadEventFired` can release `openPage` or `resetIndexedDbFixture` before the requested
+document loads. The regression fails on HEAD at the intended stale-load assertion. The shared
+wait now matches `Page.lifecycleEvent` load against both the frame and loader returned by
+`Page.navigate`, retains matching events received before that reply, skips the load wait for
+same-document navigation, and removes its listener on success/error/timeout. The 30-second
+load deadline and all subsequent UI/fixture assertions stay unchanged. There is no retry,
+cache bypass, app reload recovery, service-worker change, or requirement promotion.
+Protocol contract: [Chrome DevTools Page domain](https://chromedevtools.github.io/devtools-protocol/tot/Page/#event-lifecycleEvent).
+
+Verification so far: 430 tests / 17 files (navigation, diagnostics, screenshot privacy,
+simulator), workspace typecheck, scoped ESLint/Prettier, content check, build/browser-secret
+scan and status/diff guards pass. Real Chrome 152 smoke passed normal/hash/reload navigation,
+fixture unload-before-clear, and fresh fixture boot against exact deployed source `936c577`.
+One fresh Sol High review covers only this driver correction and new regression, under
+read-only/network-isolated Bubblewrap commands; parent runtime remains unrestricted. The reviewer independently ran the embedded Node regression under that boundary and found
+no actionable issues; its Vitest wrapper needed Vite temp writes, so the full 430-test result
+is attributed to the parent. Corrected polish passed all 215 cells; corrected navigation passed 38 cases / 252 resets
+with zero captured browser errors. Both assert the unchanged deployed source `936c577`;
+these local-driver checks do not replace verification of the next immutable source. Historical cancellation remains
+unexplained, C8 stays open, and final immutable CI/Preview is still required before audit.
