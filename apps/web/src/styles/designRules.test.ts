@@ -70,6 +70,15 @@ function rules(css: string): { selector: string; body: string; line: number }[] 
  */
 const NAV_RAIL = 'apps/web/src/app/AppRail.module.css';
 
+it('keeps workflow status text legible on light nodes inside ink workspaces', () => {
+  const node = rules(
+    read(join(ROOT, 'packages/design-system/src/semantic/WorkflowNode.module.css')),
+  ).find((rule) => rule.selector === '.node');
+  // StatusPill consumes semantic roles rather than the node's direct color declaration.
+  expect(node?.body).toMatch(/--bl-color-text:\s*var\(--bl-color-ink\)/);
+  expect(node?.body).toMatch(/--bl-color-text-soft:\s*var\(--bl-color-ink-soft\)/);
+});
+
 describe('recovery text uses a normal-text contrast role (A11Y-004)', () => {
   it.each([
     ['apps/web/src/screens/SyncScreen.module.css', '.error'],

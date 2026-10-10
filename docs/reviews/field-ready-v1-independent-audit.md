@@ -3,6 +3,32 @@
 Date: 2026-10-10. Disposition: corrections verified locally; release acceptance remains open.
 This report does not declare Field-Ready Complete or completion of the remaining C7 automation.
 
+## Post-publication contrast finding
+
+The first three reviewed commits were published with explicit push/Preview approval at
+`1311e4cf74381f3cf6b46f37f4fa1e9822dff776`. Its Checks job passes 2,174 tests / 175 files;
+Preview acceptance is still running at this snapshot. Production is skipped.
+
+Independent review of the fresh accessibility archive resolved eight inherited Workflow Idle
+1:1 incomplete observations into a confirmed visible defect: light node cards inherited white
+semantic text roles from their dark InkSurface. All six status labels use the same affected role.
+The scoped correction restores dark text and soft-text roles on WorkflowNode only. A new
+stylesheet regression fails on the old source and passes after the correction. Independent
+real built Workflow render checks at 1440, 390 and 320 px plus clearly labeled six-state CSS
+fixtures measure 17.78:1 text contrast; the surrounding ink role remains white.
+
+The final local full suite passes **2,175 tests / 175 files** with two workers. An earlier
+parallel-check run retained two existing content-test timeout failures; no assertion failed,
+and no test deadline was increased. Typecheck, lint, formatting and build pass.
+
+Separate inherited P2: the default `SC-glowhaus-no-show` starter places its first node 120 px
+below a 141.78 px trigger card, partly covering the trigger status on desktop. This is authored
+curriculum layout, also used by the booking-confirmation exercise and Workflow Foundations.
+Mobile does not overlap. Saved learner coordinates are intentionally preserved; no existing
+workflow was silently repositioned. A candidate source correction spaces the new starter at
+150/300/450 px with a content version/lock update. Seed-data and further push approval are
+required by the user's working agreement before applying/publishing that candidate.
+
 ## Immutable sources and preserved stack
 
 - Repository: `Beeyach/Bloomlab`, verified PUBLIC; visibility was not changed.
