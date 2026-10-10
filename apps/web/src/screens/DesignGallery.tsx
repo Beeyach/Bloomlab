@@ -1,3 +1,4 @@
+import { Meta } from '@bloomlab/design-system';
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router';
 
@@ -148,10 +149,20 @@ export default function DesignGallery() {
                   <span className={styles.mono}>{hex}</span>
                   <span className={styles.ratios}>
                     <span>
-                      ink on it {inkOn.toFixed(1)}:1 · {grade(inkOn)}
+                      <Meta
+                        items={[
+                          { kind: 'text', label: <>ink on it {inkOn.toFixed(1)}:1</> },
+                          { kind: 'text', label: grade(inkOn) },
+                        ]}
+                      />
                     </span>
                     <span>
-                      on cloud {onCloud.toFixed(1)}:1 · {grade(onCloud)}
+                      <Meta
+                        items={[
+                          { kind: 'text', label: <>on cloud {onCloud.toFixed(1)}:1</> },
+                          { kind: 'text', label: grade(onCloud) },
+                        ]}
+                      />
                     </span>
                   </span>
                 </div>
@@ -174,28 +185,67 @@ export default function DesignGallery() {
             Secondary text uses Ink Soft, which clears AA on every light surface.
           </p>
           <p className={styles.code}>
-            IBM Plex Mono · wait: 1 day before appointment · SMS_SENT 10:00
+            <Meta
+              items={[
+                { kind: 'text', label: 'IBM Plex Mono' },
+                { kind: 'text', label: 'wait: 1 day before appointment' },
+                { kind: 'text', label: 'SMS_SENT 10:00' },
+              ]}
+            />
           </p>
         </Section>
 
         <Section id="surfaces" title="Surfaces">
           <Grid minColumn="14rem" gap={4}>
             <Surface tone="snow">
-              <h3 className={styles.h3}>Snow · elevation 0</h3>
+              <h3 className={styles.h3}>
+                <Meta
+                  style={{ fontSize: 'inherit', color: 'inherit' }}
+                  items={[
+                    { kind: 'text', label: 'Snow' },
+                    { kind: 'text', label: 'elevation 0' },
+                  ]}
+                />
+              </h3>
               <p className={styles.note}>Default container.</p>
             </Surface>
             <Surface tone="mist" elevation={1}>
-              <h3 className={styles.h3}>Mist · elevation 1</h3>
+              <h3 className={styles.h3}>
+                <Meta
+                  style={{ fontSize: 'inherit', color: 'inherit' }}
+                  items={[
+                    { kind: 'text', label: 'Mist' },
+                    { kind: 'text', label: 'elevation 1' },
+                  ]}
+                />
+              </h3>
               <p className={styles.note}>Secondary grouping.</p>
             </Surface>
             <Surface tone="tint" elevation={2} interactive>
-              <h3 className={styles.h3}>Tint · elevation 2 · interactive</h3>
+              <h3 className={styles.h3}>
+                <Meta
+                  style={{ fontSize: 'inherit', color: 'inherit' }}
+                  items={[
+                    { kind: 'text', label: 'Tint' },
+                    { kind: 'text', label: 'elevation 2' },
+                    { kind: 'text', label: 'interactive' },
+                  ]}
+                />
+              </h3>
               <p className={styles.note}>Hover lifts.</p>
             </Surface>
           </Grid>
           <InkSurface padding="lg">
             <Stack gap={3}>
-              <h3 className={styles.h3}>Ink surface · roles invert</h3>
+              <h3 className={styles.h3}>
+                <Meta
+                  style={{ fontSize: 'inherit', color: 'inherit' }}
+                  items={[
+                    { kind: 'text', label: 'Ink surface' },
+                    { kind: 'text', label: 'roles invert' },
+                  ]}
+                />
+              </h3>
               <p className={styles.note}>
                 Workspace for the Workflow Lab and Call Room. <a href="#surfaces">Links go aqua</a>.
               </p>
@@ -298,11 +348,27 @@ export default function DesignGallery() {
         <Section id="motion" title="Motion">
           <Grid minColumn="14rem" gap={4}>
             <Stack gap={2}>
-              <h3 className={styles.h3}>State · 120–200 ms</h3>
+              <h3 className={styles.h3}>
+                <Meta
+                  style={{ fontSize: 'inherit', color: 'inherit' }}
+                  items={[
+                    { kind: 'text', label: 'State' },
+                    { kind: 'text', label: '120–200 ms' },
+                  ]}
+                />
+              </h3>
               <div className={`${styles.stateDemo} ${motionClass.state}`}>Hover me</div>
             </Stack>
             <Stack gap={2}>
-              <h3 className={styles.h3}>Spatial · ≤ 300 ms</h3>
+              <h3 className={styles.h3}>
+                <Meta
+                  style={{ fontSize: 'inherit', color: 'inherit' }}
+                  items={[
+                    { kind: 'text', label: 'Spatial' },
+                    { kind: 'text', label: '≤ 300 ms' },
+                  ]}
+                />
+              </h3>
               <Button onClick={() => setSheetOpen(true)}>Open sheet</Button>
             </Stack>
             <Stack gap={2}>
@@ -319,7 +385,16 @@ export default function DesignGallery() {
               </Field>
             </Stack>
             <Stack gap={2}>
-              <h3 className={styles.h3}>Reward · 1.5–3 s · skippable</h3>
+              <h3 className={styles.h3}>
+                <Meta
+                  style={{ fontSize: 'inherit', color: 'inherit' }}
+                  items={[
+                    { kind: 'text', label: 'Reward' },
+                    { kind: 'text', label: '1.5–3 s' },
+                    { kind: 'text', label: 'skippable' },
+                  ]}
+                />
+              </h3>
               <Button onClick={() => setRewardKey((k) => k + 1)}>Replay</Button>
             </Stack>
           </Grid>
@@ -436,14 +511,30 @@ export default function DesignGallery() {
         </Section>
 
         <Section id="semantic" title="Semantic components">
-          <h3 className={styles.h3}>Mastery badge · one glyph per state</h3>
+          <h3 className={styles.h3}>
+            <Meta
+              style={{ fontSize: 'inherit', color: 'inherit' }}
+              items={[
+                { kind: 'text', label: 'Mastery badge' },
+                { kind: 'text', label: 'one glyph per state' },
+              ]}
+            />
+          </h3>
           <Cluster gap={2}>
             {MASTERY_STATES.map((state) => (
               <MasteryBadge key={state} state={state} />
             ))}
           </Cluster>
 
-          <h3 className={styles.h3}>Skill card · material escalates</h3>
+          <h3 className={styles.h3}>
+            <Meta
+              style={{ fontSize: 'inherit', color: 'inherit' }}
+              items={[
+                { kind: 'text', label: 'Skill card' },
+                { kind: 'text', label: 'material escalates' },
+              ]}
+            />
+          </h3>
           <Grid minColumn="14rem" gap={4}>
             {MASTERY_STATES.map((state, index) => (
               <SkillCard
@@ -490,7 +581,15 @@ export default function DesignGallery() {
             />
           </Grid>
 
-          <h3 className={styles.h3}>Client case cover · abstract identity</h3>
+          <h3 className={styles.h3}>
+            <Meta
+              style={{ fontSize: 'inherit', color: 'inherit' }}
+              items={[
+                { kind: 'text', label: 'Client case cover' },
+                { kind: 'text', label: 'abstract identity' },
+              ]}
+            />
+          </h3>
           <Grid minColumn="16rem" gap={4}>
             <ClientCaseCover
               businessName="GlowHaus Med Spa"
@@ -510,7 +609,15 @@ export default function DesignGallery() {
             />
           </Grid>
 
-          <h3 className={styles.h3}>Workflow node · light on ink</h3>
+          <h3 className={styles.h3}>
+            <Meta
+              style={{ fontSize: 'inherit', color: 'inherit' }}
+              items={[
+                { kind: 'text', label: 'Workflow node' },
+                { kind: 'text', label: 'light on ink' },
+              ]}
+            />
+          </h3>
           <InkSurface padding="lg">
             <div className={styles.canvas}>
               <WorkflowNode
@@ -536,7 +643,7 @@ export default function DesignGallery() {
               <WorkflowNode
                 kind="action"
                 name="Send SMS"
-                config="Reminder · template A"
+                config="Reminder using template A"
                 status="running"
               />
               <WorkflowNode kind="action" name="Add Tag" config="reminded-24h" status="skipped" />
@@ -544,7 +651,15 @@ export default function DesignGallery() {
             </div>
           </InkSurface>
 
-          <h3 className={styles.h3}>Contact row · high density</h3>
+          <h3 className={styles.h3}>
+            <Meta
+              style={{ fontSize: 'inherit', color: 'inherit' }}
+              items={[
+                { kind: 'text', label: 'Contact row' },
+                { kind: 'text', label: 'high density' },
+              ]}
+            />
+          </h3>
           <ToolPanel title="Contacts" density="high">
             <div className={styles.rows}>
               <ContactRow
@@ -628,7 +743,15 @@ export default function DesignGallery() {
             />
           </Surface>
 
-          <h3 className={styles.h3}>Call participant · very low density</h3>
+          <h3 className={styles.h3}>
+            <Meta
+              style={{ fontSize: 'inherit', color: 'inherit' }}
+              items={[
+                { kind: 'text', label: 'Call participant' },
+                { kind: 'text', label: 'very low density' },
+              ]}
+            />
+          </h3>
           <InkSurface depth="deep" padding="lg">
             <Grid minColumn="16rem" gap={4}>
               <CallParticipant

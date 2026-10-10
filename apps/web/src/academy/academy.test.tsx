@@ -113,7 +113,10 @@ describe('Academy unit rendering (CUR-036, DES-020)', () => {
       'href',
       '#where-the-money-leaks',
     );
-    expect(screen.getByText(/Academy · Strategize · 18 min read/)).toBeInTheDocument();
+    expect(screen.getByText('Academy')).toBeInTheDocument();
+    expect(screen.getByText('Strategize')).toBeInTheDocument();
+    expect(screen.getByText('18 min')).toBeInTheDocument();
+    expect(document.querySelector('header')?.textContent).not.toContain('·');
     // Authored prose, not JSX: a sentence from the MDX body.
     expect(screen.getByText(/Glowhaus Med Spa gets about 140 leads a month/)).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/\bXP\b|\bstars?\b|\bpoints\b|Lesson \d/i);
@@ -185,6 +188,14 @@ describe('Funnel-math interactive', () => {
     await openUnit();
     const results = screen.getByTestId('funnel-results');
     expect(results).toHaveTextContent('13 sales');
+    expect(within(results).getByText('64 booked')).toBeInTheDocument();
+    expect(within(results).getByText('37 showed')).toBeInTheDocument();
+    expect(within(results).getByText('13 bought')).toBeInTheDocument();
+    expect(results).not.toHaveTextContent('·');
+    expect(within(results).getByText('64 booked')).toBeInTheDocument();
+    expect(within(results).getByText('37 showed')).toBeInTheDocument();
+    expect(within(results).getByText('13 bought')).toBeInTheDocument();
+    expect(results).not.toHaveTextContent('·');
     expect(results).toHaveTextContent('$5,360 a month');
     expect(results).toHaveTextContent('$2,960 after $2,400 of ads');
     expect(results).toHaveTextContent('Biggest leak: 76 people lost after leads.');
@@ -455,7 +466,8 @@ describe('Phase 7 navigation into the Academy', () => {
     const object = (await screen.findByRole('heading', { level: 2, name: 'Funnel math' })).closest(
       'section',
     ) as HTMLElement;
-    expect(object).toHaveTextContent('Next · Read');
+    expect(within(object).getByText('Next')).toBeInTheDocument();
+    expect(within(object).getByText('Read')).toBeInTheDocument();
     fireEvent.click(within(object).getByRole('button', { name: 'Continue' }));
     expect(
       await screen.findByRole('heading', { level: 1, name: firstUnit.title }),
@@ -492,8 +504,8 @@ describe('Phase 7 navigation into the Academy', () => {
       'section',
     ) as HTMLElement;
     expect(object).toHaveTextContent('Started, nothing passed yet.');
-    expect(object).not.toHaveTextContent('Next · Read');
-    expect(object).toHaveTextContent('first practice');
+    expect(within(object).queryByText('Read')).not.toBeInTheDocument();
+    expect(object).toHaveTextContent('First practice');
     await waitFor(() =>
       expect(screen.getByRole('heading', { name: 'Recent evidence' })).toBeInTheDocument(),
     );

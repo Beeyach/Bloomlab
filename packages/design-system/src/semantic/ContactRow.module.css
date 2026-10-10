@@ -1,12 +1,15 @@
 /* High-density CRM row (spec §55, §72). */
 .row {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 2fr) minmax(0, 1fr) auto;
+  grid-template-columns: var(
+    --bl-contact-columns,
+    minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 2fr) minmax(0, 1fr) auto
+  );
   align-items: center;
-  gap: var(--bl-space-3);
+  gap: 16px;
   width: 100%;
   min-height: 44px;
-  padding: var(--bl-density-row) var(--bl-space-3);
+  padding: var(--bl-density-row) 12px;
   border: 0;
   border-top: 1px solid var(--bl-color-border);
   background: transparent;
@@ -15,6 +18,13 @@
   font-size: var(--bl-font-size-sm);
   text-align: left;
   cursor: pointer;
+}
+
+.row > * {
+  min-width: 0;
+}
+.more {
+  flex: none;
 }
 
 .row:first-child {
@@ -56,6 +66,9 @@
 }
 
 .tag {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   padding: 1px var(--bl-space-2);
   border-radius: var(--bl-radius-sm);
   background: var(--bl-color-surface-2);

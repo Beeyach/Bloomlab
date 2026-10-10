@@ -1,3 +1,4 @@
+import { Meta } from '@bloomlab/design-system';
 import { useState } from 'react';
 import type { Exercise } from '@bloomlab/content-schema';
 import { saveNegotiationDraft, sendNegotiationTurn, type AttemptContext } from '../attempt';
@@ -88,7 +89,12 @@ export function NegotiationThread({
       <header className={styles.threadHead}>
         <h3 className={styles.deskTitle}>{config.subject}</h3>
         <p className={styles.deskNote}>
-          Standalone practice agreement · Changes apply to this attempt.
+          <Meta
+            items={[
+              { kind: 'text', label: 'Standalone practice agreement' },
+              { kind: 'text', label: 'Changes apply to this attempt.' },
+            ]}
+          />
         </p>
       </header>
       <div className={local.layout}>
@@ -184,7 +190,9 @@ export function NegotiationThread({
                         <span>
                           <span className={styles.choiceName}>
                             {s.name}
-                            {s.locked ? ' · Required foundation' : ''}
+                            {s.locked && (
+                              <Meta items={[{ kind: 'badge', label: 'Required foundation' }]} />
+                            )}
                           </span>
                           {draft.excluded.includes(s.id) && (
                             <span className={styles.choiceHelp}>{s.consequence}</span>
@@ -300,8 +308,17 @@ export function NegotiationThread({
         >
           <h4 className={styles.deskTitle}>The agreement on the table</h4>
           <p className={styles.deskNote}>
-            {state.deal.phase ? 'Phase 1' : 'Project'}: ${quote.total} · Deposit: ${quote.deposit} ·{' '}
-            {quote.timeline_days} days · {quote.revisions} revision rounds
+            <Meta
+              items={[
+                {
+                  kind: 'text',
+                  label: `${state.deal.phase ? 'Phase 1' : 'Project'}: $${quote.total}`,
+                },
+                { kind: 'text', label: `Deposit: $${quote.deposit}` },
+                { kind: 'text', label: `${quote.timeline_days} days` },
+                { kind: 'text', label: `${quote.revisions} revision rounds` },
+              ]}
+            />
           </p>
           <p className={styles.help}>
             Separate support: ${quote.recurring} per month. Balance{' '}
@@ -313,8 +330,15 @@ export function NegotiationThread({
           {state.deal.phase && (
             <>
               <p className={styles.deskNote}>
-                Phase 2: ${state.deal.phase.project} · {state.deal.phase.days} days after Phase 1
-                acceptance
+                <Meta
+                  items={[
+                    { kind: 'text', label: `Phase 2: $${state.deal.phase.project}` },
+                    {
+                      kind: 'text',
+                      label: `${state.deal.phase.days} days after Phase 1 acceptance`,
+                    },
+                  ]}
+                />
               </p>
               <p className={styles.help}>{phase?.consequence}</p>
             </>

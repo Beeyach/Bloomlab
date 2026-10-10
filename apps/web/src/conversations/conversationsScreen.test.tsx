@@ -104,7 +104,9 @@ describe('Conversations shows the account’s messages and a reply reaches the w
     });
     const inbound = thread.querySelector('[data-direction="inbound"]') as HTMLElement;
     expect(inbound).toHaveTextContent('YES');
-    expect(inbound).toHaveTextContent(/Maria Delgado · Text/);
+    expect(within(inbound).getByText('Maria Delgado')).toBeInTheDocument();
+    expect(within(inbound).getByText('Text')).toBeInTheDocument();
+    expect(inbound).not.toHaveTextContent('·');
 
     await waitFor(async () => {
       const reloaded = await loadRun(run.state.run_id);

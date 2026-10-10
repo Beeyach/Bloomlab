@@ -493,7 +493,8 @@ describe('CALL-001/004/006 call work area', () => {
   it('shows identity, company, objective, audio state, elapsed time and notes without requesting microphone permission', async () => {
     const a = await open();
     expect(screen.getByRole('heading', { name: 'Gary Lindqvist' })).toBeInTheDocument();
-    expect(screen.getByText(/Northwind Heating & Air/)).toBeInTheDocument();
+    expect(screen.getByText('Northwind Heating & Air')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Client identity' })).not.toHaveTextContent('·');
     expect(screen.getByRole('region', { name: 'Call objective' })).toBeInTheDocument();
     expect(screen.getByText('Ready to start')).toBeInTheDocument();
     expect(screen.getByLabelText('Elapsed call time')).toHaveTextContent('00:00');

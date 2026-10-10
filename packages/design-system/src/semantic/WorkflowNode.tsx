@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef } from 'react';
+import type { ComponentPropsWithRef, ReactNode } from 'react';
 
 import { cx } from '../utils/cx';
 import { StatusPill, type StatusGlyph, type StatusTone } from './StatusPill';
@@ -30,7 +30,7 @@ export interface WorkflowNodeProps extends ComponentPropsWithRef<'button'> {
   /** Real GHL feature name from the registry (spec §51, GHL-010). */
   name: string;
   /** One concise configuration line; everything else lives in the inspector (spec §53). */
-  config?: string;
+  config?: ReactNode;
   status?: WorkflowNodeStatus;
   /** Registry fidelity B/C: clearly marked (spec §26, §51). */
   approximation?: boolean;

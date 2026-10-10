@@ -57,7 +57,7 @@ export const unitTitle = (id: string, bundle: ContentBundle = content): string =
 export const exerciseOf = (id: string, bundle: ContentBundle = content) =>
   bundle.exercises.find((e) => e.id === id) ?? null;
 
-/** "Read · Funnel math, in the owner's numbers" / "Build It · Build Glowhaus's no-show recovery". */
+/** Separate action, title and context for the next-step metadata. */
 export function describeStep(
   step: SessionItem,
   bundle: ContentBundle = content,

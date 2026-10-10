@@ -1,3 +1,4 @@
+import { Meta } from '@bloomlab/design-system';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 
@@ -206,7 +207,12 @@ export default function SimulatorHarness() {
             <div>
               <dt>Seed</dt>
               <dd>
-                {state.random.seed} · {state.random.draws} draws
+                <Meta
+                  items={[
+                    { kind: 'text', label: state.random.seed },
+                    { kind: 'text', label: <>{state.random.draws} draws</> },
+                  ]}
+                />
               </dd>
             </div>
             <div>
@@ -294,9 +300,16 @@ export default function SimulatorHarness() {
                 {contact.first_name} {contact.last_name ?? ''}
               </span>
               <span className={styles.rowDetail}>
-                {contact.tags.length > 0 ? contact.tags.join(', ') : 'no tags'}
-                {contact.dnd ? ' · do not disturb' : ''}
-                {contact.phone ? '' : ' · no phone'}
+                <Meta
+                  items={[
+                    {
+                      kind: 'text',
+                      label: contact.tags.length > 0 ? contact.tags.join(', ') : 'no tags',
+                    },
+                    ...(contact.dnd ? [{ kind: 'badge' as const, label: 'do not disturb' }] : []),
+                    ...(!contact.phone ? [{ kind: 'text' as const, label: 'no phone' }] : []),
+                  ]}
+                />
               </span>
             </li>
           ))}
@@ -313,8 +326,14 @@ export default function SimulatorHarness() {
               <li key={entry.id} className={styles.row}>
                 <span className={styles.rowName}>{contentEventName(entry.type)}</span>
                 <span className={styles.rowDetail}>
-                  {entry.at}
-                  {entry.description ? ` · ${entry.description}` : ''}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: entry.at },
+                      ...(entry.description
+                        ? [{ kind: 'text' as const, label: entry.description }]
+                        : []),
+                    ]}
+                  />
                 </span>
               </li>
             ))}
@@ -332,7 +351,12 @@ export default function SimulatorHarness() {
               <li key={entry.id} className={styles.row}>
                 <span className={styles.rowName}>{contentEventName(entry.type)}</span>
                 <span className={styles.rowDetail}>
-                  {entry.at} · {ORIGIN_WORDS[entry.origin] ?? entry.origin}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: entry.at },
+                      { kind: 'text', label: ORIGIN_WORDS[entry.origin] ?? entry.origin },
+                    ]}
+                  />
                 </span>
               </li>
             ))}
@@ -350,9 +374,17 @@ export default function SimulatorHarness() {
               <li key={record.id} className={styles.row}>
                 <span className={styles.rowName}>{KIND_WORDS[record.kind] ?? record.kind}</span>
                 <span className={styles.rowDetail}>
-                  {record.at}
-                  {record.contact_id ? ` · ${record.contact_id}` : ''}
-                  {record.reason ? ` · ${record.reason.replaceAll('_', ' ')}` : ''}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: record.at },
+                      ...(record.contact_id
+                        ? [{ kind: 'text' as const, label: record.contact_id }]
+                        : []),
+                      ...(record.reason
+                        ? [{ kind: 'text' as const, label: record.reason.replaceAll('_', ' ') }]
+                        : []),
+                    ]}
+                  />
                 </span>
               </li>
             ))}
@@ -373,7 +405,12 @@ export default function SimulatorHarness() {
               <li key={point.id} className={styles.row}>
                 <span className={styles.rowName}>{point.label}</span>
                 <span className={styles.rowDetail}>
-                  {point.at} · after {point.log_length} events
+                  <Meta
+                    items={[
+                      { kind: 'text', label: point.at },
+                      { kind: 'text', label: <>after {point.log_length} events</> },
+                    ]}
+                  />
                 </span>
               </li>
             ))}

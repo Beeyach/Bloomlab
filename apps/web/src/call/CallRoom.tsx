@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Exercise } from '@bloomlab/content-schema';
-import { Sheet } from '@bloomlab/design-system';
+import { ContentTitle, Meta, Sheet } from '@bloomlab/design-system';
 import {
   CALL_LIMITS,
   type CallPhase,
@@ -445,7 +445,9 @@ export default function CallRoom({
     >
       <header className={styles.header}>
         <div>
-          <h1 id="call-title">{exercise.title}</h1>
+          <h1 id="call-title">
+            <ContentTitle title={exercise.title} />
+          </h1>
         </div>
         <div className={styles.clock}>
           <span>Elapsed</span>
@@ -463,7 +465,13 @@ export default function CallRoom({
             <div>
               <h2>{client.team[0]!.name}</h2>
               <p>
-                {client.team[0]!.role} · {client.business_name}
+                <Meta
+                  className={styles.contextMeta}
+                  items={[
+                    { kind: 'text', label: client.team[0]!.role },
+                    { kind: 'text', label: client.business_name },
+                  ]}
+                />
               </p>
             </div>
           </section>
@@ -481,8 +489,16 @@ export default function CallRoom({
           {snapshot && (
             <section className={styles.clientLine} aria-label="Current client response">
               <p className={styles.lineSpeaker}>
-                {client.team[0]!.name} ·{' '}
-                {snapshot.complete ? 'Closing' : `Turn ${snapshot.turn + 1}`}
+                <Meta
+                  className={styles.contextMeta}
+                  items={[
+                    { kind: 'text', label: client.team[0]!.name },
+                    {
+                      kind: 'text',
+                      label: snapshot.complete ? 'Closing' : `Turn ${snapshot.turn + 1}`,
+                    },
+                  ]}
+                />
               </p>
               <p>{snapshot.current.text}</p>
             </section>
@@ -787,9 +803,19 @@ export default function CallRoom({
             <details>
               <summary>Agreement on the table</summary>
               <p>
-                Project: ${snapshot.agreement.project} · Due now: ${snapshot.agreement.due_now} ·{' '}
-                {snapshot.agreement.timeline_days} days · {snapshot.agreement.revisions} revision
-                rounds · Separate support: ${snapshot.agreement.recurring}/month
+                <Meta
+                  className={styles.contextMeta}
+                  items={[
+                    { kind: 'text', label: `Project: $${snapshot.agreement.project}` },
+                    { kind: 'text', label: `Due now: $${snapshot.agreement.due_now}` },
+                    { kind: 'text', label: `${snapshot.agreement.timeline_days} days` },
+                    { kind: 'text', label: `${snapshot.agreement.revisions} revision rounds` },
+                    {
+                      kind: 'text',
+                      label: `Separate support: $${snapshot.agreement.recurring}/month`,
+                    },
+                  ]}
+                />
               </p>
               {snapshot.agreement.phase && (
                 <p>
@@ -850,7 +876,15 @@ export default function CallRoom({
       </div>
       {snapshot && (
         <details className={styles.history}>
-          <summary>Call transcript · {snapshot.turns.length} confirmed turns</summary>
+          <summary>
+            <Meta
+              className={styles.contextMeta}
+              items={[
+                { kind: 'text', label: 'Call transcript' },
+                { kind: 'text', label: `${snapshot.turns.length} confirmed turns` },
+              ]}
+            />
+          </summary>
           <ol>
             {snapshot.turns.map((turn) => (
               <li key={turn.turn}>

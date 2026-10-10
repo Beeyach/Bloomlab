@@ -52,7 +52,7 @@ describe('sync status', () => {
 
     act(() => setOnline(false));
     expect(result.current.status).toBe('offline');
-    expect(result.current.label).toBe('Offline · saved on this device');
+    expect(result.current.label).toBe('Offline, saved on this device');
 
     act(() => setOnline(true));
     await act(async () => {

@@ -21,6 +21,24 @@ const { page } = browser;
 const { waitFor, click, typeInto, hasButton } = probeHelpers({ base: BASE });
 const has = (text) =>
   `document.querySelector('main')?.textContent.includes(${JSON.stringify(text)})`;
+// The list title and derived count are separate elements; keep both facts scoped to one list.
+const hasListCount = (name, count) =>
+  `[...document.querySelectorAll('main section')].some(section => section.querySelector(':scope > h3')?.textContent.trim() === ${JSON.stringify(name)} && section.querySelector(':scope > span')?.textContent.trim() === ${JSON.stringify(count)})`;
+// Require exact facts in one row of the list belonging to the named log or ledger.
+const hasRowFactsAfterHeading = (heading, facts) => `(() => {
+  const title = [...document.querySelectorAll('main h2, main h3')]
+    .find(el => el.textContent.trim() === ${JSON.stringify(heading)});
+  let list = title?.nextElementSibling;
+  while (list && list.tagName !== 'UL' && !/^H[1-6]$/.test(list.tagName)) list = list.nextElementSibling;
+  if (list?.tagName !== 'UL') return false;
+  const expected = ${JSON.stringify(facts)};
+  return [...list.querySelectorAll(':scope > li')].some(row => {
+    const leaves = [...row.querySelectorAll('span')]
+      .filter(el => el.childElementCount === 0).map(el => el.textContent.trim());
+    const start = leaves.indexOf(expected[0]);
+    return start >= 0 && expected.every((fact, index) => leaves[start + index] === fact);
+  });
+})()`;
 const go = async (path, ready) => {
   await openPage(page, BASE + path);
   assert(await waitFor(page, ready), `${path} did not open`);
@@ -133,7 +151,15 @@ try {
     'value-value': '200000',
     'value-ready': 'true',
   });
-  assert(await page.evaluate(has('Review property · Home Two')));
+  assert(
+    await page.evaluate(
+      hasRowFactsAfterHeading('Object automation log', [
+        'Review property',
+        'Home Two',
+        'recorded, not delivered',
+      ]),
+    ),
+  );
   // Reusing the schema identifier with an incompatible field type is an atomic refusal.
   await form(
     'OBJECT_SCHEMA_SAVED',
@@ -170,11 +196,11 @@ try {
     'type-1': 'boolean',
     'value-1': 'false',
   });
-  assert(await page.evaluate(has('Reachable Meta leads · 2 of 5 contacts')));
+  assert(await page.evaluate(hasListCount('Reachable Meta leads', '2 of 5 contacts')));
   await go('/crm?area=contacts&record=maria', hasButton('Turn on'));
   await click(page, 'Turn on');
   assert(await waitFor(page, hasButton('Turn off')));
-  await go('/crm?area=lists', has('Reachable Meta leads · 1 of 5 contacts'));
+  await go('/crm?area=lists', hasListCount('Reachable Meta leads', '1 of 5 contacts'));
   await go('/crm?area=contacts&record=maria', hasButton('Turn off'));
   await click(page, 'Turn off');
   assert(await waitFor(page, hasButton('Turn on')));
@@ -264,7 +290,16 @@ try {
   });
   await go('/payments', hasButton('Ledger & subscriptions'));
   await click(page, 'Ledger & subscriptions');
-  assert(await page.evaluate(has('training-retry · Maria Delgado · $25.00 USD · refunded')));
+  assert(
+    await page.evaluate(
+      hasRowFactsAfterHeading('Ledger & subscriptions', [
+        'training-retry',
+        'Maria Delgado',
+        '$25.00 USD',
+        'refunded',
+      ]),
+    ),
+  );
   assert(await page.evaluate(has('2 successful charges')));
   result.flows.paymentsFailureRetryRefundSubscriptionOfflineReload = true;
 

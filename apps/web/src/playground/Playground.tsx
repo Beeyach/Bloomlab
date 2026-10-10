@@ -77,6 +77,7 @@ export default function Playground() {
           <Field label="Scenario" id="playground-scenario" className={styles.scenarioChoice}>
             <Select
               value={scenario?.id ?? ''}
+              title={scenario?.title ?? scenario?.id ?? ''}
               onChange={(event) => setScenarioId(event.target.value)}
             >
               {scenarios.map((row) => (
@@ -133,34 +134,44 @@ export default function Playground() {
             there appears here.
           </p>
         ) : (
-          <ul className={styles.features} aria-label="Unlocked features">
-            {unlocked.map(({ feature, via, by }) => {
-              const simulated =
-                feature.simulation_fidelity === 'A' || feature.simulation_fidelity === 'B';
-              return (
-                <li key={feature.id} className={styles.feature} data-feature={feature.id}>
-                  <span className={styles.featureName}>{feature.official_name}</span>
-                  <span className={styles.featureArea}>{feature.area}</span>
-                  <StatusPill
-                    label={
-                      feature.simulation_fidelity === 'A'
-                        ? 'Simulated'
-                        : feature.simulation_fidelity === 'B'
-                          ? 'Training approximation'
-                          : 'Practised in GHL'
-                    }
-                    tone={simulated ? 'success' : 'neutral'}
-                    glyph={simulated ? 'check' : 'dash'}
-                  />
-                  <span className={styles.featureVia}>
-                    {via === 'skill'
-                      ? `From ${content.skills.find((skill) => skill.id === by)?.title ?? by}`
-                      : `Met in ${scenarios.find((row) => row.id === by)?.title ?? by}`}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
+          <div className={styles.featureTable}>
+            <div className={styles.featureHead} role="group" aria-label="Feature columns">
+              <span>Feature</span>
+              <span>Area</span>
+              <span>Mode</span>
+              <span>Where you met it</span>
+            </div>
+            <ul className={styles.features} aria-label="Unlocked features">
+              {unlocked.map(({ feature, via, by }) => {
+                const simulated =
+                  feature.simulation_fidelity === 'A' || feature.simulation_fidelity === 'B';
+                const encounter =
+                  via === 'skill'
+                    ? `From ${content.skills.find((skill) => skill.id === by)?.title ?? by}`
+                    : `Met in ${scenarios.find((row) => row.id === by)?.title ?? by}`;
+                return (
+                  <li key={feature.id} className={styles.feature} data-feature={feature.id}>
+                    <span className={styles.featureName}>{feature.official_name}</span>
+                    <span className={styles.featureArea}>{feature.area}</span>
+                    <StatusPill
+                      label={
+                        feature.simulation_fidelity === 'A'
+                          ? 'Simulated'
+                          : feature.simulation_fidelity === 'B'
+                            ? 'Training approximation'
+                            : 'Practised in GHL'
+                      }
+                      tone={simulated ? 'success' : 'neutral'}
+                      glyph={simulated ? 'check' : 'dash'}
+                    />
+                    <span className={styles.featureVia} title={encounter}>
+                      {encounter}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         )}
       </section>
     </Stack>

@@ -40,14 +40,15 @@ describe('DATA-006 scenario case files', () => {
     expect(await screen.findByLabelText('Add a case file')).toBeInTheDocument();
     const file = new File(['%PDF-1.4'], 'brief.pdf', { type: 'application/pdf' });
     fireEvent.change(screen.getByLabelText('Add a case file'), { target: { files: [file] } });
-    expect(await screen.findByText(/brief\.pdf · 2 KB/)).toBeInTheDocument();
+    expect(await screen.findByText('brief.pdf')).toBeInTheDocument();
+    expect(screen.getByText('2 KB')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Download' }));
     await waitFor(() => expect(api.downloadScenarioAttachment).toHaveBeenCalledWith(asset));
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
     await waitFor(() =>
       expect(api.deleteScenarioAttachment).toHaveBeenCalledWith(asset.attachment_id),
     );
-    expect(screen.queryByText(/brief\.pdf ·/)).toBeNull();
+    expect(screen.queryByText('brief.pdf')).toBeNull();
   });
 
   it('keeps the file surface usable after a storage error', async () => {

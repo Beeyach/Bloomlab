@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router';
 
-import { Button, Stack, StatusPill, cx } from '@bloomlab/design-system';
+import { Meta, Button, Stack, StatusPill, cx } from '@bloomlab/design-system';
 import {
   bookableSlots,
   contentEventName,
@@ -198,7 +198,12 @@ function CaseFile({ row }: { row: IncidentCase }) {
           {row.incident.title}
         </h1>
         <p className={styles.lead}>
-          {clientName(row.client_id)} · {row.title}
+          <Meta
+            items={[
+              { kind: 'text', label: clientName(row.client_id) },
+              { kind: 'text', label: row.title },
+            ]}
+          />
         </p>
         <StatusPill label="Open" tone="warning" glyph="dot" />
       </header>
@@ -387,14 +392,27 @@ function SystemState({ state }: { state: SimulatorState }) {
               const openings = bookableSlots(account, calendar.id, state.clock.now).length;
               return (
                 <li key={calendar.id}>
-                  {calendar.name} · {calendar.type.replace('_', ' ')} ·{' '}
-                  {calendar.staff_ids.length === 0
-                    ? 'nobody on the team'
-                    : `${calendar.staff_ids.length} on the team`}{' '}
-                  ·{' '}
-                  <span className={cx(openings === 0 && styles.absent)}>
-                    {openings === 0 ? 'no times offered' : `${openings} times offered`}
-                  </span>
+                  <Meta
+                    items={[
+                      { kind: 'text', label: calendar.name },
+                      { kind: 'text', label: calendar.type.replace('_', ' ') },
+                      {
+                        kind: 'text',
+                        label:
+                          calendar.staff_ids.length === 0
+                            ? 'nobody on the team'
+                            : `${calendar.staff_ids.length} on the team`,
+                      },
+                      {
+                        kind: 'text',
+                        label: (
+                          <span className={cx(openings === 0 && styles.absent)}>
+                            {openings === 0 ? 'no times offered' : `${openings} times offered`}
+                          </span>
+                        ),
+                      },
+                    ]}
+                  />
                 </li>
               );
             })}
@@ -413,14 +431,23 @@ function SystemState({ state }: { state: SimulatorState }) {
           <ul className={styles.list} data-testid="state-endpoints">
             {Object.values(account.external_endpoints).map((endpoint) => (
               <li key={endpoint.id}>
-                {endpoint.url} ·{' '}
-                {endpoint.auth
-                  ? `expects a ${endpoint.auth.header} header`
-                  : 'no credential required'}{' '}
-                ·{' '}
-                {endpoint.outage
-                  ? `currently answering ${endpoint.outage.status}`
-                  : `answers ${endpoint.ok_status} when the caller is accepted`}
+                <Meta
+                  items={[
+                    { kind: 'text', label: endpoint.url },
+                    {
+                      kind: 'text',
+                      label: endpoint.auth
+                        ? `expects a ${endpoint.auth.header} header`
+                        : 'no credential required',
+                    },
+                    {
+                      kind: 'text',
+                      label: endpoint.outage
+                        ? `currently answering ${endpoint.outage.status}`
+                        : `answers ${endpoint.ok_status} when the caller is accepted`,
+                    },
+                  ]}
+                />
               </li>
             ))}
           </ul>
@@ -490,15 +517,26 @@ function Logs({
                   <td>{words(record.kind)}</td>
                   <td>{String(record.data.node_label ?? record.node_id ?? '—')}</td>
                   <td className={styles.reason} data-testid={`log-reason-${record.id}`}>
-                    {record.reason ? words(record.reason) : detailOf(record)}
-                    {/*
-                      A failed call says what came back as well as what went wrong. 401 and 503
-                      are the difference between a credential to fix and a service to wait for,
-                      so the status belongs beside the reason rather than behind a click.
-                    */}
-                    {typeof record.data.status === 'number' && record.reason && (
-                      <span className={styles.detail}> · {String(record.data.status)}</span>
-                    )}
+                    <Meta
+                      items={[
+                        {
+                          kind: 'text',
+                          label: record.reason ? words(record.reason) : detailOf(record),
+                        },
+                        ...(typeof record.data.status === 'number' && record.reason
+                          ? [
+                              {
+                                kind: 'text' as const,
+                                label: (
+                                  <span className={styles.detail}>
+                                    {String(record.data.status)}
+                                  </span>
+                                ),
+                              },
+                            ]
+                          : []),
+                      ]}
+                    />
                   </td>
                 </tr>
               ))}

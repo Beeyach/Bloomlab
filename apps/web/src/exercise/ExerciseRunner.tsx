@@ -5,7 +5,7 @@ const CallRoom = lazy(() => import('../call/CallRoom'));
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 
-import { Button, Stack, Surface, cx } from '@bloomlab/design-system';
+import { ContentTitle, Meta, Button, Stack, Surface, cx } from '@bloomlab/design-system';
 import type { Exercise } from '@bloomlab/content-schema';
 import type { HintLevel } from '@bloomlab/mastery-engine';
 
@@ -62,8 +62,14 @@ function Brief({ exercise }: { exercise: Exercise }) {
       </h2>
       {(scenario ?? client) && (
         <p className={styles.context}>
-          {scenario?.title ?? client?.business_name}
-          {scenario && client ? ` · ${client.business_name}` : ''}
+          <Meta
+            items={[
+              { kind: 'text', label: scenario?.title ?? client?.business_name },
+              ...(scenario && client
+                ? [{ kind: 'chip' as const, label: client.business_name }]
+                : []),
+            ]}
+          />
         </p>
       )}
       <Markdown text={exercise.instructions} className={styles.instructions} />
@@ -198,7 +204,9 @@ export default function ExerciseRunner() {
     if (!flags.voice_calls)
       return (
         <article className={styles.screen}>
-          <h1 className={styles.title}>{exercise.title}</h1>
+          <h1 className={styles.title}>
+            <ContentTitle title={exercise.title} />
+          </h1>
           <p>Voice calls are not enabled in this environment yet.</p>
           <p>{exercise.call.objective}</p>
         </article>
@@ -251,20 +259,29 @@ export default function ExerciseRunner() {
     >
       <header className={styles.masthead}>
         <h1 id="exercise-title" className={styles.title}>
-          {exercise.title}
+          <ContentTitle title={exercise.title} />
         </h1>
         <p className={styles.stance}>{treatment.stance}</p>
-        <p className={styles.meta}>
-          {treatment.family} · {MODE_WORDS[exercise.mode]} · {exercise.estimated_minutes} min
-          {run === 'retrieval' && ' · Retrieval'}
-        </p>
+        <Meta
+          className={styles.meta}
+          items={[
+            { kind: 'text', label: treatment.family },
+            { kind: 'chip', label: MODE_WORDS[exercise.mode] },
+            { kind: 'text', label: `${exercise.estimated_minutes} min` },
+            ...(run === 'retrieval' ? [{ kind: 'badge' as const, label: 'Retrieval' }] : []),
+          ]}
+        />
         {skillId && (
           <p className={styles.for}>
             {run === 'retrieval' ? 'Reviewing ' : 'For '}
             <Link to={`/skills/${skillId}`} className={styles.inlineLink}>
               {skillTitle(skillId)}
             </Link>
-            {run === 'retrieval' && ' · a review challenge, not a new demonstration'}
+            {run === 'retrieval' && (
+              <Meta
+                items={[{ kind: 'text', label: 'A review challenge, not a new demonstration' }]}
+              />
+            )}
           </p>
         )}
       </header>

@@ -406,12 +406,16 @@ export default function SyncScreen() {
   return (
     <Stack as="section" gap={4} className={styles.screen} aria-labelledby="sync-title">
       <p className={styles.back}>
-        <Link to="/">← Bloomlab</Link>
+        <Link to="/" className={styles.link}>
+          ← Bloomlab
+        </Link>
       </p>
       <h1 id="sync-title" className={styles.title}>
         Sync across devices
       </h1>
-      <Link to="/settings/ai">AI settings</Link>
+      <Link to="/settings/ai" className={styles.link}>
+        AI settings
+      </Link>
       {!device && (
         <p className={styles.muted} role="status">
           Preparing this device…

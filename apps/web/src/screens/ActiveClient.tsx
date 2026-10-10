@@ -1,3 +1,4 @@
+import { Meta } from '@bloomlab/design-system';
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link } from 'react-router';
@@ -55,8 +56,13 @@ export function ActiveClient() {
             {client.business_name}
           </Link>
           <p className={styles.muted}>
-            Most recently worked with · {data.record.relationship.replaceAll('_', ' ')} · fictional
-            training client.
+            <Meta
+              items={[
+                { kind: 'text', label: 'Most recently worked with' },
+                { kind: 'text', label: data.record.relationship.replaceAll('_', ' ') },
+                { kind: 'text', label: 'fictional training client.' },
+              ]}
+            />
           </p>
         </>
       ) : (

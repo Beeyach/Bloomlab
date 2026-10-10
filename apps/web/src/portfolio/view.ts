@@ -93,11 +93,11 @@ export async function readPortfolio(database: BloomlabDatabase = db): Promise<Po
         const entries = [
           { title: exercise.title, text: a.response?.text ?? '' },
           ...(a.response?.sales?.turns ?? []).map((turn, i) => ({
-            title: `${exercise.title} · Your reply ${i + 1}`,
+            title: `Your reply ${i + 1} for ${exercise.title}`,
             text: turn.text,
           })),
           ...(a.response?.negotiation?.turns ?? []).map((turn, i) => ({
-            title: `${exercise.title} · Your negotiation reply ${i + 1}`,
+            title: `Your negotiation reply ${i + 1} for ${exercise.title}`,
             text: turn.action.text,
           })),
           ...(a.response?.pricing?.exclusions ?? []).map((text) => ({

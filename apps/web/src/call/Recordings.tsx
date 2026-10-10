@@ -1,3 +1,4 @@
+import { Meta } from '@bloomlab/design-system';
 import { useEffect, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import type { CallRecording } from '@bloomlab/shared';
@@ -6,6 +7,7 @@ import { callFetch, callRequest } from './client';
 import { CallAction } from './CallAction';
 import { updates } from '../pwa/updates';
 import { localRecordingsForAttempt } from './local';
+import styles from './call.module.css';
 
 /** Deletion lives outside immutable attempt history. Metadata is fetched from the media store. */
 export function Recordings({ attemptId, revision }: { attemptId: string; revision: string }) {
@@ -110,17 +112,25 @@ export function Recordings({ attemptId, revision }: { attemptId: string; revisio
           return (
             <li key={id}>
               <span>
-                Turn {(device?.turn ?? server?.turn ?? 0) + 1} ·{' '}
-                {device ? 'On this device' : 'No local audio'} ·{' '}
-                {server
-                  ? server.deleted_at
-                    ? 'Server audio deleted'
-                    : server.status === 'deleting'
-                      ? 'Server deletion pending'
-                      : server.retain
-                        ? 'Retained on server'
-                        : 'On server for recovery'
-                  : 'Server status not confirmed'}
+                <Meta
+                  className={styles.contextMeta}
+                  items={[
+                    { kind: 'text', label: `Turn ${(device?.turn ?? server?.turn ?? 0) + 1}` },
+                    { kind: 'text', label: device ? 'On this device' : 'No local audio' },
+                    {
+                      kind: 'text',
+                      label: server
+                        ? server.deleted_at
+                          ? 'Server audio deleted'
+                          : server.status === 'deleting'
+                            ? 'Server deletion pending'
+                            : server.retain
+                              ? 'Retained on server'
+                              : 'On server for recovery'
+                        : 'Server status not confirmed',
+                    },
+                  ]}
+                />
               </span>
               <div>
                 {available && (

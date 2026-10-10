@@ -11,7 +11,7 @@ import { db, type BloomlabDatabase } from './db';
 export type SyncStatus = 'offline' | 'saved-locally' | 'syncing' | 'synced';
 
 export const SYNC_STATUS_LABELS: Readonly<Record<SyncStatus, string>> = {
-  offline: 'Offline · saved on this device',
+  offline: 'Offline, saved on this device',
   'saved-locally': 'Saved on this device',
   syncing: 'Syncing…',
   synced: 'Synced',

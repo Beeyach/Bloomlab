@@ -1,0 +1,45 @@
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  color: var(--bl-color-text-soft);
+  font-size: 13px;
+}
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.icon {
+  display: inline-flex;
+  flex: none;
+}
+.icon svg {
+  width: 14px;
+  height: 14px;
+}
+.chip {
+  padding: 2px 8px;
+  border-radius: var(--bl-radius-full);
+  background: rgb(89 64 141 / 0.1);
+  color: #3e3954;
+  font-size: 12px;
+  font-weight: 600;
+}
+.badge {
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: var(--bl-color-ink);
+  color: var(--bl-color-snow);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.flow {
+  gap: 6px;
+}
+.arrow {
+  flex: none;
+  opacity: 0.6;
+}

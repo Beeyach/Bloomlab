@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 
 import { Button, Cluster, Field, Input, Surface } from '@bloomlab/design-system';
 
@@ -12,6 +12,7 @@ import styles from './DeviceIdentity.module.css';
  */
 export function DeviceIdentity() {
   const device = useDevice();
+  const { pathname } = useLocation();
   const [draft, setDraft] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -83,9 +84,11 @@ export function DeviceIdentity() {
       )}
       <p className={styles.muted}>
         Everything you do is saved on this device first and keeps working offline.{' '}
-        <Link to="/sync">
-          {device && isLinked(device) ? 'Connected devices' : 'Sync across devices'}
-        </Link>
+        {pathname !== '/sync' && (
+          <Link to="/sync" className={styles.link}>
+            {device && isLinked(device) ? 'Connected devices' : 'Sync across devices'}
+          </Link>
+        )}
       </p>
     </Surface>
   );

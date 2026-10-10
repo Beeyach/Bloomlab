@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getFeatureFlags } from '@bloomlab/shared';
 
@@ -84,6 +84,47 @@ async function openLab(path = '/workflow') {
 const node = (id: string) => document.querySelector(`[data-node="${id}"]`) as HTMLElement | null;
 
 describe('the Workflow Lab opens on the real account (WFL-001)', () => {
+  it('measures cards and keeps their neighbors stable through the first keyboard move and undo', async () => {
+    const rect = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        const height = this.dataset.measureNode === 'trigger' ? 140 : 121;
+        return {
+          x: 0,
+          y: 0,
+          top: 0,
+          left: 0,
+          right: 240,
+          bottom: height,
+          width: 240,
+          height,
+          toJSON: () => ({}),
+        };
+      });
+    try {
+      await openLab();
+      expect(node('n1')!.parentElement!.style.transform).toBe('translate(24px, 192px)');
+      const neighbor = node('n2')!.parentElement!.style.transform;
+      fireEvent.click(node('n1')!);
+      fireEvent.keyDown(screen.getByTestId('workflow-canvas'), { key: 'ArrowRight' });
+      expect(node('n1')!.parentElement!.style.transform).toBe('translate(40px, 192px)');
+      expect(node('n2')!.parentElement!.style.transform).toBe(neighbor);
+      fireEvent.click(screen.getByTestId('undo'));
+      expect(node('n1')!.parentElement!.style.transform).toBe('translate(24px, 192px)');
+      fireEvent.click(screen.getByTestId('redo'));
+      expect(node('n1')!.parentElement!.style.transform).toBe('translate(40px, 192px)');
+      expect(node('n2')!.parentElement!.style.transform).toBe(neighbor);
+    } finally {
+      rect.mockRestore();
+    }
+  });
+  it('offers date and time choices and opens palette help beside the step name', async () => {
+    await openLab();
+    expect(screen.getByLabelText('Starts at date')).toHaveAttribute('type', 'date');
+    expect(screen.getByLabelText('Starts at time')).toHaveAttribute('type', 'time');
+    fireEvent.click(screen.getByRole('button', { name: 'About Wait' }));
+    expect(screen.getByRole('dialog', { name: 'About Wait' })).toBeInTheDocument();
+  });
   it('shows the authored workflow as nodes, with real feature names and one config line each', async () => {
     await openLab();
     expect(node('trigger')).toHaveTextContent('Customer Booked Appointment');
@@ -153,7 +194,9 @@ describe('editing is drafts, saving is an event (WFL-002)', () => {
     fireEvent.click(screen.getByTestId('save'));
     await waitFor(() => expect(screen.queryByText('Unsaved draft')).toBeNull(), { timeout: 8000 });
     const history = screen.getByTestId('history');
-    expect(within(history).getByText(/Version 2 · updated · 4 steps/)).toBeInTheDocument();
+    const version = within(history).getByText('Version 2').closest('li')!;
+    expect(within(version).getByText('updated')).toBeInTheDocument();
+    expect(within(version).getByText('4 steps')).toBeInTheDocument();
   });
 });
 
@@ -174,10 +217,25 @@ describe('the default test fires the trigger and the engine decides (WFL-004)', 
     const triggerTest = within(test).getByTestId('trigger-test');
     expect(triggerTest).toHaveTextContent('Customer Booked Appointment');
     expect(triggerTest).toHaveTextContent('The engine decides whether the event matches');
+    fireEvent.change(within(test).getByLabelText('Starts at date'), {
+      target: { value: '2026-09-07' },
+    });
+    fireEvent.change(within(test).getByLabelText('Starts at time'), {
+      target: { value: '14:30:00' },
+    });
     fireEvent.click(within(test).getByTestId('run-test'));
     const outcome = await screen.findByTestId('trigger-outcome', {}, { timeout: 8000 });
     expect(outcome).toHaveAttribute('data-outcome', 'enrolled');
     expect(outcome).toHaveTextContent('Customer Booked Appointment fired and enrolled Maria');
+    const stored = await listRuns();
+    const reloaded = await loadRun(stored[0]!.id);
+    expect(
+      Object.values(reloaded!.state.account.appointments).some(
+        (appointment) =>
+          appointment.contact_id === 'maria' &&
+          appointment.starts_at === '2026-09-07T14:30:00-05:00',
+      ),
+    ).toBe(true);
 
     const timeline = screen.getByTestId('timeline');
     await waitFor(

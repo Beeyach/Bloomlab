@@ -128,7 +128,9 @@ describe('the runner is data-driven (EXR-001)', () => {
 describe('the challenge brief', () => {
   it('shows the authored objective, context and allowed features, and no gamification', async () => {
     await openRunner();
-    expect(screen.getByText(/Architecture decision · Practice · 10 min/)).toBeInTheDocument();
+    expect(screen.getByText('Architecture decision')).toBeInTheDocument();
+    expect(screen.getByText('Practice')).toBeInTheDocument();
+    expect(screen.getByText('10 min')).toBeInTheDocument();
     expect(screen.getByText(/Glowhaus's Meta lead form asks which treatment/)).toBeInTheDocument();
     const brief = screen.getByRole('heading', { level: 2, name: 'The job' }).parentElement!;
     expect(within(brief).getByText('Tags')).toBeInTheDocument();
@@ -576,7 +578,8 @@ describe('the result view (spec §158)', () => {
     await finalizeAttempt(decision, await answerDecision(), db);
     await openRunner();
     expect(await screen.findByRole('heading', { level: 2, name: 'Passed' })).toBeInTheDocument();
-    expect(screen.getByText(/100% · pass mark 70%/)).toBeInTheDocument();
+    expect(screen.getByText('100%')).toBeInTheDocument();
+    expect(screen.getByText('pass mark 70%')).toBeInTheDocument();
     expect(screen.getAllByText(/SYSTEM_DESIGN_RUBRIC_V1/).length).toBeGreaterThan(0);
     expect(screen.getByRole('heading', { level: 3, name: /Required checks/ })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 3, name: 'Assistance used' })).toBeInTheDocument();

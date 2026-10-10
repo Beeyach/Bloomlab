@@ -56,3 +56,14 @@ describe('DeviceIdentity (DATA-001 first interaction)', () => {
     expect(screen.getByText(device.label)).toBeInTheDocument();
   });
 });
+
+it('omits the redundant sync link on the Sync page', async () => {
+  await ensureDevice();
+  render(
+    <MemoryRouter initialEntries={['/sync']}>
+      <DeviceIdentity />
+    </MemoryRouter>,
+  );
+  expect(await screen.findByRole('button', { name: 'Rename' })).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Sync across devices' })).not.toBeInTheDocument();
+});

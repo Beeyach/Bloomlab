@@ -1,10 +1,21 @@
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { useSearchParams } from 'react-router';
 
-import { Button, Field, Select, Sheet, Stack, Surface, ToolPanel } from '@bloomlab/design-system';
+import {
+  Button,
+  Field,
+  Meta,
+  Popover,
+  Select,
+  Sheet,
+  Stack,
+  Surface,
+  ToolPanel,
+} from '@bloomlab/design-system';
 import { validateWorkflowGraph, type Workflow } from '@bloomlab/simulator-core';
 
 import { Canvas } from './Canvas';
+import { movePresentedNode } from './canvasLayout';
 import { NodeInspector, type InspectorEdits } from './NodeInspector';
 import { StepList } from './StepList';
 import { TestPanel } from './TestPanel';
@@ -364,7 +375,26 @@ export default function WorkflowLab() {
             data-palette={entry.id}
             data-runnable={entry.runnable}
           >
-            <span className={styles.paletteName}>{entry.name}</span>
+            <span className={`${styles.paletteName} ${styles.paletteHeading}`}>
+              {entry.name}
+              {(entry.approximation || entry.practised) && (
+                <Popover
+                  label={`About ${entry.name}`}
+                  trigger={(props) => (
+                    <button
+                      {...props}
+                      type="button"
+                      className={styles.paletteHelp}
+                      aria-label={`About ${entry.name}`}
+                    >
+                      i
+                    </button>
+                  )}
+                >
+                  <p>{entry.approximation ?? entry.practised}</p>
+                </Popover>
+              )}
+            </span>
             {entry.runnable ? (
               <Button
                 size="sm"
@@ -377,9 +407,6 @@ export default function WorkflowLab() {
               </Button>
             ) : (
               <span className={styles.practised}>Practised in GHL</span>
-            )}
-            {(entry.approximation || entry.practised) && (
-              <p className={styles.paletteNote}>{entry.approximation ?? entry.practised}</p>
             )}
           </li>
         ))}
@@ -433,11 +460,16 @@ export default function WorkflowLab() {
         <ol className={styles.history}>
           {versions.map((row) => (
             <li key={row.id}>
-              <span>
-                Version {String(row.data.version)} ·{' '}
-                {row.reason === 'workflow_created' ? 'created' : 'updated'} ·{' '}
-                {String(row.data.nodes)} steps
-              </span>
+              <Meta
+                items={[
+                  { kind: 'chip', label: `Version ${String(row.data.version)}` },
+                  {
+                    kind: 'text',
+                    label: row.reason === 'workflow_created' ? 'created' : 'updated',
+                  },
+                  { kind: 'text', label: `${String(row.data.nodes)} steps` },
+                ]}
+              />
               <span>{simulatorTime(row.at, run.state.clock.timezone)}</span>
             </li>
           ))}
@@ -502,7 +534,7 @@ export default function WorkflowLab() {
               </Button>
             </>
           ) : (
-            <Button size="sm" variant="ghost" onClick={() => setConfirmingReset(true)}>
+            <Button size="sm" variant="secondary" onClick={() => setConfirmingReset(true)}>
               Reset account
             </Button>
           )}
@@ -523,7 +555,7 @@ export default function WorkflowLab() {
               {runs.map((row, index) => (
                 <option key={row.run_id} value={row.run_id}>
                   Account {runs.length - index}
-                  {index === 0 ? ' (saved most recently)' : ''} · last saved{' '}
+                  {index === 0 ? ' (saved most recently)' : ''}, last saved{' '}
                   {savedAt(row.updated_at)}
                 </option>
               ))}
@@ -534,35 +566,38 @@ export default function WorkflowLab() {
 
       <div className={styles.workflowBar}>
         <Field label="Workflow" id="wf-choice" className={styles.workflowChoice}>
-          <Select
-            value={workflows.some((row) => row.id === draft.id) ? draft.id : '__new__'}
-            onChange={(event) => {
-              if (event.target.value === '__new__') {
-                const fresh = blankWorkflow();
-                setStored({
-                  key: workflowDraftKey(run.state.run_id, run.generation, fresh.id),
-                  version: 0,
-                  history: startHistory(fresh),
-                });
-                setWatchedId(null);
-                setParam({ workflow: fresh.id, node: 'trigger' });
-              } else {
-                setWatchedId(null);
-                setParam({ workflow: event.target.value, node: null });
-              }
-            }}
-          >
-            {workflows.map((row) => (
-              <option key={row.id} value={row.id}>
-                {row.name} · v{row.version}
+          <div className={styles.workflowPicker}>
+            <Select
+              value={workflows.some((row) => row.id === draft.id) ? draft.id : '__new__'}
+              onChange={(event) => {
+                if (event.target.value === '__new__') {
+                  const fresh = blankWorkflow();
+                  setStored({
+                    key: workflowDraftKey(run.state.run_id, run.generation, fresh.id),
+                    version: 0,
+                    history: startHistory(fresh),
+                  });
+                  setWatchedId(null);
+                  setParam({ workflow: fresh.id, node: 'trigger' });
+                } else {
+                  setWatchedId(null);
+                  setParam({ workflow: event.target.value, node: null });
+                }
+              }}
+            >
+              {workflows.map((row) => (
+                <option key={row.id} value={row.id}>
+                  {row.name}
+                </option>
+              ))}
+              <option value="__new__">
+                {workflows.some((row) => row.id === draft.id)
+                  ? 'New workflow…'
+                  : `${draft.name} (unsaved)`}
               </option>
-            ))}
-            <option value="__new__">
-              {workflows.some((row) => row.id === draft.id)
-                ? 'New workflow…'
-                : `${draft.name} (unsaved)`}
-            </option>
-          </Select>
+            </Select>
+            {saved && <Meta items={[{ kind: 'chip', label: `v${saved.version}` }]} />}
+          </div>
         </Field>
         <div className={styles.toolbar} role="toolbar" aria-label="Editing">
           <Button
@@ -717,8 +752,8 @@ export default function WorkflowLab() {
                   account={account}
                   selectedId={selectedId}
                   onSelect={(id) => setParam({ node: id })}
-                  onMove={(id, x, y) => {
-                    applyEdit((w) => graph.moveNode(w, id, x, y));
+                  onMove={(id, x, y, positions) => {
+                    applyEdit((w) => movePresentedNode(w, id, x, y, positions));
                     void playSound('snap');
                   }}
                   watched={watched}

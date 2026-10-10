@@ -64,7 +64,17 @@ try {
           : e;
         const small = controls.map(target).filter(e=>{const r=e.getBoundingClientRect(); return r.height < 43.5 || r.width < 43.5;}).map(name);
         const mono = [...document.querySelectorAll('main *')].filter(e => visible(e) && [...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()) && getComputedStyle(e).fontFamily.includes('monospace')).map(name);
-        const eyebrows = [...document.querySelectorAll('main *')].filter(e => visible(e) && [...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()) && getComputedStyle(e).textTransform === 'uppercase' && parseFloat(getComputedStyle(e).fontSize) < 13).map(name);
+        // The user's fix-round explicitly specifies this one 11.5px/600 campaign eyebrow.
+        // Retain the generic prohibition and verify the exact requested presentation exception.
+        const requestedEyebrow = e => e.matches('[data-testid="campaign-eyebrow"]') && e.parentElement.querySelector('#continue-title') && getComputedStyle(e).fontSize === '11.5px' && getComputedStyle(e).fontWeight === '600' && getComputedStyle(e).color === 'rgb(62, 57, 84)';
+        const eyebrows = [...document.querySelectorAll('main *')].filter(e => visible(e) && [...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()) && getComputedStyle(e).textTransform === 'uppercase' && parseFloat(getComputedStyle(e).fontSize) < 13 && !requestedEyebrow(e)).map(name);
+        const territoryAlignment = [...document.querySelectorAll('main button[data-territory]')].map(e => {
+          const material=e.querySelector('[data-variant]'), progress=e.querySelector('[class*="progress"]'), inner=progress?.parentElement;
+          if (!material || !progress || !inner) return { territory:e.dataset.territory, passed:false };
+          const card=e.getBoundingClientRect(), surface=material.getBoundingClientRect(), footer=progress.getBoundingClientRect();
+          return { territory:e.dataset.territory, passed:Math.abs(card.height-surface.height)<1 && Math.abs(card.y-surface.y)<1 && Math.abs(card.bottom-footer.bottom-parseFloat(getComputedStyle(inner).paddingBottom))<1 };
+        });
+        const factSeparators = [...document.querySelectorAll('main *')].filter(e => visible(e) && !e.matches('script,style,option')).flatMap(e=>[...e.childNodes].filter(n=>n.nodeType===3&&/[·•]|\\s\\|\\s/.test(n.textContent)).map(n=>n.textContent.trim().slice(0,150)));
         const headings = [...document.querySelectorAll('main h1, main h2, main h3')].filter(visible);
         const painted = [...document.querySelectorAll('main *')].filter(visible);
         const gradientText = painted.filter(e => {
@@ -92,6 +102,8 @@ try {
           smallFont: fields.filter(e=>!e.matches('[type=radio],[type=checkbox]')&&parseFloat(getComputedStyle(e).fontSize)<16).map(name),
           mono,
           eyebrows,
+          territoryAlignment,
+          factSeparators,
           controls: controls.length,
           density: { words, headings: headings.length, sections: surfaces.length, controls: controls.length, unitsPer100kPx: Number((((words + headings.length*8 + controls.length*12) / area)*100000).toFixed(2)) },
           prohibitedSignals: {
@@ -113,6 +125,9 @@ try {
       if (width < 768 && measured.smallFont.length) failures.push('input text below 16 px');
       if (measured.mono.length) failures.push('user-facing monospace');
       if (measured.eyebrows.length) failures.push('small uppercase eyebrow');
+      if (measured.territoryAlignment.some((card) => !card.passed))
+        failures.push('territory surface or footer alignment');
+      if (measured.factSeparators.length) failures.push('visible fact separator');
       for (const [signal, value] of Object.entries(measured.prohibitedSignals))
         if (Array.isArray(value) ? value.length > 0 : value)
           failures.push(`§70 prohibited signal: ${signal}`);

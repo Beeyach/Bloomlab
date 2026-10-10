@@ -66,5 +66,10 @@ describe('Payments Lab state boundaries', () => {
     expect(screen.getByText(/No Lab prices yet/)).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('That invoice is already paid');
     expect(screen.getByText(/No card, provider or real charge/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Workflow Lab' })).toHaveAttribute(
+      'href',
+      '/workflow?scenario=SC-glowhaus-crm',
+    );
+    expect(document.querySelector('header')?.textContent).not.toMatch(/[·•]| \| /);
   });
 });

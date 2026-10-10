@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -55,7 +55,10 @@ async function openLab(path = '/calendar') {
 /** Saves, and waits for the account to hold the new version — not merely for the button. */
 async function saveAndWait() {
   fireEvent.click(screen.getByTestId('calendar-save'));
-  await screen.findByText(/Saved · version \d+/, {}, { timeout: 8000 });
+  await waitFor(
+    () => expect(screen.getByTestId('calendar-save-state')).toHaveTextContent(/Saved\s*v\d+/),
+    { timeout: 8000 },
+  );
 }
 
 const slotTimes = () =>
@@ -67,12 +70,42 @@ describe('the Lab opens on the shared account', () => {
   it('shows the scenario’s calendar, its schedule and what is already booked', async () => {
     await openLab();
     expect(screen.getByTestId('calendar-picker')).toHaveValue('consultation');
-    expect(screen.getByTestId('calendar-summary').textContent).toContain('30 minutes');
-    expect(screen.getByTestId('calendar-summary').textContent).toContain('no buffer');
+    expect(screen.getByTestId('calendar-summary').textContent).toContain('30 min');
+    expect(screen.getByTestId('calendar-summary').textContent).toContain('No buffer');
     // Nadia and Marcus are already in the diary, drawn on the day they are on.
     expect(screen.getByTestId('appointment-appt-nadia')).not.toBeNull();
     expect(screen.getByTestId('appointment-appt-marcus')).not.toBeNull();
     expect(slotTimes()).toContain('2026-09-08T09:00:00-05:00');
+  });
+
+  it('presents separate schedule facts, ordered days and clearly labelled account actions', async () => {
+    await openLab();
+    const summary = screen.getByTestId('calendar-summary');
+    for (const label of [
+      '30 min',
+      'Every 30 min',
+      'No buffer',
+      'Bookable now',
+      'America/Chicago',
+    ]) {
+      expect(within(summary).getByText(label)).toBeInTheDocument();
+    }
+    expect(summary.textContent).not.toMatch(/[·•]| \| /);
+    const days = within(screen.getByTestId('calendar-week')).getAllByRole('heading');
+    expect(days.map((day) => day.textContent)).toEqual([
+      'Tuesday8 Sep',
+      'Wednesday9 Sep',
+      'Thursday10 Sep',
+      'Friday11 Sep',
+      'Saturday12 Sep',
+      'Sunday13 Sep',
+      'Monday14 Sep',
+    ]);
+    expect(screen.getByRole('button', { name: 'Reset account' })).toBeInTheDocument();
+    expect(within(screen.getByTestId('calendar-save-state')).getByText('v1')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('slot-2026-09-10T13:00:00-05:00'));
+    expect(screen.getByTestId('booking-what').textContent).not.toMatch(/[·•]| \| /);
+    expect(screen.getByTestId('appointments').textContent).not.toMatch(/[·•]| \| /);
   });
 
   it('says nothing about points, stars or levels', async () => {

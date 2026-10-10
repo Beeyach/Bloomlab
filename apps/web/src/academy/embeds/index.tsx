@@ -1,3 +1,4 @@
+import { ContentTitle, Meta, IconClock } from '@bloomlab/design-system';
 import { useId, useMemo, type ReactNode } from 'react';
 import { Link } from 'react-router';
 
@@ -79,10 +80,17 @@ export function Feature({ id }: { id: string }) {
       <h3 id={headingId} className={styles.featureName}>
         {feature.official_name}
       </h3>
-      <p className={styles.featureMeta}>
-        <code className={styles.mono}>{feature.id}</code> · {feature.area} ·{' '}
-        {FIDELITY_WORDS[feature.simulation_fidelity] ?? feature.simulation_fidelity}
-      </p>
+      <Meta
+        className={styles.featureMeta}
+        items={[
+          { kind: 'text', label: <code className={styles.mono}>{feature.id}</code> },
+          { kind: 'chip', label: feature.area },
+          {
+            kind: 'text',
+            label: FIDELITY_WORDS[feature.simulation_fidelity] ?? feature.simulation_fidelity,
+          },
+        ]}
+      />
       {feature.approximation_note && (
         <p className={styles.featureText}>{feature.approximation_note}</p>
       )}
@@ -93,17 +101,25 @@ export function Feature({ id }: { id: string }) {
           ))}
         </ul>
       )}
-      <p className={styles.featureMeta}>
-        Verified {feature.last_verified} ·{' '}
-        <a
-          href={feature.source_url}
-          target="_blank"
-          rel="noreferrer"
-          className={styles.featureLink}
-        >
-          Official documentation
-        </a>
-      </p>
+      <Meta
+        className={styles.featureMeta}
+        items={[
+          { kind: 'text', label: `Verified ${feature.last_verified}` },
+          {
+            kind: 'text',
+            label: (
+              <a
+                href={feature.source_url}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.featureLink}
+              >
+                Official documentation
+              </a>
+            ),
+          },
+        ]}
+      />
     </aside>
   );
 }
@@ -115,12 +131,17 @@ export function Exercise({ id }: { id: string }) {
   if (!exercise) return null;
   return (
     <aside className={styles.practice} aria-labelledby={headingId} data-embed="exercise">
-      <p className={styles.embedLabel}>
-        Practice · {EXERCISE_LABELS[exercise.type as ExerciseType]} · {exercise.estimated_minutes}{' '}
-        min · {modeWord(exercise.mode)}
-      </p>
+      <Meta
+        className={styles.embedLabel}
+        items={[
+          { kind: 'chip', label: 'Practice' },
+          { kind: 'text', label: EXERCISE_LABELS[exercise.type as ExerciseType] },
+          { kind: 'text', icon: <IconClock />, label: `${exercise.estimated_minutes} min` },
+          { kind: 'badge', label: modeWord(exercise.mode) },
+        ]}
+      />
       <h3 id={headingId} className={styles.practiceTitle}>
-        {exercise.title}
+        <ContentTitle title={exercise.title} />
       </h3>
       <p className={styles.practiceText}>
         Finishing this unit records that you read it. The exercise is where the capability gets

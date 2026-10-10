@@ -103,3 +103,7 @@ export {
   type AudioState,
   type CallParticipantProps,
 } from './semantic/CallParticipant';
+export { Meta, type MetaItem, type MetaProps } from './semantic/Meta';
+export { ProgressMeter } from './semantic/ProgressMeter';
+
+export { ContentTitle } from './semantic/ContentTitle';

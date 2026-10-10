@@ -73,11 +73,19 @@ describe('Command Center (DES-010, PRD-012)', () => {
     const object = (await screen.findByRole('heading', { level: 2, name: 'Funnel math' })).closest(
       'section',
     ) as HTMLElement;
-    expect(object).toHaveTextContent('Field Ready campaign · Gate 1 · Funnel Thinking');
+    expect(within(object).getByText('Field Ready campaign')).toBeInTheDocument();
+    expect(object.textContent).not.toMatch(/[·|•]/);
     expect(object).toHaveTextContent('Not started.');
-    expect(object).toHaveTextContent('Next · Read');
-    expect(object).toHaveTextContent('Gate 1: 0 of 2 capabilities demonstrated');
-    expect(object).toHaveTextContent('0 capabilities demonstrated across the map');
+    expect(within(object).getByText('Next')).toBeInTheDocument();
+    expect(within(object).getByText('Read')).toBeInTheDocument();
+    expect(within(object).getByRole('progressbar', { name: 'Gate 1' })).toHaveAttribute(
+      'aria-valuemax',
+      '2',
+    );
+    expect(within(object).getByRole('progressbar', { name: 'Whole map' })).toHaveAttribute(
+      'aria-valuenow',
+      '0',
+    );
     expect(within(object).getByRole('button', { name: 'Continue' })).toBeInTheDocument();
 
     expect(screen.getByRole('heading', { name: 'Due for retrieval' })).toBeInTheDocument();
@@ -109,8 +117,14 @@ describe('Command Center (DES-010, PRD-012)', () => {
     const object = (
       await screen.findByRole('heading', { level: 2, name: 'Bottleneck diagnosis' })
     ).closest('section') as HTMLElement;
-    expect(object).toHaveTextContent('Gate 1: 1 of 2 capabilities demonstrated');
-    expect(object).toHaveTextContent('1 capability demonstrated across the map');
+    expect(within(object).getByRole('progressbar', { name: 'Gate 1' })).toHaveAttribute(
+      'aria-valuenow',
+      '1',
+    );
+    expect(within(object).getByRole('progressbar', { name: 'Whole map' })).toHaveAttribute(
+      'aria-valuenow',
+      '1',
+    );
 
     const repair = screen.getByRole('heading', { name: 'Needs another run' })
       .parentElement as HTMLElement;
@@ -171,17 +185,23 @@ describe('Campaign (PRD-007)', () => {
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Field Ready' }),
     ).toBeInTheDocument();
-    // The campaign's kind and pace read as one metadata line under the title; there is no
-    // eyebrow repeating the heading above it (DES-021).
-    expect(
-      screen.getByText('Campaign · Suggested pace: ~30 days at 3–5 hours/day'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('About 30 days')).toBeInTheDocument();
+    expect(screen.getByText('3 to 5 hours a day')).toBeInTheDocument();
     expect(screen.queryByText('Field Ready campaign')).not.toBeInTheDocument();
 
     const current = await screen.findByRole('listitem', { current: 'step' });
     expect(current).toHaveTextContent('Funnel Thinking');
     expect(within(current).getByText('Open')).toBeInTheDocument();
-    expect(current).toHaveTextContent('0 of 2 capabilities demonstrated');
+    expect(within(current).getByRole('heading', { name: 'Funnel Thinking' })).toBeInTheDocument();
+    expect(within(current).getByRole('progressbar', { name: 'Gate 1' })).toHaveAttribute(
+      'aria-valuenow',
+      '0',
+    );
+    expect(within(current).getByRole('progressbar', { name: 'Gate 1' })).toHaveAttribute(
+      'aria-valuemax',
+      '2',
+    );
+    expect(current).not.toHaveTextContent('·');
     expect(current).toHaveTextContent('2 independent demonstrations per capability');
     expect(within(current).getByRole('link', { name: /Funnel math/ })).toHaveAttribute(
       'href',
@@ -271,7 +291,9 @@ describe('Skill Map (DES-011, PRD-013)', () => {
     const evidence = within(dialog).getByRole('heading', { name: 'Evidence' })
       .parentElement as HTMLElement;
     expect(within(evidence).getByText('Demonstrated')).toBeInTheDocument();
-    expect(evidence).toHaveTextContent('exercise, no hints · 4 days ago');
+    expect(within(evidence).getByText('exercise, no hints')).toBeInTheDocument();
+    expect(within(evidence).getByText('4 days ago')).toBeInTheDocument();
+    expect(evidence).not.toHaveTextContent('·');
     expect(within(dialog).getByRole('heading', { name: 'Opens' })).toBeInTheDocument();
     expect(within(dialog).getByRole('link', { name: /Bottleneck diagnosis/ })).toBeInTheDocument();
 

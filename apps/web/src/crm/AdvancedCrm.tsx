@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { advancedCrm, segmentContacts, type SimulatorEventType } from '@bloomlab/simulator-core';
-import { Button, Field, Input, Select } from '@bloomlab/design-system';
+import { ContentTitle, Meta, Button, Field, Input, Select } from '@bloomlab/design-system';
 import { runCommand } from './commands';
 import type { CrmSetupProps } from './CrmSetup';
 import styles from './crm.module.css';
@@ -182,12 +182,20 @@ export function AdvancedCrm({ run, apply, area }: Props) {
           const members = segmentContacts(account, list);
           return (
             <section key={list.id}>
-              <h3>
-                {list.name} · {members.length} of {contacts.length} contacts
-              </h3>
-              <p>
-                {list.id} · Match {list.match}
-              </p>
+              <h3>{list.name}</h3>
+              <Meta
+                items={[
+                  { kind: 'text', label: `${members.length} of ${contacts.length} contacts` },
+                ]}
+              />
+              <div>
+                <Meta
+                  items={[
+                    { kind: 'text', label: list.id },
+                    { kind: 'text', label: `Match ${list.match}` },
+                  ]}
+                />
+              </div>
               <ul>
                 {list.rules.map((rule, i) => (
                   <li key={i}>
@@ -364,7 +372,13 @@ export function AdvancedCrm({ run, apply, area }: Props) {
           <ul>
             {schema.fields.map((field) => (
               <li key={field.key}>
-                {field.key} · {field.type} · {field.required ? 'required' : 'optional'}
+                <Meta
+                  items={[
+                    { kind: 'text', label: field.key },
+                    { kind: 'chip', label: field.type },
+                    { kind: 'text', label: field.required ? 'required' : 'optional' },
+                  ]}
+                />
               </li>
             ))}
           </ul>
@@ -373,9 +387,14 @@ export function AdvancedCrm({ run, apply, area }: Props) {
             .map((row) => (
               <section key={row.id}>
                 <h3>{row.name}</h3>
-                <p>
-                  {row.id} · Updated at simulated time {row.updated_at}
-                </p>
+                <div>
+                  <Meta
+                    items={[
+                      { kind: 'text', label: row.id },
+                      { kind: 'text', label: `Updated at simulated time ${row.updated_at}` },
+                    ]}
+                  />
+                </div>
                 <dl>
                   {Object.entries(row.values).map(([key, value]) => (
                     <div key={key}>
@@ -508,8 +527,20 @@ export function AdvancedCrm({ run, apply, area }: Props) {
               .filter((r) => r.schema_id === schema.id)
               .map((r) => (
                 <li key={r.id}>
-                  {r.id}: {r.on}, {r.field} is {String(r.equals)} → notify{' '}
-                  {account.users[r.recipient]?.name} · {r.enabled ? 'enabled' : 'disabled'}
+                  <Meta
+                    variant="flow"
+                    items={[
+                      {
+                        kind: 'text',
+                        label: `${r.id}: ${r.on}, ${r.field} is ${String(r.equals)}`,
+                      },
+                      {
+                        kind: 'text',
+                        label: `Notify ${account.users[r.recipient]?.name ?? r.recipient}`,
+                      },
+                      { kind: 'badge', label: r.enabled ? 'enabled' : 'disabled' },
+                    ]}
+                  />
                 </li>
               ))}
           </ul>
@@ -523,7 +554,13 @@ export function AdvancedCrm({ run, apply, area }: Props) {
               )
               .map((e) => (
                 <li key={e.id}>
-                  {e.at}: {String(e.payload.message)} · recorded, not delivered
+                  <Meta
+                    items={[
+                      { kind: 'text', label: e.at },
+                      { kind: 'text', label: <ContentTitle title={String(e.payload.message)} /> },
+                      { kind: 'text', label: 'recorded, not delivered' },
+                    ]}
+                  />
                 </li>
               ))}
           </ul>

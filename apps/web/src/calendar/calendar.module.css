@@ -188,6 +188,7 @@
 
 .workspace {
   display: grid;
+  min-width: 0;
   gap: var(--bl-space-3);
 }
 
@@ -205,23 +206,25 @@
   color: var(--bl-color-text-soft);
 }
 
+.weekScroll {
+  min-width: 0;
+  overflow-x: auto;
+  padding: 2px;
+}
+
 .week {
   display: grid;
-  gap: var(--bl-space-3);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  min-width: 76rem;
+  gap: var(--bl-space-2);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-@media (min-width: 1024px) {
-  .week {
-    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-    gap: var(--bl-space-2);
-  }
-}
-
 .day {
   display: grid;
+  min-width: 0;
   gap: var(--bl-space-2);
   align-content: start;
   padding-top: var(--bl-space-2);
@@ -244,41 +247,68 @@
 
 .slots,
 .booked {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  min-width: 0;
   gap: var(--bl-space-1);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-@media (min-width: 1024px) {
-  .slots,
-  .booked {
-    display: grid;
-  }
+.slots > li,
+.booked > li {
+  min-width: 0;
 }
 
 .slot {
   display: grid;
-  gap: 0;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   min-height: 44px;
   width: 100%;
+  padding: 8px 10px;
   text-align: left;
 }
 
+.slotContent {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+}
+
 .slotTime {
+  flex: none;
+  font-size: 15px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
 .slotHost {
-  font-size: var(--bl-font-size-xs);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
   font-weight: var(--bl-font-weight-regular);
-  opacity: 0.75;
+  color: #5d5873;
+}
+
+.slot[aria-pressed='true'] .slotHost {
+  color: inherit;
+}
+
+.slotDetail {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 12.5px;
 }
 
 .bookedRow {
   display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
   align-items: center;
   gap: var(--bl-space-2);
   width: 100%;
@@ -293,6 +323,10 @@
   font-size: var(--bl-font-size-sm);
   text-align: left;
   cursor: pointer;
+}
+
+.bookedStatus {
+  flex-basis: 100%;
 }
 
 .bookedRow[aria-pressed='true'] {
@@ -330,7 +364,10 @@
 
 .groupTabs {
   display: flex;
-  flex-wrap: wrap;
+  min-width: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  white-space: nowrap;
   gap: var(--bl-space-1);
   margin-bottom: var(--bl-space-3);
   padding-bottom: var(--bl-space-2);
@@ -338,6 +375,7 @@
 }
 
 .groupTab {
+  flex: none;
   min-height: 44px;
   padding: var(--bl-space-1) var(--bl-space-2);
   border: 0;
@@ -345,7 +383,7 @@
   background: none;
   color: var(--bl-color-text-soft);
   font: inherit;
-  font-size: var(--bl-font-size-sm);
+  font-size: 13px;
   cursor: pointer;
 }
 
@@ -440,6 +478,8 @@
 
 .appointmentHead {
   display: flex;
+  min-width: 0;
+  width: 100%;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--bl-space-2);

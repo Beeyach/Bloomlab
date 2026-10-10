@@ -5,6 +5,7 @@ import {
   ExecutionEvent,
   IconPause,
   IconPlay,
+  Meta,
   ToolPanel,
   usePrefersReducedMotion,
 } from '@bloomlab/design-system';
@@ -247,7 +248,13 @@ function TimelineInner({
                   key={row.id}
                   time={row.time}
                   name={row.name}
-                  detail={row.detail}
+                  detail={
+                    row.detail ? (
+                      <Meta
+                        items={row.detail.split('\n').map((label) => ({ kind: 'text', label }))}
+                      />
+                    ) : undefined
+                  }
                   status={row.status}
                   branch={row.branch}
                   className={styles.timelineRow}
@@ -350,9 +357,14 @@ const RunListItem = memo(function RunListItem({
         data-run={id}
       >
         <span>{contact}</span>
-        <span className={styles.small}>
-          {RUN_STATUS_WORDS[status]} · v{version} · {simulatorTime(enrolledAt, timezone)}
-        </span>
+        <Meta
+          className={styles.small}
+          items={[
+            { kind: 'text', label: RUN_STATUS_WORDS[status] },
+            { kind: 'chip', label: `v${version}` },
+            { kind: 'text', label: simulatorTime(enrolledAt, timezone) },
+          ]}
+        />
       </button>
     </li>
   );

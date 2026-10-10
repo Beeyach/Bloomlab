@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Button, Field, Input } from '@bloomlab/design-system';
+import { Meta, Button, Field, Input } from '@bloomlab/design-system';
 import {
   deleteScenarioAttachment,
   downloadScenarioAttachment,
@@ -79,7 +79,12 @@ export function ScenarioAttachments({ scenarioId }: { scenarioId: string }) {
             <ul className={styles.list}>
               {assets.map((asset) => (
                 <li key={asset.attachment_id}>
-                  {asset.name} · {Math.ceil(asset.byte_length / 1024)} KB{' '}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: asset.name },
+                      { kind: 'text', label: `${Math.ceil(asset.byte_length / 1024)} KB` },
+                    ]}
+                  />
                   <Button
                     size="sm"
                     variant="ghost"

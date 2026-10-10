@@ -1,4 +1,13 @@
-import { Button, StatusPill } from '@bloomlab/design-system';
+import {
+  Button,
+  Meta,
+  IconCheck,
+  IconClock,
+  IconGlobe,
+  IconPause,
+  IconRepeat,
+  StatusPill,
+} from '@bloomlab/design-system';
 import type { AccountState, Calendar, Slot } from '@bloomlab/simulator-core';
 
 import { HOST_REASONS, STATUS_TONE, APPOINTMENT_STATUS_LABELS } from './words';
@@ -54,93 +63,132 @@ export function Workspace({
   const total = days.reduce((count, day) => count + day.slots.length, 0);
   return (
     <div className={styles.workspace}>
-      <p className={styles.summary} data-testid="calendar-summary">
-        {duration(calendar.duration_minutes)} · every {calendar.slot_interval_minutes} minutes ·{' '}
-        {calendar.pre_buffer_minutes === 0 && calendar.post_buffer_minutes === 0
-          ? 'no buffer'
-          : `${calendar.pre_buffer_minutes} before, ${calendar.post_buffer_minutes} after`}{' '}
-        ·{' '}
-        {calendar.minimum_notice_minutes === 0
-          ? 'bookable now'
-          : `${duration(calendar.minimum_notice_minutes)} notice`}{' '}
-        · {zone}
-      </p>
+      <div className={styles.summary} data-testid="calendar-summary">
+        <Meta
+          items={[
+            { kind: 'chip', icon: <IconClock />, label: `${calendar.duration_minutes} min` },
+            {
+              kind: 'chip',
+              icon: <IconRepeat />,
+              label: `Every ${calendar.slot_interval_minutes} min`,
+            },
+            {
+              kind: 'chip',
+              icon: <IconPause />,
+              label:
+                calendar.pre_buffer_minutes === 0 && calendar.post_buffer_minutes === 0
+                  ? 'No buffer'
+                  : `${calendar.pre_buffer_minutes} before, ${calendar.post_buffer_minutes} after`,
+            },
+            {
+              kind: 'chip',
+              icon: <IconCheck />,
+              label:
+                calendar.minimum_notice_minutes === 0
+                  ? 'Bookable now'
+                  : `${duration(calendar.minimum_notice_minutes)} notice`,
+            },
+            { kind: 'chip', icon: <IconGlobe />, label: zone },
+          ]}
+        />
+      </div>
       {total === 0 && (
         <p className={styles.empty} data-testid="calendar-no-slots">
           Nothing is bookable in the next {days.length} days. The working hours, the duration, the
           buffers, the minimum notice or the team are what decide that.
         </p>
       )}
-      <ol className={styles.week} data-testid="calendar-week">
-        {days.map((day) => (
-          <li className={styles.day} key={day.date}>
-            <h3 className={styles.dayHead}>
-              <span className={styles.dayName}>{dayName(day.weekday)}</span>
-              <span className={styles.dayDate}>{dayLabel(day.date)}</span>
-            </h3>
-            {day.appointments.length > 0 && (
-              <ul className={styles.booked} data-testid={`booked-${day.date}`}>
-                {day.appointments.map((appointment) => (
-                  <li key={appointment.id}>
-                    <button
-                      type="button"
-                      className={styles.bookedRow}
-                      aria-pressed={selectedAppointment === appointment.id}
-                      onClick={() => onSelectAppointment(appointment.id)}
-                      data-testid={`appointment-${appointment.id}`}
-                    >
-                      <span className={styles.bookedTime}>
-                        {clockTime(appointment.starts_at, zone)}
-                      </span>
-                      <span className={styles.bookedWho}>
-                        {account.contacts[appointment.contact_id]?.first_name ??
-                          appointment.contact_id}
-                      </span>
-                      <StatusPill
-                        label={APPOINTMENT_STATUS_LABELS[appointment.status] ?? appointment.status}
-                        tone={tone(appointment.status)}
-                      />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {day.slots.length === 0 ? (
-              <p className={styles.dayEmpty}>No openings</p>
-            ) : (
-              <ul className={styles.slots}>
-                {day.slots.map((slot) => {
-                  const picked = chosen?.starts_at === slot.starts_at;
-                  return (
-                    <li key={slot.starts_at}>
-                      <Button
-                        variant={picked ? 'primary' : 'secondary'}
-                        className={styles.slot}
-                        aria-pressed={picked}
-                        onClick={() => onChoose(slot)}
-                        data-testid={`slot-${slot.starts_at}`}
+      <div className={styles.weekScroll} role="region" aria-label="Seven-day schedule" tabIndex={0}>
+        <ol className={styles.week} data-testid="calendar-week">
+          {days.map((day) => (
+            <li className={styles.day} key={day.date}>
+              <h3 className={styles.dayHead}>
+                <span className={styles.dayName}>{dayName(day.weekday)}</span>
+                <span className={styles.dayDate}>{dayLabel(day.date)}</span>
+              </h3>
+              {day.appointments.length > 0 && (
+                <ul className={styles.booked} data-testid={`booked-${day.date}`}>
+                  {day.appointments.map((appointment) => (
+                    <li key={appointment.id}>
+                      <button
+                        type="button"
+                        className={styles.bookedRow}
+                        aria-pressed={selectedAppointment === appointment.id}
+                        onClick={() => onSelectAppointment(appointment.id)}
+                        data-testid={`appointment-${appointment.id}`}
                       >
-                        <span className={styles.slotTime}>{clockTime(slot.starts_at, zone)}</span>
-                        {slot.seats_remaining !== undefined && (
-                          <span>{slot.seats_remaining} seats left</span>
-                        )}
-                        {slot.resource_id && (
-                          <span>{account.resources?.[slot.resource_id]?.name}</span>
-                        )}
-                        <span className={styles.slotHost}>
-                          {slot.host_id
-                            ? (account.users[slot.host_id]?.name ?? slot.host_id)
-                            : 'No host'}
+                        <span className={styles.bookedTime}>
+                          {clockTime(appointment.starts_at, zone)}
                         </span>
-                      </Button>
+                        <span className={styles.bookedWho}>
+                          {account.contacts[appointment.contact_id]?.first_name ??
+                            appointment.contact_id}
+                        </span>
+                        <span className={styles.bookedStatus}>
+                          <StatusPill
+                            label={
+                              APPOINTMENT_STATUS_LABELS[appointment.status] ?? appointment.status
+                            }
+                            tone={tone(appointment.status)}
+                          />
+                        </span>
+                      </button>
                     </li>
-                  );
-                })}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ol>
+                  ))}
+                </ul>
+              )}
+              {day.slots.length === 0 ? (
+                <p className={styles.dayEmpty}>No openings</p>
+              ) : (
+                <ul className={styles.slots}>
+                  {day.slots.map((slot) => {
+                    const picked = chosen?.starts_at === slot.starts_at;
+                    return (
+                      <li key={slot.starts_at}>
+                        <Button
+                          variant={picked ? 'primary' : 'secondary'}
+                          className={styles.slot}
+                          aria-pressed={picked}
+                          onClick={() => onChoose(slot)}
+                          data-testid={`slot-${slot.starts_at}`}
+                        >
+                          <span className={styles.slotContent}>
+                            <span className={styles.slotTime}>
+                              {clockTime(slot.starts_at, zone)}
+                            </span>
+                            <span
+                              className={styles.slotHost}
+                              title={
+                                slot.host_id
+                                  ? (account.users[slot.host_id]?.name ?? slot.host_id)
+                                  : 'No host'
+                              }
+                            >
+                              {slot.host_id
+                                ? (account.users[slot.host_id]?.name ?? slot.host_id)
+                                : 'No host'}
+                            </span>
+                          </span>
+                          {slot.seats_remaining !== undefined && (
+                            <span className={styles.slotDetail}>
+                              {slot.seats_remaining} seats left
+                            </span>
+                          )}
+                          {slot.resource_id && (
+                            <span className={styles.slotDetail}>
+                              {account.resources?.[slot.resource_id]?.name}
+                            </span>
+                          )}
+                        </Button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ol>
+      </div>
       {chosen && (
         <p className={styles.chosen} data-testid="chosen-slot">
           {clockTime(chosen.starts_at, zone)} to {clockTime(chosen.ends_at, zone)},{' '}

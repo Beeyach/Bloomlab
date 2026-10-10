@@ -56,7 +56,7 @@ function Screenshot({
         if (active) setUrl(objectUrl);
       }
       if (local?.status === 'local') {
-        setStatus('Saved on this device · ready to upload');
+        setStatus('Saved on this device and ready to upload.');
         return;
       }
       try {
@@ -79,7 +79,7 @@ function Screenshot({
           if (active) setUrl(objectUrl);
         }
       } catch {
-        if (active) setStatus('Remote status unavailable · retry when connected');
+        if (active) setStatus('Remote status is unavailable. Retry when connected.');
       }
     };
     void load();

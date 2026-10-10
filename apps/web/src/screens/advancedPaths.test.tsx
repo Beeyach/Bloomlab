@@ -89,3 +89,16 @@ it('shares one evidence record across paths without earning Field Ready or inven
     'does not mark Field Ready complete',
   );
 });
+
+it('renders authored placement titles as separate facts while preserving their exercise destinations', async () => {
+  await ensureDevice();
+  show();
+  await screen.findByText(/0 of 12 gates passed/);
+  const placements = content.exercises.filter((exercise) => exercise.placement_area);
+  expect(placements.length).toBeGreaterThan(0);
+  for (const exercise of placements) {
+    const link = document.querySelector(`a[href="/exercise/${exercise.id}"]`)!;
+    expect(link).toHaveAccessibleName(exercise.title.replace(/\s+[·|•]\s+/g, ' '));
+    expect(link.textContent).not.toMatch(/[·•]| \| /);
+  }
+});

@@ -47,11 +47,11 @@ export function ContactRow({
         aria-label={tags.length ? `Tags: ${tags.join(', ')}` : 'No tags'}
       >
         {shown.map((tag) => (
-          <span key={tag} className={styles.tag}>
+          <span key={tag} className={styles.tag} title={tag}>
             {tag}
           </span>
         ))}
-        {more > 0 && <span className={styles.tag}>+{more}</span>}
+        {more > 0 && <span className={cx(styles.tag, styles.more)}>+{more}</span>}
       </span>
       <span className={styles.owner}>{owner ?? 'Unassigned'}</span>
       <span className={styles.activity}>{lastActivity ?? '—'}</span>

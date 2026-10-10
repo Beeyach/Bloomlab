@@ -69,7 +69,7 @@ export function searchDocuments(
         description:
           glossary?.definition ??
           (feature
-            ? `${feature.status.replaceAll('_', ' ')} · Fidelity ${feature.simulation_fidelity} · verified ${feature.last_verified}`
+            ? `${feature.status.replaceAll('_', ' ')}. Fidelity ${feature.simulation_fidelity}, verified ${feature.last_verified}`
             : (skill?.description ?? '')),
         destination: path(kind, entry.id),
       };
@@ -81,7 +81,7 @@ export function searchDocuments(
       id: attempt.id,
       kind: 'attempts',
       title: exercise?.title ?? 'Saved exercise',
-      description: `${attempt.result} · ${attempt.completed_at.slice(0, 10)} · ${attempt.assistance.replaceAll('_', ' ')} assistance`,
+      description: `${attempt.result} on ${attempt.completed_at.slice(0, 10)} with ${attempt.assistance.replaceAll('_', ' ')} assistance`,
       keywords: [
         attempt.exercise_id ?? '',
         attempt.exercise_type ?? '',

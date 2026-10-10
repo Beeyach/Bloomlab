@@ -285,6 +285,8 @@ export {
   addHours,
   addMinutes,
   formatInstant,
+  epochFromParts,
+  offsetAt,
   hasOffset,
   instant,
   instantForDay,

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import type { CustomFieldType } from '@bloomlab/simulator-core';
-import { Button, Field, Input, Select, Textarea } from '@bloomlab/design-system';
+import { Button, Field, Input, Select, Textarea, Meta } from '@bloomlab/design-system';
 
 import { NATIVE_LABELS } from '../content/featureNames';
 import type { StoredRun } from '../simulator/store';
@@ -51,13 +51,24 @@ export function CrmSetup({ run, apply }: CrmSetupProps) {
           {Object.values(account.custom_fields).map((field) => (
             <div key={field.key} className={styles.definitionRow}>
               <span>{field.label}</span>
-              <span className={styles.stageCount}>
-                {field.type} · {field.object}
-              </span>
-              <span className={styles.definitionMeta}>
-                {field.key}
-                {field.options ? ` · ${field.options.join(', ')}` : ''}
-              </span>
+              <div className={styles.stageCount}>
+                <Meta
+                  items={[
+                    { kind: 'chip', label: field.type },
+                    { kind: 'text', label: field.object },
+                  ]}
+                />
+              </div>
+              <div className={styles.definitionMeta}>
+                <Meta
+                  items={[
+                    { kind: 'text', label: field.key },
+                    ...(field.options
+                      ? [{ kind: 'text' as const, label: field.options.join(', ') }]
+                      : []),
+                  ]}
+                />
+              </div>
             </div>
           ))}
           {Object.keys(account.custom_fields).length === 0 && (

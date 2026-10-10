@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useState, type FormEvent } from 'react';
 
-import { Button, Cluster, Field, Surface, Textarea } from '@bloomlab/design-system';
+import { Meta, Button, Cluster, Field, Surface, Textarea } from '@bloomlab/design-system';
 
 import {
   DB_NAME,
@@ -53,7 +53,10 @@ function NewestNoteEditor() {
   if (!newest) return <p className={styles.muted}>No notes yet.</p>;
   return (
     <form className={styles.noteForm} onSubmit={save}>
-      <Field label="Newest note" hint={`id ${newest.id.slice(0, 8)} · revision ${newest.revision}`}>
+      <Field
+        label="Newest note"
+        hint={`Revision ${newest.revision} of note ${newest.id.slice(0, 8)}`}
+      >
         <Textarea
           rows={3}
           value={draft ?? newest.body}
@@ -127,7 +130,13 @@ export function LocalDataDiagnostics() {
       <Surface as="dl" padding="sm" className={styles.list}>
         <dt>Database</dt>
         <dd>
-          {DB_NAME} · v{DB_VERSION} · IndexedDB via Dexie
+          <Meta
+            items={[
+              { kind: 'text', label: DB_NAME },
+              { kind: 'chip', label: `v${DB_VERSION}` },
+              { kind: 'text', label: 'IndexedDB via Dexie' },
+            ]}
+          />
         </dd>
         <dt>Persistent storage</dt>
         <dd>{persisted}</dd>
@@ -139,18 +148,40 @@ export function LocalDataDiagnostics() {
         </dd>
         <dt>Records</dt>
         <dd>
-          {counts ? TABLES.map((name) => `${name} ${counts[name]}`).join(' · ') : 'counting…'}
+          {counts ? (
+            <Meta
+              items={TABLES.map((name) => ({ kind: 'text', label: `${name} ${counts[name]}` }))}
+            />
+          ) : (
+            'counting…'
+          )}
         </dd>
         <dt>Link</dt>
         <dd>
-          {device && isLinked(device)
-            ? `linked · learner ${device.learner_id.slice(0, 8)} · device ${device.device_id.slice(0, 8)}`
-            : 'not linked'}
+          {device && isLinked(device) ? (
+            <Meta
+              items={[
+                { kind: 'text', label: 'linked' },
+                { kind: 'text', label: `learner ${device.learner_id.slice(0, 8)}` },
+                { kind: 'text', label: `device ${device.device_id.slice(0, 8)}` },
+              ]}
+            />
+          ) : (
+            'not linked'
+          )}
         </dd>
         <dt>Sync</dt>
         <dd>
-          {label} · {pending} pending · cursor {state?.server_cursor ?? 0}
-          {state?.last_error ? ` · last error: ${state.last_error}` : ''}
+          <Meta
+            items={[
+              { kind: 'text', label },
+              { kind: 'text', label: `${pending} pending` },
+              { kind: 'text', label: `cursor ${state?.server_cursor ?? 0}` },
+              ...(state?.last_error
+                ? [{ kind: 'text' as const, label: `last error: ${state.last_error}` }]
+                : []),
+            ]}
+          />
         </dd>
       </Surface>
 
@@ -162,7 +193,7 @@ export function LocalDataDiagnostics() {
               <li key={op.seq}>
                 #{op.seq} {op.entity}/{op.entity_id.slice(0, 8)} {op.op} r{op.revision} {op.status}
                 {op.force ? ' force' : ''}
-                {op.last_error ? ` · ${op.last_error}` : ''}
+                {op.last_error && <Meta items={[{ kind: 'text', label: op.last_error }]} />}
               </li>
             ))}
           </ul>
@@ -183,7 +214,7 @@ export function LocalDataDiagnostics() {
             size="sm"
             onClick={() =>
               void notes.create({
-                body: `Diagnostics note · ${new Date().toLocaleTimeString()}`,
+                body: `Diagnostics note at ${new Date().toLocaleTimeString()}`,
                 target_kind: 'general',
                 target_ref: null,
               })

@@ -1,7 +1,15 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 
-import { Button, Stack, StatusPill, Surface, cx } from '@bloomlab/design-system';
+import {
+  ContentTitle,
+  Button,
+  Meta,
+  Stack,
+  StatusPill,
+  Surface,
+  cx,
+} from '@bloomlab/design-system';
 import {
   buildReport,
   type MetricId,
@@ -176,8 +184,8 @@ export default function ReportingLab() {
           Everything this run has done goes back to where the scenario starts, and the report goes
           back with it. It is derived, so there is nothing else to clear.
         </p>
-        <Button variant="ghost" onClick={() => void reset()} data-testid="reporting-reset">
-          Reset this account
+        <Button variant="secondary" onClick={() => void reset()} data-testid="reporting-reset">
+          Reset account
         </Button>
       </section>
 
@@ -575,7 +583,12 @@ function Diagnosis({
           {chosen.id === 'leads' && (
             <p className={styles.muted}>
               Sources:{' '}
-              {report.sources.map((row) => `${row.source} ${row.leads}/${row.visits}`).join(' · ')}
+              <Meta
+                items={report.sources.map((row) => ({
+                  kind: 'text',
+                  label: `${row.source} ${row.leads}/${row.visits}`,
+                }))}
+              />
             </p>
           )}
           {chosen.id === 'booked' && (
@@ -592,7 +605,7 @@ function Diagnosis({
         <p className={styles.exerciseLink}>
           <StatusPill label="Graded" tone="info" />{' '}
           <Link to={`/exercise/${exerciseId}`} className={styles.inlineLink}>
-            {exerciseTitle ?? 'Diagnose the bottleneck'}
+            <ContentTitle title={exerciseTitle ?? 'Diagnose the bottleneck'} />
           </Link>
         </p>
       )}

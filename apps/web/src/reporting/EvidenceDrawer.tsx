@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { Sheet } from '@bloomlab/design-system';
+import { Sheet, Meta } from '@bloomlab/design-system';
 import type { MetricValue, SimulatorEvent, SimulatorState } from '@bloomlab/simulator-core';
 import { contentEventName } from '@bloomlab/simulator-core';
 
@@ -86,7 +86,9 @@ export function EvidenceDrawer({
             </h3>
             <ul className={styles.recordList} data-testid="evidence-records">
               {metric.evidence_record_ids.map((id) => (
-                <li key={id}>{describe(state, id)}</li>
+                <li key={id}>
+                  <Meta items={describe(state, id).map((label) => ({ kind: 'text', label }))} />
+                </li>
               ))}
             </ul>
           </>
@@ -104,27 +106,27 @@ export function EvidenceDrawer({
 }
 
 /** One record id, said in words the account can actually back up. */
-function describe(state: SimulatorState, id: string): string {
+function describe(state: SimulatorState, id: string): string[] {
   const account = state.account;
   const contact = account.contacts[id];
-  if (contact) return `${contact.first_name} ${contact.last_name ?? ''} · contact ${id}`.trim();
+  if (contact) return [`${contact.first_name} ${contact.last_name ?? ''}`.trim(), `contact ${id}`];
   const appointment = account.appointments[id];
   if (appointment) {
-    return `Appointment ${id} · ${appointment.starts_at} · ${appointment.status}`;
+    return [`Appointment ${id}`, appointment.starts_at, appointment.status];
   }
   const opportunity = account.opportunities[id];
   if (opportunity) {
-    return `${opportunity.name} · ${opportunity.status} · ${opportunity.value}`;
+    return [opportunity.name, opportunity.status, String(opportunity.value)];
   }
   const payment = account.payments[id];
-  if (payment) return `Payment ${id} · ${payment.amount} · ${payment.status}`;
+  if (payment) return [`Payment ${id}`, String(payment.amount), payment.status];
   const visit = account.funnel_visits[id];
   if (visit) {
-    return `Visit ${id} · ${visit.source} · ${visit.contact_id ? 'became a lead' : 'left'}`;
+    return [`Visit ${id}`, visit.source, visit.contact_id ? 'became a lead' : 'left'];
   }
   const message = Object.values(account.conversations)
     .flatMap((conversation) => conversation.messages)
     .find((row) => row.id === id);
-  if (message) return `${message.direction} ${message.channel} · ${message.at}`;
-  return id;
+  if (message) return [`${message.direction} ${message.channel}`, message.at];
+  return [id];
 }

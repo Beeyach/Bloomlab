@@ -1,3 +1,4 @@
+import { Meta } from '@bloomlab/design-system';
 import type { EvidenceItem, Exercise } from '@bloomlab/content-schema';
 
 import { wordCount } from '../sales';
@@ -54,12 +55,22 @@ export function WrittenAnswer({
       data-testid={`written-${field.key}`}
     >
       <label className={styles.field}>
-        <span className={styles.fieldLabel}>
-          {field.label}
-          {field.message_type && (
-            <span className={styles.kind}> · {MESSAGE_TYPE_WORDS[field.message_type]}</span>
-          )}
-        </span>
+        <Meta
+          className={styles.fieldLabel}
+          items={[
+            { kind: 'text', label: field.label },
+            ...(field.message_type
+              ? [
+                  {
+                    kind: 'text' as const,
+                    label: (
+                      <span className={styles.kind}>{MESSAGE_TYPE_WORDS[field.message_type]}</span>
+                    ),
+                  },
+                ]
+              : []),
+          ]}
+        />
         <textarea
           className={styles.textarea}
           rows={field.rows}

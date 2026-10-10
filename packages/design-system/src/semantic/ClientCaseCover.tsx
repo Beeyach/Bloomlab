@@ -3,6 +3,7 @@ import type { ComponentPropsWithRef } from 'react';
 import { HoloMaterial } from '../holo/HoloMaterial';
 import { cx } from '../utils/cx';
 import { IdentityMark } from './IdentityMark';
+import { Meta } from './Meta';
 import { StatusPill } from './StatusPill';
 import styles from './ClientCaseCover.module.css';
 
@@ -61,7 +62,13 @@ export function ClientCaseCover({
               }
               glyph={relationship === 'active' ? 'check' : relationship === 'lost' ? 'dash' : 'dot'}
             />
-            <span className={styles.kind}>{boss ? `Boss Client · ${label}` : label}</span>
+            <Meta
+              className={styles.kind}
+              items={[
+                ...(boss ? [{ kind: 'chip' as const, label: 'Boss Client' }] : []),
+                { kind: 'text', label },
+              ]}
+            />
           </span>
         </span>
       </HoloMaterial>

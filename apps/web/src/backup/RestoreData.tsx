@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button, Cluster, Field, Input } from '@bloomlab/design-system';
+import { Meta, Button, Cluster, Field, Input } from '@bloomlab/design-system';
 import { cancelRestore, confirmRestore, previewRestore, type RestorePreview } from './restore';
 import { MAX_BACKUP_BYTES } from './restoreSchema';
 
@@ -111,8 +111,15 @@ export function RestoreData() {
             Review restore
           </h3>
           <p>
-            Exported {new Date(preview.exportedAt).toLocaleString()} · Content{' '}
-            {preview.contentVersion}
+            <Meta
+              items={[
+                {
+                  kind: 'text',
+                  label: `Exported ${new Date(preview.exportedAt).toLocaleString()}`,
+                },
+                { kind: 'text', label: `Content  ${preview.contentVersion}` },
+              ]}
+            />
           </p>
           <p>
             {preview.add} missing records to add; {preview.keep} existing records or existing-run

@@ -171,7 +171,7 @@ export default function CrmLab() {
               </Button>
             </>
           ) : (
-            <Button size="sm" variant="ghost" onClick={() => setConfirmingReset(true)}>
+            <Button size="sm" variant="secondary" onClick={() => setConfirmingReset(true)}>
               Reset account
             </Button>
           )}
@@ -192,7 +192,7 @@ export default function CrmLab() {
               {runs.map((row, index) => (
                 <option key={row.run_id} value={row.run_id}>
                   Account {runs.length - index}
-                  {index === 0 ? ' (saved most recently)' : ''} · last saved{' '}
+                  {index === 0 ? ' (saved most recently)' : ''}; last saved{' '}
                   {savedAt(row.updated_at)}
                 </option>
               ))}
@@ -304,9 +304,10 @@ function ContactsArea({
       <div className={styles.listPane}>
         <div className={styles.toolbar}>
           <div className={styles.search}>
-            <Field label="Search contacts" hint="Name, email, phone or tag.">
+            <Field label="Search contacts">
               <Input
                 type="search"
+                placeholder="Name, email, phone or tag."
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
               />
@@ -324,23 +325,32 @@ function ContactsArea({
         <p className={styles.count}>
           {contacts.length} of {Object.keys(account.contacts).length} contacts
         </p>
-        <ul className={styles.rows}>
-          {contacts.map((contact) => (
-            <li key={contact.id}>
-              <ContactRow
-                name={fullName(contact)}
-                hasPhone={Boolean(contact.phone)}
-                hasEmail={Boolean(contact.email)}
-                tags={contact.tags}
-                owner={ownerName(account, contact.owner_id)}
-                lastActivity={contact.dnd ? 'Do not disturb' : undefined}
-                selected={contact.id === selectedId}
-                data-contact={contact.id}
-                onClick={() => onSelect(contact.id === selectedId ? null : contact.id)}
-              />
-            </li>
-          ))}
-        </ul>
+        <div className={styles.contactTable}>
+          <div className={styles.tableHead} role="group" aria-label="Contact columns">
+            <span>Name</span>
+            <span>Reach</span>
+            <span>Tags</span>
+            <span>Owner</span>
+            <span>Status</span>
+          </div>
+          <ul className={styles.rows}>
+            {contacts.map((contact) => (
+              <li key={contact.id}>
+                <ContactRow
+                  name={fullName(contact)}
+                  hasPhone={Boolean(contact.phone)}
+                  hasEmail={Boolean(contact.email)}
+                  tags={contact.tags}
+                  owner={ownerName(account, contact.owner_id)}
+                  lastActivity={contact.dnd ? 'Do not disturb' : undefined}
+                  selected={contact.id === selectedId}
+                  data-contact={contact.id}
+                  onClick={() => onSelect(contact.id === selectedId ? null : contact.id)}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
         {contacts.length === 0 && <p className={styles.empty}>No contact matches that.</p>}
       </div>
 

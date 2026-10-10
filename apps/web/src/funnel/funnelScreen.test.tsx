@@ -57,7 +57,8 @@ const mode = (name: 'build' | 'preview' | 'simulate') => screen.getByTestId(`fun
 /** Saves, and waits for the account to actually hold the version — not merely for the button. */
 async function saveFunnelAndWait() {
   fireEvent.click(screen.getByTestId('funnel-save'));
-  await screen.findByText(/Saved · version \d+/, {}, { timeout: 8000 });
+  await screen.findByText('Saved', {}, { timeout: 8000 });
+  expect(screen.getByText(/^v\d+$/)).toBeInTheDocument();
 }
 
 /** The block roles on the selected step, in order, read from the rows rather than their text. */
@@ -410,4 +411,10 @@ describe('the Funnel Lab is a named destination', () => {
       expect(menu.querySelector(`a[href="${href}"]`)).toBeNull();
     }
   });
+});
+
+it('keeps the same reset action label in the funnel confirmation', async () => {
+  await openLab();
+  fireEvent.click(screen.getByRole('button', { name: 'Reset account' }));
+  expect(screen.getByTestId('funnel-reset-confirm')).toHaveTextContent('Reset account');
 });

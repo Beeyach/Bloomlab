@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 
 import { cx } from '../utils/cx';
 import { StatusPill, type StatusGlyph, type StatusTone } from './StatusPill';
@@ -22,7 +22,7 @@ export interface ExecutionEventProps extends Omit<ComponentPropsWithoutRef<'li'>
   time: string;
   /** Event or step name, in real GHL terminology where it represents a real feature. */
   name: string;
-  detail?: string;
+  detail?: ReactNode;
   status?: ExecutionEventStatus;
   /** Branch taken, e.g. "Yes" / "No phone". */
   branch?: string;

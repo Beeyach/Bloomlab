@@ -64,6 +64,12 @@ describe('the CRM Lab opens on the real account (CRM-001)', () => {
     expect(screen.getByText('Jordan Pike')).toBeInTheDocument();
     expect(screen.getByText('Aisha Bello')).toBeInTheDocument();
     expect(screen.getByText(/5 of 5 contacts/)).toBeInTheDocument();
+    expect(screen.getByLabelText('Search contacts')).toHaveAttribute(
+      'placeholder',
+      'Name, email, phone or tag.',
+    );
+    expect(screen.queryByText('Name, email, phone or tag.')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Contact columns')).toHaveTextContent('NameReachTagsOwnerStatus');
   });
 
   it('says what is missing rather than leaving a gap', async () => {

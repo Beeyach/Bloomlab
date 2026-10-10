@@ -225,3 +225,30 @@ export const IconSandbox = (p: IconProps) => (
     <path d="M7.5 15h9" />
   </Icon>
 );
+export const IconRepeat = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 7h13a3 3 0 0 1 3 3v2M4 7l3-3M4 7l3 3M20 17H7a3 3 0 0 1-3-3v-2M20 17l-3 3M20 17l-3-3" />
+  </Icon>
+);
+export const IconGlobe = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18M12 3c5 5 5 13 0 18M12 3c-5 5-5 13 0 18" />
+  </Icon>
+);
+export const IconBook = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3 4h6a3 3 0 0 1 3 3v14a3 3 0 0 0-3-3H3zM21 4h-6a3 3 0 0 0-3 3v14a3 3 0 0 1 3-3h6z" />
+  </Icon>
+);
+export const IconFlag = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5 21V3l7 2 7-2v10l-7 2-7-2" />
+  </Icon>
+);
+export const IconUnlock = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="5" y="10" width="14" height="11" rx="2" />
+    <path d="M9 10V6a4 4 0 0 1 8 0M12 14v3" />
+  </Icon>
+);

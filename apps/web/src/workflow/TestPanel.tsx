@@ -1,7 +1,8 @@
 import { memo, useState } from 'react';
 
-import { Button, Field, Input, Select, ToolPanel } from '@bloomlab/design-system';
+import { Button, Field, Input, Meta, Select, ToolPanel } from '@bloomlab/design-system';
 import {
+  calendarZone,
   nextScheduled,
   type GraphIssue,
   type SimulatorScenario,
@@ -34,6 +35,7 @@ import {
 } from './triggerTest';
 import { operatorWords, simulatorTime } from './words';
 import styles from './workflow.module.css';
+import { ZonedDateTime } from './ZonedDateTime';
 
 /**
  * Testing a workflow (WFL-004, SIM-007, SIM-009, CONV-001).
@@ -145,6 +147,13 @@ function TestPanelInner({
       : undefined,
   };
   const built = option ? buildTriggerEvent(option, resolved, account) : null;
+  const startsCalendarId = needs('calendar')
+    ? resolved.calendar_id
+    : resolved.appointment_id
+      ? account.appointments[resolved.appointment_id]?.calendar_id
+      : undefined;
+  const startsCalendar = startsCalendarId ? account.calendars[startsCalendarId] : null;
+  const startsZone = startsCalendar ? calendarZone(account, startsCalendar) : zone;
 
   const fireTrigger = async () => {
     if (!workflow || !option || !built?.ok || !triggerName) return;
@@ -225,14 +234,14 @@ function TestPanelInner({
             {contacts.map((contact) => (
               <option key={contact.id} value={contact.id}>
                 {contact.first_name} {contact.last_name ?? ''}
-                {contact.phone ? '' : ' · no phone'}
-                {contact.dnd ? ' · DND' : ''}
+                {contact.phone ? '' : ' (no phone)'}
+                {contact.dnd ? ' (Do not disturb)' : ''}
               </option>
             ))}
           </Select>
         </Field>
         <div className={styles.actions}>
-          <Button size="sm" variant="ghost" onClick={() => setGenerating((open) => !open)}>
+          <Button size="sm" variant="secondary" onClick={() => setGenerating((open) => !open)}>
             {generating ? 'Cancel' : 'Generate a contact'}
           </Button>
         </div>
@@ -309,9 +318,19 @@ function TestPanelInner({
         ) : (
           <>
             <p className={styles.muted}>
-              {triggerName}
-              {filtersWords.length > 0 ? ` · filters: ${filtersWords.join(', ')}` : ' · no filters'}
-              . The engine decides whether the event matches; nothing is enrolled by hand.
+              <Meta
+                items={[
+                  { kind: 'text', label: triggerName },
+                  ...filtersWords.map((label) => ({
+                    kind: 'text' as const,
+                    label: `filters: ${label}`,
+                  })),
+                  ...(filtersWords.length === 0
+                    ? [{ kind: 'text' as const, label: 'No filters' }]
+                    : []),
+                ]}
+              />
+              The engine decides whether the event matches; nothing is enrolled by hand.
             </p>
             {options.length > 1 && (
               <Field label="What happens" id="trigger-event">
@@ -388,23 +407,19 @@ function TestPanelInner({
                 >
                   {appointments.map((row) => (
                     <option key={row.id} value={row.id}>
-                      {simulatorTime(row.starts_at, zone)} · {row.status.replace('_', '-')}
+                      {simulatorTime(row.starts_at, zone)} ({row.status.replace('_', '-')})
                     </option>
                   ))}
                 </Select>
               </Field>
             )}
             {needs('starts_at') && (
-              <Field
+              <ZonedDateTime
                 label="Starts at"
-                hint="An instant with an offset, e.g. 2026-09-05T14:00:00-05:00"
-                id="trigger-starts-at"
-              >
-                <Input
-                  value={resolved.starts_at ?? ''}
-                  onChange={(event) => patch({ starts_at: event.target.value })}
-                />
-              </Field>
+                value={resolved.starts_at ?? ''}
+                zone={startsZone}
+                onChange={(starts_at) => patch({ starts_at })}
+              />
             )}
             {needs('status') && (
               <Field label="New status" id="trigger-status">
@@ -458,7 +473,7 @@ function TestPanelInner({
                 >
                   {opportunities.map((row) => (
                     <option key={row.id} value={row.id}>
-                      {row.name} · {row.stage}
+                      {row.name} ({row.stage})
                     </option>
                   ))}
                 </Select>
@@ -540,7 +555,7 @@ function TestPanelInner({
               <option value="">Their next live appointment</option>
               {appointments.map((row) => (
                 <option key={row.id} value={row.id}>
-                  {simulatorTime(row.starts_at, zone)} · {row.status.replace('_', '-')}
+                  {simulatorTime(row.starts_at, zone)} ({row.status.replace('_', '-')})
                 </option>
               ))}
             </Select>
@@ -598,12 +613,17 @@ function TestPanelInner({
       )}
 
       <div className={styles.formGrid} style={{ marginTop: 'var(--bl-space-4)' }}>
-        <p className={styles.muted}>
-          Account time: {simulatorTime(run.state.clock.now, zone)}
-          {upcoming
-            ? ` · next: ${upcoming.description ?? upcoming.type} at ${simulatorTime(upcoming.at, zone)}`
-            : ' · nothing queued'}
-        </p>
+        <Meta
+          items={[
+            { kind: 'text', label: `Account time: ${simulatorTime(run.state.clock.now, zone)}` },
+            {
+              kind: 'text',
+              label: upcoming
+                ? `Next: ${upcoming.description ?? upcoming.type} at ${simulatorTime(upcoming.at, zone)}`
+                : 'Nothing queued',
+            },
+          ]}
+        />
         <div className={styles.actions} role="group" aria-label="Time Machine">
           <Button
             size="sm"
@@ -674,14 +694,12 @@ function TestPanelInner({
                 ).then(() => setBookingAt(''));
               }}
             >
-              <Field
+              <ZonedDateTime
                 label={`${chosen.first_name} books on ${calendar.name}`}
-                hint="An instant with an offset, e.g. 2026-09-05T14:00:00-05:00"
-                id="inject-booking"
-                className={styles.workflowChoice}
-              >
-                <Input value={bookingAt} onChange={(event) => setBookingAt(event.target.value)} />
-              </Field>
+                value={bookingAt}
+                zone={calendarZone(account, calendar)}
+                onChange={setBookingAt}
+              />
               <Button type="submit" size="sm" variant="secondary" disabled={busy || !bookingAt}>
                 Book
               </Button>

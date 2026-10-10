@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router';
 
 import {
   Button,
+  Meta,
+  IconCheck,
   Field,
   Input,
   Select,
@@ -328,7 +330,7 @@ export default function FunnelLab() {
               </Select>
             </Field>
           )}
-          <Button variant="ghost" size="sm" onClick={() => setConfirmingReset(true)}>
+          <Button variant="secondary" size="sm" onClick={() => setConfirmingReset(true)}>
             Reset account
           </Button>
         </div>
@@ -363,7 +365,7 @@ export default function FunnelLab() {
             ))}
           </Select>
         </Field>
-        <Button variant="ghost" size="sm" onClick={addFunnel} data-testid="funnel-new">
+        <Button variant="secondary" size="sm" onClick={addFunnel} data-testid="funnel-new">
           New funnel
         </Button>
         <div className={styles.modes} role="group" aria-label="Mode">
@@ -383,12 +385,15 @@ export default function FunnelLab() {
         <div className={styles.saveArea}>
           {dirty ? (
             <StatusPill label="Unsaved changes" tone="warning" glyph="dot" />
-          ) : (
-            <StatusPill
-              label={saved ? `Saved · version ${saved.version}` : 'Not saved yet'}
-              tone={saved ? 'success' : 'neutral'}
-              glyph={saved ? 'check' : 'dash'}
+          ) : saved ? (
+            <Meta
+              items={[
+                { kind: 'text', icon: <IconCheck />, label: 'Saved' },
+                { kind: 'chip', label: `v${saved.version}` },
+              ]}
             />
+          ) : (
+            <StatusPill label="Not saved yet" tone="neutral" glyph="dash" />
           )}
           <Button
             variant="ghost"
@@ -572,7 +577,7 @@ export default function FunnelLab() {
               }}
               data-testid="funnel-reset-confirm"
             >
-              Reset
+              Reset account
             </Button>
           </>
         }
