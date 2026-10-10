@@ -187,7 +187,7 @@ Conventions: **Given / When / Then** where behavior is testable; checklists wher
 - **SIM-017** Regression suite exists with stable fixture IDs; CI fails when a fixture breaks (demonstrated by an intentional break on a branch).
 - **SIM-018** Reset returns to the initial scenario; replay reproduces the log.
 - **SIM-019** `simulator_version` is exported and recorded in attempts.
-- **DES-021** No user-facing screen shows a tiny upper-case label above a heading, and the information such labels carried is still on screen somewhere sensible.
+- **DES-021** No user-facing screen shows a tiny upper-case label above a heading, and the information such labels carried is still on screen somewhere sensible. The user's 2026-10-10 visual specification explicitly permits one Home continuation Field Ready campaign label above its title: 11.5px, weight 600, uppercase, #3E3954. Verify exactly one mounted label in that continuation context and reject different files/selectors/styles in negative controls. Other contexts retain the original prohibition.
 - **DES-022** No user-facing screen renders text in a monospace family, including logs, counts, IDs and code snippets.
 
 ## Phase 11 — CRM Lab

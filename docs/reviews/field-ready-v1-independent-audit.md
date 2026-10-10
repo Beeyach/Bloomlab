@@ -1,5 +1,7 @@
 # Bloomlab Field-Ready v1 independent audit
 
+> **Current published evidence (2026-10-10):** Exact-head CI [38071166013](https://github.com/Beeyach/Bloomlab/actions/runs/38071166013) passed Checks and Preview at `6b0226eb35d83b96f442b26c97495385b43de33c`; Production was skipped. Worker version: `b75296b9-0f63-4d83-a91d-c7236e2734a6`. Older failed/pending narratives below are preserved source snapshots, superseded for this published head. Their historical timing/cancellation causes are not retroactively resolved. Requirement statuses remain unchanged. The subsequent local engineering investigation is recorded in `field-ready-v1-engineering-acceptance.md` and requires its own exact-head Preview run before new-source remote verification.
+
 Date: 2026-10-10. Disposition: independent audit finished; published corrections pass Checks, but exact-head Preview fails sync recovery. Field-Ready v1 is not complete.
 This report does not declare Field-Ready Complete or completion of the remaining C7 automation.
 
@@ -210,3 +212,7 @@ broad semantic/reasoning/language-quality evidence; real-device, screen-reader, 
 privacy and real-GHL acceptance for the twelve parked rows. No synthetic result substitutes for these.
 
 The first three commits are published to existing draft PR #32, and their failed Preview evidence is preserved. The user has explicitly approved contrast `21e90b4`, the starter-spacing correction, a fast-forward and Preview-only CI. The follow-up also records bounded push/pull timing/status and failure-time busy/queue/lock counts, without payloads, headers, private URL values or any gate change. These diagnostics identify timing evidence; they are not a claimed root-cause correction. Follow-up publication and exact-head verification remain pending at this committed snapshot. Human/provider and objective-state evidence gaps remain separate release blockers.
+
+## Later engineering and visual follow-up
+
+The subsequent published baseline is `6b0226eb35d83b96f442b26c97495385b43de33c`, verified by passing Checks/Preview in CI `38071166013`, Production skipped. This supersedes the historical pending-publication narrative for that baseline only. The additional local unknown-route fix, exact-state collector and user-directed visual corrections are documented in [field-ready-v1-engineering-acceptance.md](field-ready-v1-engineering-acceptance.md) and [field-ready-v1-visual-fix-round.md](field-ready-v1-visual-fix-round.md). Their local runtime evidence, retained test timeouts and new-source publication boundary must not be attributed to the older CI. No requirement status or stacked base changed.

@@ -1,5 +1,7 @@
 # Field-Ready v1 code/audit closeout
 
+> **Current published evidence (2026-10-10):** Exact-head CI [38071166013](https://github.com/Beeyach/Bloomlab/actions/runs/38071166013) passed Checks and Preview at `6b0226eb35d83b96f442b26c97495385b43de33c`; Production was skipped. Worker version: `b75296b9-0f63-4d83-a91d-c7236e2734a6`. Older failed/pending narratives below are preserved source snapshots, superseded for this published head. Their historical timing/cancellation causes are not retroactively resolved. Requirement statuses remain unchanged. The subsequent local engineering investigation is recorded in `field-ready-v1-engineering-acceptance.md` and requires its own exact-head Preview run before new-source remote verification.
+
 Date: 2026-09-10  
 Branch: `codex/field-ready-v1-code-closeout`  
 Starting head: `fa8fd5b4e8dfb54f961b9f0d2104cc616150b59d`  
@@ -752,3 +754,7 @@ is attributed to the parent. Corrected polish passed all 215 cells; corrected na
 with zero captured browser errors. Both assert the unchanged deployed source `936c577`;
 these local-driver checks do not replace verification of the next immutable source. Historical cancellation remains
 unexplained, C8 stays open, and final immutable CI/Preview is still required before audit.
+
+## Later engineering and visual follow-up
+
+Published baseline `6b0226eb35d83b96f442b26c97495385b43de33c` passed Checks and Preview in CI `38071166013`, with Production skipped. Earlier pending-CI statements above remain historical source snapshots. The subsequent local engineering and user-directed visual changes have separate evidence in [field-ready-v1-engineering-acceptance.md](field-ready-v1-engineering-acceptance.md) and [field-ready-v1-visual-fix-round.md](field-ready-v1-visual-fix-round.md). New-source exact-head CI remains required; no local marker or baseline pass certifies publication or the retained human/provider acceptance.

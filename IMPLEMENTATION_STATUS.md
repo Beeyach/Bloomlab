@@ -585,3 +585,7 @@ The proposal feedback blocker is remediated and the saved human call recovered w
 ## ROLL-UP
 
 313 requirements registered · 284 PASSED · 8 IN_PROGRESS · 5 PARTIAL · 12 IMPLEMENTED_UNVERIFIED · 0 BLOCKED · 2 DEFERRED · 2 NOT_STARTED. Run the validator for the live count by status and priority.
+
+## 2026-10-10 local engineering and visual follow-up
+
+Published source `6b0226eb35d83b96f442b26c97495385b43de33c` passed Checks/Preview in CI `38071166013`, Production skipped. Later local changes and their distinct verification limits are recorded in `docs/reviews/field-ready-v1-engineering-acceptance.md` and `docs/reviews/field-ready-v1-visual-fix-round.md`; no requirement status is promoted. The user's visual specification supersedes the historical universal DES-021 eyebrow ban only for the exact single Home continuation campaign label now documented in the requirement/acceptance contract. The older Phase 10 evidence remains a historical source snapshot. New-source exact-head CI and all human/provider acceptance remain required.
