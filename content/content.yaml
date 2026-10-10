@@ -1,4 +1,4 @@
-content_version: 2026.09.28.1
+content_version: 2026.10.10.1
 schema_version: 1
 notes: Field-Ready closeout — distinct Webhook and Custom Webhook registry and scenario contracts.
 advanced_paths_enforced: true
