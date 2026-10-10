@@ -758,3 +758,5 @@ unexplained, C8 stays open, and final immutable CI/Preview is still required bef
 ## Later engineering and visual follow-up
 
 Published baseline `6b0226eb35d83b96f442b26c97495385b43de33c` passed Checks and Preview in CI `38071166013`, with Production skipped. Earlier pending-CI statements above remain historical source snapshots. The subsequent local engineering and user-directed visual changes have separate evidence in [field-ready-v1-engineering-acceptance.md](field-ready-v1-engineering-acceptance.md) and [field-ready-v1-visual-fix-round.md](field-ready-v1-visual-fix-round.md). New-source exact-head CI remains required; no local marker or baseline pass certifies publication or the retained human/provider acceptance.
+
+The approved follow-up was published at `a662b19ec0f3d3191d328a5d1bb5bb92ed7aaac2`. CI `38092996980` passed Checks but failed Preview, with Production skipped. Its retained artifacts and the local probe corrections are recorded in [preview-probe-followup.md](preview-probe-followup.md). That failed run remains failed; clean CI on the next approved source and human/provider acceptance are still required.

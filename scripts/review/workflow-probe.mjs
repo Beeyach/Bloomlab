@@ -47,6 +47,10 @@ const setText = (page, selector, value) =>
   page.evaluate(
     `(() => { const el = ${q(selector)}; if (!el) return false; const setter = Object.getOwnPropertyDescriptor(el.__proto__, 'value').set; setter.call(el, ${JSON.stringify(value)}); el.dispatchEvent(new Event('input', { bubbles: true })); return true; })()`,
   );
+const setLabeledText = (page, label, value) =>
+  page.evaluate(
+    `(() => { const el = [...document.querySelectorAll('[data-testid="trigger-test"] label')].find((row) => row.textContent.trim() === ${JSON.stringify(label)})?.control; if (!el) return false; const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, ${JSON.stringify(value)}); el.dispatchEvent(new Event('input', { bubbles: true })); return el.value === ${JSON.stringify(value)}; })()`,
+  );
 async function waitFor(page, expression, { timeout = 10000, every = 100 } = {}) {
   const started = Date.now();
   while (Date.now() - started < timeout) {
@@ -121,6 +125,8 @@ try {
   await setViewport(page, 1440, 950, { mobile: false });
   await openPage(page, LAB);
   const ready = await waitFor(page, READY);
+  report.head = await page.evaluate(`document.querySelector('[data-build-id]')?.dataset.buildId`);
+  if (process.env.REVIEW_HEAD) assert.equal(report.head, process.env.REVIEW_HEAD);
   await sleep(300);
   const colours = await page.evaluate(`(() => {
     const canvas = ${q('[data-testid="workflow-canvas"]')}; const node = ${q('[data-node="n1"]')};
@@ -152,7 +158,7 @@ try {
   // Add a Wait after n2, undo, redo, save.
   await click(page, '[data-node="n2"]');
   await sleep(150);
-  await click(page, '[data-palette="GHL-WF-WAIT"] button');
+  assert(await clickText(page, '[data-palette="GHL-WF-WAIT"] button', 'Add'));
   const added = await waitFor(page, `Boolean(${q('[data-node="n4"]')})`, { timeout: 3000 });
   const dirty = (await text(page, 'body')).includes('Unsaved draft');
   await click(page, '[data-testid="undo"]');
@@ -434,13 +440,28 @@ try {
   await setSelect(page, '#test-contact', 'maria');
   // Maria books (the trigger is Appointment Status: new) for the 5th at noon, so the 24-hour
   // reminder wait ends on the 4th at noon: one day of waiting, then release on the second.
-  await setText(page, '#trigger-starts-at', '2026-09-05T12:00:00-05:00');
+  assert(await setLabeledText(page, 'Starts at date', '2026-09-05'));
+  assert(await setLabeledText(page, 'Starts at time', '12:00:00'));
   await click(page, '[data-testid="run-test"]');
   const waiting = await waitFor(
     page,
     `${q('[data-testid="timeline"]')}.textContent.includes('Waiting')`,
     { timeout: 8000 },
   );
+  const bookingInstant = await page.evaluate(`new Promise((resolve, reject) => {
+    const request = indexedDB.open('bloomlab');
+    request.onerror = () => reject(new Error('Could not read the synthetic booking'));
+    request.onsuccess = () => {
+      const database = request.result;
+      const read = database.transaction('sim_events').objectStore('sim_events').getAll();
+      read.onsuccess = () => {
+        database.close();
+        resolve(read.result.some(row => row.event.type === 'APPOINTMENT_BOOKED' &&
+          row.event.payload.starts_at === '2026-09-05T12:00:00-05:00'));
+      };
+      read.onerror = () => { database.close(); reject(new Error('Could not read the synthetic booking')); };
+    };
+  })`);
   const heldUntil = (await text(page, '[data-testid="timeline"]')).includes('Until');
   await clickText(page, '[data-testid="test-panel"] button', '+1 day');
   await sleep(600);
@@ -452,7 +473,14 @@ try {
     { timeout: 8000 },
   );
   const smsRow = (await text(page, '[data-testid="timeline"]')).includes('Send SMS done');
-  section('wait-released-by-time-machine', { waiting, heldUntil, stillWaiting, released, smsRow });
+  section('wait-released-by-time-machine', {
+    bookingInstant,
+    waiting,
+    heldUntil,
+    stillWaiting,
+    released,
+    smsRow,
+  });
   await screenshot(page, resolve(OUT, 'workflow-wait-1440.png'), null, false);
 
   /* ---- 7. Conversations: the reminder is in the inbox and a reply lands (CONV-001) --------- */

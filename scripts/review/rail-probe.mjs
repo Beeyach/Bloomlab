@@ -37,6 +37,7 @@ const DESTINATIONS = [
   '/clients',
   '/portfolio',
   '/playground',
+  ...(process.env.REVIEW_HEAD ? ['/system', '/design'] : []),
 ];
 
 const measure = (page) =>
@@ -141,21 +142,17 @@ async function overflowCase(page, width, reducedMotion) {
     noHorizontalOverflow: !initial.pageOverflow && initial.contentWidth <= initial.width,
     nativeMotion: initial.behavior === 'auto',
   };
-  // Phone More retains containment; desktop destinations deliberately chain at boundaries (D-202).
+  // The requested rail contains boundary gestures on desktop and phone; the page has its own wheel input.
   await page.evaluate('window.__railScroller.scrollTop = window.__railScroller.scrollHeight');
   await wheel(initial.x, initial.y, 300);
-  checks.bottomBoundaryBehavior = phone
-    ? (await state()).page === initial.page
-    : (await state()).page > initial.page;
+  checks.bottomBoundaryBehavior = (await state()).page === initial.page;
   await page.evaluate('scrollTo(0, 0)');
   await page.evaluate('window.__railScroller.scrollTop = 0');
   await wheel(phone ? 4 : width - 40, 100, 240);
   const pageScrolled = await state();
   checks.pageScrollsIndependently = pageScrolled.page > initial.page && pageScrolled.top === 0;
   await wheel(initial.x, initial.y, -300);
-  checks.topBoundaryBehavior = phone
-    ? (await state()).page === pageScrolled.page
-    : (await state()).page < pageScrolled.page;
+  checks.topBoundaryBehavior = (await state()).page === pageScrolled.page;
   await page.evaluate('scrollTo(0, 0)');
 
   // Every real link, including flag-gated bottom actions, must scroll into view with its ring.

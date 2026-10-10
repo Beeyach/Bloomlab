@@ -71,7 +71,7 @@
     "review:failure-isolation": "node scripts/review/failure-isolation-probe.mjs",
     "review:field-ready-preview": "node scripts/review/field-ready-preview.mjs",
     "review:screen-inventory": "node scripts/review/screen-inventory.mjs",
-    "review:screen-states:test": "node --test scripts/review/exact-state-evidence.test.mjs",
+    "review:screen-states:test": "node --test scripts/review/exact-state-evidence.test.mjs scripts/review/sidebar-composition.test.mjs",
     "review:screen-states": "node scripts/review/screen-state-matrix.mjs"
   },
   "devDependencies": {
