@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import { openPage, screenshot } from './cdp.mjs';
 import { probeHelpers } from './probe-lib.mjs';
 import { probeExitCode } from './probe-result.mjs';
+import { createSyncTimingCollector } from './sync-timing.mjs';
 
 const base = process.env.BASE ?? 'http://localhost:4173';
 const head = process.env.REVIEW_HEAD;
@@ -15,6 +16,11 @@ const browser = await device('Field-Ready failure isolation');
 const { page } = browser;
 const report = { base, head: head ?? null, matrix: [], ok: false };
 const browserErrors = [];
+const syncTimings = createSyncTimingCollector();
+page.on('Network.requestWillBeSent', syncTimings.request);
+page.on('Network.responseReceived', syncTimings.response);
+page.on('Network.loadingFinished', syncTimings.finish);
+page.on('Network.loadingFailed', syncTimings.fail);
 page.on('Runtime.exceptionThrown', (event) => {
   if (browserErrors.length < 50) browserErrors.push(event.exceptionDetails);
 });
@@ -458,16 +464,47 @@ try {
   report.error = String(error?.stack ?? error);
   report.failureContext = await page
     .evaluate(
-      `({
+      `(async () => {
+    const contextTimeoutMs = 1000;
+    const bounded = async promise => {
+      let timeout;
+      try {
+        return await Promise.race([promise, new Promise(resolve => {
+          timeout = setTimeout(() => resolve(null), contextTimeoutMs);
+        })]);
+      } catch { return null; }
+      finally { clearTimeout(timeout); }
+    };
+    const queueRead = typeof indexedDB === 'undefined' ? null : new Promise(resolve => {
+      const request = indexedDB.open('bloomlab');
+      request.onerror = () => resolve(null);
+      request.onsuccess = () => {
+        const database = request.result;
+        if (!database.objectStoreNames.contains('sync_queue')) { database.close(); resolve(null); return; }
+        const read = database.transaction('sync_queue').objectStore('sync_queue').getAll();
+        read.onerror = () => { database.close(); resolve(null); };
+        read.onsuccess = () => {
+          const rows = read.result;
+          database.close();
+          resolve({total: rows.length, pending: rows.filter(row => row.status === 'pending').length,
+            syncing: rows.filter(row => row.status === 'syncing').length});
+        };
+      };
+    });
+    const [queueCounts, locks] = await Promise.all([bounded(queueRead), bounded(navigator.locks?.query())]);
+    return {
     url: location.origin + location.pathname, readyState: document.readyState,
     bodyElementCount: document.body.childElementCount,
     injectedRequests: Object.fromEntries(Object.entries(sessionStorage).filter(([key]) => key.startsWith('__bloomlab_failed_'))),
-    syncCompleted: document.querySelector('[data-sync-completed]')?.dataset.syncCompleted ?? null
-  })`,
+    syncCompleted: document.querySelector('[data-sync-completed]')?.dataset.syncCompleted ?? null,
+    syncButtonBusy: document.querySelector('[data-sync-completed]')?.getAttribute('aria-busy') === 'true',
+    queueCounts, lockCounts: locks ? {held: locks.held.length, pending: locks.pending.length} : null
+  }; })()`,
     )
     .catch(() => null);
   await screenshot(page, resolve(out, 'probe-failure.png'), undefined, false).catch(() => {});
 } finally {
+  report.syncTimings = syncTimings.summary();
   report.browserErrors = browserErrors;
   await setFailure(null).catch(() => {});
   await page
