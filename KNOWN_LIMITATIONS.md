@@ -1,5 +1,21 @@
 # KNOWN LIMITATIONS
 
+Current independent audit (2026-10-10): source `aa5a04764a234666243e96adcd422c0ae5f616ed`
+has passing exact-head CI/Preview run `34682953401`, Worker version
+`04d0f314-a96f-42cb-957e-8abc6dcc7415`; Production SKIPPED. Older pending verification
+statements below are historical for earlier sources. Passing this run does not establish
+a root cause for historical cancellation or erase the failed supplemental C5 timing check.
+The isolated correction tree needs its own CI/Preview; old-source artifacts do not certify it.
+The audit retains all requirement statuses. In particular, the 216 missing exact screen/state/input
+cells are feasible objective evidence work, not human-only acceptance. They are separate from
+43 subjective visual-review rows and the twelve parked human/real-GHL requirements.
+Private recovery-stage cleanup/lifecycle configuration remains unverified; expiry rejects
+confirmation but does not by itself demonstrate deletion of staged bytes. Current dependency
+advisories also remain recorded, without claiming a demonstrated deployed exploit.
+See `docs/reviews/field-ready-v1-independent-audit.md` for corrections, verification and blockers.
+
+## Historical closeout verification records
+
 Review corrections are now included in pushed masking source `aaa850c`. Bloomlab is public
 and GitHub run `34673325444` attempt 2 passed Checks after the previous private-repo
 billing/spending-limit failures. Preview attempt 2 failed on a blank negotiation exercise at

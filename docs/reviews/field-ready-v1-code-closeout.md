@@ -11,6 +11,13 @@ Field-Ready Complete claim, a new sidebar phase, a live-provider/GHL exercise or
 human visual and physical-device acceptance. DES-009 is inherited regression coverage only and
 remains IN_PROGRESS.
 
+Current independent disposition (2026-10-10): exact source
+`aa5a04764a234666243e96adcd422c0ae5f616ed` PASSED GitHub run `34682953401`
+Checks and Preview with Production SKIPPED. This supersedes earlier pending-CI statements
+for that source only. Independent corrections and remaining automated, operational and
+human acceptance blockers are recorded in `field-ready-v1-independent-audit.md`.
+No passing historical artifact certifies the new correction tree. All statuses remain unchanged.
+
 ## Authorized publication — 2026-09-11
 
 The owner authorized the product commit/push and existing Preview verification flow. Commit
