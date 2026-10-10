@@ -7,6 +7,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 
 import { REQUIRED_WIDTHS, SCREEN_INVENTORY } from './screen-matrix.mjs';
+import { joinExactStates, verifyExactArtifacts } from './exact-state-evidence.mjs';
 
 const evidenceRoot = resolve(process.env.EVIDENCE_ROOT ?? '.review/field-ready-browser');
 const out = resolve(process.env.REVIEW_OUT ?? '.review/field-ready-screen-states');
@@ -20,6 +21,17 @@ assert.equal(
   'Screen evidence must match the requested exact head',
 );
 const probeRows = new Map(suite.probes.map((probe) => [probe.name, probe]));
+const exactPath = process.env.EXACT_STATE_EVIDENCE
+  ? resolve(process.env.EXACT_STATE_EVIDENCE)
+  : resolve(evidenceRoot, 'exact-states', 'exact-state-probe.json');
+if (process.env.EXACT_STATE_EVIDENCE)
+  assert(existsSync(exactPath), 'Explicit exact-state evidence is missing');
+const exact = joinExactStates(
+  existsSync(exactPath) ? JSON.parse(readFileSync(exactPath, 'utf8')) : undefined,
+  suite.head,
+  SCREEN_INVENTORY,
+);
+verifyExactArtifacts(exact.values(), resolve(exactPath, '..'));
 const evidence = (...probes) => {
   for (const probe of probes)
     assert.equal(probeRows.get(probe)?.status, 'PASSED', `Required ${probe} evidence did not pass`);
@@ -274,7 +286,7 @@ const FAMILY = {
       status: 'UNVERIFIED',
       sources: ['apps/web/src/app/App.tsx'],
       limitation:
-        'The wildcard NotFound route is outside the shared per-screen error boundary; the lazy-route evidence does not prove its failure behavior.',
+        'The wildcard NotFound route now uses the screen boundary; exact render-fault browser evidence is still required for this cell.',
     }),
     completed: () => notApplicable('An unknown route has no completion/result lifecycle.'),
     keyboard: () => evidence('a11y'),
@@ -320,7 +332,21 @@ const rows = SCREEN_INVENTORY.map((screen) => {
       ];
     }),
   );
-  const states = Object.fromEntries(cells.map((cell) => [cell, policy[cell]()]));
+  const states = Object.fromEntries(
+    cells.map((cell) => [
+      cell,
+      exact.has(`${screen.name}:${cell}`)
+        ? {
+            ...exact.get(`${screen.name}:${cell}`),
+            artifact: relative(process.cwd(), exactPath).replaceAll('\\', '/'),
+            screenshot: relative(
+              process.cwd(),
+              resolve(exactPath, '..', exact.get(`${screen.name}:${cell}`).screenshot),
+            ).replaceAll('\\', '/'),
+          }
+        : policy[cell](),
+    ]),
+  );
   const reduced = polish.screens.find((row) => row.name === screen.name && row.width === 390);
   assert(reduced?.reducedMotion?.checked, `Missing reduced-motion check for ${screen.name}`);
   return {
@@ -400,7 +426,8 @@ const report = {
   requirement: {
     id: 'DES-018',
     status: 'IN_PROGRESS',
-    reason: 'Family-level probe references still need exact screen/state/input assertion mapping.',
+    reason:
+      'Remaining semantic states and all human visual rows require acceptance evidence. Exact assertions retain their named scope.',
   },
   head: suite.head,
   base: suite.base,
@@ -422,6 +449,9 @@ const report = {
     shared_contract_cells: rows
       .flatMap((row) => Object.values(row.states))
       .filter((cell) => cell.status === 'PROVEN_SHARED_ROUTE_CONTRACT').length,
+    exact_browser_state_cells: rows
+      .flatMap((row) => Object.values(row.states))
+      .filter((cell) => cell.status === 'PROVEN_BROWSER').length,
     unverified_state_cells: rows
       .flatMap((row) => Object.values(row.states))
       .filter((cell) => ['RELATED_BROWSER_EVIDENCE', 'UNVERIFIED'].includes(cell.status)).length,
@@ -432,7 +462,7 @@ writeFileSync(resolve(out, 'screen-state-matrix.json'), `${JSON.stringify(report
 const cellWord = (cell) =>
   cell.status === 'N/A'
     ? `N/A — ${cell.reason}`
-    : `${cell.status.replaceAll('_', ' ')} — ${(cell.probes ?? cell.sources ?? []).join(', ')}`;
+    : `${cell.status.replaceAll('_', ' ')} — ${cell.scope ?? (cell.probes ?? cell.sources ?? []).join(', ')}`;
 writeFileSync(
   resolve(out, 'screen-state-matrix.md'),
   [
@@ -441,6 +471,7 @@ writeFileSync(
     `Exact head: \`${report.head}\``,
     'DES-018: IN_PROGRESS. Related probe references are not proof of every semantic/input cell.',
     `Unverified semantic/input cells: ${report.summary.unverified_state_cells}`,
+    `Exact browser state assertions: ${report.summary.exact_browser_state_cells}`,
     `Learner screens: ${report.summary.screens}`,
     `Five-width layout cells: ${report.summary.layout_cells}`,
     `State/input cells: ${report.summary.state_cells}`,

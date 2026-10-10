@@ -44,6 +44,14 @@ function readRouter() {
           id: propertyString(entry, 'id'),
           path: propertyString(entry, 'path'),
           flag: propertyString(entry, 'flag'),
+          module: entry.properties
+            .find(
+              (property) =>
+                ts.isPropertyAssignment(property) &&
+                property.name.getText(routeSource) === 'Component',
+            )
+            ?.getText(routeSource)
+            .match(/import\(['"][^'"]*\/([^/'"]+)['"]\)/)?.[1],
         }));
       }
     }

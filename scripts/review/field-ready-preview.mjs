@@ -185,6 +185,9 @@ await run('failure-isolation', 'scripts/review/failure-isolation-probe.mjs', [],
   REVIEW_OUT: resolve(out, 'failure-isolation'),
 });
 await run('ghl-terminology', 'scripts/ghl-terminology.mjs');
+await run('exact-states', 'scripts/review/exact-state-probe.mjs', [], {
+  REVIEW_OUT: resolve(evidenceRoot, 'exact-states'),
+});
 await run('screen-states', 'scripts/review/screen-state-matrix.mjs', [], {
   EVIDENCE_ROOT: evidenceRoot,
   REVIEW_OUT: resolve(out, 'screen-states'),
