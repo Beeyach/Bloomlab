@@ -8,13 +8,17 @@ Last updated: 2026-10-10
 
 Independent audit continuation (2026-10-10): GitHub still has main
 `59ec678910cb51559d84af3c4200590f9c7e29ec` and draft PR #32 at
-`aa5a04764a234666243e96adcd422c0ae5f616ed`, against the unchanged navigation-shell base.
-Exact-head run `34682953401` PASSED Checks and Preview; Production was SKIPPED.
-This supersedes the older pending-CI narratives below for that source, without resolving
-historical navigation cancellation or the supplemental C5 timing failure.
+`1311e4cf74381f3cf6b46f37f4fa1e9822dff776`, against the unchanged navigation-shell base.
+Exact-head run `38063758423` PASSED Checks (2,174 tests / 175 files), but Preview FAILED
+manual sync recovery after clearing the controlled push failure. Production was SKIPPED.
+The original source `aa5a04764a234666243e96adcd422c0ae5f616ed` passed run `34682953401`;
+that historical pass does not supersede the fresh failure or resolve earlier cancellation/timing failures.
 The isolated independent audit corrects attachment upload/delete races and cleanup retry,
 Unicode download-header encoding, public failure-report text exposure, and Windows adversarial
-report path matching. New-source CI/Preview must be verified separately before release.
+report path matching. Approved follow-up corrects Workflow status contrast and the new Glowhaus
+starter spacing, preserving saved learner coordinates. Bounded sync timing/count diagnostics
+are added without changing gates; the failed CI root cause remains unconfirmed. Follow-up
+source needs its own exact-head CI/Preview before release.
 No requirement promotion: 313 registered, 284 PASSED, 24 open P0/P1; the twelve parked rows
 and DES-009 remain unchanged. The 216 state/input cells are objective automation/evidence
 work, separate from 43 human visual reviews. Current audit evidence and limits:

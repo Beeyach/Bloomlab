@@ -1,11 +1,13 @@
 # KNOWN LIMITATIONS
 
-Current independent audit (2026-10-10): source `aa5a04764a234666243e96adcd422c0ae5f616ed`
-has passing exact-head CI/Preview run `34682953401`, Worker version
-`04d0f314-a96f-42cb-957e-8abc6dcc7415`; Production SKIPPED. Older pending verification
-statements below are historical for earlier sources. Passing this run does not establish
-a root cause for historical cancellation or erase the failed supplemental C5 timing check.
-The isolated correction tree needs its own CI/Preview; old-source artifacts do not certify it.
+Current independent audit (2026-10-10): published source `1311e4cf74381f3cf6b46f37f4fa1e9822dff776`
+has exact-head run `38063758423`: Checks PASSED, Preview FAILED during manual sync recovery,
+Production SKIPPED. Worker version `e1e20276-fbd7-4a21-853c-e3ff785b567a` matches that source.
+The original source `aa5a04764a234666243e96adcd422c0ae5f616ed` passed run `34682953401`,
+but that pass and a standalone passing diagnostic do not supersede the fresh failed CI.
+Approved contrast/starter-spacing corrections need their own exact-head CI/Preview. New bounded
+sync diagnostics retain timing/status and queue/lock counts, never payloads or credentials;
+no assertion, timeout or preparatory wait was relaxed. The failed CI root cause is unconfirmed.
 The audit retains all requirement statuses. In particular, the 216 missing exact screen/state/input
 cells are feasible objective evidence work, not human-only acceptance. They are separate from
 43 subjective visual-review rows and the twelve parked human/real-GHL requirements.
