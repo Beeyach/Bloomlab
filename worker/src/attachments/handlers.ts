@@ -163,11 +163,16 @@ async function upload(request: Request, env: Storage, session: Session, id: stri
       httpMetadata: { contentType: mime },
       customMetadata: { learner_id: session.learnerId, checksum, attachment_id: id },
     });
-    await env.DB.prepare(
-      "UPDATE scenario_attachments SET status='ready',updated_at=? WHERE attachment_id=? AND status='uploading'",
+    const saved = await env.DB.prepare(
+      "UPDATE scenario_attachments SET status='ready',updated_at=? WHERE attachment_id=? AND status='uploading' AND deleted_at IS NULL",
     )
       .bind(now, id)
       .run();
+    if (!saved.meta.changes) {
+      const latest = await rowById(env.DB, session, id);
+      if (latest.deleted_at || latest.status === 'deleting') await env.MEDIA.delete(key);
+      throw new AttachmentError(409, 'Attachment changed during upload. Retry.');
+    }
     return view(await rowById(env.DB, session, id));
   } catch (error) {
     await env.DB.prepare(
@@ -211,7 +216,7 @@ export async function handleAttachments(request: Request, env: Storage): Promise
         headers: {
           'content-type': row.mime_type,
           'content-length': String(row.byte_length),
-          'content-disposition': `attachment; filename="${row.name.replace(/["\\]/g, '_')}"`,
+          'content-disposition': `attachment; filename="${row.name.replace(/[^\x20-\x7e]|["\\]/g, '_')}"; filename*=UTF-8''${encodeURIComponent(row.name).replace(/[!'()*]/g, (character) => `%${character.charCodeAt(0).toString(16).toUpperCase()}`)}`,
           'cache-control': 'private, no-store',
           'x-content-type-options': 'nosniff',
         },
@@ -219,7 +224,6 @@ export async function handleAttachments(request: Request, env: Storage): Promise
     }
     if (request.method === 'GET' && !match[2]) return json(view(row));
     if (request.method === 'DELETE' && !match[2]) {
-      if (row.status === 'deleted') return json(view(row));
       const now = new Date().toISOString();
       if (!row.deleted_at)
         await env.DB.prepare(

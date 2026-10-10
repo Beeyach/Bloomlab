@@ -459,8 +459,8 @@ try {
   report.failureContext = await page
     .evaluate(
       `({
-    url: location.href, readyState: document.readyState,
-    body: document.body.innerText.slice(0, 12000),
+    url: location.origin + location.pathname, readyState: document.readyState,
+    bodyElementCount: document.body.childElementCount,
     injectedRequests: Object.fromEntries(Object.entries(sessionStorage).filter(([key]) => key.startsWith('__bloomlab_failed_'))),
     syncCompleted: document.querySelector('[data-sync-completed]')?.dataset.syncCompleted ?? null
   })`,

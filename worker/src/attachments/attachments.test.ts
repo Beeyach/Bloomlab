@@ -40,6 +40,49 @@ async function setup() {
 }
 
 describe('DATA-006 private scenario attachments', () => {
+  it('downloads Unicode filenames with an ASCII fallback and UTF-8 filename parameter', async () => {
+    const a = await setup();
+    const name = "case—客户's brief.pdf";
+    const uploaded = await a.request(
+      `/${a.id}?scenario_id=${scenarioId}&name=${encodeURIComponent(name)}`,
+      'PUT',
+      undefined,
+      pdf,
+    );
+    expect(uploaded.status).toBe(200);
+    const download = await a.request(`/${a.id}/file`);
+    expect(download.status).toBe(200);
+    expect(download.headers.get('content-disposition')).toBe(
+      "attachment; filename=\"case___'s brief.pdf\"; filename*=UTF-8''case%E2%80%94%E5%AE%A2%E6%88%B7%27s%20brief.pdf",
+    );
+    expect(new Uint8Array(await download.arrayBuffer())).toEqual(pdf);
+  });
+
+  it('removes a late upload when deletion completed during its R2 write', async () => {
+    const a = await setup();
+    const originalPut = env.MEDIA.put.bind(env.MEDIA);
+    const put = vi.spyOn(env.MEDIA, 'put').mockImplementationOnce(async (...args) => {
+      expect((await a.request(`/${a.id}`, 'DELETE')).status).toBe(200);
+      return originalPut(...args);
+    });
+    try {
+      const uploaded = await a.request(
+        `/${a.id}?scenario_id=${scenarioId}&name=brief.pdf`,
+        'PUT',
+        undefined,
+        pdf,
+      );
+      expect(uploaded.status).toBe(409);
+      expect(await (await a.request()).json()).toMatchObject({ status: 'deleted' });
+      expect(
+        await env.MEDIA.head(`attachments/v1/${a.linked.learner_id}/${scenarioId}/${a.id}`),
+      ).toBeNull();
+      expect((await a.request(`/${a.id}/file`)).status).toBe(410);
+    } finally {
+      put.mockRestore();
+    }
+  });
+
   it('uploads, lists, downloads and deletes a bounded case file through authenticated D1/R2', async () => {
     const a = await setup();
     const uploaded = await a.request(
@@ -70,6 +113,34 @@ describe('DATA-006 private scenario attachments', () => {
       status: 'deleted',
     });
     expect((await a.request(`/${a.id}/file`)).status).toBe(410);
+  });
+
+  it('retries removing late bytes after upload compensation failed once', async () => {
+    const a = await setup();
+    const originalPut = env.MEDIA.put.bind(env.MEDIA);
+    const remove = vi.spyOn(env.MEDIA, 'delete');
+    const put = vi.spyOn(env.MEDIA, 'put').mockImplementationOnce(async (...args) => {
+      expect((await a.request(`/${a.id}`, 'DELETE')).status).toBe(200);
+      remove.mockRejectedValueOnce(new Error('R2 cleanup temporarily unavailable'));
+      return originalPut(...args);
+    });
+    try {
+      const uploaded = await a.request(
+        `/${a.id}?scenario_id=${scenarioId}&name=brief.pdf`,
+        'PUT',
+        undefined,
+        pdf,
+      );
+      expect(uploaded.status).toBe(503);
+      const key = `attachments/v1/${a.linked.learner_id}/${scenarioId}/${a.id}`;
+      expect(await env.MEDIA.head(key)).not.toBeNull();
+      expect((await a.request(`/${a.id}`, 'DELETE')).status).toBe(200);
+      expect(await env.MEDIA.head(key)).toBeNull();
+      expect(await (await a.request()).json()).toMatchObject({ status: 'deleted' });
+    } finally {
+      put.mockRestore();
+      remove.mockRestore();
+    }
   });
 
   it('fails closed for anonymous/foreign access, unsupported or malformed bytes, oversize and ID reuse', async () => {

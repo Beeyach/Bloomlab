@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ADVERSARIAL_CASES } from './adversarial-cases.mjs';
+import { findReportFile } from './adversarial-evidence.mjs';
 
 assert.equal(ADVERSARIAL_CASES.length, 15);
 assert.equal(new Set(ADVERSARIAL_CASES.map((row) => row.id)).size, 15);
@@ -38,7 +39,7 @@ const exit = await new Promise((done, reject) => {
 });
 const raw = JSON.parse(readFileSync(path, 'utf8'));
 const rows = ADVERSARIAL_CASES.map((row) => {
-  const file = raw.testResults.find((file) => file.name === resolve(row.file));
+  const file = findReportFile(raw.testResults, resolve(row.file));
   const observed = row.tests.map((title) => {
     const matches = file?.assertionResults.filter((test) => test.title === title) ?? [];
     return {
