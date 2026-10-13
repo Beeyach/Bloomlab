@@ -101,6 +101,32 @@ describe('ContactRow', () => {
     expect(screen.getByText('+1')).toBeInTheDocument();
     expect(screen.getByLabelText('Tags: Lead, Booked, VIP, Referral')).toBeInTheDocument();
   });
+
+  it('uses Last activity for the generic activity value', () => {
+    const { container } = render(
+      <ContactRow name="Maria Alvarez" hasPhone hasEmail lastActivity="10:02" />,
+    );
+    const labels = [...container.querySelectorAll('[data-contact-field-label]')].map(
+      (label) => label.textContent,
+    );
+    expect(labels).toContain('Last activity');
+  });
+
+  it('allows a caller to label the activity value as Status', () => {
+    const { container } = render(
+      <ContactRow
+        name="Maria Alvarez"
+        hasPhone
+        hasEmail
+        lastActivity="Do not disturb"
+        activityLabel="Status"
+      />,
+    );
+    const labels = [...container.querySelectorAll('[data-contact-field-label]')].map(
+      (label) => label.textContent,
+    );
+    expect(labels).toContain('Status');
+  });
 });
 
 describe('PricingScopeItem', () => {

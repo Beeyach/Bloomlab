@@ -7,6 +7,7 @@ import { session, openPage, setViewport, screenshot, sleep } from './cdp.mjs';
 import { probeHelpers } from './probe-lib.mjs';
 import { pageLoadDiagnostics } from './page-load-diagnostics.mjs';
 import { REQUIRED_WIDTHS, SCREEN_INVENTORY } from './screen-matrix.mjs';
+import { playgroundLayout } from './playground-layout.mjs';
 const base = process.env.BASE ?? 'http://127.0.0.1:4183';
 const out = resolve(process.env.REVIEW_OUT ?? '.review/phase-26-polish');
 mkdirSync(out, { recursive: true });
@@ -46,6 +47,19 @@ try {
         `Promise.all(document.getAnimations().filter(a=>a.effect?.getTiming().iterations !== Infinity).map(a=>a.finished.catch(()=>null)))`,
       );
       await sleep(100);
+      let unlockedLayout = null;
+      if (name === 'playground') {
+        if (
+          !(await page.evaluate(`!!document.querySelector('[aria-label="Unlocked features"] li')`))
+        ) {
+          await page.evaluate(`document.querySelector('[data-testid="open-run"]').click()`);
+          assert(
+            await waitFor(page, `!!document.querySelector('[aria-label="Unlocked features"] li')`),
+            'Populated Playground features',
+          );
+        }
+        unlockedLayout = await playgroundLayout(page);
+      }
       if (report.head)
         assert.equal(
           await page.evaluate("document.querySelector('[data-build-id]')?.dataset.buildId"),
@@ -94,6 +108,8 @@ try {
         const glass = surfaces.filter(e=>getComputedStyle(e).backdropFilter!=='none').length;
         const words=(main?.innerText??'').trim().split(/\\s+/).filter(Boolean).length;
         const area=Math.max(1,(main?.getBoundingClientRect().width??innerWidth)*(main?.getBoundingClientRect().height??innerHeight));
+        const masteryRow=main?.querySelector('p[class*="_state_"]');
+        const masterySentence=masteryRow ? { available:masteryRow.getBoundingClientRect().width, sentence:masteryRow.lastElementChild.getBoundingClientRect().width } : null;
         return {
           title: document.querySelector('main h1')?.textContent,
           width: innerWidth,
@@ -105,6 +121,7 @@ try {
           territoryAlignment,
           factSeparators,
           controls: controls.length,
+          masterySentence,
           density: { words, headings: headings.length, sections: surfaces.length, controls: controls.length, unitsPer100kPx: Number((((words + headings.length*8 + controls.length*12) / area)*100000).toFixed(2)) },
           prohibitedSignals: {
             gradientText,
@@ -120,6 +137,13 @@ try {
         };
       })()`);
       const failures = [];
+      if (
+        name === 'home' &&
+        width < 390 &&
+        measured.masterySentence &&
+        measured.masterySentence.sentence < measured.masterySentence.available - 1
+      )
+        failures.push('mastery progress text constrained beside badge');
       if (measured.scrollWidth > width + 1) failures.push('page horizontal overflow');
       if (width < 768 && measured.small.length) failures.push('small touch targets');
       if (width < 768 && measured.smallFont.length) failures.push('input text below 16 px');
@@ -145,7 +169,16 @@ try {
         if (reducedMotion.infinite.length)
           failures.push('infinite visible animation under reduced motion');
       }
-      report.screens.push({ name, path, family, routeId, ...measured, reducedMotion, failures });
+      report.screens.push({
+        name,
+        path,
+        family,
+        routeId,
+        ...measured,
+        unlockedLayout,
+        reducedMotion,
+        failures,
+      });
       report.failures.push(...failures.map((failure) => ({ name, width, failure })));
       await screenshot(page, resolve(out, name + '-' + width + '.png'), undefined, false);
       console.log(

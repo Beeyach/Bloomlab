@@ -102,8 +102,8 @@
 
 .feature {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--bl-space-1) 16px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--bl-space-2) 16px;
   align-items: center;
   min-height: 44px;
   padding: var(--bl-space-2) 11px;
@@ -112,14 +112,9 @@
   background: var(--bl-color-surface);
 }
 
-@media (min-width: 768px) {
-  .feature {
-    grid-template-columns: var(--feature-columns);
-  }
-}
-
 .featureName {
   font-weight: var(--bl-font-weight-medium);
+  overflow-wrap: anywhere;
 }
 
 .featureArea,
@@ -131,11 +126,10 @@
 .featureTable {
   --feature-columns: minmax(0, 1.2fr) 140px 170px minmax(0, 1.4fr);
   min-width: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
+  container-type: inline-size;
 }
 .featureHead {
-  display: grid;
+  display: none;
   grid-template-columns: var(--feature-columns);
   align-items: center;
   column-gap: 16px;
@@ -151,18 +145,23 @@
   min-width: 0;
 }
 .featureVia {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }
-@media (min-width: 768px) {
-  .featureHead,
-  .features {
-    min-width: 740px;
+.feature > :nth-child(3) {
+  justify-self: start;
+  max-width: 100%;
+}
+@container (min-width: 740px) {
+  .feature {
+    grid-template-columns: var(--feature-columns);
+    gap: var(--bl-space-1) 16px;
   }
-}
-@media (max-width: 767px) {
   .featureHead {
-    display: none;
+    display: grid;
+  }
+  .featureVia {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

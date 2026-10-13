@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createRun } from '@bloomlab/simulator-core';
@@ -71,5 +71,25 @@ describe('Payments Lab state boundaries', () => {
       '/workflow?scenario=SC-glowhaus-crm',
     );
     expect(document.querySelector('header')?.textContent).not.toMatch(/[·•]| \| /);
+  });
+  it('does not render empty catalog lists before the empty state', () => {
+    mocked.state.loading = false;
+    mocked.state.run = {
+      generation: 'test',
+      checkpoints: [],
+      state: createRun({
+        id: 'SC-empty',
+        simulation_time: '2026-09-09T09:00:00Z',
+        timezone: 'UTC',
+        seed: 25,
+        initial_account_state: {},
+      }),
+    };
+    open();
+    const catalog = screen.getByRole('heading', {
+      name: 'Products & prices',
+      level: 2,
+    }).parentElement!;
+    expect(within(catalog).queryAllByRole('list')).toHaveLength(0);
   });
 });

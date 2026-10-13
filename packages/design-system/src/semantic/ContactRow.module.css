@@ -90,6 +90,10 @@
   white-space: nowrap;
 }
 
+.mobileLabel {
+  display: none;
+}
+
 /* Mobile recomposition: two-line row instead of five columns (spec §83). */
 @media (max-width: 767px) {
   .row {
@@ -115,10 +119,28 @@
 
   .owner {
     grid-area: owner;
+    display: flex;
+    gap: var(--bl-space-1);
+    align-items: baseline;
     text-align: right;
   }
 
   .activity {
     grid-area: activity;
+    display: flex;
+    gap: var(--bl-space-1);
+    align-items: baseline;
+  }
+
+  .mobileLabel {
+    display: inline;
+    flex: none;
+    color: var(--bl-color-text-soft);
+    font-size: var(--bl-font-size-xs);
+    font-weight: var(--bl-font-weight-semibold);
+  }
+
+  .mobileLabel::after {
+    content: ':';
   }
 }

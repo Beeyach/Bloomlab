@@ -343,6 +343,7 @@ function ContactsArea({
                   tags={contact.tags}
                   owner={ownerName(account, contact.owner_id)}
                   lastActivity={contact.dnd ? 'Do not disturb' : undefined}
+                  activityLabel="Status"
                   selected={contact.id === selectedId}
                   data-contact={contact.id}
                   onClick={() => onSelect(contact.id === selectedId ? null : contact.id)}

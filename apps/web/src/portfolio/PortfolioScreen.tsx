@@ -415,7 +415,10 @@ export default function PortfolioScreen() {
               This project has no assembled work on this device. Sync to retrieve saved work from
               another device.
             </p>
-            <Link to="/portfolio">Back to Portfolio</Link>
+            <p>
+              <Link to="/sync">Sync and devices</Link> or{' '}
+              <Link to="/portfolio">Back to Portfolio</Link>
+            </p>
           </>
         )}
       </div>

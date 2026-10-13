@@ -198,6 +198,13 @@ describe('PORT-002 truthful archive UI', () => {
     expect(await screen.findByText('Your archive starts with the work.')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Find project/ })).toHaveAttribute('href', '/campaign');
   });
+  it('offers the named Sync recovery action when a portfolio item is unavailable', async () => {
+    renderPortfolio(true);
+    expect(
+      await screen.findByRole('heading', { name: 'Portfolio item unavailable' }),
+    ).toBeVisible();
+    expect(screen.getByRole('link', { name: /Sync/ })).toHaveAttribute('href', '/sync');
+  });
   it('shows the authored label on list and detail and every category, with saved reflection after remount', async () => {
     await savedWork(db, { capture: true });
     await savedWork(db, { fieldwork: true });

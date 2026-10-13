@@ -309,12 +309,67 @@ try {
     await setViewport(page, width, 900, { mobile: width < 768 });
     await page.evaluate('window.scrollTo(0,0)');
     await sleep(100);
-    const measure = await page.evaluate(
-      `({width:innerWidth,scroll:document.documentElement.scrollWidth,
-        room:!!document.querySelector('[data-testid=call-room]'),notes:!!document.querySelector('#call-notes'),
-        inputFonts:[...document.querySelectorAll('[data-testid=call-room] textarea,[data-testid=call-room] select,[data-testid=call-room] input:not([type=checkbox])')].map(e=>({label:e.id||e.closest('label')?.textContent.trim().slice(0,40),pixels:parseFloat(getComputedStyle(e).fontSize)}))})`,
-    );
+    const measureCallLayout = () =>
+      page.evaluate(`(()=>{
+        const room=document.querySelector('[data-testid=call-room]');
+        const layout=room?.querySelector(':scope > div');
+        const main=layout?.children[0];
+        const side=layout?.children[1];
+        const identity=main?.querySelector('[aria-label="Client identity"]');
+        const rect=(element)=>element?element.getBoundingClientRect():null;
+        const mainRect=rect(main),sideRect=rect(side);
+        return {width:innerWidth,scroll:document.documentElement.scrollWidth,
+          room:!!room,notes:!!document.querySelector('#call-notes'),
+          sidebar:document.querySelector('[data-sidebar]')?.dataset.sidebar??null,
+          layoutWidth:rect(layout)?.width??null,mainWidth:mainRect?.width??null,
+          sideWidth:sideRect?.width??null,identityWidth:rect(identity)?.width??null,
+          stacked:Boolean(mainRect&&sideRect&&sideRect.top>=mainRect.bottom-1),
+          inputFonts:[...document.querySelectorAll('[data-testid=call-room] textarea,[data-testid=call-room] select,[data-testid=call-room] input:not([type=checkbox])')].map(e=>({label:e.id||e.closest('label')?.textContent.trim().slice(0,40),pixels:parseFloat(getComputedStyle(e).fontSize)}))};
+      })()`);
+    const measure = await measureCallLayout();
     assert(measure.scroll <= measure.width + 1, `Horizontal overflow at ${width}`);
+    const shouldStack = measure.layoutWidth <= 640;
+    assert.equal(
+      measure.stacked,
+      shouldStack,
+      `Call room must ${shouldStack ? 'stack' : 'stay split'} for ${measure.layoutWidth}px of available content at ${width}px: ${JSON.stringify(measure)}`,
+    );
+    if (width === 768) {
+      assert.equal(measure.sidebar, 'expanded', '768px call check starts with the expanded rail');
+      await page.evaluate("document.querySelector('[data-testid=rail-toggle]')?.click()");
+      await sleep(100);
+      const collapsed = await measureCallLayout();
+      assert.equal(collapsed.sidebar, 'collapsed', '768px call check collapses the rail');
+      assert.equal(
+        collapsed.stacked,
+        collapsed.layoutWidth <= 640,
+        `Call room must follow available content width with the collapsed rail: ${JSON.stringify(collapsed)}`,
+      );
+      report.checks.push(
+        'Call room follows available width with expanded and collapsed rail at 768px',
+      );
+      await page.evaluate("document.querySelector('[data-testid=rail-toggle]')?.click()");
+      await sleep(100);
+    }
+    if (width === 1024) {
+      await page.evaluate(
+        "document.querySelector('[data-sidebar]')?.style.setProperty('--bl-sidebar-effective-width','280px')",
+      );
+      await sleep(100);
+      const wideRail = await measureCallLayout();
+      assert.equal(
+        wideRail.stacked,
+        wideRail.layoutWidth <= 640,
+        `Call room must follow available content width with a 280px rail: ${JSON.stringify(wideRail)}`,
+      );
+      report.checks.push(
+        'Call room composition follows available width with a 280px rail at 1024px',
+      );
+      await page.evaluate(
+        "document.querySelector('[data-sidebar]')?.style.removeProperty('--bl-sidebar-effective-width')",
+      );
+      await sleep(100);
+    }
     if (width < 768) {
       assert(measure.inputFonts.length >= 3, 'Review must include notes, transcript and move');
       assert(

@@ -113,6 +113,23 @@ const AUDIT = `(() => {
   const board = document.querySelector('[data-board]');
   const boardScrolls = board ? board.scrollWidth > board.clientWidth + 2 : null;
   const boardOverflowX = board ? getComputedStyle(board).overflowX : null;
+  const firstContact = document.querySelector('[data-contact]');
+  const mobileContactLabels = firstContact
+    ? [...firstContact.querySelectorAll('[data-contact-field-label]')]
+        .filter(visible)
+        .map((label) => label.textContent.trim())
+    : [];
+  const contactSearch = document.querySelector('input[type=search]');
+  const searchPlaceholderFits = contactSearch
+    ? (() => {
+        const style = getComputedStyle(contactSearch);
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        context.font = style.font;
+        const available = contactSearch.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        return context.measureText(contactSearch.placeholder).width <= available + 1;
+      })()
+    : null;
   // Something past the right edge only counts when nothing between it and the page clips or
   // scrolls it: a truncated tag list or the board's own scroller is a design, not an overflow.
   const contained = (e) => {
@@ -134,6 +151,8 @@ const AUDIT = `(() => {
     eyebrow: [...new Set(eyebrow)].slice(0, 6),
     textUnder12px: [...new Set(tiny)].slice(0, 6),
     board: board ? { scrolls: boardScrolls, overflowX: boardOverflowX } : null,
+    mobileContactLabels,
+    searchPlaceholderFits,
   };
 })()`;
 
@@ -283,6 +302,15 @@ try {
       if (state.id === 'pipeline-board' && width < 1024 && audit.board) {
         if (audit.board.overflowX !== 'auto' && audit.board.overflowX !== 'scroll')
           fail(`${width} pipeline-board: board is not its own scroller`);
+      }
+      if (state.id === 'contacts-empty' && width <= 390) {
+        const expectedLabels = ['Reach', 'Tags', 'Owner', 'Status'];
+        if (JSON.stringify(audit.mobileContactLabels) !== JSON.stringify(expectedLabels))
+          fail(
+            `${width} contacts-empty: mobile contact labels ${JSON.stringify(audit.mobileContactLabels)} do not match ${JSON.stringify(expectedLabels)}`,
+          );
+        if (!audit.searchPlaceholderFits)
+          fail(`${width} contacts-empty: search placeholder is visually clipped`);
       }
       const height = Math.min(await page.evaluate('document.documentElement.scrollHeight'), 6000);
       await page.send('Emulation.setDeviceMetricsOverride', {

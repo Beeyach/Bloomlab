@@ -110,32 +110,36 @@ export default function PaymentsLab() {
               A product is what is sold. A price fixes its amount and billing interval. Prices are
               immutable here so an edit cannot silently change an existing invoice or subscription.
             </p>
-            <ul>
-              {Object.values(account.products).map((p) => (
-                <li key={p.id}>
-                  <Meta
-                    items={[
-                      { kind: 'text', label: p.name },
-                      { kind: 'text', label: p.id },
-                    ]}
-                  />
-                </li>
-              ))}
-            </ul>
-            <ul>
-              {Object.values(catalog.prices).map((p) => (
-                <li key={p.id}>
-                  <Meta
-                    items={[
-                      { kind: 'text', label: p.name },
-                      { kind: 'text', label: dollars(p.cents) },
-                      { kind: 'text', label: p.interval.replace('_', ' ') },
-                      { kind: 'text', label: p.id },
-                    ]}
-                  />
-                </li>
-              ))}
-            </ul>
+            {Object.keys(account.products).length > 0 && (
+              <ul>
+                {Object.values(account.products).map((p) => (
+                  <li key={p.id}>
+                    <Meta
+                      items={[
+                        { kind: 'text', label: p.name },
+                        { kind: 'text', label: p.id },
+                      ]}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+            {prices.length > 0 && (
+              <ul>
+                {Object.values(catalog.prices).map((p) => (
+                  <li key={p.id}>
+                    <Meta
+                      items={[
+                        { kind: 'text', label: p.name },
+                        { kind: 'text', label: dollars(p.cents) },
+                        { kind: 'text', label: p.interval.replace('_', ' ') },
+                        { kind: 'text', label: p.id },
+                      ]}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
             {!prices.length && (
               <p>
                 No Lab prices yet. Existing scenario products need an explicit price before

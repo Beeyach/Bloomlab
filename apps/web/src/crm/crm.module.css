@@ -178,6 +178,21 @@
   min-width: 0;
 }
 
+@media (max-width: 420px) {
+  .search,
+  .toolbarAction {
+    flex-basis: 100%;
+  }
+
+  .search {
+    max-width: none;
+  }
+
+  .toolbarAction {
+    padding-top: 0;
+  }
+}
+
 .rows {
   display: grid;
   margin: 0;

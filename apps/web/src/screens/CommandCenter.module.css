@@ -345,6 +345,15 @@
 }
 
 @media (max-width: 389px) {
+  .state {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .state > span:last-child {
+    align-self: stretch;
+  }
+
   .objectBody {
     padding: var(--bl-space-4);
   }
