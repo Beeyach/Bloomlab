@@ -769,7 +769,10 @@ async function previewArchive(request: Request, env: Storage, session: Session) 
     )
       .bind(new Date().toISOString(), stageId)
       .run();
-    if (!saved.meta.changes) throw new RecoveryError(409, 'Recovery stage changed. Retry.');
+    if (!saved.meta.changes) {
+      await env.MEDIA.delete(key);
+      throw new RecoveryError(409, 'Recovery stage changed. Retry.');
+    }
     return {
       stage_id: stageId,
       backup_id: decoded.header.backup_id,
@@ -816,6 +819,10 @@ async function readStage(env: Storage, session: Session, row: StageRow) {
 
 async function confirmStage(env: Storage, session: Session, id: string) {
   const stage = await ownedStage(env, session, id);
+  if (stage.status === 'restored' && (await env.MEDIA.head(stage.object_key))) {
+    await env.MEDIA.delete(stage.object_key);
+    return { stage_id: id, status: 'restored' };
+  }
   if (!['staged', 'failed'].includes(stage.status))
     throw new RecoveryError(409, 'Recovery stage cannot be confirmed in its current state.');
   const decoded = await readStage(env, session, stage);
@@ -834,12 +841,13 @@ async function confirmStage(env: Storage, session: Session, id: string) {
       await writeObject(env, session, asset, decoded.bytes(asset));
       await indexAsset(env, session, asset);
     }
-    await env.MEDIA.delete(stage.object_key);
-    await env.DB.prepare(
+    const saved = await env.DB.prepare(
       "UPDATE recovery_stages SET status='restored',updated_at=? WHERE stage_id=? AND status='restoring'",
     )
       .bind(new Date().toISOString(), id)
       .run();
+    if (!saved.meta.changes) throw new RecoveryError(409, 'Recovery stage changed. Retry.');
+    await env.MEDIA.delete(stage.object_key);
     return { stage_id: id, status: 'restored', applied: before.counts };
   } catch (error) {
     await env.DB.prepare(
@@ -853,14 +861,15 @@ async function confirmStage(env: Storage, session: Session, id: string) {
 
 async function cancelStage(env: Storage, session: Session, id: string) {
   const stage = await ownedStage(env, session, id);
-  if (!['staged', 'failed', 'uploading'].includes(stage.status))
+  if (!['staged', 'failed', 'uploading', 'cancelled'].includes(stage.status))
     throw new RecoveryError(409, 'Recovery stage cannot be cancelled in its current state.');
-  await env.MEDIA.delete(stage.object_key);
-  await env.DB.prepare(
-    "UPDATE recovery_stages SET status='cancelled',updated_at=? WHERE stage_id=? AND status IN ('staged','failed','uploading')",
+  const claimed = await env.DB.prepare(
+    "UPDATE recovery_stages SET status='cancelled',updated_at=? WHERE stage_id=? AND status IN ('staged','failed','uploading','cancelled')",
   )
     .bind(new Date().toISOString(), id)
     .run();
+  if (!claimed.meta.changes) throw new RecoveryError(409, 'Recovery stage changed. Retry.');
+  await env.MEDIA.delete(stage.object_key);
   return { stage_id: id, status: 'cancelled' };
 }
 
