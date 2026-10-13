@@ -1,6 +1,6 @@
 # Field-Ready v1 code/audit closeout
 
-> **Current published evidence (2026-10-10):** Exact-head CI [38071166013](https://github.com/Beeyach/Bloomlab/actions/runs/38071166013) passed Checks and Preview at `6b0226eb35d83b96f442b26c97495385b43de33c`; Production was skipped. Worker version: `b75296b9-0f63-4d83-a91d-c7236e2734a6`. Older failed/pending narratives below are preserved source snapshots, superseded for this published head. Their historical timing/cancellation causes are not retroactively resolved. Requirement statuses remain unchanged. The subsequent local engineering investigation is recorded in `field-ready-v1-engineering-acceptance.md` and requires its own exact-head Preview run before new-source remote verification.
+> **Current published evidence (rechecked 2026-10-12):** Exact-head CI [38096748142](https://github.com/Beeyach/Bloomlab/actions/runs/38096748142), attempt 1, passed Checks and all seven Preview stages at `18f112f8710766462a18256d72bba5034410973b`; Production was skipped. Worker: `c09f3a84-436a-46e6-8abd-84c58cabe4b7`. Artifact and physical screenshot digests were verified. The automated matrix has zero unverified state cells; 43 human visual rows and all existing open requirement statuses remain. [Publication record](field-ready-v1-preview-publication.md) separates this verified source from older failed/pending snapshots. Historical timing/cancellation causes remain unproven.
 
 Date: 2026-09-10  
 Branch: `codex/field-ready-v1-code-closeout`  
@@ -13,7 +13,7 @@ Field-Ready Complete claim, a new sidebar phase, a live-provider/GHL exercise or
 human visual and physical-device acceptance. DES-009 is inherited regression coverage only and
 remains IN_PROGRESS.
 
-Current independent disposition (2026-10-10): exact source
+Historical independent disposition (2026-10-10): exact source
 `aa5a04764a234666243e96adcd422c0ae5f616ed` PASSED GitHub run `34682953401`
 Checks and Preview with Production SKIPPED. This supersedes earlier pending-CI statements
 for that source only. Independent corrections and remaining automated, operational and

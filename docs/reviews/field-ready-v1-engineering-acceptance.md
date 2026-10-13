@@ -1,5 +1,14 @@
 # Field-Ready v1 engineering acceptance follow-up
 
+> **Published outcome, rechecked 2026-10-12:** This investigation and the approved
+> visual fixes are now included in `18f112f8710766462a18256d72bba5034410973b`.
+> Exact-head [CI 38096748142](https://github.com/Beeyach/Bloomlab/actions/runs/38096748142)
+> passed Checks and Preview; Production was skipped. The automated state-cell
+> gap is closed, with 43 human visual rows still required. The baseline and local
+> verification narratives below retain their historical source binding. See the
+> [publication record](field-ready-v1-preview-publication.md) for current evidence
+> and unchanged release boundaries.
+
 Date: 2026-10-10. Baseline: `6b0226eb35d83b96f442b26c97495385b43de33c`.
 
 ## Published evidence and ledger

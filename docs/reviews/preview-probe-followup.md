@@ -1,5 +1,14 @@
 # Preview probe follow-up — 2026-10-11
 
+> **Published outcome, rechecked 2026-10-12:** This follow-up was approved and
+> pushed as `18f112f8710766462a18256d72bba5034410973b`. Exact-head
+> [CI 38096748142](https://github.com/Beeyach/Bloomlab/actions/runs/38096748142),
+> attempt 1, passed Checks and all seven Preview stages; Production was skipped.
+> Artifact/screenshot digests were verified. The final unpublished/pending
+> paragraph below retains the earlier local review snapshot. See
+> [publication evidence](field-ready-v1-preview-publication.md) for current results
+> and unchanged human/provider boundaries.
+
 Report date uses Asia/Manila, as requested for the client handoff. CI and browser
 evidence timestamps remain in their original UTC date, 2026-10-10.
 

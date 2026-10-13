@@ -1,22 +1,33 @@
 # KNOWN LIMITATIONS
 
-Current independent audit (2026-10-10): published source `1311e4cf74381f3cf6b46f37f4fa1e9822dff776`
-has exact-head run `38063758423`: Checks PASSED, Preview FAILED during manual sync recovery,
-Production SKIPPED. Worker version `e1e20276-fbd7-4a21-853c-e3ff785b567a` matches that source.
-The original source `aa5a04764a234666243e96adcd422c0ae5f616ed` passed run `34682953401`,
-but that pass and a standalone passing diagnostic do not supersede the fresh failed CI.
-Approved contrast/starter-spacing corrections need their own exact-head CI/Preview. New bounded
-sync diagnostics retain timing/status and queue/lock counts, never payloads or credentials;
-no assertion, timeout or preparatory wait was relaxed. The failed CI root cause is unconfirmed.
-The audit retains all requirement statuses. In particular, the 216 missing exact screen/state/input
-cells are feasible objective evidence work, not human-only acceptance. They are separate from
-43 subjective visual-review rows and the twelve parked human/real-GHL requirements.
-Private recovery-stage cleanup/lifecycle configuration remains unverified; expiry rejects
-confirmation but does not by itself demonstrate deletion of staged bytes. Current dependency
-advisories also remain recorded, without claiming a demonstrated deployed exploit.
-See `docs/reviews/field-ready-v1-independent-audit.md` for corrections, verification and blockers.
+Current publication rechecked on 2026-10-12: source
+`18f112f8710766462a18256d72bba5034410973b` passed exact-head run
+`38096748142`, attempt 1: Checks PASSED, all seven Preview stages PASSED,
+Production SKIPPED. Worker: `c09f3a84-436a-46e6-8abd-84c58cabe4b7`.
+Full artifact and physical exact-state screenshot digests were verified.
+The automated joined matrix now has zero unverified state cells; its former
+216-cell gap is historical. The 43 subjective visual-review rows and twelve
+human/real-GHL requirements remain open, with no requirement promotions.
+
+Historical sync timing and navigation cancellation causes remain unproven.
+The current five held-failure cases passed unchanged deadlines; that does not
+convert earlier failed runs or the larger-burst supplement into passes.
+Recovery confirmation expires after 24 hours, but the source has no scheduled
+abandoned-stage deletion sweep. Confirmation/cancellation delete the staged R2
+object; neither operation establishes abandoned-stage cleanup. Actual cloud
+lifecycle configuration and deletion remain unverified. No learner bytes were
+read or deleted during this continuation. Ten dependency warnings remain in a
+fresh read-only npm audit; no dependency was installed or upgraded and no
+deployed exploit is claimed. See `docs/reviews/field-ready-v1-preview-publication.md`.
 
 ## Historical closeout verification records
+
+The following source/run narratives retain their original failed or pending
+dispositions. Current verification is the exact-head publication above.
+
+Source `1311e4cf74381f3cf6b46f37f4fa1e9822dff776` passed Checks but failed
+Preview manual-sync recovery in `38063758423`; Worker
+`e1e20276-fbd7-4a21-853c-e3ff785b567a`. Its historical cause remains unconfirmed.
 
 Review corrections are now included in pushed masking source `aaa850c`. Bloomlab is public
 and GitHub run `34673325444` attempt 2 passed Checks after the previous private-repo
@@ -42,7 +53,7 @@ Existing JSON restore still rejects backups containing simulator `2026.09.23-r1`
 under r2; those require the original engine. In-place saved-run compatibility does not establish
 cross-version JSON restore support.
 
-## Current Field-Ready code/audit closeout boundary (2026-09-10)
+## Historical Field-Ready code/audit closeout boundary (2026-09-10)
 
 `docs/reviews/field-ready-v1-code-closeout.md` records checkpoints C1–C8. The closeout resolves
 the provable AI-Off, learner-ownership, immutable-prediction, private binary recovery,
