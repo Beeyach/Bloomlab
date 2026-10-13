@@ -571,6 +571,12 @@ export const ExerciseSchema = z
     ) {
       issue(['hints'], 'REBUILD BLIND never provides a worked example');
     }
+    if ('has_written_response' in exercise.response_markers) {
+      issue(
+        ['response_markers', 'has_written_response'],
+        'has_written_response is reserved for the trimmed response completion check',
+      );
+    }
     // ---- checks the Phase 9 grader relies on: a malformed rule must fail the build, never
     // reach a learner as a check that silently cannot be judged (EXR-002, CNT-005).
     const markerKeys = new Set(Object.keys(exercise.response_markers));
@@ -686,6 +692,7 @@ export const ExerciseSchema = z
           const key = rest.join('.');
           if (
             !markerKeys.has(key) &&
+            key !== 'has_written_response' &&
             !(
               exercise.type === 'FIELDWORK' &&
               exercise.fieldwork?.proof &&

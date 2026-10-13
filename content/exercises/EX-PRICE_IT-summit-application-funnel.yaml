@@ -187,14 +187,14 @@ expected_outcomes:
     operator: equals
     value: true
     description: The quote covers delivery plus the contingency this client's risk asks for.
-    tier: quality
+    tier: required
   - id: a8
     type: state
     path: price.margin_at_least_floor
     operator: equals
     value: true
     description: The margin on the one-time work is at or above the floor this business works to.
-    tier: quality
+    tier: required
   - id: a9
     type: state
     path: price.scope.typeform_migration.included

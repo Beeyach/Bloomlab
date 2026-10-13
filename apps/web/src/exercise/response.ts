@@ -132,6 +132,7 @@ export function learnerState(
       response.fieldwork && completionMissing(exercise, response.fieldwork).length === 0,
     );
   for (const key of Object.keys(exercise.response_markers)) answer[key] = found.includes(key);
+  answer.has_written_response = response.text.trim().length > 0;
   // Each named answer is graded on its own: which markers appear *in it*, and whether it was
   // answered at all. That is what lets a check say the hypothesis names the booking step without
   // being satisfied by the problem statement mentioning it.

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { objectiveReport } from '@bloomlab/exercise-engine';
 import { getFeatureFlags } from '@bloomlab/shared';
 import { App } from '../app/App';
 import { content } from '../content/bundle';
@@ -76,5 +77,34 @@ describe('R9 later-level architecture evidence boundaries', () => {
       expect(report.outcome).toBe('partial');
       expect(report.rubric_pending).toBe('SYSTEM_DESIGN_RUBRIC_V1');
     }
+  });
+  it.each([
+    [
+      'positive marker language',
+      'I need to know the callback time before I choose the first build.',
+      true,
+    ],
+    ['empty', '', false],
+    ['whitespace', '   \n\t ', false],
+    [
+      'manual nonmarker paraphrase',
+      'Start with an owned callback queue. Inspect booking abandonment and response-time data before automation.',
+      true,
+    ],
+    ['gibberish', 'banana banana banana', true],
+  ])('uses nonblank completion before semantic review: %s', async (_name, text, pending) => {
+    const exercise = content.exercises.find(
+      (row) => row.id === 'EX-WHAT_WOULD_YOU_BUILD-glowhaus-leads',
+    )!;
+    await startAttempt(exercise, NORMAL_RUN);
+    await saveResponse(exercise.id, NORMAL_RUN, { text });
+    const report = objectiveReport(
+      gradeAttempt(exercise, (await loadAttempt(exercise.id, NORMAL_RUN))!),
+    );
+    expect(report).toMatchObject(
+      pending
+        ? { outcome: 'partial', reason: 'rubric_pending', score: 100 }
+        : { outcome: 'failed', reason: 'below_threshold', score: 0 },
+    );
   });
 });

@@ -6,7 +6,7 @@ import {
   SCOPE_DIMENSIONS,
   type Exercise,
 } from '@bloomlab/content-schema';
-import { gradeExercise } from '@bloomlab/exercise-engine';
+import { combineRubric, gradeExercise } from '@bloomlab/exercise-engine';
 
 import { content } from '../content/bundle';
 import { emptyResponse, learnerState } from './response';
@@ -157,7 +157,7 @@ describe('the Summit deal accepts more than one defensible price (PRI-002, EXR-0
   });
 
   // 22 hours at $55 is $1,210 of delivery, plus 2 hours of the one revision round: $1,320.
-  it.each([2200, 3200])('$%i clears the floor, the risk and the margin', (project) => {
+  it.each([2200, 3200, 4000])('$%i clears the floor, the risk and the margin', (project) => {
     const report = gradePricing(summit(), answered(project));
     const failed = report.tiers.critical.filter((row) => !row.passed && !row.unevaluated);
     expect(failed).toEqual([]);
@@ -174,6 +174,28 @@ describe('the Summit deal accepts more than one defensible price (PRI-002, EXR-0
     const failed = report.tiers.critical.filter((row) => !row.passed && !row.unevaluated);
     expect(failed.map((row) => row.id)).toEqual(['c1']);
     expect(report.outcome).not.toBe('passed');
+  });
+
+  it.each([
+    ['at cost', 1320, 78, ['a7', 'a8']],
+    ['under risk coverage', 1400, 78, ['a7', 'a8']],
+    ['covers risk but is under minimum margin', 1600, 89, ['a8']],
+  ])('required-gates %s and an all-pass rubric cannot erase it', (_name, project, score, ids) => {
+    const objective = gradePricing(summit(), answered(project));
+    expect(objective).toMatchObject({ outcome: 'failed', reason: 'required_failure', score });
+    expect(objective.failed_critical).toEqual([]);
+    expect(objective.tiers.required.filter((row) => !row.passed).map((row) => row.id)).toEqual(ids);
+    const rubric = content.rubrics.find((row) => row.id === 'PRICING_REASONING_RUBRIC_V1')!;
+    const combined = combineRubric(objective, rubric, {
+      score: 100,
+      rubric_results: rubric.items.map((item) => ({
+        id: item.id,
+        passed: true,
+        reason: 'met',
+      })),
+      critical_issue: null,
+    });
+    expect(combined).toMatchObject({ outcome: 'failed', reason: 'required_failure', score });
   });
 
   it('drops the floor when the learner drops scope, so a smaller deal is defensible cheaper', () => {
