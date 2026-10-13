@@ -322,7 +322,7 @@ describe('devices (SYNC-004, SYNC-005)', () => {
 });
 
 describe('schema (DATA-004, DATA-005)', () => {
-  it('creates the spec §93 tables plus notes, media and call infrastructure, and no curriculum tables', async () => {
+  it('creates the spec §93 tables plus notes, private media/recovery and call infrastructure, and no curriculum tables', async () => {
     const { results } = await env.DB.prepare(
       "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'd1_%' AND name NOT LIKE '_cf_%'",
     ).all<{ name: string }>();
@@ -358,8 +358,27 @@ describe('schema (DATA-004, DATA-005)', () => {
         'call_recordings',
         'call_turns',
         'call_voice_assets',
+        'scenario_attachments',
+        'recovery_stages',
       ].sort(),
     );
+    for (const learnerOwned of [
+      'media_assets',
+      'evidence_assets',
+      'call_attempts',
+      'call_recordings',
+      'call_voice_assets',
+      'scenario_attachments',
+      'recovery_stages',
+    ]) {
+      const columns = await env.DB.prepare(`PRAGMA table_info(${learnerOwned})`).all<{
+        name: string;
+      }>();
+      expect(
+        columns.results.map((column) => column.name),
+        `${learnerOwned} must carry explicit ownership`,
+      ).toContain('learner_id');
+    }
     for (const forbidden of ['skills', 'units', 'exercises', 'ghl_features', 'registry']) {
       expect(names).not.toContain(forbidden);
     }

@@ -2,7 +2,11 @@ import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 
 import {
+  ContentTitle,
   Button,
+  Meta,
+  IconBook,
+  IconClock,
   HoloTerritory,
   MasteryBadge,
   MASTERY_LABELS,
@@ -181,10 +185,13 @@ function SkillDetail({
         <div className={styles.detailState}>
           <MasteryBadge state={evaluation.state} size="lg" />
           <div>
-            <p className={styles.detailTerritory}>
-              {TERRITORY_LABELS[skill.territory as Territory]}
-              {focused && ' · Your focus'}
-            </p>
+            <Meta
+              className={styles.detailTerritory}
+              items={[
+                { kind: 'chip', label: TERRITORY_LABELS[skill.territory as Territory] },
+                ...(focused ? [{ kind: 'badge' as const, label: 'Your focus' }] : []),
+              ]}
+            />
             <StatusPill
               label={availability.label}
               tone={availability.tone}
@@ -201,20 +208,44 @@ function SkillDetail({
           </p>
         )}
         {evaluation.review_due && evaluation.state !== 'NEEDS_REFRESH' && (
-          <p className={styles.detailMeta}>
-            Retrieval due {relativeDay(evaluation.review_due, snapshot.now)}
-            {evaluation.last_demonstrated &&
-              ` · last demonstrated ${relativeDay(evaluation.last_demonstrated, snapshot.now)}`}
-          </p>
+          <Meta
+            className={styles.detailMeta}
+            items={[
+              {
+                kind: 'text',
+                label: `Retrieval due ${relativeDay(evaluation.review_due, snapshot.now)}`,
+              },
+              ...(evaluation.last_demonstrated
+                ? [
+                    {
+                      kind: 'text' as const,
+                      label: `last demonstrated ${relativeDay(evaluation.last_demonstrated, snapshot.now)}`,
+                    },
+                  ]
+                : []),
+            ]}
+          />
         )}
 
         {step && described && (
           <Surface tone="mist" padding="sm" className={styles.next}>
-            <p className={styles.nextTitle}>{described.title}</p>
-            <p className={styles.detailMeta}>
-              Next · {described.verb} · {step.minutes} min
-              {described.detail ? ` · ${described.detail}` : ''} · {step.reason}
+            <p className={styles.nextTitle}>
+              <ContentTitle title={described.title} />
             </p>
+            <Meta
+              className={styles.detailMeta}
+              items={[
+                { kind: 'badge', label: 'Next' },
+                {
+                  kind: 'text',
+                  icon: step.kind === 'unit' ? <IconBook /> : undefined,
+                  label: described.verb,
+                },
+                { kind: 'text', icon: <IconClock />, label: `${step.minutes} min` },
+                ...(described.detail ? [{ kind: 'text' as const, label: described.detail }] : []),
+                { kind: 'text', label: step.reason },
+              ]}
+            />
             {stepExercise && (
               <p className={styles.nextText}>{excerpt(stepExercise.instructions)}</p>
             )}
@@ -295,9 +326,13 @@ function SkillDetail({
               {history.map((evidence: SkillEvidence) => (
                 <li key={evidence.id} className={styles.evidenceRow}>
                   <span className={styles.evidenceWord}>{evidenceWord(evidence)}</span>
-                  <span className={styles.detailMeta}>
-                    {KIND_WORDS[evidence.kind]} · {relativeDay(evidence.occurred_at, snapshot.now)}
-                  </span>
+                  <Meta
+                    className={styles.detailMeta}
+                    items={[
+                      { kind: 'text', label: KIND_WORDS[evidence.kind] },
+                      { kind: 'text', label: relativeDay(evidence.occurred_at, snapshot.now) },
+                    ]}
+                  />
                 </li>
               ))}
             </ul>
@@ -422,7 +457,7 @@ export default function SkillMap() {
           <p className={styles.panelCount}>
             {selectedSkills.length === 0
               ? 'No capabilities authored yet'
-              : `${selectedDemonstrated} of ${selectedSkills.length} capabilities demonstrated`}
+              : `${selectedDemonstrated} of ${selectedSkills.length} ${selectedSkills.length === 1 ? 'capability' : 'capabilities'} demonstrated`}
           </p>
         </header>
         {selectedSkills.length === 0 ? (

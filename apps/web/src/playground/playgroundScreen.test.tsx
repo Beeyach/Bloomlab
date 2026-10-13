@@ -51,7 +51,16 @@ describe('the Playground exposes every unlocked feature without an exercise (SIM
     await waitFor(() => expect(within(list).getByText('Send SMS')).toBeInTheDocument());
     const sms = list.querySelector('[data-feature="GHL-WF-SEND-SMS"]') as HTMLElement;
     expect(within(sms).getByText('Simulated')).toBeInTheDocument();
-    expect(within(sms).getByText(/Met in/)).toBeInTheDocument();
+    const encounter = within(sms).getByText(/Met in/);
+    expect(encounter).toHaveAttribute('title', encounter.textContent);
+    const scenarioChoice = screen.getByLabelText('Scenario') as HTMLSelectElement;
+    expect(scenarioChoice).toHaveAttribute(
+      'title',
+      scenarioChoice.selectedOptions.item(0)?.textContent,
+    );
+    expect(screen.getByLabelText('Feature columns')).toHaveTextContent(
+      'FeatureAreaModeWhere you met it',
+    );
     expect(screen.getByText(/1 saved run/)).toBeInTheDocument();
     // No gamification words anywhere on the surface.
     expect(document.body.textContent).not.toMatch(/\bXP\b|\bpoints\b|\bstreak\b|\blevel \d/i);

@@ -1,7 +1,16 @@
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { useSearchParams } from 'react-router';
 
-import { Button, Field, Select, Sheet, StatusPill, ToolPanel } from '@bloomlab/design-system';
+import {
+  Button,
+  Field,
+  IconCheck,
+  Meta,
+  Select,
+  Sheet,
+  StatusPill,
+  ToolPanel,
+} from '@bloomlab/design-system';
 import { calendarZone, validateCalendar, type Calendar, type Slot } from '@bloomlab/simulator-core';
 
 import {
@@ -286,7 +295,12 @@ export default function CalendarLab() {
   );
 
   return (
-    <div className={styles.screen}>
+    <div
+      className={styles.screen}
+      data-testid="calendar-lab"
+      data-run-generation={run.generation}
+      aria-busy={busy}
+    >
       <header className={styles.header}>
         <h1 className={styles.title}>Calendar Lab</h1>
         <p className={styles.lead}>
@@ -338,9 +352,10 @@ export default function CalendarLab() {
                   setWatermark(null);
                   void reset();
                 }}
+                disabled={busy}
                 data-testid="calendar-reset-confirm"
               >
-                Reset
+                Reset account
               </Button>
               <Button variant="ghost" onClick={() => setConfirmingReset(false)}>
                 Keep it
@@ -348,11 +363,12 @@ export default function CalendarLab() {
             </>
           ) : (
             <Button
-              variant="ghost"
+              variant="secondary"
               onClick={() => setConfirmingReset(true)}
+              disabled={busy}
               data-testid="calendar-reset"
             >
-              Reset the account
+              Reset account
             </Button>
           )}
         </div>
@@ -380,12 +396,21 @@ export default function CalendarLab() {
             ))}
           </Select>
         </Field>
-        <Button variant="ghost" onClick={addCalendar} data-testid="calendar-add">
+        <Button variant="secondary" onClick={addCalendar} data-testid="calendar-add">
           New calendar
         </Button>
-        <span className={styles.saveState} data-testid="calendar-save-state">
-          {dirty ? 'Unsaved changes' : `Saved · version ${savedVersion}`}
-        </span>
+        <div className={styles.saveState} data-testid="calendar-save-state">
+          {dirty ? (
+            'Unsaved changes'
+          ) : (
+            <Meta
+              items={[
+                { kind: 'text', icon: <IconCheck />, label: 'Saved' },
+                { kind: 'chip', label: `v${savedVersion}` },
+              ]}
+            />
+          )}
+        </div>
         <Button onClick={() => void save()} disabled={busy || !dirty} data-testid="calendar-save">
           Save
         </Button>
@@ -536,7 +561,10 @@ export default function CalendarLab() {
                 <span className={styles.chainOrigin} data-origin={entry.origin}>
                   {ORIGIN_WORDS[entry.origin] ?? entry.origin}
                 </span>
-                <span className={styles.chainDetail}>{entry.detail}</span>
+                <Meta
+                  className={styles.chainDetail}
+                  items={entry.detail.map((label) => ({ kind: 'text', label }))}
+                />
                 <span className={styles.chainAt}>
                   {clockTime(entry.at, run.state.clock.timezone)}
                 </span>

@@ -2,6 +2,8 @@ import {
   memo,
   useCallback,
   useEffect,
+  useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -10,6 +12,7 @@ import {
 
 import {
   InkSurface,
+  Meta,
   WorkflowNode as NodeCard,
   cx,
   usePrefersReducedMotion,
@@ -24,6 +27,7 @@ import type {
 } from '@bloomlab/simulator-core';
 
 import { COLUMN, ROW } from './graphEdit';
+import { CARD_FALLBACK_HEIGHT, measuredPositions, type Positions } from './canvasLayout';
 import { featureName, paletteEntry } from './palette';
 import { configSummary, nodeKind, nodeName, playbackStatus } from './words';
 import styles from './workflow.module.css';
@@ -46,7 +50,7 @@ export interface CanvasProps {
   account: AccountState;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
-  onMove: (id: string, x: number, y: number) => void;
+  onMove: (id: string, x: number, y: number, positions: Positions) => void;
   /** The run whose status the nodes show, when one is being watched. */
   watched: WorkflowRun | null;
   records: ExecutionRecord[];
@@ -58,7 +62,7 @@ export interface CanvasProps {
 }
 
 const CARD_WIDTH = 240;
-const CARD_HEIGHT = 96;
+const CARD_HEIGHT = CARD_FALLBACK_HEIGHT;
 const PAD = 24;
 const TRIGGER_Y = 0;
 
@@ -87,20 +91,46 @@ function CanvasInner({
     y: number;
   } | null>(null);
   const surface = useRef<HTMLDivElement>(null);
+  const [heights, setHeights] = useState<Record<string, number>>({});
+  const positions = useMemo(() => measuredPositions(workflow, heights), [workflow, heights]);
+  useLayoutEffect(() => {
+    const cards = surface.current?.querySelectorAll<HTMLElement>('[data-measure-node]');
+    if (!cards) return;
+    const measure = () => {
+      const next = Object.fromEntries(
+        [...cards]
+          .map((card) => [card.dataset.measureNode!, card.getBoundingClientRect().height])
+          .filter(([, height]) => Number(height) > 0),
+      );
+      setHeights((current) =>
+        Object.keys(next).every((id) => current[id] === next[id]) &&
+        Object.keys(current).length === Object.keys(next).length
+          ? current
+          : next,
+      );
+    };
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(measure);
+    cards.forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, [workflow]);
   const reduced = usePrefersReducedMotion();
 
   const width = Math.max(
-    ...workflow.nodes.map((node) => node.position.x + CARD_WIDTH + PAD * 2),
+    ...workflow.nodes.map((node) => positions[node.id]!.x + CARD_WIDTH + PAD * 2),
     COLUMN + PAD * 2,
   );
   const height =
     Math.max(
-      ...workflow.nodes.map((node) => node.position.y + CARD_HEIGHT + PAD * 2),
+      ...workflow.nodes.map(
+        (node) => positions[node.id]!.y + (heights[node.id] ?? CARD_HEIGHT) + PAD * 2,
+      ),
       ROW * 2 + PAD * 2,
     ) + ROW;
 
   const positionOf = (node: WorkflowNode) =>
-    dragging && dragging.id === node.id ? { x: dragging.x, y: dragging.y } : node.position;
+    dragging && dragging.id === node.id ? { x: dragging.x, y: dragging.y } : positions[node.id]!;
 
   const onPointerDown = (node: WorkflowNode) => (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return;
@@ -109,9 +139,9 @@ function CanvasInner({
     target.setPointerCapture(event.pointerId);
     setDragging({
       id: node.id,
-      dx: event.clientX - node.position.x,
-      dy: event.clientY - node.position.y,
-      ...node.position,
+      dx: event.clientX - positionOf(node).x,
+      dy: event.clientY - positionOf(node).y,
+      ...positionOf(node),
     });
   };
   const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -125,8 +155,8 @@ function CanvasInner({
   const onPointerUp = () => {
     if (!dragging) return;
     const node = workflow.nodes.find((row) => row.id === dragging.id);
-    if (node && (node.position.x !== dragging.x || node.position.y !== dragging.y)) {
-      onMove(dragging.id, dragging.x, dragging.y);
+    if (node && (positions[node.id]!.x !== dragging.x || positions[node.id]!.y !== dragging.y)) {
+      onMove(dragging.id, dragging.x, dragging.y, positions);
     }
     setDragging(null);
   };
@@ -149,11 +179,12 @@ function CanvasInner({
       event.preventDefault();
       onMove(
         node.id,
-        Math.max(0, node.position.x + move[0]),
-        Math.max(0, node.position.y + move[1]),
+        Math.max(0, positions[node.id]!.x + move[0]),
+        Math.max(0, positions[node.id]!.y + move[1]),
+        positions,
       );
     },
-    [selectedId, workflow.nodes, onMove],
+    [selectedId, workflow.nodes, onMove, positions],
   );
 
   useEffect(() => {
@@ -201,13 +232,24 @@ function CanvasInner({
       >
         <svg className={styles.edges} width={width} height={height} aria-hidden="true">
           {entry && (
-            <line
-              x1={PAD + CARD_WIDTH / 2}
-              y1={TRIGGER_Y + PAD + CARD_HEIGHT}
-              x2={center(positionedNode(entry, positionOf)).x}
-              y2={positionOf(entry).y + PAD}
-              className={styles.edge}
-            />
+            <g>
+              <line
+                x1={PAD + CARD_WIDTH / 2}
+                y1={TRIGGER_Y + PAD + (heights.trigger ?? CARD_HEIGHT)}
+                x2={center(positionedNode(entry, positionOf)).x}
+                y2={positionOf(entry).y + PAD}
+                className={styles.edge}
+              />
+              <circle
+                className={styles.connectorDot}
+                r={3}
+                cx={(PAD + CARD_WIDTH / 2 + center(positionedNode(entry, positionOf)).x) / 2}
+                cy={
+                  (TRIGGER_Y + PAD + (heights.trigger ?? CARD_HEIGHT) + positionOf(entry).y + PAD) /
+                  2
+                }
+              />
+            </g>
           )}
           {workflow.edges.map((edge) => {
             const from = workflow.nodes.find((node) => node.id === edge.from);
@@ -215,7 +257,10 @@ function CanvasInner({
             if (!from || !to) return null;
             const a = center(positionedNode(from, positionOf));
             const b = center(positionedNode(to, positionOf));
-            const start = { x: a.x, y: positionOf(from).y + PAD + CARD_HEIGHT };
+            const start = {
+              x: a.x,
+              y: positionOf(from).y + PAD + (heights[from.id] ?? CARD_HEIGHT),
+            };
             const end = { x: b.x, y: positionOf(to).y + PAD };
             const mid = (start.y + end.y) / 2;
             const active = lit.has(edge.from) && lit.has(edge.to);
@@ -225,6 +270,7 @@ function CanvasInner({
                   d={`M ${start.x} ${start.y} C ${start.x} ${mid}, ${end.x} ${mid}, ${end.x} ${end.y}`}
                   className={cx(styles.edge, active && styles.edgeActive)}
                 />
+                <circle className={styles.connectorDot} r={3} cx={(start.x + end.x) / 2} cy={mid} />
                 {edge.branch && (
                   <text x={(start.x + end.x) / 2 + 6} y={mid - 4} className={styles.edgeLabel}>
                     {edge.branch}
@@ -236,6 +282,7 @@ function CanvasInner({
         </svg>
 
         <div
+          data-measure-node="trigger"
           className={styles.triggerCard}
           style={{ transform: `translate(${PAD}px, ${TRIGGER_Y + PAD}px)` }}
         >
@@ -243,16 +290,18 @@ function CanvasInner({
             kind="trigger"
             name={trigger ? trigger.name : 'Choose a trigger'}
             config={
-              workflow.trigger.filters.length > 0
-                ? workflow.trigger.filters
-                    .map(
-                      (filter) =>
-                        `${filter.field} ${filter.operator} ${String(filter.value ?? '')}`,
-                    )
-                    .join(' · ')
-                : trigger
-                  ? 'No filters'
-                  : 'What starts this workflow?'
+              workflow.trigger.filters.length > 0 ? (
+                <Meta
+                  items={workflow.trigger.filters.map((filter) => ({
+                    kind: 'text',
+                    label: `${filter.field} ${filter.operator} ${String(filter.value ?? '')}`,
+                  }))}
+                />
+              ) : trigger ? (
+                'No filters'
+              ) : (
+                'What starts this workflow?'
+              )
             }
             status={watched ? 'done' : 'idle'}
             approximation={Boolean(trigger?.approximation)}
@@ -277,6 +326,7 @@ function CanvasInner({
           return (
             <div
               key={node.id}
+              data-measure-node={node.id}
               className={styles.placed}
               style={{ transform: `translate(${position.x + PAD}px, ${position.y + PAD}px)` }}
               data-dragging={dragging?.id === node.id || undefined}

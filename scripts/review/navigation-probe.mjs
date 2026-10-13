@@ -4,13 +4,74 @@ import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { openPage, screenshot, session, setViewport, sleep } from './cdp.mjs';
+import { sidebarCompositionChecks } from './sidebar-composition.mjs';
 
 const BASE = process.env.BASE ?? 'http://localhost:4173';
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review/navigation');
 const HEAD = process.env.REVIEW_HEAD;
+const REQUIRED_DESTINATIONS = [
+  '/',
+  '/campaign',
+  '/skills',
+  '/search',
+  '/workflow',
+  '/crm',
+  '/funnel',
+  '/calendar',
+  '/conversations',
+  '/reporting',
+  '/payments',
+  '/incident',
+  '/clients',
+  '/portfolio',
+  '/playground',
+  ...(HEAD ? ['/system', '/design'] : []),
+];
 mkdirSync(OUT, { recursive: true });
 const report = { base: BASE, head: HEAD ?? 'working-tree', cases: [], status: 'RUNNING' };
 const { page, close } = await session();
+// A readiness failure can precede the whole React shell. Preserve the browser's actual
+// exceptions and current navigation requests, without recording headers or request bodies.
+const browserErrors = [];
+const requests = new Map();
+let lastReset;
+let resetCount = 0;
+const recordError = (kind, details) => {
+  browserErrors.push({ at: new Date().toISOString(), kind, details });
+  if (browserErrors.length > 100) browserErrors.shift();
+};
+const stopDiagnostics = [
+  page.on('Runtime.exceptionThrown', (details) => recordError('exception', details)),
+  page.on('Log.entryAdded', ({ entry }) => {
+    if (entry.level === 'error') recordError('browser-log', entry);
+  }),
+  page.on('Network.requestWillBeSent', ({ requestId, loaderId, type, request, timestamp }) => {
+    requests.set(requestId, { loaderId, type, url: request.url, startedAt: timestamp });
+    if (requests.size > 300) requests.delete(requests.keys().next().value);
+  }),
+  page.on('Network.responseReceived', ({ requestId, response }) => {
+    const request = requests.get(requestId);
+    if (request)
+      Object.assign(request, {
+        status: response.status,
+        mimeType: response.mimeType,
+        fromServiceWorker: response.fromServiceWorker,
+        fromDiskCache: response.fromDiskCache,
+      });
+  }),
+  page.on('Network.loadingFinished', ({ requestId, encodedDataLength, timestamp }) => {
+    const request = requests.get(requestId);
+    if (request)
+      Object.assign(request, { finished: true, finishedAt: timestamp, encodedDataLength });
+  }),
+  page.on('Network.loadingFailed', ({ requestId, errorText, canceled, blockedReason }) => {
+    const request = requests.get(requestId);
+    if (request) Object.assign(request, { errorText, canceled, blockedReason });
+    recordError('request-failed', { url: request?.url, errorText, canceled, blockedReason });
+  }),
+];
+await page.send('Network.enable');
+await page.send('Log.enable');
 const save = () =>
   writeFileSync(resolve(OUT, 'navigation-probe.json'), JSON.stringify(report, null, 2));
 const key = async (key, modifiers = 0) => {
@@ -52,13 +113,13 @@ const state = () =>
     token:parseFloat(getComputedStyle(n).getPropertyValue('--bl-size-rail')),offset:parseFloat(getComputedStyle(frame).paddingLeft),mainLeft:main.getBoundingClientRect().left,
     horizontal:document.documentElement.scrollWidth>innerWidth,last:last.getAttribute('href'),lastVisible:b.top>=r.top&&b.bottom<=r.bottom,
     names:links.map(a=>a.getAttribute('aria-label')),hrefs:links.map(a=>a.getAttribute('href')),
-    labels:links.map(a=>{const l=a.querySelector('[class*="label"]');return {visible:l.getClientRects().length>0,fits:a.scrollWidth<=a.clientWidth};}),
+    labels:links.map(a=>{const l=a.querySelector('[class*="label"]'),b=l.getBoundingClientRect();return {visible:l.getClientRects().length>0,fits:l.scrollWidth<=l.clientWidth+1&&b.left>=r.left&&b.right<=r.left+s.clientWidth};}),
     composition:links.map(a=>{
       const geometry=el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return {
-        left:r.left,right:r.right,width:r.width,height:r.height,cx:r.left+r.width/2,cy:r.top+r.height/2,
+        left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height,cx:r.left+r.width/2,cy:r.top+r.height/2,
         boxes:el.getClientRects().length,visible:cs.visibility==='visible'&&Number(cs.opacity)>0&&r.width>0&&r.height>0
       };};
-      return {name:a.getAttribute('aria-label'),row:geometry(a),icon:geometry(a.querySelector('svg')),label:geometry(a.querySelector('[class*="label"]'))};
+      return {name:a.getAttribute('aria-label'),row:geometry(a),icon:geometry(a.querySelector('svg')),glyph:geometry(a.querySelector('[class*="glyph"]')),label:geometry(a.querySelector('[class*="label"]')),gap:parseFloat(getComputedStyle(a).gap),labelFontSize:parseFloat(getComputedStyle(a.querySelector('[class*="label"]')).fontSize)};
     }),
     icons:links.every(a=>!!a.querySelector('svg')),behavior:getComputedStyle(s).scrollBehavior,
     build:frame.dataset.buildId,
@@ -71,8 +132,20 @@ const state = () =>
     })()};
 })()`);
 const reset = async () => {
+  requests.clear();
+  lastReset = {
+    number: ++resetCount,
+    startedAt: new Date().toISOString(),
+    url: BASE + '/skills',
+    case: report.cases.at(-1)?.name,
+  };
   await openPage(page, BASE + '/skills');
-  await sleep(100);
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    if (await page.evaluate(`Boolean(document.querySelector('[data-testid="rail-destinations"]'))`))
+      return;
+    await sleep(50);
+  }
+  throw new Error('Navigation shell did not become ready after route reset');
 };
 const swipe = async (s) => {
   await page.send('Input.dispatchTouchEvent', {
@@ -93,7 +166,7 @@ try {
   report.healthBefore = await (await fetch(BASE + '/api/health')).json();
   if (HEAD) assert.equal(report.healthBefore.build_id, HEAD);
   const widths = process.env.NAV_WIDTHS?.split(',').map(Number) ?? [1440, 1024, 768];
-  const heights = process.env.NAV_HEIGHTS?.split(',').map(Number) ?? [900, 720, 600, 480];
+  const heights = process.env.NAV_HEIGHTS?.split(',').map(Number) ?? [900, 810, 720, 600, 480];
   for (const width of widths)
     for (const height of heights)
       for (const mode of ['expanded', 'collapsed']) {
@@ -121,9 +194,9 @@ try {
             await page.evaluate(
               `document.querySelectorAll('[data-testid="rail-destinations"] a').forEach(a=>a.style.flexDirection='column')`,
             );
-          if (process.env.NAV_COMPOSITION_NEGATIVE === 'visible-label' && mode === 'collapsed')
+          if (process.env.NAV_COMPOSITION_NEGATIVE === 'hidden-label' && mode === 'collapsed')
             await page.evaluate(
-              `document.querySelectorAll('[data-testid="rail-destinations"] a [class*="label"]').forEach(l=>l.style.display='block')`,
+              `document.querySelectorAll('[data-testid="rail-destinations"] a [class*="label"]').forEach(l=>l.style.display='none')`,
             );
           let initial = await state();
           row.initial = initial;
@@ -140,36 +213,18 @@ try {
             'namesAndIcons',
             initial.names.length >= 15 && initial.names.every(Boolean) && initial.icons,
           );
-          for (const { name, row: target, icon, label } of initial.composition) {
-            check(
-              `${name}: visible icon and 44px target`,
-              icon.visible && target.width >= 44 && target.height >= 44,
-            );
-            if (mode === 'expanded') {
-              check(
-                `${name}: visible label beside icon`,
-                label.visible &&
-                  label.boxes > 0 &&
-                  icon.cx < label.left &&
-                  icon.right <= label.left &&
-                  label.left - icon.right <= 16,
-              );
-              check(`${name}: shared vertical centerline`, Math.abs(icon.cy - label.cy) <= 2);
-              check(`${name}: compact horizontal row`, target.height <= 48);
-            } else {
-              check(
-                `${name}: no rendered label boxes`,
-                label.boxes === 0 && label.width === 0 && label.height === 0,
-              );
-              check(
-                `${name}: centered icon`,
-                Math.abs(icon.cx - target.cx) <= 1 && Math.abs(icon.cy - target.cy) <= 1,
-              );
-            }
-          }
+          check(
+            'allRequiredDestinationsPresent',
+            REQUIRED_DESTINATIONS.every((href) => initial.hrefs.includes(href)),
+          );
+          for (const composition of initial.composition)
+            for (const [criterion, passed] of Object.entries(
+              sidebarCompositionChecks(composition, mode),
+            ))
+              check(`${composition.name}: ${criterion}`, passed);
           check(
             'labelComposition',
-            initial.labels.every((l) => l.fits && l.visible === (mode === 'expanded')),
+            initial.labels.every((l) => l.fits && l.visible),
           );
           check(
             'noHorizontalOverflow',
@@ -200,17 +255,29 @@ try {
             const small = await state();
             row.trackpad = small;
             check('smallWheelDeltas', small.top > 0 && small.page === 0);
-            for (let i = 0; i < 20 && !(await state()).lastVisible; i++)
+            // Seeing the last link is not reaching the native boundary: bottom padding remains.
+            for (
+              let i = 0;
+              i < 20 && (await state()).top < initial.content - initial.height - 1;
+              i++
+            )
               await wheel(initial.x, initial.y, 180);
             const bottom = await state();
             row.bottom = bottom;
             check('wheelRevealsLowerDestination', bottom.lastVisible && bottom.top > 0);
-            // Separate wheel gestures at the exhausted boundary should permit page movement.
+            check(
+              'wheelReachesNativeBoundary',
+              Math.abs(bottom.top + bottom.height - bottom.content) <= 1,
+            );
+            // The requested rail contains boundary gestures; wheel input over the page remains independent.
             await sleep(250);
             await wheel(initial.x, initial.y, 300);
             const boundary = await state();
             row.boundary = boundary;
-            check('boundaryDoesNotSwallowInput', boundary.page > bottom.page);
+            check(
+              'boundaryContainedInRail',
+              boundary.page === bottom.page && boundary.top === bottom.top,
+            );
             await reset();
             initial = await state();
             await wheel(width - 35, 150, 200);
@@ -466,10 +533,33 @@ try {
 } catch (error) {
   report.status = 'FAILED';
   report.error = String(error);
+  report.failureContext = {
+    reset: lastReset,
+    browserErrors,
+    requests: [...requests.values()],
+    page: await page
+      .evaluate(
+        `({
+        url: location.href,
+        readyState: document.readyState,
+        title: document.title,
+        build: document.querySelector('[data-build-id]')?.dataset.buildId,
+        rootElements: document.querySelector('#root')?.childElementCount,
+        main: document.querySelector('main')?.textContent,
+        body: document.body.textContent,
+        controller: navigator.serviceWorker?.controller?.scriptURL,
+        scripts: [...document.scripts].map(script => ({ src: script.src, type: script.type }))
+      })`,
+      )
+      .catch((failure) => ({ error: String(failure) })),
+  };
   console.error(error);
   await screenshot(page, resolve(OUT, 'failure.png'), null, false).catch(() => {});
   process.exitCode = 1;
 } finally {
+  report.browserErrors = browserErrors;
+  report.navigationResets = resetCount;
   save();
+  stopDiagnostics.forEach((stop) => stop());
   await close();
 }

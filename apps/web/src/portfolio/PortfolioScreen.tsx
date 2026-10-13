@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
-import { Button } from '@bloomlab/design-system';
+import { ContentTitle, Meta, Button } from '@bloomlab/design-system';
 import { PORTFOLIO_ARTIFACT_KINDS } from '@bloomlab/content-schema';
 import { content } from '../content/bundle';
 import { db } from '../data/db';
@@ -76,7 +76,7 @@ function Artifact({ kind, view }: { kind: ArtifactKind; view: PortfolioView }) {
             .filter((c) => c.capture.workflows.length || c.capture.funnels.length)
             .map(({ attempt, capture }) => (
               <p key={attempt.id}>
-                {exerciseName(attempt.exercise_id)}: saved structure includes{' '}
+                <ContentTitle title={exerciseName(attempt.exercise_id)} />: saved structure includes{' '}
                 {[
                   ...capture.workflows.map((w) => w.name),
                   ...capture.funnels.map((f) => f.name),
@@ -119,8 +119,9 @@ function Artifact({ kind, view }: { kind: ArtifactKind; view: PortfolioView }) {
                   ))}
                 </ol>
                 <p className={styles.muted}>
-                  Submitted structure · {exerciseName(attempt.exercise_id)}. Step order is the saved
-                  definition order, not an execution trace; full configuration is not captured here.
+                  Submitted structure for <ContentTitle title={exerciseName(attempt.exercise_id)} />
+                  . Step order is the saved definition order, not an execution trace; full
+                  configuration is not captured here.
                 </p>
               </div>
             )),
@@ -140,16 +141,28 @@ function Artifact({ kind, view }: { kind: ArtifactKind; view: PortfolioView }) {
                 <ol>
                   {f.steps.map((s) => (
                     <li key={s.id}>
-                      <strong>{s.name}</strong> · {s.purpose}
+                      <Meta
+                        items={[
+                          { kind: 'text', label: <strong>{s.name}</strong> },
+                          { kind: 'text', label: s.purpose },
+                        ]}
+                      />
                       <ul>
                         {s.blocks.map((b, i) => (
                           <li key={i}>
-                            {b.role}
-                            {b.connected === null
-                              ? ''
-                              : b.connected
-                                ? ' · connected'
-                                : ' · connection missing'}
+                            <Meta
+                              items={[
+                                { kind: 'text', label: b.role },
+                                ...(b.connected === null
+                                  ? []
+                                  : [
+                                      {
+                                        kind: 'badge' as const,
+                                        label: b.connected ? 'connected' : 'connection missing',
+                                      },
+                                    ]),
+                              ]}
+                            />
                           </li>
                         ))}
                       </ul>
@@ -157,7 +170,15 @@ function Artifact({ kind, view }: { kind: ArtifactKind; view: PortfolioView }) {
                   ))}
                 </ol>
                 <p className={styles.muted}>
-                  Submitted conversion structure · {exerciseName(attempt.exercise_id)}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: 'Submitted conversion structure' },
+                      {
+                        kind: 'text',
+                        label: <ContentTitle title={exerciseName(attempt.exercise_id)} />,
+                      },
+                    ]}
+                  />
                 </p>
               </div>
             )),
@@ -183,7 +204,9 @@ function Artifact({ kind, view }: { kind: ArtifactKind; view: PortfolioView }) {
         <>
           {view.reasoning.map((r, i) => (
             <details key={i}>
-              <summary>{r.title}</summary>
+              <summary>
+                <ContentTitle title={r.title} />
+              </summary>
               <p className={styles.prose}>{r.text}</p>
             </details>
           ))}
@@ -227,12 +250,21 @@ function Artifact({ kind, view }: { kind: ArtifactKind; view: PortfolioView }) {
         <ul>
           {view.attempts.map((a) => (
             <li key={a.id}>
-              {exerciseName(a.exercise_id)} · {a.assistance.replace(/_/g, ' ')} assistance ·{' '}
-              {a.result === 'passed'
-                ? 'Passed'
-                : a.result === 'failed'
-                  ? 'Needs another run'
-                  : 'Partly assessed'}
+              <Meta
+                items={[
+                  { kind: 'text', label: <ContentTitle title={exerciseName(a.exercise_id)} /> },
+                  { kind: 'text', label: `${a.assistance.replace(/_/g, ' ')} assistance` },
+                  {
+                    kind: 'text',
+                    label:
+                      a.result === 'passed'
+                        ? 'Passed'
+                        : a.result === 'failed'
+                          ? 'Needs another run'
+                          : 'Partly assessed',
+                  },
+                ]}
+              />
             </li>
           ))}
         </ul>
@@ -248,7 +280,9 @@ function Artifact({ kind, view }: { kind: ArtifactKind; view: PortfolioView }) {
               </p>
               <ul>
                 {[...new Set(view.realGhl.map((e) => e.exercise_id))].map((id) => (
-                  <li key={id}>{exerciseName(id)}</li>
+                  <li key={id}>
+                    <ContentTitle title={exerciseName(id)} />
+                  </li>
                 ))}
               </ul>
               <p>
@@ -302,10 +336,20 @@ function Detail({ view }: { view: PortfolioView }) {
             >
               <h2>{ARTIFACT_LABELS[kind]}</h2>
               <p className={styles.description}>
-                {view.template.artifacts.find((a) => a.kind === kind)?.required
-                  ? 'Required'
-                  : 'Optional'}{' '}
-                · {view.template.artifacts.find((a) => a.kind === kind)?.description}
+                <Meta
+                  items={[
+                    {
+                      kind: 'text',
+                      label: view.template.artifacts.find((a) => a.kind === kind)?.required
+                        ? 'Required'
+                        : 'Optional',
+                    },
+                    {
+                      kind: 'text',
+                      label: view.template.artifacts.find((a) => a.kind === kind)?.description,
+                    },
+                  ]}
+                />
               </p>
               <Artifact kind={kind} view={view} />
             </section>
@@ -371,7 +415,10 @@ export default function PortfolioScreen() {
               This project has no assembled work on this device. Sync to retrieve saved work from
               another device.
             </p>
-            <Link to="/portfolio">Back to Portfolio</Link>
+            <p>
+              <Link to="/sync">Sync and devices</Link> or{' '}
+              <Link to="/portfolio">Back to Portfolio</Link>
+            </p>
           </>
         )}
       </div>
@@ -414,7 +461,7 @@ export default function PortfolioScreen() {
                     : 'Real-GHL evidence not supplied'}
                 </p>
                 <p className={styles.muted}>
-                  Saved work assembled · missing artifacts remain visible
+                  Saved work is assembled. Missing artifacts remain visible.
                 </p>
               </div>
             </li>

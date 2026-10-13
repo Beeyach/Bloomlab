@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 
-import { Button, Field, Select, Stack, Surface, Textarea } from '@bloomlab/design-system';
+import { Meta, Button, Field, Select, Stack, Surface, Textarea } from '@bloomlab/design-system';
 import type { AccountState, Message } from '@bloomlab/simulator-core';
 
 import { fullName, simulatorTime } from '../crm/words';
@@ -191,9 +191,14 @@ export default function ConversationsLab() {
                         {contact ? fullName(contact) : row.contact_id}
                       </span>
                       <span className={styles.threadMeta}>
-                        {last
-                          ? `${channelWord(last.channel)} · ${simulatorTime(last.at, timezone)}`
-                          : ''}
+                        {last && (
+                          <Meta
+                            items={[
+                              { kind: 'text', label: channelWord(last.channel) },
+                              { kind: 'text', label: simulatorTime(last.at, timezone) },
+                            ]}
+                          />
+                        )}
                       </span>
                       {last && <span className={styles.threadPreview}>{last.body}</span>}
                     </button>
@@ -207,8 +212,13 @@ export default function ConversationsLab() {
         {selected && (
           <div className={styles.threadPane} data-testid="thread">
             <h2 className={styles.threadTitle}>
-              {fullName(selected)}
-              {selected.dnd ? ' · Do not disturb' : ''}
+              <Meta
+                style={{ fontSize: 'inherit', color: 'inherit' }}
+                items={[
+                  { kind: 'text', label: fullName(selected) },
+                  ...(selected.dnd ? [{ kind: 'badge' as const, label: 'Do not disturb' }] : []),
+                ]}
+              />
             </h2>
             <ol className={styles.messages} aria-label={`Messages with ${fullName(selected)}`}>
               {(thread?.messages ?? []).map((message) => (
@@ -222,23 +232,26 @@ export default function ConversationsLab() {
                     {message.subject && <span className={styles.subject}>{message.subject}</span>}
                     {message.body}
                   </span>
-                  <span className={styles.meta}>
-                    {message.direction === 'inbound' ? `${fullName(selected)} · ` : ''}
-                    {channelWord(message.channel)} · {simulatorTime(message.at, timezone)}
-                    {message.workflow_id
-                      ? ` · sent by ${account.workflows[message.workflow_id]?.name ?? message.workflow_id}${
-                          message.node_id
-                            ? ` (${featureName(
-                                account.workflows[message.workflow_id]?.nodes.find(
-                                  (node) => node.id === message.node_id,
-                                )?.ghl_feature_id,
-                              )})`
-                            : ''
-                        }`
-                      : message.direction === 'outbound'
-                        ? ' · sent by staff'
-                        : ''}
-                  </span>
+                  <Meta
+                    className={styles.meta}
+                    items={[
+                      ...(message.direction === 'inbound'
+                        ? [{ kind: 'text' as const, label: fullName(selected) }]
+                        : []),
+                      { kind: 'text', label: channelWord(message.channel) },
+                      { kind: 'text', label: simulatorTime(message.at, timezone) },
+                      ...(message.workflow_id
+                        ? [
+                            {
+                              kind: 'text' as const,
+                              label: `sent by ${account.workflows[message.workflow_id]?.name ?? message.workflow_id}${message.node_id ? ` (${featureName(account.workflows[message.workflow_id]?.nodes.find((node) => node.id === message.node_id)?.ghl_feature_id)})` : ''}`,
+                            },
+                          ]
+                        : message.direction === 'outbound'
+                          ? [{ kind: 'text' as const, label: 'sent by staff' }]
+                          : []),
+                    ]}
+                  />
                 </li>
               ))}
               {(thread?.messages ?? []).length === 0 && (

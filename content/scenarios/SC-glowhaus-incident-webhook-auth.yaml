@@ -2,7 +2,7 @@
 #
 # Bloomlab makes no request. `external_endpoints` is the scenario's own deterministic answer for
 # one exact URL — training simulation, not a HighLevel field, and every screen that shows it says
-# so. What is real is the Webhook action's own configuration: HighLevel's Custom Webhook carries
+# so. What is real is the Custom Webhook action's own configuration: it carries
 # headers, including Authorization, and this workflow sends one with last season's token in it.
 id: SC-glowhaus-incident-webhook-auth
 title: Glowhaus — the booking sync that stopped syncing
@@ -56,7 +56,7 @@ initial_account_state:
       nodes:
         - id: n1
           type: action
-          ghl_feature_id: GHL-WF-WEBHOOK
+          ghl_feature_id: GHL-WF-CUSTOM-WEBHOOK
           label: Push the booking to the rota
           config:
             url: 'https://rota.glowhaus.example/hooks/bookings'

@@ -130,6 +130,7 @@
 /* ---- the two-column workspace ------------------------------------------ */
 
 .workspace {
+  min-width: 0;
   display: grid;
   gap: var(--bl-space-4);
   align-items: start;
@@ -175,6 +176,21 @@
   flex: 1 1 14rem;
   max-width: 26rem;
   min-width: 0;
+}
+
+@media (max-width: 420px) {
+  .search,
+  .toolbarAction {
+    flex-basis: 100%;
+  }
+
+  .search {
+    max-width: none;
+  }
+
+  .toolbarAction {
+    padding-top: 0;
+  }
 }
 
 .rows {
@@ -558,4 +574,34 @@
 .advanced select {
   min-width: 0;
   width: 100%;
+}
+
+.contactTable {
+  --bl-contact-columns: minmax(160px, 1.2fr) 150px minmax(0, 1.6fr) 140px 120px;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.tableHead {
+  display: grid;
+  grid-template-columns: var(--bl-contact-columns);
+  align-items: center;
+  column-gap: 16px;
+  height: 32px;
+  padding: 0 12px;
+  color: #5d5873;
+  font-size: 12px;
+  font-weight: 600;
+}
+@media (min-width: 768px) {
+  .tableHead,
+  .rows {
+    /* Reserve 122px for tags after fixed columns, gaps and padding. */
+    min-width: 780px;
+  }
+}
+@media (max-width: 767px) {
+  .tableHead {
+    display: none;
+  }
 }

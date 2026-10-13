@@ -36,7 +36,7 @@ const type = async (page, selector, text) => {
 };
 const activate = async (page, expression, touch) => {
   const rect = await page.evaluate(
-    `(() => {const el=${expression}; el.scrollIntoView({block:'center'}); el.focus(); const r=el.getBoundingClientRect(); return {x:r.x+r.width/2,y:r.y+r.height/2,w:r.width,h:r.height};})()`,
+    `(() => {const el=${expression}; el.scrollIntoView({block:'center'}); const r=el.getBoundingClientRect(); return {x:r.x+r.width/2,y:r.y+r.height/2,w:r.width,h:r.height};})()`,
   );
   if (touch) {
     assert(rect.w >= 44 && rect.h >= 44, '44px touch target');
@@ -46,22 +46,30 @@ const activate = async (page, expression, touch) => {
     });
     await page.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   } else {
-    // Keyboard activation after focus, with visible-focus assertion. R4 covers native Tab routing.
+    // Enter through the real sequential focus order. Programmatic focus before pressing an
+    // arbitrary key does not establish keyboard modality and can produce a false :focus-visible
+    // failure in headless Chromium.
+    assert(
+      await page.evaluate(
+        `(() => {const target=${expression};const items=[...document.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex="0"]')].filter(el=>el.getClientRects().length);const index=items.indexOf(target);if(index<1)return false;items[index-1].focus();return true;})()`,
+      ),
+      'Target must have a preceding sequential focus stop',
+    );
     await page.send('Input.dispatchKeyEvent', {
-      type: 'keyDown',
-      key: 'Shift',
-      code: 'ShiftLeft',
-      windowsVirtualKeyCode: 16,
+      type: 'rawKeyDown',
+      key: 'Tab',
+      code: 'Tab',
+      windowsVirtualKeyCode: 9,
     });
     await page.send('Input.dispatchKeyEvent', {
       type: 'keyUp',
-      key: 'Shift',
-      code: 'ShiftLeft',
-      windowsVirtualKeyCode: 16,
+      key: 'Tab',
+      code: 'Tab',
+      windowsVirtualKeyCode: 9,
     });
     assert(
       await page.evaluate(
-        `getComputedStyle(document.activeElement).outlineStyle !== 'none' || getComputedStyle(document.activeElement).boxShadow !== 'none'`,
+        `document.activeElement===${expression} && document.activeElement.matches(':focus-visible') && (getComputedStyle(document.activeElement).outlineStyle !== 'none' || getComputedStyle(document.activeElement).boxShadow !== 'none')`,
       ),
     );
     for (const type of ['keyDown', 'keyUp'])
@@ -98,7 +106,17 @@ for (const width of [1440, 1024, 768, 390, 320])
         'main textarea',
         'The booking workflow sends one confirmation and then adds booked.',
       );
-      await openPage(page, BASE + '/workflow');
+      await activate(
+        page,
+        `[...document.querySelectorAll('button')].find(el=>el.textContent.trim()==='Commit prediction')`,
+        touch,
+      );
+      await wait(page, `${q('main input[type="text"]')}.disabled`);
+      const workflowPath = await page.evaluate(
+        `[...document.querySelectorAll('a')].find(el=>el.textContent.includes('Open Workflow Lab'))?.getAttribute('href')`,
+      );
+      assert(workflowPath?.startsWith('/workflow?'), 'Committed attempt must link to Workflow Lab');
+      await openPage(page, BASE + workflowPath);
       await wait(page, q(id('run-test')));
       await page.evaluate(
         `(() => {const el=document.querySelector('[data-testid="test-panel"] select'); el.value='maria'; el.dispatchEvent(new Event('change',{bubbles:true}));})()`,
@@ -112,7 +130,10 @@ for (const width of [1440, 1024, 768, 390, 320])
           : `${q(id('trigger-outcome'))}?.dataset.outcome === 'enrolled'`,
       );
       await openPage(page, BASE + route);
-      await wait(page, `${q('main input[type="text"]')}?.value === 'booked'`);
+      await wait(
+        page,
+        `${q('main input[type="text"]')}?.value === 'booked' && ${q('main input[type="text"]')}.disabled && [...document.querySelectorAll('button')].some(el=>el.textContent.trim()==='Run it'&&!el.disabled)`,
+      );
       await activate(
         page,
         `[...document.querySelectorAll('button')].find(el=>el.textContent.trim()==='Run it')`,

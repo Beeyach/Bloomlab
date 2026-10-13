@@ -132,6 +132,16 @@ describe('the palette is the registry (WFL-011)', () => {
       nodeType: 'wait',
       approximation: expect.any(String),
     });
+    expect(PALETTE.find((entry) => entry.id === 'GHL-WF-CUSTOM-WEBHOOK')).toMatchObject({
+      name: 'Custom Webhook',
+      runnable: true,
+      nodeType: 'action',
+    });
+    expect(PALETTE.find((entry) => entry.id === 'GHL-WF-WEBHOOK')).toMatchObject({
+      name: 'Webhook',
+      runnable: false,
+      kind: 'action',
+    });
   });
 
   it('a registry record added later appears without a code change, and is not shown as runnable', () => {

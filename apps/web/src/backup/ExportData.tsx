@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Button } from '@bloomlab/design-system';
 import { createBackup, downloadBackup } from './export';
 import { RestoreData } from './RestoreData';
+import { PrivateMediaRecovery } from './PrivateMediaRecovery';
 
 export function ExportData() {
   const pending = useRef(false);
@@ -34,8 +35,8 @@ export function ExportData() {
           device. Sync first if you need recent work from another device.
         </p>
         <p>
-          Private images, raw call audio and connection keys are excluded. Your written work remains
-          in the file; keep it private.
+          Private media and connection keys are excluded from JSON. Your written work remains in the
+          file; keep it private. Use the separate private-media archive below for recoverable files.
         </p>
         <Button loading={busy} onClick={() => void run()}>
           Export Bloomlab Data
@@ -43,6 +44,7 @@ export function ExportData() {
         <p role={error ? 'alert' : 'status'}>{status}</p>
       </section>
       <RestoreData />
+      <PrivateMediaRecovery />
     </>
   );
 }

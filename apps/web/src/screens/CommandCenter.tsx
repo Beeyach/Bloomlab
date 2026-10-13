@@ -1,13 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 import {
   Button,
   Cluster,
+  ContentTitle,
   HoloMaterial,
   IconArrowRight,
   IconRefresh,
   MasteryBadge,
+  Meta,
+  ProgressMeter,
+  IconBook,
+  IconClock,
   Stack,
   StatusPill,
   Surface,
@@ -45,7 +50,6 @@ import {
   describeStep,
   evidenceWord,
   isDemonstrated,
-  plural,
   relativeDay,
   skillTitle,
   stateSentence,
@@ -128,14 +132,27 @@ function ContinueObject({
     <section aria-labelledby="continue-title" className={styles.continue}>
       <HoloMaterial variant="collectible" radius="xl" className={styles.object}>
         <div className={styles.objectBody}>
+          <p className={styles.eyebrow} data-testid="campaign-eyebrow">
+            {campaignContent ? `${campaignContent.title} campaign` : 'Next capability'}
+          </p>
           <h2 id="continue-title" className={styles.objectTitle}>
             {skill.title}
           </h2>
           <p className={styles.objectContext}>
-            {campaignContent ? `${campaignContent.title} campaign` : 'Next capability'}
-            {gate && ` · Gate ${gate.number} · ${gate.name}`}
-            {focused && ' · Your focus'}
-            {!focused && !inGate && campaign?.work_ahead.includes(skillId) && ' · Work ahead'}
+            <Meta
+              items={[
+                ...(gate
+                  ? [
+                      { kind: 'chip' as const, label: `Gate ${gate.number}` },
+                      { kind: 'text' as const, label: gate.name },
+                    ]
+                  : []),
+                ...(focused ? [{ kind: 'badge' as const, label: 'Your focus' }] : []),
+                ...(!focused && !inGate && campaign?.work_ahead.includes(skillId)
+                  ? [{ kind: 'badge' as const, label: 'Work ahead' }]
+                  : []),
+              ]}
+            />
           </p>
           <p className={styles.state}>
             <MasteryBadge state={evaluation.state} />
@@ -143,24 +160,45 @@ function ContinueObject({
           </p>
           {described && step && (
             <p className={styles.step}>
-              <span className={styles.stepTitle}>{described.title}</span>
+              <span className={styles.stepTitle}>
+                <ContentTitle title={described.title} />
+              </span>
               <span className={styles.stepMeta}>
-                Next · {described.verb} · {step.minutes} min
-                {described.detail ? ` · ${described.detail}` : ''}
+                <Meta
+                  items={[
+                    { kind: 'badge', label: 'Next' },
+                    { kind: 'text', icon: <IconBook />, label: described.verb },
+                    { kind: 'text', icon: <IconClock />, label: `${step.minutes} min` },
+                    ...(described.detail
+                      ? [{ kind: 'text' as const, label: described.detail }]
+                      : []),
+                  ]}
+                />
               </span>
             </p>
           )}
           {step ? (
-            <p className={styles.reason}>{step.reason}</p>
+            <p className={styles.reason}>
+              {step.reason.charAt(0).toUpperCase() + step.reason.slice(1)}
+            </p>
           ) : (
             <p className={styles.reason}>
               No suitable next exercise is authored for this capability yet.
             </p>
           )}
           <p className={styles.progress}>
-            {gate &&
-              `Gate ${gate.number}: ${gate.passed_count} of ${gate.total} capabilities demonstrated · `}
-            {plural(demonstrated, 'capability', 'capabilities')} demonstrated across the map
+            {gate && (
+              <ProgressMeter
+                label={`Gate ${gate.number}`}
+                value={gate.passed_count}
+                total={gate.total}
+              />
+            )}
+            <ProgressMeter
+              label="Whole map"
+              value={demonstrated}
+              total={snapshot.evaluations.size}
+            />
           </p>
           <div className={styles.objectActions}>
             <Button
@@ -257,7 +295,7 @@ function SessionBuilder({ focusId }: { focusId: string | undefined }) {
           <p className={styles.planMeta}>
             {plan.planned_minutes} of {plan.budget_minutes} min planned
             {plan.assistance_dependence >= SESSION_RULES.assistance_dependence_threshold &&
-              ' · recent passes leaned on help, so this plan repeats them with fewer hints'}
+              '. Recent passes leaned on help, so this plan repeats them with fewer hints.'}
           </p>
           {planned.length === 0 && (
             <p className={styles.muted}>
@@ -276,10 +314,17 @@ function SessionBuilder({ focusId }: { focusId: string | undefined }) {
                       <li key={item.id} className={styles.item}>
                         <Link to={stepDestination(item, item.skill_id)} className={styles.itemLink}>
                           <span className={styles.itemVerb}>{described.verb}</span>
-                          <span className={styles.itemTitle}>{described.title}</span>
+                          <span className={styles.itemTitle}>
+                            <ContentTitle title={described.title} />
+                          </span>
                         </Link>
                         <span className={styles.itemMeta}>
-                          {item.minutes} min · {skillTitle(item.skill_id)}
+                          <Meta
+                            items={[
+                              { kind: 'text', icon: <IconClock />, label: `${item.minutes} min` },
+                              { kind: 'text', label: skillTitle(item.skill_id) },
+                            ]}
+                          />
                         </span>
                         <span className={styles.itemReason}>{item.reason}</span>
                       </li>
@@ -337,7 +382,7 @@ function SkillRows({
   title: string;
   id: string;
   intro?: string;
-  rows: { skill_id: string; word: string; meta?: string }[];
+  rows: { skill_id: string; word: ReactNode; meta?: ReactNode }[];
 }) {
   if (rows.length === 0) return null;
   return (
@@ -348,7 +393,7 @@ function SkillRows({
       {intro && <p className={styles.muted}>{intro}</p>}
       <ul className={styles.rows}>
         {rows.map((row) => (
-          <li key={`${row.skill_id}:${row.word}`} className={styles.row}>
+          <li key={row.skill_id} className={styles.row}>
             <Link to={`/skills/${row.skill_id}`} className={styles.rowLink}>
               {skillTitle(row.skill_id)}
             </Link>
@@ -434,7 +479,16 @@ export default function CommandCenter() {
               const gate = gateOf(skillId);
               return {
                 skill_id: skillId,
-                word: gate ? `Gate ${gate.number} · ${gate.name}` : 'Available',
+                word: gate ? (
+                  <Meta
+                    items={[
+                      { kind: 'chip', label: `Gate ${gate.number}` },
+                      { kind: 'text', label: gate.name },
+                    ]}
+                  />
+                ) : (
+                  'Available'
+                ),
               };
             })}
           />
@@ -454,7 +508,12 @@ export default function CommandCenter() {
                   {skillTitle(evidence.skill_id)}
                 </Link>
                 <span className={styles.rowMeta}>
-                  {KIND_WORDS[evidence.kind]} · {relativeDay(evidence.occurred_at, snapshot.now)}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: KIND_WORDS[evidence.kind] },
+                      { kind: 'text', label: relativeDay(evidence.occurred_at, snapshot.now) },
+                    ]}
+                  />
                 </span>
               </li>
             ))}

@@ -1,4 +1,4 @@
-import { Surface } from '@bloomlab/design-system';
+import { Surface, Meta } from '@bloomlab/design-system';
 import { CONTENT_TYPES, TERRITORIES } from '@bloomlab/content-schema';
 
 import { CONTENT_HASH, CONTENT_VERSION, content } from '../content/bundle';
@@ -20,34 +20,61 @@ export function ContentDiagnostics() {
         <dt>Content hash</dt>
         <dd>{CONTENT_HASH.slice(0, 12)}</dd>
         <dt>Records</dt>
-        <dd>{CONTENT_TYPES.map((type) => `${type} ${content.counts[type]}`).join(' · ')}</dd>
+        <dd>
+          <Meta
+            items={CONTENT_TYPES.map((type) => ({
+              kind: 'text',
+              label: `${type} ${content.counts[type]}`,
+            }))}
+          />
+        </dd>
         <dt>Skill graph</dt>
         <dd>
-          {content.graph.order.length} skills · longest prerequisite chain {maxDepth} ·{' '}
-          {TERRITORIES.map(
-            (territory) => `${territory} ${content.graph.territories[territory].length}`,
-          ).join(' · ')}
+          <Meta
+            items={[
+              { kind: 'text', label: `${content.graph.order.length} skills` },
+              { kind: 'text', label: `longest prerequisite chain ${maxDepth}` },
+              ...TERRITORIES.map((territory) => ({
+                kind: 'text' as const,
+                label: `${territory} ${content.graph.territories[territory].length}`,
+              })),
+            ]}
+          />
         </dd>
         <dt>Campaign paths</dt>
         <dd>
-          {content.campaign_paths
-            .map(
-              (path) =>
-                `${path.campaign}: ${path.ordered_skills.length} skills in ${path.gates.length} gates`,
-            )
-            .join(' · ')}
+          <Meta
+            items={content.campaign_paths.map((path) => ({
+              kind: 'text',
+              label: `${path.campaign}: ${path.ordered_skills.length} skills in ${path.gates.length} gates`,
+            }))}
+          />
         </dd>
         <dt>Coverage gaps</dt>
         <dd>
-          {gaps.length === 0
-            ? 'none'
-            : gaps.map((row) => `${row.skill} (${row.gaps.join(', ')})`).join(' · ')}
+          {gaps.length === 0 ? (
+            'none'
+          ) : (
+            <Meta
+              items={gaps.map((row) => ({
+                kind: 'text',
+                label: `${row.skill} (${row.gaps.join(', ')})`,
+              }))}
+            />
+          )}
         </dd>
         <dt>Registry review list</dt>
         <dd>
-          {content.freshness.length === 0
-            ? 'nothing to review'
-            : content.freshness.map((row) => `${row.feature} — ${row.reason}`).join(' · ')}
+          {content.freshness.length === 0 ? (
+            'nothing to review'
+          ) : (
+            <Meta
+              items={content.freshness.map((row) => ({
+                kind: 'text',
+                label: `${row.feature} — ${row.reason}`,
+              }))}
+            />
+          )}
         </dd>
         <dt>Compiler warnings</dt>
         <dd>{content.warnings.length}</dd>

@@ -64,6 +64,12 @@ describe('the CRM Lab opens on the real account (CRM-001)', () => {
     expect(screen.getByText('Jordan Pike')).toBeInTheDocument();
     expect(screen.getByText('Aisha Bello')).toBeInTheDocument();
     expect(screen.getByText(/5 of 5 contacts/)).toBeInTheDocument();
+    expect(screen.getByLabelText('Search contacts')).toHaveAttribute(
+      'placeholder',
+      'Name, email, phone or tag.',
+    );
+    expect(screen.queryByText('Name, email, phone or tag.')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Contact columns')).toHaveTextContent('NameReachTagsOwnerStatus');
   });
 
   it('says what is missing rather than leaving a gap', async () => {
@@ -83,7 +89,7 @@ describe('the CRM Lab opens on the real account (CRM-001)', () => {
     await openLab();
     const nav = screen.getByRole('navigation', { name: 'CRM areas' });
     fireEvent.click(within(nav).getByRole('button', { name: 'Setup' }));
-    expect(await screen.findByRole('heading', { name: 'Custom fields' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Custom Fields' })).toBeInTheDocument();
     fireEvent.click(within(nav).getByRole('button', { name: 'Pipeline' }));
     expect(await screen.findByRole('list', { name: /Consultations stages/ })).toBeInTheDocument();
   });
@@ -114,7 +120,7 @@ describe('editing goes through the event path (CRM-001)', () => {
     expect(screen.getByRole('button', { name: 'Notes' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Tasks' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Tags' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Custom fields' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Custom Fields' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Opportunities' })).toBeInTheDocument();
   });
 

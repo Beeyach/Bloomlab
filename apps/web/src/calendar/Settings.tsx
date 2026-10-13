@@ -1,4 +1,4 @@
-import { Button, Field, Input, Select, Stack } from '@bloomlab/design-system';
+import { Button, Field, Input, Meta, Select, Stack } from '@bloomlab/design-system';
 import {
   ASSIGNMENT_STRATEGIES,
   CALENDAR_TYPES,
@@ -523,7 +523,12 @@ function ServiceAndLocation({
                           )
                         }
                       />
-                      {resource.name} · capacity {resource.capacity}
+                      <Meta
+                        items={[
+                          { kind: 'text', label: resource.name },
+                          { kind: 'chip', label: `Capacity ${resource.capacity}` },
+                        ]}
+                      />
                     </label>
                   ))}
                   {!Object.keys(account.resources ?? {}).length && (

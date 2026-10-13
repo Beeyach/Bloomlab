@@ -211,6 +211,72 @@
   stroke-width: 3;
 }
 
+.connectorDot {
+  fill: rgb(255 255 255 / 0.6);
+}
+
+.dateTime {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  min-width: 0;
+}
+
+.dateTime > * {
+  min-width: 0;
+}
+
+.dateTime input {
+  max-width: 100%;
+}
+
+.paletteHeading {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.paletteHelp {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--bl-color-border-strong);
+  border-radius: 50%;
+  background: var(--bl-color-surface);
+  color: var(--bl-color-text-soft);
+  font: inherit;
+  cursor: pointer;
+}
+
+.paletteHelp:focus-visible {
+  outline: 2px solid var(--bl-color-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .paletteHelp {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.workflowPicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.workflowPicker select {
+  min-width: 0;
+  flex: 1;
+}
+
+.workflowPicker > span {
+  flex: none;
+}
+
 .edgeLabel {
   fill: rgb(255 255 255 / 0.8);
   font-size: 12px;
@@ -288,13 +354,6 @@
   flex: 1 1 8rem;
   min-width: 0;
   font-weight: var(--bl-font-weight-medium);
-}
-
-.paletteNote {
-  flex: 1 1 100%;
-  margin: 0;
-  color: var(--bl-color-text-soft);
-  font-size: var(--bl-font-size-xs);
 }
 
 .practised {

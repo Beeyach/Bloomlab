@@ -73,6 +73,8 @@ async function imageAttempt() {
   // fake-indexeddb lacks browser Blob structured cloning; browser probe verifies the actual Blob.
   await db.evidence_assets.add({
     asset_id: id,
+    learner_id: device.learner_id,
+    device_id: device.device_id,
     attempt_id: attempt.attempt_id,
     exercise_id: exercise.id,
     item_key: 'destination_workflow',

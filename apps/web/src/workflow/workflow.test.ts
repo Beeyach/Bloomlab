@@ -30,6 +30,7 @@ import {
 import { canRedo, canUndo, edit, isDirty, markSaved, redo, startHistory, undo } from './draft';
 import { handleEngineRequest, runOp, type EngineOp, type EngineRequest } from './engineOps';
 import { execute, resetEngineWorker } from './execution';
+import { ROW } from './graphEdit';
 import {
   buildTriggerEvent,
   defaultTriggerInput,
@@ -130,6 +131,35 @@ const ok = (result: Awaited<ReturnType<typeof execute>>): StoredRun => {
 };
 
 describe('definitions are account events (WFL-002, D-107)', () => {
+  it('spaces the default starter below its trigger using the editor row spacing', async () => {
+    const run = await startRun(scenario, database);
+    const nodes = run.state.account.workflows['wf-booking-confirmation']!.nodes;
+    expect(nodes).toHaveLength(3);
+    let previousY = 0;
+    for (const node of nodes) {
+      expect(node.position.y - previousY).toBeGreaterThanOrEqual(ROW);
+      previousY = node.position.y;
+    }
+  });
+
+  it('reloads saved learner coordinates without applying the new starter spacing', async () => {
+    let run = await startRun(scenario, database);
+    const starter = run.state.account.workflows['wf-booking-confirmation']!;
+    const positions = starter.nodes.map((_, index) => ({
+      x: 23 + index * 17,
+      y: 80 + index * 113,
+    }));
+    const custom = {
+      ...starter,
+      nodes: starter.nodes.map((node, index) => ({ ...node, position: positions[index]! })),
+    };
+    run = ok(await saveWorkflow(run, scenario, custom, direct()));
+    const reloaded = await loadRun(run.state.run_id, database);
+    expect(
+      reloaded?.state.account.workflows[starter.id]?.nodes.map((node) => node.position),
+    ).toEqual(positions);
+  });
+
   it('saves a new workflow as WORKFLOW_CREATED and a change as WORKFLOW_UPDATED, and persists both', async () => {
     let run = await startRun(scenario, database);
     run = ok(await saveWorkflow(run, scenario, noShowRecovery(), direct()));

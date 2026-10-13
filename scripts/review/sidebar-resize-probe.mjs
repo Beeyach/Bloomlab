@@ -8,6 +8,7 @@ const axeSource = readFileSync(
   'utf8',
 );
 import { session, openPage, setViewport, sleep, screenshot } from './cdp.mjs';
+import { sidebarCompositionChecks } from './sidebar-composition.mjs';
 const BASE = process.env.BASE ?? 'http://localhost:4173',
   HEAD = process.env.REVIEW_HEAD;
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review/sidebar-resize');
@@ -57,7 +58,7 @@ const reset = async () => {
 };
 const state = () =>
   page.evaluate(
-    `(()=>{const f=document.querySelector('[data-sidebar]'),n=document.querySelector('nav[aria-label="Primary"]'),h=document.querySelector('[data-testid="sidebar-resizer"]'),main=document.querySelector('main');const rect=e=>{const b=e.getBoundingClientRect();return{left:b.left,right:b.right,top:b.top,width:b.width,height:b.height,cx:b.x+b.width/2,cy:b.y+b.height/2,boxes:e.getClientRects().length}};return{build:f.dataset.buildId,mode:f.dataset.sidebar,width:n.getBoundingClientRect().width,offset:parseFloat(getComputedStyle(f).paddingLeft),mainLeft:main.getBoundingClientRect().left,overflow:document.documentElement.scrollWidth>innerWidth,stored:localStorage.getItem('bloomlab.sidebar.width.v1'),handle:h?{...rect(h),min:+h.getAttribute('aria-valuemin'),max:+h.getAttribute('aria-valuemax'),now:+h.getAttribute('aria-valuenow'),orientation:h.getAttribute('aria-orientation'),name:h.getAttribute('aria-label'),controls:document.getElementById(h.getAttribute('aria-controls'))===n}:null,links:[...document.querySelectorAll('[data-testid="rail-destinations"] a')].map(a=>{const label=a.querySelector('[class*="label"]');return{name:a.getAttribute('aria-label'),row:rect(a),icon:rect(a.querySelector('svg')),label:rect(label),fullLabelFits:label.scrollWidth<=label.clientWidth+1}})}})()`,
+    `(()=>{const f=document.querySelector('[data-sidebar]'),n=document.querySelector('nav[aria-label="Primary"]'),h=document.querySelector('[data-testid="sidebar-resizer"]'),main=document.querySelector('main');const rect=e=>{const b=e.getBoundingClientRect(),cs=getComputedStyle(e);return{left:b.left,right:b.right,top:b.top,bottom:b.bottom,width:b.width,height:b.height,cx:b.x+b.width/2,cy:b.y+b.height/2,boxes:e.getClientRects().length,visible:cs.visibility==='visible'&&Number(cs.opacity)>0&&b.width>0&&b.height>0}};return{build:f.dataset.buildId,mode:f.dataset.sidebar,width:n.getBoundingClientRect().width,offset:parseFloat(getComputedStyle(f).paddingLeft),mainLeft:main.getBoundingClientRect().left,overflow:document.documentElement.scrollWidth>innerWidth,stored:localStorage.getItem('bloomlab.sidebar.width.v1'),handle:h?{...rect(h),min:+h.getAttribute('aria-valuemin'),max:+h.getAttribute('aria-valuemax'),now:+h.getAttribute('aria-valuenow'),orientation:h.getAttribute('aria-orientation'),name:h.getAttribute('aria-label'),controls:document.getElementById(h.getAttribute('aria-controls'))===n}:null,links:[...document.querySelectorAll('[data-testid="rail-destinations"] a')].map(a=>{const label=a.querySelector('[class*="label"]');return{name:a.getAttribute('aria-label'),row:rect(a),icon:rect(a.querySelector('svg')),glyph:rect(a.querySelector('[class*="glyph"]')),label:rect(label),gap:parseFloat(getComputedStyle(a).gap),labelFontSize:parseFloat(getComputedStyle(label).fontSize),fullLabelFits:label.scrollWidth<=label.clientWidth+1}})}})()`,
   );
 const layout = async (name, width) => {
   const s = await state();
@@ -76,15 +77,10 @@ const layout = async (name, width) => {
   );
   check(
     name + ': readable horizontal labels',
-    s.links.length >= 15 &&
+    s.links.length >= (HEAD ? 17 : 15) &&
       s.links.every(
         (l) =>
-          l.label.boxes > 0 &&
-          l.icon.right <= l.label.left &&
-          Math.abs(l.icon.cy - l.label.cy) <= 2 &&
-          l.row.height >= 44 &&
-          l.row.height <= 48 &&
-          l.fullLabelFits,
+          Object.values(sidebarCompositionChecks(l, 'expanded')).every(Boolean) && l.fullLabelFits,
       ),
   );
   if (HEAD) check(name + ': exact browser head', s.build === HEAD);
@@ -189,7 +185,7 @@ try {
     s.width === 76 &&
       s.offset === 76 &&
       !s.handle &&
-      s.links.every((l) => l.label.boxes === 0 && Math.abs(l.icon.cx - l.row.cx) <= 1),
+      s.links.every((l) => Object.values(sidebarCompositionChecks(l, 'collapsed')).every(Boolean)),
   );
   await reset();
   check('collapsed reload', (await state()).width === 76);

@@ -100,6 +100,16 @@ const response = z.strictObject({
   text: z.string(),
   choice: z.string().nullable(),
   prediction: z.record(z.string(), z.string()),
+  run_prediction: z
+    .strictObject({
+      committed_at: iso,
+      prediction: z.record(z.string(), z.string()),
+      scenario_id: id,
+      run_id: id.nullable(),
+      run_generation: z.string().nullable(),
+      through_event_index: z.number().int().min(-1),
+    })
+    .optional(),
   written: z.record(z.string(), z.string()).optional(),
   sequence: strings.optional(),
   review: object.optional(),

@@ -11,6 +11,8 @@ export interface ContactRowProps extends ComponentPropsWithRef<'button'> {
   owner?: string;
   /** Last activity in simulated time, already formatted. */
   lastActivity?: string;
+  /** Visible mobile label for the last activity value. */
+  activityLabel?: string;
   selected?: boolean;
 }
 
@@ -24,6 +26,7 @@ export function ContactRow({
   tags = [],
   owner,
   lastActivity,
+  activityLabel = 'Last activity',
   selected = false,
   className,
   type = 'button',
@@ -35,6 +38,9 @@ export function ContactRow({
     <button type={type} className={cx(styles.row, className)} aria-pressed={selected} {...rest}>
       <span className={styles.name}>{name}</span>
       <span className={styles.channels}>
+        <span className={styles.mobileLabel} data-contact-field-label>
+          Reach
+        </span>
         <span className={hasPhone ? undefined : styles.missing}>
           {hasPhone ? 'Phone' : 'No phone'}
         </span>
@@ -46,15 +52,28 @@ export function ContactRow({
         className={styles.tags}
         aria-label={tags.length ? `Tags: ${tags.join(', ')}` : 'No tags'}
       >
+        <span className={styles.mobileLabel} data-contact-field-label>
+          Tags
+        </span>
         {shown.map((tag) => (
-          <span key={tag} className={styles.tag}>
+          <span key={tag} className={styles.tag} title={tag}>
             {tag}
           </span>
         ))}
-        {more > 0 && <span className={styles.tag}>+{more}</span>}
+        {more > 0 && <span className={cx(styles.tag, styles.more)}>+{more}</span>}
       </span>
-      <span className={styles.owner}>{owner ?? 'Unassigned'}</span>
-      <span className={styles.activity}>{lastActivity ?? '—'}</span>
+      <span className={styles.owner}>
+        <span className={styles.mobileLabel} data-contact-field-label>
+          Owner
+        </span>
+        {owner ?? 'Unassigned'}
+      </span>
+      <span className={styles.activity}>
+        <span className={styles.mobileLabel} data-contact-field-label>
+          {activityLabel}
+        </span>
+        {lastActivity ?? '—'}
+      </span>
     </button>
   );
 }

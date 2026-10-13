@@ -1,8 +1,9 @@
 import { useState } from 'react';
 
 import type { CustomFieldType } from '@bloomlab/simulator-core';
-import { Button, Field, Input, Select, Textarea } from '@bloomlab/design-system';
+import { Button, Field, Input, Select, Textarea, Meta } from '@bloomlab/design-system';
 
+import { NATIVE_LABELS } from '../content/featureNames';
 import type { StoredRun } from '../simulator/store';
 import { createPipeline, defineField, updatePipeline, type CrmOutcome } from './commands';
 import styles from './crm.module.css';
@@ -40,7 +41,7 @@ export function CrmSetup({ run, apply }: CrmSetupProps) {
     <div className={styles.setupGrid}>
       <section aria-labelledby="crm-fields" className={styles.section}>
         <h2 id="crm-fields" className={styles.stageName}>
-          Custom fields
+          {NATIVE_LABELS.customFields}
         </h2>
         <p className={styles.muted}>
           A field holds a value that can change. A tag records that something happened. Both are
@@ -50,13 +51,24 @@ export function CrmSetup({ run, apply }: CrmSetupProps) {
           {Object.values(account.custom_fields).map((field) => (
             <div key={field.key} className={styles.definitionRow}>
               <span>{field.label}</span>
-              <span className={styles.stageCount}>
-                {field.type} · {field.object}
-              </span>
-              <span className={styles.definitionMeta}>
-                {field.key}
-                {field.options ? ` · ${field.options.join(', ')}` : ''}
-              </span>
+              <div className={styles.stageCount}>
+                <Meta
+                  items={[
+                    { kind: 'chip', label: field.type },
+                    { kind: 'text', label: field.object },
+                  ]}
+                />
+              </div>
+              <div className={styles.definitionMeta}>
+                <Meta
+                  items={[
+                    { kind: 'text', label: field.key },
+                    ...(field.options
+                      ? [{ kind: 'text' as const, label: field.options.join(', ') }]
+                      : []),
+                  ]}
+                />
+              </div>
             </div>
           ))}
           {Object.keys(account.custom_fields).length === 0 && (

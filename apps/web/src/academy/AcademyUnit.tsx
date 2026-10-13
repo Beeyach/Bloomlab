@@ -1,3 +1,4 @@
+import { ContentTitle, Meta, IconClock, IconBook } from '@bloomlab/design-system';
 import { Suspense, useEffect, useMemo, useState, type ElementType } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 
@@ -90,11 +91,19 @@ function NextStep({
     <div className={styles.next} data-testid="next-step">
       {step && described ? (
         <>
-          <p className={styles.nextTitle}>{described.title}</p>
-          <p className={styles.nextMeta}>
-            Next · {described.verb} · {step.minutes} min
-            {described.detail ? ` · ${described.detail}` : ''} · {step.reason}
+          <p className={styles.nextTitle}>
+            <ContentTitle title={described.title} />
           </p>
+          <Meta
+            className={styles.nextMeta}
+            items={[
+              { kind: 'badge', label: 'Next' },
+              { kind: 'text', icon: <IconBook />, label: described.verb },
+              { kind: 'text', icon: <IconClock />, label: `${step.minutes} min` },
+              ...(described.detail ? [{ kind: 'text' as const, label: described.detail }] : []),
+              { kind: 'text', label: step.reason },
+            ]}
+          />
           <Link to={stepDestination(step, skillId)} className={styles.nextAction}>
             {step.kind === 'unit'
               ? 'Continue reading'
@@ -246,30 +255,47 @@ export default function AcademyUnit() {
           {unit.title}
         </h1>
         <p className={styles.lede}>{unit.summary}</p>
-        <p className={styles.meta}>
-          Academy · {TERRITORY_LABELS[unit.territory as Territory]} · {unit.estimated_minutes} min
-          read
-        </p>
-        <p className={styles.for}>
-          For{' '}
-          {unit.skills.map((id, index) => (
-            <span key={id}>
-              {index > 0 && ' and '}
-              <Link to={`/skills/${id}`} className={styles.inlineLink}>
-                {skillTitle(id)}
-              </Link>
-            </span>
-          ))}
-          {completion && (
-            <>
-              {' '}
-              ·{' '}
-              <span className={styles.finished}>
-                finished {relativeDay(completion.occurred_at)}
-              </span>
-            </>
-          )}
-        </p>
+        <Meta
+          className={styles.meta}
+          items={[
+            { kind: 'chip', label: 'Academy' },
+            { kind: 'chip', label: TERRITORY_LABELS[unit.territory as Territory] },
+            { kind: 'text', icon: <IconClock />, label: `${unit.estimated_minutes} min` },
+          ]}
+        />
+        <Meta
+          className={styles.for}
+          items={[
+            {
+              kind: 'text',
+              label: (
+                <>
+                  For{' '}
+                  {unit.skills.map((id, index) => (
+                    <span key={id}>
+                      {index > 0 && ' and '}
+                      <Link to={`/skills/${id}`} className={styles.inlineLink}>
+                        {skillTitle(id)}
+                      </Link>
+                    </span>
+                  ))}
+                </>
+              ),
+            },
+            ...(completion
+              ? [
+                  {
+                    kind: 'text' as const,
+                    label: (
+                      <span className={styles.finished}>
+                        Finished {relativeDay(completion.occurred_at)}
+                      </span>
+                    ),
+                  },
+                ]
+              : []),
+          ]}
+        />
       </header>
 
       <div className={styles.layout}>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Button, Surface, usePrefersReducedMotion } from '@bloomlab/design-system';
+import { Meta, Button, Surface, usePrefersReducedMotion } from '@bloomlab/design-system';
 import { loadWorkspace } from '../data/workspace';
 import { runReplayKey, type RunReplay } from './runReplay';
 import styles from './ExerciseRunner.module.css';
@@ -53,9 +53,16 @@ export function Replay({ replay, fresh = false }: { replay: RunReplay; fresh?: b
       </p>
       <p>
         Your prediction:{' '}
-        {Object.entries(replay.prediction)
-          .map(([key, value]) => `${key}: ${value}`)
-          .join(' · ') || 'No structured prediction supplied.'}
+        {Object.keys(replay.prediction).length ? (
+          <Meta
+            items={Object.entries(replay.prediction).map(([key, value]) => ({
+              kind: 'text',
+              label: `${key}: ${value}`,
+            }))}
+          />
+        ) : (
+          'No structured prediction supplied.'
+        )}
       </p>
       {!reduced && replay.events.length > 0 && (
         <div className={styles.replayControls}>

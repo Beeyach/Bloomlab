@@ -23,7 +23,7 @@ import type {
 } from './types';
 
 export const DB_NAME = 'bloomlab';
-export const DB_VERSION = 8;
+export const DB_VERSION = 9;
 
 /**
  * The IndexedDB database behind every local-first flow (DATA-002). Dexie is the whole data
@@ -106,6 +106,39 @@ export class BloomlabDatabase extends Dexie {
       .stores({ client_progress: '&id, client_id, updated_at' })
       .upgrade(async (tx) => {
         await tx.table('sync_state').toCollection().modify({ server_cursor: 0 });
+      });
+    // v9: local-only learner work carries the same explicit owner as sync records. The primary
+    // UUID/key remains stable; one browser device belongs to one learner, and linking re-keys the
+    // provisional owner in the same transaction as every sync record (PRD-009).
+    this.version(9)
+      .stores({
+        workspace: '&key, learner_id',
+        call_recordings: '&recording_id, learner_id, attempt_id, [attempt_id+turn]',
+        evidence_assets: '&asset_id, learner_id, attempt_id',
+        sync_queue: '++seq, learner_id, [entity+entity_id], status',
+        sync_state: '&entity, learner_id',
+        sync_shadow: '&[entity+entity_id], learner_id',
+        sync_conflicts: '&[entity+entity_id], learner_id, detected_at',
+      })
+      .upgrade(async (tx) => {
+        let device = await tx.table('device').toCollection().first();
+        if (!device) {
+          const at = new Date().toISOString();
+          device = {
+            device_id: crypto.randomUUID(),
+            learner_id: `local:${crypto.randomUUID()}`,
+            label: 'This device',
+            created_at: at,
+            last_seen_at: at,
+            storage_persisted: null,
+          };
+          await tx.table('device').add(device);
+        }
+        const localOwner = { learner_id: device.learner_id, device_id: device.device_id };
+        for (const table of ['workspace', 'call_recordings', 'evidence_assets'])
+          await tx.table(table).toCollection().modify(localOwner);
+        for (const table of ['sync_queue', 'sync_state', 'sync_shadow', 'sync_conflicts'])
+          await tx.table(table).toCollection().modify({ learner_id: device.learner_id });
       });
   }
 }

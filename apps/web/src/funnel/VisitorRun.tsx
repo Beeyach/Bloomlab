@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 
-import { Button, Field, Input, Select, StatusPill } from '@bloomlab/design-system';
+import { Button, Meta, Field, Input, Select, StatusPill } from '@bloomlab/design-system';
 import {
   canCreateContact,
   contentEventName,
@@ -100,7 +100,7 @@ interface ChainEntry {
   type: string;
   at: string;
   origin: string;
-  detail: string;
+  detail: string[];
 }
 
 export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunProps) {
@@ -460,7 +460,10 @@ export function VisitorRun({ funnel, run, scenario, busy, perform }: VisitorRunP
                 <span className={styles.chainOrigin} data-origin={entry.origin}>
                   {ORIGIN_WORDS[entry.origin] ?? entry.origin}
                 </span>
-                <span className={styles.chainDetail}>{entry.detail}</span>
+                <Meta
+                  className={styles.chainDetail}
+                  items={entry.detail.map((label) => ({ kind: 'text', label }))}
+                />
                 <span className={styles.chainAt}>
                   {simulatorTime(entry.at, run.state.clock.timezone)}
                 </span>
@@ -482,7 +485,7 @@ const ORIGIN_WORDS: Record<string, string> = {
 };
 
 /** A one-line summary of what an event carried, read from the payload the engine recorded. */
-function describe(payload: Record<string, unknown>, account: AccountState): string {
+function describe(payload: Record<string, unknown>, account: AccountState): string[] {
   const parts: string[] = [];
   const contactId = typeof payload.contact_id === 'string' ? payload.contact_id : null;
   if (contactId) {
@@ -502,7 +505,7 @@ function describe(payload: Record<string, unknown>, account: AccountState): stri
     parts.push(account.workflows[payload.workflow_id]?.name ?? payload.workflow_id);
   if (typeof payload.tag === 'string') parts.push(`tag ${payload.tag}`);
   if (typeof payload.body === 'string') parts.push(`“${truncate(payload.body)}”`);
-  return parts.join(' · ');
+  return parts;
 }
 
 const truncate = (text: string, limit = 60): string =>

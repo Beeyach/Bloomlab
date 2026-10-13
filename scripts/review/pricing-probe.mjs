@@ -5,10 +5,18 @@
 // review widths, the keyboard path and reduced motion. Writes pricing-probe.json and
 // pricing-*.png to .review/ (override with REVIEW_OUT).
 //   BASE=http://localhost:4173 node scripts/review/pricing-probe.mjs
+import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { openPage, screenshot, session, setViewport, sleep } from './cdp.mjs';
+import {
+  openPage,
+  resetIndexedDbFixture,
+  screenshot,
+  session,
+  setViewport,
+  sleep,
+} from './cdp.mjs';
 
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review');
 const BASE = process.env.BASE ?? 'http://localhost:4173';
@@ -121,15 +129,23 @@ async function tabUntil(page, predicate, limit = 200) {
 async function open(page, id, readyTestId) {
   await openPage(page, `${BASE}/exercise/${id}`);
   const ready = await waitFor(page, `Boolean(${at(readyTestId)})`);
+  if (!ready) {
+    const context = await page.evaluate(
+      `({path:location.pathname, main:document.querySelector('main')?.innerText.slice(0,2000), alerts:[...document.querySelectorAll('[role=alert]')].map(el=>el.textContent)})`,
+    );
+    writeFileSync(
+      resolve(OUT, 'readiness-failure.json'),
+      JSON.stringify({ id, readyTestId, ...context }, null, 2),
+    );
+    await screenshot(page, resolve(OUT, 'readiness-failure.png'), null, false);
+  }
+  assert(ready, `${id} did not render ${readyTestId}`);
   await sleep(300);
   return ready;
 }
 
 async function reset(page) {
-  await page.send('Storage.clearDataForOrigin', {
-    origin: new URL(BASE).origin,
-    storageTypes: 'indexeddb',
-  });
+  await resetIndexedDbFixture(page, BASE);
   await sleep(250);
 }
 
@@ -281,6 +297,49 @@ try {
     notPassed: !/^Passed/m.test(failedBody.slice(0, 400)),
   });
   await screenshot(page, resolve(OUT, 'pricing-underpriced-1440.png'), null, false);
+
+  /* Risk and the business's minimum margin are required, even above delivery cost. */
+  for (const [project, expectedRequired] of [
+    [1320, ['a7', 'a8']],
+    [1400, ['a7', 'a8']],
+    [1600, ['a8']],
+  ]) {
+    await reset(page);
+    await open(page, SUMMIT, 'deal-desk');
+    await click(page, 'deposit-kind-percent');
+    for (const [field, value] of [
+      ['deal-project', project],
+      ['deal-rush-fee', 0],
+      ['deposit-value', 50],
+      ['deal-timeline', 21],
+      ['deal-revisions', 1],
+      ['deal-recurring', 150],
+    ])
+      await type(page, field, String(value));
+    for (const [index, line] of ['Advertising management', 'Custom development'].entries()) {
+      await click(page, 'exclusion-add');
+      assert(await waitFor(page, `Boolean(${at(`exclusion-${index}`)})`));
+      await type(page, `exclusion-${index}`, line);
+    }
+    await sleep(400);
+    await page.evaluate(
+      `(() => {const button=[...document.querySelectorAll('button')].find(el=>el.textContent.trim()==='Run it');button.click();})()`,
+    );
+    assert(await waitFor(page, `Boolean(${at('deal-reveal')})`), 'Pricing result rendered');
+    const grade = await page.evaluate(
+      `new Promise((done,reject)=>{const request=indexedDB.open('bloomlab');request.onerror=()=>reject(request.error);request.onsuccess=()=>{const db=request.result;const read=db.transaction('exercise_attempts').objectStore('exercise_attempts').getAll();read.onerror=()=>reject(read.error);read.onsuccess=()=>{done(read.result.find(row=>row.exercise_id===${JSON.stringify(SUMMIT)})?.grade??null);db.close();};};})`,
+    );
+    section(`summit-required-price-${project}`, {
+      recorded: !!grade,
+      failed: grade?.outcome === 'failed',
+      requiredGate: grade?.reason === 'required_failure',
+      exactRequiredFailures:
+        JSON.stringify(grade?.tiers.required.filter((row) => !row.passed).map((row) => row.id)) ===
+        JSON.stringify(expectedRequired),
+      noRubricEvaluation: !grade?.rubric_evaluation,
+    });
+    await screenshot(page, resolve(OUT, `pricing-summit-required-${project}.png`), null, false);
+  }
 
   /* ---- 8. the proposal is all eight sections (SAL-009) ------------------------------------ */
   await reset(page);

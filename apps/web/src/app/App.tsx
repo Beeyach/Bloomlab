@@ -45,7 +45,14 @@ export function App({
               }
             />
           ))}
-          <Route path="*" element={<NotFound />} />
+          <Route
+            path="*"
+            element={
+              <ScreenErrorBoundary resetKey="*">
+                <NotFound />
+              </ScreenErrorBoundary>
+            }
+          />
         </Route>
       </Routes>
     </FeatureFlagsProvider>

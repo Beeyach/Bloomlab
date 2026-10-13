@@ -1,3 +1,4 @@
+import { ContentTitle } from './ContentTitle';
 import type { ReactNode } from 'react';
 
 import { cx } from '../utils/cx';
@@ -37,7 +38,9 @@ export function ExercisePrompt({
       className={cx(styles.prompt, className)}
       aria-label={`${EXERCISE_LABELS[family]}: ${title}`}
     >
-      <h2 className={styles.title}>{title}</h2>
+      <h2 className={styles.title}>
+        <ContentTitle title={title} />
+      </h2>
       <p className={styles.family}>{EXERCISE_LABELS[family]}</p>
       <div className={styles.body}>{children}</div>
       {(skills.length > 0 || noHints || assistance) && (

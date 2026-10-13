@@ -1,4 +1,6 @@
 import { handleEvidence } from './evidence/handlers';
+import { handleAttachments } from './attachments/handlers';
+import { handleRecovery } from './recovery/handlers';
 import { handleCall } from './call/handlers';
 import { handleAi } from './ai/handlers';
 import { handleVoice } from './voice/handlers';
@@ -76,6 +78,8 @@ async function handleSync(request: Request, env: Env, path: string): Promise<Res
 
 /** Only /api/* reaches this handler (see wrangler.jsonc `run_worker_first`). */
 async function handleApi(request: Request, url: URL, env: Env): Promise<Response> {
+  if (url.pathname.startsWith('/api/attachments')) return handleAttachments(request, env);
+  if (url.pathname.startsWith('/api/recovery/')) return handleRecovery(request, env);
   if (url.pathname.startsWith('/api/evidence/')) return handleEvidence(request, env);
   if (url.pathname.startsWith('/api/call/')) return handleCall(request, env);
   if (url.pathname.startsWith('/api/media/')) return handleMedia(request, env);

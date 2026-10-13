@@ -1,3 +1,4 @@
+import { ClientCaseCover } from './ClientCaseCover';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
@@ -100,6 +101,32 @@ describe('ContactRow', () => {
     expect(screen.getByText('+1')).toBeInTheDocument();
     expect(screen.getByLabelText('Tags: Lead, Booked, VIP, Referral')).toBeInTheDocument();
   });
+
+  it('uses Last activity for the generic activity value', () => {
+    const { container } = render(
+      <ContactRow name="Maria Alvarez" hasPhone hasEmail lastActivity="10:02" />,
+    );
+    const labels = [...container.querySelectorAll('[data-contact-field-label]')].map(
+      (label) => label.textContent,
+    );
+    expect(labels).toContain('Last activity');
+  });
+
+  it('allows a caller to label the activity value as Status', () => {
+    const { container } = render(
+      <ContactRow
+        name="Maria Alvarez"
+        hasPhone
+        hasEmail
+        lastActivity="Do not disturb"
+        activityLabel="Status"
+      />,
+    );
+    const labels = [...container.querySelectorAll('[data-contact-field-label]')].map(
+      (label) => label.textContent,
+    );
+    expect(labels).toContain('Status');
+  });
 });
 
 describe('PricingScopeItem', () => {
@@ -172,4 +199,17 @@ describe('IdentityMark', () => {
     const { container } = render(<IdentityMark seed="GlowHaus" />);
     expect(container.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
   });
+});
+
+it('presents skill facts and boss-case labels without separator punctuation', () => {
+  render(
+    <>
+      <SkillCard title="Wait" territory="AUTOMATE" state="LEARNING" demonstrations={1} />
+      <ClientCaseCover businessName="Example" industry="Services" relationship="active" boss />
+    </>,
+  );
+  expect(screen.getByText('1 demo')).toBeInTheDocument();
+  expect(screen.getByText('Boss Client')).toBeInTheDocument();
+  expect(screen.getByText('Simulation Project')).toBeInTheDocument();
+  expect(document.body.textContent).not.toContain('·');
 });

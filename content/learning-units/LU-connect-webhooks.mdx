@@ -4,7 +4,8 @@ title: 'Accept an event once when it arrives twice'
 territory: 'CONNECT'
 tier: 'practitioner'
 skills: ['SK-CONNECT-webhook-payloads']
-ghl_features: ['GHL-WF-WEBHOOK', 'GHL-WF-INBOUND-WEBHOOK', 'GHL-API-WEBHOOKS']
+ghl_features:
+  ['GHL-WF-WEBHOOK', 'GHL-WF-CUSTOM-WEBHOOK', 'GHL-WF-INBOUND-WEBHOOK', 'GHL-API-WEBHOOKS']
 advanced_topics: ['connect.webhooks']
 estimated_minutes: 12
 summary: 'Map webhook payloads, verify authenticity before effects and reason about idempotency, retries and durable recovery.'
@@ -20,7 +21,7 @@ From 1 September 2026, HighLevel Marketplace webhook deliveries use X-GHL-Signat
 
 Historical context: X-WH-Signature (RSA-SHA256) was deprecated on 1 September 2026; it is not supported for current delivery.
 
-The dated deprecation notice governs current guidance even where older examples remain in the official guide. Marketplace events are not the same feature as a workflow's Custom Webhook or Inbound Webhook trigger.
+The dated deprecation notice governs current guidance even where older examples remain in the official guide. Marketplace events are not the same feature as a workflow's Custom Webhook action or Inbound Webhook trigger. The simpler outbound Webhook action is a separate registry entry too; do not combine their configuration contracts.
 
 ## Repeated delivery is normal
 

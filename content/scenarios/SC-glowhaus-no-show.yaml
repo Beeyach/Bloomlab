@@ -102,16 +102,16 @@ initial_account_state:
           config:
             template: "Hi {{contact.first_name}}, you're booked at Glowhaus on {{appointment.start_time}}. Reply CHANGE to reschedule."
             purpose: confirmation
-          position: { x: 0, y: 120 }
+          position: { x: 0, y: 150 }
         - id: n2
           type: action
           ghl_feature_id: GHL-WF-ADD-CONTACT-TAG
           config:
             tag: booked
-          position: { x: 0, y: 240 }
+          position: { x: 0, y: 300 }
         - id: n3
           type: end
-          position: { x: 0, y: 360 }
+          position: { x: 0, y: 450 }
       edges:
         - { from: n1, to: n2 }
         - { from: n2, to: n3 }

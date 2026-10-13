@@ -66,9 +66,32 @@ function rules(css: string): { selector: string; body: string; line: number }[] 
 
 /**
  * The primary navigation rail labels its destinations in small caps. That is navigation, not a
- * label sitting above a heading, and it is the one place the treatment is allowed to survive.
+ * label sitting above a heading. The later user-directed Home campaign label has its own
+ * exact, separately tested exception below.
  */
 const NAV_RAIL = 'apps/web/src/app/AppRail.module.css';
+const HOME_CAMPAIGN = 'apps/web/src/screens/CommandCenter.module.css';
+
+// The user's visual fix round explicitly requests this one campaign label above Home's title.
+function isRequestedCampaignLabel(path: string, rule: { selector: string; body: string }): boolean {
+  return (
+    path === HOME_CAMPAIGN &&
+    rule.selector === '.eyebrow' &&
+    /font-size:\s*11\.5px\s*;/.test(rule.body) &&
+    /font-weight:\s*600\s*;/.test(rule.body) &&
+    /text-transform:\s*uppercase\s*;/.test(rule.body) &&
+    /color:\s*#3e3954\s*;/i.test(rule.body)
+  );
+}
+
+it('keeps workflow status text legible on light nodes inside ink workspaces', () => {
+  const node = rules(
+    read(join(ROOT, 'packages/design-system/src/semantic/WorkflowNode.module.css')),
+  ).find((rule) => rule.selector === '.node');
+  // StatusPill consumes semantic roles rather than the node's direct color declaration.
+  expect(node?.body).toMatch(/--bl-color-text:\s*var\(--bl-color-ink\)/);
+  expect(node?.body).toMatch(/--bl-color-text-soft:\s*var\(--bl-color-ink-soft\)/);
+});
 
 describe('recovery text uses a normal-text contrast role (A11Y-004)', () => {
   it.each([
@@ -85,14 +108,17 @@ describe('recovery text uses a normal-text contrast role (A11Y-004)', () => {
   });
 });
 
-describe('no eyebrows in user-facing UI (DES-021)', () => {
-  it('has no rule that is both tiny and uppercase', () => {
+describe('no unrequested eyebrows in user-facing UI (DES-021)', () => {
+  it('has no tiny uppercase rule except the explicitly requested Home campaign label', () => {
     const offenders: string[] = [];
     for (const sheet of SHEETS) {
       if (relative(sheet) === NAV_RAIL) continue;
       for (const rule of rules(read(sheet))) {
+        if (isRequestedCampaignLabel(relative(sheet), rule)) continue;
         const uppercase = /text-transform:\s*uppercase/.test(rule.body);
-        const tiny = /font-size:\s*(var\(--bl-font-size-xs\)|0\.[0-7]\d*rem)/.test(rule.body);
+        const tiny = /font-size:\s*(var\(--bl-font-size-xs\)|0\.[0-7]\d*rem|11\.5px)/.test(
+          rule.body,
+        );
         if (uppercase && tiny) {
           offenders.push(`${relative(sheet)}:${rule.line} ${rule.selector}`);
         }
@@ -107,13 +133,35 @@ describe('no eyebrows in user-facing UI (DES-021)', () => {
     }
   });
 
-  it('names no eyebrow, kicker or overline class anywhere', () => {
+  it('names no eyebrow, kicker or overline class except the requested Home campaign label', () => {
     const offenders: string[] = [];
     for (const sheet of SHEETS) {
-      const matches = read(sheet).match(/\.(eyebrow|kicker|overline)\b/gi);
-      if (matches) offenders.push(`${relative(sheet)}: ${matches.join(', ')}`);
+      for (const rule of rules(read(sheet))) {
+        if (isRequestedCampaignLabel(relative(sheet), rule)) continue;
+        const matches = rule.selector.match(/\.(eyebrow|kicker|overline)\b/gi);
+        if (matches) offenders.push(`${relative(sheet)}: ${matches.join(', ')}`);
+      }
     }
     expect(offenders).toEqual([]);
+  });
+
+  it('rejects changes or reuse of the narrowly requested campaign label', () => {
+    const label = rules(read(join(ROOT, HOME_CAMPAIGN))).find(
+      (rule) => rule.selector === '.eyebrow',
+    );
+    expect(label).toBeDefined();
+    expect(isRequestedCampaignLabel(HOME_CAMPAIGN, label!)).toBe(true);
+    expect(isRequestedCampaignLabel(NAV_RAIL, label!)).toBe(false);
+    expect(isRequestedCampaignLabel(HOME_CAMPAIGN, { ...label!, selector: '.kicker' })).toBe(false);
+    expect(
+      isRequestedCampaignLabel(HOME_CAMPAIGN, {
+        ...label!,
+        body: label!.body.replace('600', '400'),
+      }),
+    ).toBe(false);
+    const component = read(join(ROOT, 'apps/web/src/screens/CommandCenter.tsx'));
+    expect(component.match(/className=\{styles\.eyebrow\}/g)).toHaveLength(1);
+    expect(component).toMatch(/className=\{styles\.eyebrow\} data-testid="campaign-eyebrow"/);
   });
 });
 

@@ -1,6 +1,9 @@
 /* Light node for the dark ink canvas (spec §53, §77). */
 .node {
   --node-accent: var(--bl-color-ink-soft);
+  /* Child status pills must use light-surface roles even on an ink canvas. */
+  --bl-color-text: var(--bl-color-ink);
+  --bl-color-text-soft: var(--bl-color-ink-soft);
 
   display: grid;
   grid-template-columns: 4px minmax(0, 1fr);

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { paymentsCatalog } from '@bloomlab/simulator-core';
-import { Button, Stack, Field, Select } from '@bloomlab/design-system';
+import { Meta, Button, Stack, Field, Select } from '@bloomlab/design-system';
 import { useCrmRun, CRM_SCENARIO_ID } from '../crm/useCrmRun';
 import { Entry, Choice, SaveForm } from '../crm/AdvancedCrm';
 import { runCommand } from '../crm/commands';
@@ -31,7 +31,7 @@ export default function PaymentsLab() {
   }));
   const prices = Object.values(catalog.prices).map((p) => ({
     id: p.id,
-    name: `${p.name} · ${dollars(p.cents)} · ${p.interval.replace('_', ' ')}`,
+    name: `${p.name} (${dollars(p.cents)}, ${p.interval.replace('_', ' ')})`,
   }));
   return (
     <Stack gap={4} className={styles.screen}>
@@ -42,13 +42,34 @@ export default function PaymentsLab() {
           card, provider or real charge is involved.
         </p>
         <p>
-          {account.account.name} · simulated time {run.state.clock.now}
+          <Meta
+            items={[
+              { kind: 'text', label: account.account.name },
+              { kind: 'text', label: `simulated time ${run.state.clock.now}` },
+            ]}
+          />
         </p>
         <p>
-          <Link to="/crm">Open this account in CRM</Link> ·{' '}
-          <Link to={`/workflow?scenario=${CRM_SCENARIO_ID}`}>Workflow Lab</Link> ·{' '}
-          <Link to={`/calendar?scenario=${CRM_SCENARIO_ID}`}>Calendar Lab</Link> ·{' '}
-          <Link to={`/reporting?scenario=${CRM_SCENARIO_ID}`}>Reporting</Link>
+          <Meta
+            items={[
+              {
+                kind: 'text',
+                label: <Link to="/crm">Open this account in CRM</Link>,
+              },
+              {
+                kind: 'text',
+                label: <Link to={`/workflow?scenario=${CRM_SCENARIO_ID}`}>Workflow Lab</Link>,
+              },
+              {
+                kind: 'text',
+                label: <Link to={`/calendar?scenario=${CRM_SCENARIO_ID}`}>Calendar Lab</Link>,
+              },
+              {
+                kind: 'text',
+                label: <Link to={`/reporting?scenario=${CRM_SCENARIO_ID}`}>Reporting</Link>,
+              },
+            ]}
+          />
         </p>
       </header>
       <nav aria-label="Payments areas">
@@ -89,20 +110,36 @@ export default function PaymentsLab() {
               A product is what is sold. A price fixes its amount and billing interval. Prices are
               immutable here so an edit cannot silently change an existing invoice or subscription.
             </p>
-            <ul>
-              {Object.values(account.products).map((p) => (
-                <li key={p.id}>
-                  {p.name} · {p.id}
-                </li>
-              ))}
-            </ul>
-            <ul>
-              {prices.map((p) => (
-                <li key={p.id}>
-                  {p.name} · {p.id}
-                </li>
-              ))}
-            </ul>
+            {Object.keys(account.products).length > 0 && (
+              <ul>
+                {Object.values(account.products).map((p) => (
+                  <li key={p.id}>
+                    <Meta
+                      items={[
+                        { kind: 'text', label: p.name },
+                        { kind: 'text', label: p.id },
+                      ]}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+            {prices.length > 0 && (
+              <ul>
+                {Object.values(catalog.prices).map((p) => (
+                  <li key={p.id}>
+                    <Meta
+                      items={[
+                        { kind: 'text', label: p.name },
+                        { kind: 'text', label: dollars(p.cents) },
+                        { kind: 'text', label: p.interval.replace('_', ' ') },
+                        { kind: 'text', label: p.id },
+                      ]}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
             {!prices.length && (
               <p>
                 No Lab prices yet. Existing scenario products need an explicit price before
@@ -156,15 +193,28 @@ export default function PaymentsLab() {
             <ul>
               {Object.values(catalog.links).map((l) => (
                 <li key={l.id}>
-                  {l.name} · {l.id} · {l.active ? 'active' : 'inactive'} · {l.price_id}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: l.name },
+                      { kind: 'text', label: l.id },
+                      { kind: 'text', label: l.active ? 'active' : 'inactive' },
+                      { kind: 'text', label: l.price_id },
+                    ]}
+                  />
                 </li>
               ))}
             </ul>
             <ul>
               {Object.values(catalog.invoices).map((i) => (
                 <li key={i.id}>
-                  {i.id} · {contacts.find((c) => c.id === i.contact_id)?.name} · {dollars(i.cents)}{' '}
-                  · {i.status}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: i.id },
+                      { kind: 'text', label: contacts.find((c) => c.id === i.contact_id)?.name },
+                      { kind: 'text', label: dollars(i.cents) },
+                      { kind: 'text', label: i.status },
+                    ]}
+                  />
                 </li>
               ))}
             </ul>
@@ -254,11 +304,11 @@ export default function PaymentsLab() {
                     : source === 'invoice'
                       ? Object.values(catalog.invoices).map((i) => ({
                           id: i.id,
-                          name: `${i.id} · ${i.status}`,
+                          name: `${i.id} (${i.status})`,
                         }))
                       : Object.values(catalog.subscriptions).map((s) => ({
                           id: s.id,
-                          name: `${s.id} · ${s.status}`,
+                          name: `${s.id} (${s.status})`,
                         }))
                 }
               />
@@ -302,9 +352,15 @@ export default function PaymentsLab() {
             <ul>
               {Object.values(account.payments).map((p) => (
                 <li key={p.id}>
-                  {p.id} · {contacts.find((c) => c.id === p.contact_id)?.name} ·{' '}
-                  {dollars(Math.round(p.amount * 100))} · {p.status}
-                  {p.reason ? ` · ${p.reason}` : ''}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: p.id },
+                      { kind: 'text', label: contacts.find((c) => c.id === p.contact_id)?.name },
+                      { kind: 'text', label: dollars(Math.round(p.amount * 100)) },
+                      { kind: 'text', label: p.status },
+                      ...(p.reason ? [{ kind: 'text' as const, label: p.reason }] : []),
+                    ]}
+                  />
                 </li>
               ))}
             </ul>
@@ -312,13 +368,23 @@ export default function PaymentsLab() {
             <ul>
               {Object.values(catalog.subscriptions).map((s) => (
                 <li key={s.id}>
-                  {s.id} · {s.price_id} · {s.status} · {s.successful_charges} successful charges{' '}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: s.id },
+                      { kind: 'text', label: s.price_id },
+                      { kind: 'text', label: s.status },
+                      { kind: 'text', label: `${s.successful_charges} successful charges` },
+                    ]}
+                  />
                   <Button
                     variant="ghost"
                     disabled={s.status === 'cancelled'}
                     onClick={() =>
                       void apply((r) =>
-                        runCommand(r, { type: 'SUBSCRIPTION_CANCELLED', payload: { id: s.id } }),
+                        runCommand(r, {
+                          type: 'SUBSCRIPTION_CANCELLED',
+                          payload: { id: s.id },
+                        }),
                       )
                     }
                   >
@@ -340,7 +406,7 @@ export default function PaymentsLab() {
                   .filter((p) => p.status === 'received')
                   .map((p) => ({
                     id: p.id,
-                    name: `${p.id} · ${dollars(Math.round(p.amount * 100))}`,
+                    name: `${p.id} (${dollars(Math.round(p.amount * 100))})`,
                   }))}
               />
               <Entry label="Refund reason" name="reason" />
@@ -360,7 +426,15 @@ export default function PaymentsLab() {
                 .slice(-30)
                 .map((e) => (
                   <li key={e.id}>
-                    {e.sequence}: {e.type.toLowerCase().replaceAll('_', ' ')} · {e.at}
+                    <Meta
+                      items={[
+                        {
+                          kind: 'text',
+                          label: `${e.sequence}: ${e.type.toLowerCase().replaceAll('_', ' ')}`,
+                        },
+                        { kind: 'text', label: e.at },
+                      ]}
+                    />
                   </li>
                 ))}
             </ol>

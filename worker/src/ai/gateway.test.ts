@@ -2,6 +2,7 @@ import { env } from 'cloudflare:test';
 import { describe, it, expect, vi } from 'vitest';
 import content from 'virtual:bloomlab-content';
 import { generateSyncKey } from '@bloomlab/shared';
+import { NEGOTIATION_STRATEGIES, type NegotiationStrategy } from '@bloomlab/content-schema';
 import { link } from '../sync/handlers';
 import { evaluate, handleAi, settings } from './handlers';
 import { cost, MODELS } from './catalog';
@@ -10,6 +11,7 @@ import { AiError, anthropic, type Provider } from './provider';
 import { validateGrading } from './output';
 import { getAttempt, startCall } from '../call/store';
 import type { CallState } from '../call/engine';
+import { classify } from './classify';
 const rubric = content.rubrics.find((r) => r.id === 'WRITTEN_COMMUNICATION_RUBRIC_V2')!;
 const valid = () => ({
   score: 100,
@@ -218,6 +220,70 @@ describe('AI-006/009/011/012 gateway', () => {
       failure: 'provider_timeout',
       accounted_calls: 0,
     });
+  });
+});
+
+describe('NEG-003 broad language-classification contract', () => {
+  const fixtures: [NegotiationStrategy, string][] = [
+    ['discount', 'Could you bring the project fee down by fifteen percent?'],
+    ['discount', 'I need the same deliverables for less money.'],
+    ['hold', 'The scope supports the quoted fee, so I am keeping the price where it is.'],
+    ['hold', 'I can stand behind this number and the terms already proposed.'],
+    ['clarify', 'Which part of the quote is creating the concern for you?'],
+    ['clarify', 'Before changing terms, what did the competing proposal include?'],
+    ['reduce_scope', 'Let us remove the migration and handover to lower the fee.'],
+    ['reduce_scope', 'We can exclude reporting and quote the smaller deliverable set.'],
+    ['phase', 'Let us launch applications first and deliver the automation in phase two.'],
+    ['phase', 'We can split this into two paid stages instead of doing everything now.'],
+    [
+      'walk_away',
+      'I do not think I can deliver this responsibly at that budget, so I will decline.',
+    ],
+    ['walk_away', 'We may not be the right fit, and I would rather step away professionally.'],
+    ['defensive', 'That price is ridiculous to challenge after all the work I put into it.'],
+    ['defensive', 'You clearly do not understand what this takes, so stop questioning my fee.'],
+  ];
+
+  it('carries diverse paraphrases through the bounded seven-strategy schema', async () => {
+    const { session } = await learner();
+    const observed = new Set<NegotiationStrategy>();
+    for (const [strategy, text] of fixtures) {
+      const provider = vi.fn<Provider>(async (request) => {
+        expect(request.submission).toBe(text);
+        for (const name of NEGOTIATION_STRATEGIES) expect(request.stable).toContain(name);
+        return { value: { strategy, confidence: 0.9 }, usage };
+      });
+      const result = await classify(
+        {
+          exercise_id: 'EX-NEGOTIATE_IT-summit-freelancer-quote',
+          request_id: crypto.randomUUID(),
+          text,
+        },
+        session,
+        env.DB,
+        provider,
+      );
+      expect(result).toEqual({ strategy, confidence: 0.9 });
+      expect(provider).toHaveBeenCalledOnce();
+      observed.add(result.strategy);
+    }
+    expect([...observed].sort()).toEqual([...NEGOTIATION_STRATEGIES].sort());
+  });
+
+  it('preserves low confidence so the deterministic engine can take its authored fallback', async () => {
+    const { session } = await learner();
+    await expect(
+      classify(
+        {
+          exercise_id: 'EX-NEGOTIATE_IT-summit-freelancer-quote',
+          request_id: crypto.randomUUID(),
+          text: 'Maybe we meet halfway, but not if that means less?',
+        },
+        session,
+        env.DB,
+        async () => ({ value: { strategy: 'clarify', confidence: 0.42 }, usage }),
+      ),
+    ).resolves.toEqual({ strategy: 'clarify', confidence: 0.42 });
   });
 });
 describe('direct Anthropic boundary', () => {

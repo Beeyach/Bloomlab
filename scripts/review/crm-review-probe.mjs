@@ -25,6 +25,42 @@ const report = { base: BASE, widths: {}, keyboard: {}, touch: {}, reducedMotion:
 const fail = (what) => report.failures.push(what);
 
 const { page, close } = await session();
+const browserErrors = [];
+const requests = new Map();
+page.on('Runtime.exceptionThrown', (event) => {
+  if (browserErrors.length < 100) browserErrors.push(event.exceptionDetails);
+});
+page.on('Network.requestWillBeSent', ({ requestId, request, type }) => {
+  requests.set(requestId, { url: request.url, type });
+  if (requests.size > 300) requests.delete(requests.keys().next().value);
+});
+page.on('Network.responseReceived', ({ requestId, response }) => {
+  const request = requests.get(requestId);
+  if (request)
+    Object.assign(request, {
+      status: response.status,
+      mimeType: response.mimeType,
+      fromServiceWorker: response.fromServiceWorker,
+    });
+});
+page.on('Network.loadingFailed', ({ requestId, errorText, canceled }) => {
+  const request = requests.get(requestId);
+  if (request) Object.assign(request, { errorText, canceled });
+});
+await page.send('Network.enable');
+
+async function captureFailure(context) {
+  report.failureContexts ??= [];
+  const state = await page.evaluate(`({
+    url: location.href, readyState: document.readyState,
+    rootChildren: document.getElementById('root')?.childElementCount ?? null,
+    main: document.querySelector('main')?.innerText.slice(0, 8000) ?? null,
+    body: document.body.innerText.slice(0, 12000)
+  })`);
+  const capture = `failure-${report.failureContexts.length}.png`;
+  await screenshot(page, `${OUT}/${capture}`, undefined, false);
+  report.failureContexts.push({ context, ...state, requests: [...requests.values()], capture });
+}
 
 const waitFor = async (expression, tries = 80) => {
   for (let i = 0; i < tries; i += 1) {
@@ -77,6 +113,23 @@ const AUDIT = `(() => {
   const board = document.querySelector('[data-board]');
   const boardScrolls = board ? board.scrollWidth > board.clientWidth + 2 : null;
   const boardOverflowX = board ? getComputedStyle(board).overflowX : null;
+  const firstContact = document.querySelector('[data-contact]');
+  const mobileContactLabels = firstContact
+    ? [...firstContact.querySelectorAll('[data-contact-field-label]')]
+        .filter(visible)
+        .map((label) => label.textContent.trim())
+    : [];
+  const contactSearch = document.querySelector('input[type=search]');
+  const searchPlaceholderFits = contactSearch
+    ? (() => {
+        const style = getComputedStyle(contactSearch);
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        context.font = style.font;
+        const available = contactSearch.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        return context.measureText(contactSearch.placeholder).width <= available + 1;
+      })()
+    : null;
   // Something past the right edge only counts when nothing between it and the page clips or
   // scrolls it: a truncated tag list or the board's own scroller is a design, not an overflow.
   const contained = (e) => {
@@ -98,12 +151,16 @@ const AUDIT = `(() => {
     eyebrow: [...new Set(eyebrow)].slice(0, 6),
     textUnder12px: [...new Set(tiny)].slice(0, 6),
     board: board ? { scrolls: boardScrolls, overflowX: boardOverflowX } : null,
+    mobileContactLabels,
+    searchPlaceholderFits,
   };
 })()`;
 
 const openCrm = async (query = '') => {
+  requests.clear();
   await openPage(page, `${BASE}/crm${query}`);
   const ready = await waitFor("document.body.innerText.includes('Account time')");
+  if (!ready) await captureFailure(`CRM did not become ready: ${query}`);
   await settle();
   return ready;
 };
@@ -245,6 +302,15 @@ try {
       if (state.id === 'pipeline-board' && width < 1024 && audit.board) {
         if (audit.board.overflowX !== 'auto' && audit.board.overflowX !== 'scroll')
           fail(`${width} pipeline-board: board is not its own scroller`);
+      }
+      if (state.id === 'contacts-empty' && width <= 390) {
+        const expectedLabels = ['Reach', 'Tags', 'Owner', 'Status'];
+        if (JSON.stringify(audit.mobileContactLabels) !== JSON.stringify(expectedLabels))
+          fail(
+            `${width} contacts-empty: mobile contact labels ${JSON.stringify(audit.mobileContactLabels)} do not match ${JSON.stringify(expectedLabels)}`,
+          );
+        if (!audit.searchPlaceholderFits)
+          fail(`${width} contacts-empty: search placeholder is visually clipped`);
       }
       const height = Math.min(await page.evaluate('document.documentElement.scrollHeight'), 6000);
       await page.send('Emulation.setDeviceMetricsOverride', {
@@ -423,7 +489,10 @@ try {
   t.tappedCard = await tap('[data-opportunity="opp-maria"]');
   await sleep(500);
   t.inspectorOpened = await waitFor("document.body.innerText.includes('Opportunity owner')", 20);
-  if (!t.tappedCard || !t.inspectorOpened) fail('touch: tapping a deal did not open it');
+  if (!t.tappedCard || !t.inspectorOpened) {
+    await captureFailure('Touch card did not open');
+    fail('touch: tapping a deal did not open it');
+  }
   t.moved = await page.evaluate(`(() => {
     const sel = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'Consult Done'));
     if (!sel) return false;
@@ -477,8 +546,10 @@ try {
   if (rm.longTransitions.length)
     fail(`reduced motion: transitions remain ${rm.longTransitions.join(', ')}`);
 } catch (error) {
+  await captureFailure('Probe exception').catch(() => {});
   fail(`threw: ${error instanceof Error ? (error.stack ?? error.message) : String(error)}`);
 } finally {
+  report.browserErrors = browserErrors;
   await close();
 }
 

@@ -27,8 +27,9 @@ import {
 import { branchNames, incoming, outgoing } from './graphEdit';
 import {
   actions,
-  configFields,
+  type configFields,
   paletteEntry,
+  savedNodeEntry,
   referenceFor,
   referenceOptions,
   triggerFilters,
@@ -108,7 +109,7 @@ function NodeInspectorInner({
   }
   const node = workflow.nodes.find((row) => row.id === selectedId);
   if (!node) return null;
-  const entry = paletteEntry(node.ghl_feature_id);
+  const entry = savedNodeEntry(node);
   return (
     <Inspector
       title={node.type === 'end' ? 'End' : (entry?.name ?? 'Step')}
@@ -399,7 +400,7 @@ function StepEditor({
   edits: InspectorEdits;
   issues: GraphIssue[];
 }) {
-  const entry = paletteEntry(node.ghl_feature_id);
+  const entry = savedNodeEntry(node);
   const capability = actionCapabilityFor(node.ghl_feature_id);
   const problems = capability ? capability.validate(node.config, account) : [];
   const setConfig = (patch: Record<string, unknown>) =>
@@ -421,12 +422,17 @@ function StepEditor({
             onChange={(event) => edits.setFeature(node.id, event.target.value)}
           >
             <option value="">Choose an action</option>
-            {actions().map((option) => (
-              <option key={option.id} value={option.id} disabled={!option.runnable}>
-                {option.name}
-                {option.runnable ? '' : ' (practised in GHL)'}
-              </option>
-            ))}
+            {node.ghl_feature_id === 'GHL-WF-WEBHOOK' && (
+              <option value="GHL-WF-WEBHOOK">Saved webhook (legacy simulation)</option>
+            )}
+            {actions().map((option) =>
+              option.id === 'GHL-WF-WEBHOOK' && node.ghl_feature_id === option.id ? null : (
+                <option key={option.id} value={option.id} disabled={!option.runnable}>
+                  {option.name}
+                  {option.runnable ? '' : ' (practised in GHL)'}
+                </option>
+              ),
+            )}
           </Select>
         </Field>
       )}
@@ -444,7 +450,7 @@ function StepEditor({
       {node.type === 'action' && entry?.runnable && (
         <InspectorSection title="Settings">
           <div className={styles.formGrid}>
-            {configFields(node.ghl_feature_id).map((field) => (
+            {entry.feature.supported_configs.config_fields.map((field) => (
               <ConfigField
                 key={field.name}
                 node={node}
@@ -562,7 +568,7 @@ function StepEditor({
 const nameOf = (workflow: Workflow, id: string): string => {
   const node = workflow.nodes.find((row) => row.id === id);
   if (!node) return id;
-  const entry = paletteEntry(node.ghl_feature_id);
+  const entry = savedNodeEntry(node);
   return `${node.type === 'end' ? 'End' : (entry?.name ?? 'Step')} (${node.id})`;
 };
 
@@ -623,10 +629,10 @@ function ConfigField({
       </Field>
     );
   }
-  if (field.type === 'json' && field.name === 'custom_data') {
+  if (field.type === 'json' && (field.name === 'custom_data' || field.name === 'headers')) {
     return (
       <Field
-        label="Custom data"
+        label={field.name === 'headers' ? 'Headers' : 'Custom data'}
         hint="One key=value per line; values may use merge fields."
         id={id}
       >
@@ -637,7 +643,7 @@ function ConfigField({
             .join('\n')}
           onChange={(event) =>
             setConfig({
-              custom_data: Object.fromEntries(
+              [field.name]: Object.fromEntries(
                 event.target.value
                   .split('\n')
                   .map((line) => line.split('='))

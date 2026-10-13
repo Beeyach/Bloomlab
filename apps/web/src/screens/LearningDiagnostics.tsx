@@ -1,3 +1,4 @@
+import { Meta } from '@bloomlab/design-system';
 import { useState, type FormEvent } from 'react';
 
 import {
@@ -79,16 +80,29 @@ function SkillRows() {
               <MasteryBadge state={row.state} />
               <span>{row.skill_id}</span>
             </div>
-            <p className={styles.rowMeta}>
-              {skillTitle(row.skill_id)} · confidence {row.confidence} · independent{' '}
-              {row.counts.independent_passes}/{needed} · pressure {row.counts.pressure_passes} ·
-              fieldwork {row.counts.fieldwork_passes} · attempts {row.counts.attempts} · review{' '}
-              {day(row.review_due)}
-              {row.refresh_from ? ` · refresh from ${row.refresh_from}` : ''}
-              {row.missing_requirements.length > 0
-                ? ` · missing: ${row.missing_requirements.join(', ')}`
-                : ''}
-            </p>
+            <Meta
+              className={styles.rowMeta}
+              items={[
+                { kind: 'text', label: skillTitle(row.skill_id) },
+                { kind: 'text', label: `confidence ${row.confidence}` },
+                { kind: 'text', label: `independent ${row.counts.independent_passes}/${needed}` },
+                { kind: 'text', label: `pressure ${row.counts.pressure_passes}` },
+                { kind: 'text', label: `fieldwork ${row.counts.fieldwork_passes}` },
+                { kind: 'text', label: `attempts ${row.counts.attempts}` },
+                { kind: 'text', label: `review ${day(row.review_due)}` },
+                ...(row.refresh_from
+                  ? [{ kind: 'text' as const, label: `refresh from ${row.refresh_from}` }]
+                  : []),
+                ...(row.missing_requirements.length
+                  ? [
+                      {
+                        kind: 'text' as const,
+                        label: `missing: ${row.missing_requirements.join(', ')}`,
+                      },
+                    ]
+                  : []),
+              ]}
+            />
           </li>
         );
       })}
@@ -107,9 +121,22 @@ function CampaignRows() {
           <div>
             <div className={styles.rowHead}>{row.campaign_id}</div>
             <p className={styles.rowMeta}>
-              current gate {row.current_gate ?? 'complete'} · passed {row.passed_gates.length}/
-              {row.gates.filter((g) => g.status !== 'optional').length} · next{' '}
-              {row.next_required.join(', ') || '—'} · work ahead {row.work_ahead.join(', ') || '—'}
+              <Meta
+                items={[
+                  { kind: 'text', label: <>current gate {row.current_gate ?? 'complete'}</> },
+                  {
+                    kind: 'text',
+                    label: (
+                      <>
+                        passed {row.passed_gates.length}/
+                        {row.gates.filter((g) => g.status !== 'optional').length}
+                      </>
+                    ),
+                  },
+                  { kind: 'text', label: <>next {row.next_required.join(', ') || '—'}</> },
+                  { kind: 'text', label: <>work ahead {row.work_ahead.join(', ') || '—'}</> },
+                ]}
+              />
             </p>
           </div>
           <ul className={styles.gates}>
@@ -155,14 +182,27 @@ function ReviewRows() {
             <div className={styles.rowHead}>
               <span>{row.skill_id}</span>
               <span>
-                {row.status === 'due'
-                  ? `due · ${row.reason} · priority ${row.priority}`
-                  : `upcoming ${day(row.due_at)}`}
+                {row.status === 'due' ? (
+                  <Meta
+                    items={[
+                      { kind: 'badge', label: 'due' },
+                      { kind: 'text', label: row.reason },
+                      { kind: 'text', label: `priority ${row.priority}` },
+                    ]}
+                  />
+                ) : (
+                  `upcoming ${day(row.due_at)}`
+                )}
               </span>
             </div>
             <p className={styles.rowMeta}>
-              {skillTitle(row.skill_id)} · last demonstrated {day(row.last_demonstrated)} · state{' '}
-              {row.state}
+              <Meta
+                items={[
+                  { kind: 'text', label: skillTitle(row.skill_id) },
+                  { kind: 'text', label: <>last demonstrated {day(row.last_demonstrated)}</> },
+                  { kind: 'text', label: <>state {row.state}</> },
+                ]}
+              />
             </p>
           </div>
           {row.status === 'due' && (
@@ -400,8 +440,21 @@ function SessionBuilder() {
       {plan && (
         <div data-testid="session-plan">
           <p className={shared.muted}>
-            {plan.length} · {plan.planned_minutes} of {plan.budget_minutes} min · assistance
-            dependence {plan.assistance_dependence} · rules {plan.rules_version}
+            <Meta
+              items={[
+                { kind: 'text', label: plan.length },
+                {
+                  kind: 'text',
+                  label: (
+                    <>
+                      {plan.planned_minutes} of {plan.budget_minutes} min
+                    </>
+                  ),
+                },
+                { kind: 'text', label: <>assistance dependence {plan.assistance_dependence}</> },
+                { kind: 'text', label: <>rules {plan.rules_version}</> },
+              ]}
+            />
           </p>
           {plan.blocks.length === 0 && <p className={shared.muted}>Nothing to plan.</p>}
           <ul className={styles.plan}>
@@ -411,8 +464,21 @@ function SessionBuilder() {
                 <ol>
                   {block.items.map((item) => (
                     <li key={item.id}>
-                      {item.kind} {item.content_id} · {item.skill_id} · {item.minutes} min ·{' '}
-                      {item.reason}
+                      <Meta
+                        items={[
+                          {
+                            kind: 'text',
+                            label: (
+                              <>
+                                {item.kind} {item.content_id}
+                              </>
+                            ),
+                          },
+                          { kind: 'text', label: item.skill_id },
+                          { kind: 'text', label: <>{item.minutes} min</> },
+                          { kind: 'text', label: <> {item.reason}</> },
+                        ]}
+                      />
                     </li>
                   ))}
                 </ol>
@@ -438,13 +504,34 @@ function RecentEvidence() {
       {rows.map((row) => (
         <li key={row.id} className={styles.row}>
           <div className={styles.rowHead}>
-            {row.skill_id} · {row.kind} · {row.result} · {row.assistance}
+            <Meta
+              items={[
+                { kind: 'text', label: row.skill_id },
+                { kind: 'text', label: row.kind },
+                { kind: 'text', label: row.result },
+                { kind: 'text', label: row.assistance },
+              ]}
+            />
           </div>
           <p className={styles.rowMeta}>
-            {day(row.occurred_at)} · {row.exercise_id ?? 'no exercise'} · app {row.versions.app} ·
-            content {row.versions.content} ({row.versions.content_hash.slice(0, 8)}) · simulator{' '}
-            {row.versions.simulator} · rules {row.versions.rules} · device{' '}
-            {row.device_id.slice(0, 8)}
+            <Meta
+              items={[
+                { kind: 'text', label: day(row.occurred_at) },
+                { kind: 'text', label: row.exercise_id ?? 'no exercise' },
+                { kind: 'text', label: <>app {row.versions.app}</> },
+                {
+                  kind: 'text',
+                  label: (
+                    <>
+                      content {row.versions.content} ({row.versions.content_hash.slice(0, 8)})
+                    </>
+                  ),
+                },
+                { kind: 'text', label: <>simulator {row.versions.simulator}</> },
+                { kind: 'text', label: <>rules {row.versions.rules}</> },
+                { kind: 'text', label: <>device {row.device_id.slice(0, 8)}</> },
+              ]}
+            />
           </p>
         </li>
       ))}
@@ -464,8 +551,21 @@ export function LearningDiagnostics() {
       <Surface as="dl" padding="sm" className={shared.list}>
         <dt>Evidence stamp</dt>
         <dd>
-          app {versions.app} · content {versions.content} ({versions.content_hash.slice(0, 8)}) ·
-          simulator {versions.simulator} · rules {versions.rules}
+          <Meta
+            items={[
+              { kind: 'text', label: <>app {versions.app}</> },
+              {
+                kind: 'text',
+                label: (
+                  <>
+                    content {versions.content} ({versions.content_hash.slice(0, 8)})
+                  </>
+                ),
+              },
+              { kind: 'text', label: <>simulator {versions.simulator}</> },
+              { kind: 'text', label: <>rules {versions.rules}</> },
+            ]}
+          />
         </dd>
       </Surface>
 

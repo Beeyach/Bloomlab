@@ -6,6 +6,7 @@
 // keyboard, the five review widths with touch, and reduced motion. Writes calendar-probe.json and
 // calendar-*.png to .review/ (override with REVIEW_OUT).
 //   BASE=http://localhost:4173 node scripts/review/calendar-probe.mjs
+import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -102,6 +103,18 @@ const chain = (page) => text(page, '[data-testid="calendar-chain"]');
 const LAB = `${BASE}/calendar`;
 const READY = `Boolean(${q('[data-testid="calendar-week"]')})`;
 
+/** Saved is a check-labelled fact and the exact version is a separate Meta chip. */
+const savedVersionIn = (root) => `(() => {
+  const el = ${root};
+  if (!el) return null;
+  const labels = [...el.querySelectorAll('span')]
+    .filter((span) => span.childElementCount === 0)
+    .map((span) => span.textContent.trim());
+  const version = labels.find((label) => /^v[1-9]\\d*$/.test(label));
+  return labels.includes('Saved') && version ? Number(version.slice(1)) : null;
+})()`;
+const calendarSavedVersion = savedVersionIn(q('[data-testid="calendar-save-state"]'));
+
 /** Saves, then waits for the account to hold the new version rather than for the button. */
 async function save(page) {
   // The button is only enabled once React has taken the edit, so wait for that rather than for a
@@ -110,11 +123,7 @@ async function save(page) {
     timeout: 6000,
   });
   await click(page, '[data-testid="calendar-save"]');
-  const ok = await waitFor(
-    page,
-    `(${q('[data-testid="calendar-save-state"]')}?.textContent ?? '').startsWith('Saved')`,
-    { timeout: 8000 },
-  );
+  const ok = await waitFor(page, `(${calendarSavedVersion}) !== null`, { timeout: 8000 });
   if (!ok) {
     console.log('  save-state:', await text(page, '[data-testid="calendar-save-state"]'));
     console.log('  refusal:', await text(page, '[data-testid="calendar-refusal"]'));
@@ -124,11 +133,32 @@ async function save(page) {
 
 /** Resets the account so a section starts from the scenario's own beginning. */
 async function resetAccount(page) {
+  const generation = await page.evaluate(
+    `document.querySelector('[data-testid="calendar-lab"]')?.dataset.runGeneration`,
+  );
+  assert(generation, 'Reset requires the rendered run generation');
   await click(page, '[data-testid="calendar-reset"]');
   await waitFor(page, `Boolean(${q('[data-testid="calendar-reset-confirm"]')})`, { timeout: 4000 });
   await click(page, '[data-testid="calendar-reset-confirm"]');
-  await sleep(600);
-  return waitFor(page, READY, { timeout: 8000 });
+  const ready = await waitFor(
+    page,
+    `document.querySelector('[data-testid="calendar-lab"]')?.dataset.runGeneration !== ${JSON.stringify(generation)} && document.querySelector('[data-testid="calendar-lab"]')?.getAttribute('aria-busy') === 'false' && (${READY})`,
+    { timeout: 8000 },
+  );
+  assert(ready, 'Account reset did not commit and render its new generation');
+  return ready;
+}
+
+async function chooseCalendar(page, id, title) {
+  await setSelect(page, '[data-testid="calendar-picker"]', id);
+  assert(
+    await waitFor(
+      page,
+      `new URL(location.href).searchParams.get('calendar') === ${JSON.stringify(id)} && [...document.querySelectorAll('main h2')].some(el => el.textContent === ${JSON.stringify(title + ' — the next 7 days')})`,
+      { timeout: 6000 },
+    ),
+    'Requested calendar did not render',
+  );
 }
 
 const { page, close } = await session();
@@ -213,7 +243,9 @@ try {
     hadHalfHours: beforeDuration.includes('2026-09-08T09:30:00-05:00'),
     nowOnTheHour: !afterDuration.includes('2026-09-08T09:30:00-05:00'),
     stillOffersSomething: afterDuration.length > 0,
-    summaryFollows: (await text(page, '[data-testid="calendar-summary"]')).includes('1 hour'),
+    summaryFollows: await page.evaluate(
+      `[...document.querySelectorAll('[data-testid="calendar-summary"] span')].some((span) => span.childElementCount === 0 && span.textContent.trim() === '60 min')`,
+    ),
   });
 
   /* ---- 4. minimum notice hides what is too soon (CAL-001) -------------------------------- */
@@ -300,7 +332,7 @@ try {
 
   /* ---- 9. a service is behaviour, not a label (CAL-001) ---------------------------------- */
   await resetAccount(page);
-  await setSelect(page, '[data-testid="calendar-picker"]', 'treatments');
+  await chooseCalendar(page, 'treatments', 'Treatments');
   await waitFor(page, `Boolean(${q('[data-testid="booking-service"]')})`, { timeout: 6000 });
   await click(page, '[data-testid="group-service"]');
   await waitFor(page, `Boolean(${q('[data-testid="service-duration-signature-facial"]')})`, {
@@ -332,13 +364,21 @@ try {
 
   /* ---- 10. booking puts a real event through the shared engine (CAL-003) ----------------- */
   await resetAccount(page);
-  await setSelect(page, '[data-testid="calendar-picker"]', 'consultation');
+  await chooseCalendar(page, 'consultation', 'Consultation');
   await waitFor(page, `Boolean(${q('[data-testid="slot-2026-09-10T13:00:00-05:00"]')})`, {
     timeout: 6000,
   });
   await click(page, '[data-testid="slot-2026-09-10T13:00:00-05:00"]');
   await setSelect(page, '[data-testid="booking-contact"]', 'soraya');
   await sleep(200);
+  assert(
+    await waitFor(
+      page,
+      `${q('[data-testid="booking-book"]')}?.disabled === false && (${q('[data-testid="booking-what"]')}?.textContent ?? '').includes('Theo Marsh')`,
+      { timeout: 6000 },
+    ),
+    'Chosen consultation slot did not reach the booking panel',
+  );
   const bookingWhat = await text(page, '[data-testid="booking-what"]');
   await click(page, '[data-testid="booking-book"]');
   const booked = await waitFor(
@@ -452,6 +492,7 @@ try {
   await click(page, '[data-testid="group-availability"]');
   await setText(page, '[data-testid="calendar-notice"]', '2880');
   const savedForFunnel = await save(page);
+  const versionBeforeReload = await page.evaluate(calendarSavedVersion);
   await sleep(300);
   const calendarTimes = await slotTimes(page);
 
@@ -477,9 +518,11 @@ try {
   await waitFor(page, `Boolean(${q('[data-testid="block-reference"]')})`, { timeout: 4000 });
   await setSelect(page, '[data-testid="block-reference"]', 'consultation');
   await click(page, '[data-testid="funnel-save"]');
-  await waitFor(page, `/Saved · version \\d+/.test(document.body.textContent ?? '')`, {
-    timeout: 8000,
-  });
+  const funnelSaved = await waitFor(
+    page,
+    `(${savedVersionIn(`${q('[data-testid="funnel-save"]')}?.parentElement`)}) === 1`,
+    { timeout: 8000 },
+  );
   await click(page, '[data-testid="funnel-mode-simulate"]');
   await sleep(600);
   const visitorSlots = await page.evaluate(
@@ -487,6 +530,7 @@ try {
   );
   section('funnel-shares-the-engine', {
     calendarSaved: savedForFunnel,
+    newFunnelSavedAtVersionOne: funnelSaved,
     funnelOffersSomething: visitorSlots.length > 0,
     // Two days of notice on the calendar, and the funnel's visitor honours it — one engine.
     honoursTheNotice: visitorSlots.every((at) => at >= '2026-09-10'),
@@ -504,9 +548,9 @@ try {
   );
   section('persistence', {
     keptTheSetting: noticeAfterReload === '2880',
-    keptTheVersion: /Saved · version \d+/.test(
-      await text(page, '[data-testid="calendar-save-state"]'),
-    ),
+    keptTheVersion:
+      versionBeforeReload !== null &&
+      (await page.evaluate(calendarSavedVersion)) === versionBeforeReload,
   });
 
   /* ---- 16. the keyboard reaches everything (A11Y-001) ------------------------------------ */

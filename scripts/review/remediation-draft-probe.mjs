@@ -68,12 +68,23 @@ for (const width of (process.env.REVIEW_WIDTHS ?? '1440,1024,768,390,320').split
         `document.querySelector('[data-node="n1"]').closest('li').querySelector('button:not([data-node])').click()`,
       );
       await wait(page, `Boolean(document.querySelector('[data-palette="GHL-WF-WAIT"] button'))`);
-      await page.evaluate(`document.querySelector('[data-palette="GHL-WF-WAIT"] button').click()`);
+      assert(
+        await page.evaluate(`(() => {
+          const add = [...document.querySelectorAll('[data-palette="GHL-WF-WAIT"] button')]
+            .find(button => button.textContent.trim() === 'Add');
+          if (!add) return false;
+          add.click();
+          return true;
+        })()`),
+      );
       await wait(page, `Boolean(document.querySelector('[data-node="n4"]'))`);
     }
     await wait(page, `(${snapshot}).then(rows => rows.workspace > 0)`);
     await sleep(100);
     await page.send('Page.reload');
+    // Preserve the Worker-offline reload and restore the new document's navigator.onLine signal.
+    await workers.send('Network.emulateNetworkConditions', offline);
+    await page.send('Network.emulateNetworkConditions', offline);
     await wait(page, `Boolean(document.querySelector('[data-node="n1"]'))`);
     if (width >= 768) assert.equal(await page.evaluate(transform), moved);
     else assert(await page.evaluate(`Boolean(document.querySelector('[data-node="n4"]'))`));

@@ -41,3 +41,10 @@
   font-size: var(--bl-font-size-sm);
   line-height: var(--bl-font-leading-normal);
 }
+
+.link {
+  color: var(--bl-color-ink);
+  text-decoration: underline;
+  text-decoration-color: rgba(22, 20, 43, 0.3);
+  text-underline-offset: 3px;
+}

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import type { VoiceCharacter, VoiceLine } from '@bloomlab/content-schema';
 import type { VoiceAssetStatus } from '@bloomlab/shared';
-import { Button } from '@bloomlab/design-system';
+import { Button, Meta } from '@bloomlab/design-system';
 import { content } from '../content/bundle';
 import { voiceAudio, voiceLibrary } from './client';
 import styles from './VoiceReview.module.css';
@@ -63,13 +63,22 @@ function Player({
         {line.text}
       </p>
       <p>
-        {asset
-          ? asset.available
-            ? `Saved audio · ${Math.round((asset.byte_length ?? 0) / 1024)} KB`
-            : 'Audio not generated yet.'
-          : loading
-            ? 'Checking saved audio…'
-            : 'Saved audio is unavailable.'}
+        {asset ? (
+          asset.available ? (
+            <Meta
+              items={[
+                { kind: 'text', label: 'Saved audio' },
+                { kind: 'text', label: `${Math.round((asset.byte_length ?? 0) / 1024)} KB` },
+              ]}
+            />
+          ) : (
+            'Audio not generated yet.'
+          )
+        ) : loading ? (
+          'Checking saved audio…'
+        ) : (
+          'Saved audio is unavailable.'
+        )}
       </p>
       <Button onClick={() => void play()} disabled={!asset?.available || busy}>
         {busy ? 'Loading…' : 'Play line'}
@@ -139,7 +148,7 @@ function CharacterReview({ voice }: { voice: VoiceCharacter }) {
         >
           {voice.lines.map((l) => (
             <option key={l.id} value={l.id}>
-              {l.kind} · {l.id}
+              {l.kind} ({l.id})
             </option>
           ))}
         </select>

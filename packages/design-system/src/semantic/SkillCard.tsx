@@ -3,6 +3,8 @@ import type { ComponentPropsWithRef } from 'react';
 import { HoloMaterial, type HoloVariant } from '../holo/HoloMaterial';
 import { cx } from '../utils/cx';
 import { TERRITORY_LABELS, type MasteryState, type Territory } from './domain';
+import { IconCheck } from '../icons';
+import { Meta } from './Meta';
 import { MasteryBadge } from './MasteryBadge';
 import styles from './SkillCard.module.css';
 
@@ -43,11 +45,21 @@ export function SkillCard({
         <MasteryBadge state={state} />
       </span>
       {summary && <span className={styles.summary}>{summary}</span>}
-      <span className={styles.meta}>
-        {TERRITORY_LABELS[territory]}
-        {demonstrations !== undefined &&
-          ` · ${demonstrations} ${demonstrations === 1 ? 'demonstration' : 'demonstrations'}`}
-      </span>
+      <Meta
+        className={styles.meta}
+        items={[
+          { kind: 'chip', label: TERRITORY_LABELS[territory] },
+          ...(demonstrations !== undefined
+            ? [
+                {
+                  kind: 'text' as const,
+                  icon: <IconCheck />,
+                  label: `${demonstrations} ${demonstrations === 1 ? 'demo' : 'demos'}`,
+                },
+              ]
+            : []),
+        ]}
+      />
     </span>
   );
 

@@ -150,11 +150,6 @@
   font-size: var(--bl-font-size-sm);
 }
 
-.featureList li + li::before {
-  content: '· ';
-  color: var(--bl-color-text-soft);
-}
-
 /* Work area */
 .options {
   display: grid;

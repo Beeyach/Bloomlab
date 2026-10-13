@@ -30,6 +30,8 @@ import { learnerState } from './response';
 import { availableSources, canGradeNow, runtimeFor } from './runtime';
 import { saveWorkspace } from '../data/workspace';
 import { captureRunReplay, runReplayKey } from './runReplay';
+import { currentRun } from '../simulator/currentRun';
+import { eventsAfterPrediction } from './runPrediction';
 
 /**
  * Finalizing an attempt: grade what the learner did, then write it once through the Phase 6
@@ -219,12 +221,33 @@ async function finalizeOneAttempt(
   // Read the runtime's own state now, once, so the report is of the account as it stood at
   // submission and cannot drift while the evidence is being written.
   const runtime = runtimeFor(exercise);
-  const context =
+  const checkpoint = current.response.run_prediction;
+  if (exercise.type === 'RUN_THE_LEAD' && !checkpoint)
+    throw new Error('Commit the prediction before executing this lead.');
+  if (checkpoint) {
+    current.response = {
+      ...current.response,
+      prediction: { ...checkpoint.prediction },
+    };
+  }
+  let context =
     runtime && !current.submitted
       ? await runtime.context(exercise, learnerState(exercise, current.response))
       : null;
   if (runtime && !context && !current.submitted)
     throw new RuntimeUnavailableError(exercise.id, runtime.id);
+  if (exercise.type === 'RUN_THE_LEAD' && checkpoint && context && !current.submitted) {
+    const run = exercise.scenario ? await currentRun(exercise.scenario, database) : null;
+    if (!run) throw new RuntimeUnavailableError(exercise.id, runtime?.id ?? 'workflow-lab');
+    const events = eventsAfterPrediction(context.events, checkpoint, {
+      run_id: run.state.run_id,
+      generation: run.generation,
+    });
+    const subject = exercise.starting_state.contact_id;
+    if (!events.some((event) => !subject || event.fields.contact_id === subject))
+      throw new Error('Execute this lead in Workflow Lab after committing the prediction.');
+    context = { ...context, events };
+  }
   const portfolioCapture =
     current.submitted?.portfolio_capture ?? captureArchitecture(context?.architecture);
   let report = objectiveReport(

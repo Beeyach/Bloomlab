@@ -50,7 +50,7 @@ export function HoloTerritory({
           </span>
           <span className={styles.progress}>
             <span className={styles.count}>
-              {demonstrated} of {total} capabilities demonstrated
+              {demonstrated} of {total} {total === 1 ? 'capability' : 'capabilities'} demonstrated
             </span>
             <span className={styles.track} aria-hidden="true">
               <span className={styles.fill} style={{ width: `${ratio * 100}%` }} />

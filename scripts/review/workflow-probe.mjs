@@ -5,6 +5,7 @@
 // with frame timing while the engine works in the worker. Writes workflow-probe.json and
 // workflow-*.png to .review/ (override with REVIEW_OUT).
 //   BASE=http://localhost:4173 node scripts/review/workflow-probe.mjs
+import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -46,6 +47,10 @@ const setText = (page, selector, value) =>
   page.evaluate(
     `(() => { const el = ${q(selector)}; if (!el) return false; const setter = Object.getOwnPropertyDescriptor(el.__proto__, 'value').set; setter.call(el, ${JSON.stringify(value)}); el.dispatchEvent(new Event('input', { bubbles: true })); return true; })()`,
   );
+const setLabeledText = (page, label, value) =>
+  page.evaluate(
+    `(() => { const el = [...document.querySelectorAll('[data-testid="trigger-test"] label')].find((row) => row.textContent.trim() === ${JSON.stringify(label)})?.control; if (!el) return false; const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, ${JSON.stringify(value)}); el.dispatchEvent(new Event('input', { bubbles: true })); return el.value === ${JSON.stringify(value)}; })()`,
+  );
 async function waitFor(page, expression, { timeout = 10000, every = 100 } = {}) {
   const started = Date.now();
   while (Date.now() - started < timeout) {
@@ -66,11 +71,11 @@ const transformOf = (page, selector) =>
 
 const startFrames = (page) =>
   page.evaluate(`(() => {
-    window.__frames = []; window.__long = []; window.__sampling = true;
+    window.__frames = []; window.__slowFrames = []; window.__long = []; window.__longDetails = []; window.__sampling = true;
     let last = performance.now();
-    const loop = () => { const now = performance.now(); window.__frames.push(now - last); last = now; if (window.__sampling) requestAnimationFrame(loop); };
+    const loop = () => { const now = performance.now(); const duration = now - last; window.__frames.push(duration); if (duration > 50) window.__slowFrames.push({ duration: Math.round(duration), iteration: window.__stressIteration ?? null }); last = now; if (window.__sampling) requestAnimationFrame(loop); };
     requestAnimationFrame(loop);
-    try { window.__po = new PerformanceObserver((list) => { for (const e of list.getEntries()) window.__long.push(Math.round(e.duration)); }); window.__po.observe({ type: 'longtask', buffered: false }); } catch {}
+    try { window.__po = new PerformanceObserver((list) => { for (const e of list.getEntries()) { window.__long.push(Math.round(e.duration)); window.__longDetails.push({ duration: Math.round(e.duration), start: Math.round(e.startTime), iteration: window.__stressIteration ?? null }); } }); window.__po.observe({ type: 'longtask', buffered: false }); } catch {}
     return true;
   })()`);
 const stopFrames = (page) =>
@@ -78,7 +83,7 @@ const stopFrames = (page) =>
     window.__sampling = false; try { window.__po?.disconnect(); } catch {}
     const f = window.__frames.slice(1); const sorted = [...f].sort((a, b) => a - b);
     const p = (k) => sorted.length ? sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * k))] : null;
-    return { frames: f.length, mean: f.length ? +(f.reduce((a, b) => a + b, 0) / f.length).toFixed(1) : null, p95: p(0.95), max: f.length ? Math.round(Math.max(...f)) : null, over50ms: f.filter((x) => x > 50).length, longTasks: window.__long };
+    return { frames: f.length, mean: f.length ? +(f.reduce((a, b) => a + b, 0) / f.length).toFixed(1) : null, p95: p(0.95), max: f.length ? Math.round(Math.max(...f)) : null, over50ms: f.filter((x) => x > 50).length, slowFrames: window.__slowFrames, longTasks: window.__long, longTaskDetails: window.__longDetails };
   })()`);
 
 const mouse = (page, type, x, y, extra = {}) =>
@@ -120,6 +125,8 @@ try {
   await setViewport(page, 1440, 950, { mobile: false });
   await openPage(page, LAB);
   const ready = await waitFor(page, READY);
+  report.head = await page.evaluate(`document.querySelector('[data-build-id]')?.dataset.buildId`);
+  if (process.env.REVIEW_HEAD) assert.equal(report.head, process.env.REVIEW_HEAD);
   await sleep(300);
   const colours = await page.evaluate(`(() => {
     const canvas = ${q('[data-testid="workflow-canvas"]')}; const node = ${q('[data-node="n1"]')};
@@ -151,7 +158,7 @@ try {
   // Add a Wait after n2, undo, redo, save.
   await click(page, '[data-node="n2"]');
   await sleep(150);
-  await click(page, '[data-palette="GHL-WF-WAIT"] button');
+  assert(await clickText(page, '[data-palette="GHL-WF-WAIT"] button', 'Add'));
   const added = await waitFor(page, `Boolean(${q('[data-node="n4"]')})`, { timeout: 3000 });
   const dirty = (await text(page, 'body')).includes('Unsaved draft');
   await click(page, '[data-testid="undo"]');
@@ -366,12 +373,18 @@ try {
   let ranIn = null;
   const started = Date.now();
   for (let i = 0; i < 90 && eventsAdded < 500; i += 1) {
-    const runsBefore = await count(page, '[data-testid="timeline"] [data-run]');
+    await page.evaluate(`window.__stressIteration=${i}`);
+    const runsBefore = Number(
+      await page.evaluate(`${q('[data-testid="timeline"]')}.dataset.runCount`),
+    );
     await click(page, '[data-testid="run-test"]');
-    await waitFor(
-      page,
-      `document.querySelectorAll('[data-testid="timeline"] [data-run]').length > ${runsBefore}`,
-      { timeout: 8000, every: 20 },
+    assert(
+      await waitFor(
+        page,
+        `Number(${q('[data-testid="timeline"]')}.dataset.runCount) > ${runsBefore}`,
+        { timeout: 8000, every: 20 },
+      ),
+      `Run count did not advance after stress iteration ${i}`,
     );
     const timing = await text(page, '[data-testid="timing"]');
     const m = timing.match(
@@ -387,6 +400,12 @@ try {
   const stateSize = await page.evaluate(
     `document.querySelectorAll('[data-testid="timeline"] [data-run]').length`,
   );
+  const totalRuns = Number(
+    await page.evaluate(`${q('[data-testid="timeline"]')}.dataset.runCount`),
+  );
+  const olderRuns = await page.evaluate(
+    `${q('[data-testid="older-runs"]')}?.textContent.trim() ?? null`,
+  );
   section(
     'five-hundred-events',
     {
@@ -397,6 +416,8 @@ try {
       p95Under50ms: busyFrames.p95 !== null && busyFrames.p95 < 50,
       noFrameOver100ms: busyFrames.max !== null && busyFrames.max < 100,
       noLongTaskOver100ms: !busyFrames.longTasks.some((duration) => duration > 100),
+      boundedRunDom: stateSize <= 25,
+      earlierRunsReachable: totalRuns <= 24 || /^Show \d+ earlier runs$/.test(olderRuns ?? ''),
     },
     {
       eventsAdded,
@@ -404,6 +425,7 @@ try {
       ranIn,
       elapsedMs: Date.now() - started,
       runsListed: stateSize,
+      totalRuns,
       frames: busyFrames,
     },
   );
@@ -418,13 +440,28 @@ try {
   await setSelect(page, '#test-contact', 'maria');
   // Maria books (the trigger is Appointment Status: new) for the 5th at noon, so the 24-hour
   // reminder wait ends on the 4th at noon: one day of waiting, then release on the second.
-  await setText(page, '#trigger-starts-at', '2026-09-05T12:00:00-05:00');
+  assert(await setLabeledText(page, 'Starts at date', '2026-09-05'));
+  assert(await setLabeledText(page, 'Starts at time', '12:00:00'));
   await click(page, '[data-testid="run-test"]');
   const waiting = await waitFor(
     page,
     `${q('[data-testid="timeline"]')}.textContent.includes('Waiting')`,
     { timeout: 8000 },
   );
+  const bookingInstant = await page.evaluate(`new Promise((resolve, reject) => {
+    const request = indexedDB.open('bloomlab');
+    request.onerror = () => reject(new Error('Could not read the synthetic booking'));
+    request.onsuccess = () => {
+      const database = request.result;
+      const read = database.transaction('sim_events').objectStore('sim_events').getAll();
+      read.onsuccess = () => {
+        database.close();
+        resolve(read.result.some(row => row.event.type === 'APPOINTMENT_BOOKED' &&
+          row.event.payload.starts_at === '2026-09-05T12:00:00-05:00'));
+      };
+      read.onerror = () => { database.close(); reject(new Error('Could not read the synthetic booking')); };
+    };
+  })`);
   const heldUntil = (await text(page, '[data-testid="timeline"]')).includes('Until');
   await clickText(page, '[data-testid="test-panel"] button', '+1 day');
   await sleep(600);
@@ -436,7 +473,14 @@ try {
     { timeout: 8000 },
   );
   const smsRow = (await text(page, '[data-testid="timeline"]')).includes('Send SMS done');
-  section('wait-released-by-time-machine', { waiting, heldUntil, stillWaiting, released, smsRow });
+  section('wait-released-by-time-machine', {
+    bookingInstant,
+    waiting,
+    heldUntil,
+    stillWaiting,
+    released,
+    smsRow,
+  });
   await screenshot(page, resolve(OUT, 'workflow-wait-1440.png'), null, false);
 
   /* ---- 7. Conversations: the reminder is in the inbox and a reply lands (CONV-001) --------- */
@@ -559,6 +603,35 @@ try {
       noHorizontalOverflow: overflow,
     });
     await screenshot(page, resolve(OUT, `workflow-${width}.png`), null, false);
+
+    // Inbox is a single natural conversation flow on phones: list first, selected thread and
+    // composer below it. Both remain present and usable; the desktop two-pane layout is not
+    // squeezed into the viewport (RSP-004).
+    await openPage(
+      page,
+      `${BASE}/conversations?scenario=SC-glowhaus-double-reminder&contact=maria`,
+    );
+    assert(
+      await waitFor(page, `Boolean(${q('[data-testid="thread"]')})`, { timeout: 8000 }),
+      `Inbox thread did not open at ${width}`,
+    );
+    const inbox = await page.evaluate(`(() => {
+      const workspace = document.querySelector('[class*=workspace][data-thread]');
+      const list = workspace.firstElementChild.getBoundingClientRect();
+      const thread = workspace.lastElementChild.getBoundingClientRect();
+      const reply = document.querySelector('#inbox-body');
+      const send = document.querySelector('[data-testid="send-message"]');
+      return {
+        columns: getComputedStyle(workspace).gridTemplateColumns.split(' ').length,
+        listBeforeThread: list.bottom <= thread.top,
+        thread: Boolean(document.querySelector('[data-testid="thread"]')),
+        composer: Boolean(reply && send),
+        targets44: [reply, send].every((item) => item.getBoundingClientRect().height >= 44),
+        noHorizontalOverflow: document.documentElement.scrollWidth <= innerWidth + 1,
+      };
+    })()`);
+    section(`conversations-${width}`, inbox);
+    await screenshot(page, resolve(OUT, `conversations-${width}.png`), null, false);
   }
 } finally {
   await close();

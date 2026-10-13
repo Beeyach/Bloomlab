@@ -1,3 +1,4 @@
+import { Meta } from '@bloomlab/design-system';
 import { useState } from 'react';
 
 import type { Exercise } from '@bloomlab/content-schema';
@@ -57,8 +58,12 @@ export function ClientThread({
           {conversation.subject}
         </h3>
         <p className={styles.deskNote}>
-          {who}
-          {client ? ` · ${client.business_name}` : ''}
+          <Meta
+            items={[
+              { kind: 'text', label: who },
+              ...(client ? [{ kind: 'text' as const, label: client.business_name }] : []),
+            ]}
+          />
         </p>
       </header>
 

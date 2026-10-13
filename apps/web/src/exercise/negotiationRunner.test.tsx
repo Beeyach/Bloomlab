@@ -53,7 +53,7 @@ describe('real negotiation runner and the shared persistence door', () => {
         diagnosis: 'constraint',
       });
     });
-    expect(screen.getByTestId('neg-dialogue')).toHaveTextContent('outside it');
+    await waitFor(() => expect(screen.getByTestId('neg-dialogue')).toHaveTextContent('outside it'));
   });
   it('queued text and selected action are read by the turn before immediate finalization', async () => {
     const started = await startAttempt(exercise);

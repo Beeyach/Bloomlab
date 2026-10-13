@@ -1,4 +1,5 @@
 import { emptyFieldwork } from '../fieldwork/proof';
+import { localRecordingsForAttempt } from '../call/local';
 import { content } from '../content/bundle';
 import type { CallResponse, FieldworkResponse } from '@bloomlab/shared';
 import type { GradeReport } from '@bloomlab/exercise-engine';
@@ -16,6 +17,8 @@ import { db, type BloomlabDatabase } from '../data/db';
 import { randomId } from '../data/envelope';
 import { clearWorkspace, loadWorkspace, saveWorkspace } from '../data/workspace';
 import { emptyResponse, type LearnerResponse } from './response';
+import { predictionFields } from './response';
+import { currentRun } from '../simulator/currentRun';
 
 /**
  * The active attempt: one logical try at an exercise, from the moment the learner starts until
@@ -237,9 +240,67 @@ export const saveResponse = (
   update(
     exerciseId,
     context,
-    (attempt) => ({ ...attempt, response: { ...attempt.response, ...response } }),
+    (attempt) => {
+      // Only commitRunPrediction may create the execution boundary. Ordinary answer saves must
+      // not manufacture, replace or clear it, including an explicitly undefined property.
+      if ('run_prediction' in response)
+        throw new Error('Use Commit prediction to create the prediction checkpoint.');
+      const checkpoint = attempt.response.run_prediction;
+      if (
+        checkpoint &&
+        'prediction' in response &&
+        JSON.stringify(response.prediction) !== JSON.stringify(checkpoint.prediction)
+      )
+        throw new Error('This prediction is committed. Start a new attempt to change it.');
+      return { ...attempt, response: { ...attempt.response, ...response } };
+    },
     database,
   );
+
+/**
+ * Freezes a RUN THE LEAD prediction before execution. The current run/generation and its last
+ * event are the boundary; finalization will ignore everything at or before it.
+ */
+export function commitRunPrediction(
+  exercise: Exercise,
+  context: AttemptContext,
+  database: BloomlabDatabase = db,
+  now: Date = new Date(),
+): Promise<ActiveAttempt | null> {
+  if (exercise.type !== 'RUN_THE_LEAD' || !exercise.scenario)
+    return Promise.reject(new Error('Only RUN THE LEAD exercises have a prediction checkpoint.'));
+  return update(
+    exercise.id,
+    context,
+    async (attempt) => {
+      if (attempt.response.run_prediction) return attempt;
+      const prediction = { ...attempt.response.prediction };
+      const missing = predictionFields(exercise).filter((field) => !prediction[field.key]?.trim());
+      if (missing.length > 0)
+        throw new Error(`Complete ${missing.map((field) => field.label).join(', ')} first.`);
+      const run = await currentRun(exercise.scenario!, database);
+      return {
+        ...attempt,
+        response: {
+          ...attempt.response,
+          prediction,
+          run_prediction: {
+            committed_at: now.toISOString(),
+            prediction,
+            scenario_id: exercise.scenario!,
+            run_id: run?.state.run_id ?? null,
+            run_generation: run?.generation ?? null,
+            through_event_index: Math.max(
+              -1,
+              ...(run?.state.log.map((event) => event.sequence) ?? []),
+            ),
+          },
+        },
+      };
+    },
+    database,
+  );
+}
 
 /**
  * Reveals the next hint the exercise offers and records it on the attempt, because assistance is
@@ -278,37 +339,45 @@ export async function replaceUnfinishedCall(
 ): Promise<ActiveAttempt> {
   const key = attemptKey(exercise.id, context);
   return enqueue(key, () =>
-    database.transaction('rw', database.workspace, database.call_recordings, async () => {
-      const current = await loadAttempt(exercise.id, context, database);
-      if (
-        !exercise.call ||
-        current?.attempt_id !== expectedId ||
-        current.submitted ||
-        current.response.call?.snapshot?.complete ||
-        [
-          'microphone_permission',
-          'recording',
-          'uploading',
-          'transcribing',
-          'evaluating',
-          'resolving',
-        ].includes(current.response.call?.phase ?? '') ||
-        (await database.call_recordings.where('attempt_id').equals(expectedId).count()) > 0
-      )
-        throw new Error('This call changed or still has saved audio. Review it before restarting.');
-      const fresh: ActiveAttempt = {
-        attempt_id: randomId(),
-        exercise_id: exercise.id,
-        rubric_id: exercise.grading.rubric,
-        skill_id: context.skill_id,
-        run: context.run,
-        started_at: new Date().toISOString(),
-        hints_revealed: [],
-        response: emptyResponse(),
-      };
-      await saveWorkspace(key, fresh, database);
-      return fresh;
-    }),
+    database.transaction(
+      'rw',
+      database.workspace,
+      database.call_recordings,
+      database.device,
+      async () => {
+        const current = await loadAttempt(exercise.id, context, database);
+        if (
+          !exercise.call ||
+          current?.attempt_id !== expectedId ||
+          current.submitted ||
+          current.response.call?.snapshot?.complete ||
+          [
+            'microphone_permission',
+            'recording',
+            'uploading',
+            'transcribing',
+            'evaluating',
+            'resolving',
+          ].includes(current.response.call?.phase ?? '') ||
+          (await localRecordingsForAttempt(expectedId, database)).length > 0
+        )
+          throw new Error(
+            'This call changed or still has saved audio. Review it before restarting.',
+          );
+        const fresh: ActiveAttempt = {
+          attempt_id: randomId(),
+          exercise_id: exercise.id,
+          rubric_id: exercise.grading.rubric,
+          skill_id: context.skill_id,
+          run: context.run,
+          started_at: new Date().toISOString(),
+          hints_revealed: [],
+          response: emptyResponse(),
+        };
+        await saveWorkspace(key, fresh, database);
+        return fresh;
+      },
+    ),
   );
 }
 

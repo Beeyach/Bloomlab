@@ -23,7 +23,7 @@ export interface ChainEntry {
   type: string;
   at: string;
   origin: string;
-  detail: string;
+  detail: string[];
 }
 
 /** What the run logged since the watermark, in its own order, described in plain words. */
@@ -41,7 +41,7 @@ export const chainSince = (
   }));
 
 /** A one-line summary of what an event carried, read from the payload the engine recorded. */
-export function describe(payload: Record<string, unknown>, account: AccountState): string {
+export function describe(payload: Record<string, unknown>, account: AccountState): string[] {
   const parts: string[] = [];
   const contactId = typeof payload.contact_id === 'string' ? payload.contact_id : null;
   if (contactId) {
@@ -61,5 +61,5 @@ export function describe(payload: Record<string, unknown>, account: AccountState
   if (typeof payload.reason === 'string') parts.push(payload.reason);
   if (typeof payload.tag === 'string') parts.push(`tag ${payload.tag}`);
   if (typeof payload.body === 'string') parts.push(`“${payload.body}”`);
-  return parts.join(' · ');
+  return parts;
 }

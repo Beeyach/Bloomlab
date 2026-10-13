@@ -94,6 +94,8 @@ describe('DATA-008 versioned local export', () => {
     } as never);
     await db.workspace.put({
       key: 'ai.settings',
+      learner_id: device.learner_id,
+      device_id: device.device_id,
       value: { secret: 'workspace-secret' },
       updated_at: new Date().toISOString(),
     });
@@ -104,6 +106,8 @@ describe('DATA-008 versioned local export', () => {
     const asset = attempt.response!.fieldwork!.screenshots.destination_workflow!;
     await db.evidence_assets.put({
       asset_id: asset,
+      learner_id: device.learner_id,
+      device_id: device.device_id,
       attempt_id: attempt.id,
       exercise_id: attempt.exercise_id!,
       item_key: 'destination_workflow',

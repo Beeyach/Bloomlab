@@ -88,10 +88,13 @@ describe('PORT-001 canonical portfolio', () => {
   });
   it('preserves deleted source state and never resurrects a portfolio tombstone', async () => {
     const saved = await savedWork(db, { fieldwork: true });
+    const device = await ensureDevice();
     await collectPortfolio();
     const asset = saved.attempt!.response!.fieldwork!.screenshots.destination_workflow!;
     await db.evidence_assets.put({
       asset_id: asset,
+      learner_id: device.learner_id,
+      device_id: device.device_id,
       attempt_id: saved.attempt!.id,
       exercise_id: saved.attempt!.exercise_id!,
       item_key: 'destination_workflow',
@@ -195,6 +198,13 @@ describe('PORT-002 truthful archive UI', () => {
     expect(await screen.findByText('Your archive starts with the work.')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Find project/ })).toHaveAttribute('href', '/campaign');
   });
+  it('offers the named Sync recovery action when a portfolio item is unavailable', async () => {
+    renderPortfolio(true);
+    expect(
+      await screen.findByRole('heading', { name: 'Portfolio item unavailable' }),
+    ).toBeVisible();
+    expect(screen.getByRole('link', { name: /Sync/ })).toHaveAttribute('href', '/sync');
+  });
   it('shows the authored label on list and detail and every category, with saved reflection after remount', async () => {
     await savedWork(db, { capture: true });
     await savedWork(db, { fieldwork: true });
@@ -218,9 +228,12 @@ describe('PORT-002 truthful archive UI', () => {
   });
   it('shows deleted private images truthfully without a read request', async () => {
     const saved = await savedWork(db, { fieldwork: true });
+    const device = await ensureDevice();
     const id = saved.attempt!.response!.fieldwork!.screenshots.destination_workflow!;
     await db.evidence_assets.put({
       asset_id: id,
+      learner_id: device.learner_id,
+      device_id: device.device_id,
       attempt_id: saved.attempt!.id,
       exercise_id: saved.attempt!.exercise_id!,
       item_key: 'destination_workflow',

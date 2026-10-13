@@ -3,7 +3,15 @@ import { NORMAL_RUN } from './attempt';
 import { useMemo } from 'react';
 import { Link } from 'react-router';
 
-import { Button, MasteryBadge, StatusPill, Surface, cx } from '@bloomlab/design-system';
+import {
+  ContentTitle,
+  Meta,
+  Button,
+  MasteryBadge,
+  StatusPill,
+  Surface,
+  cx,
+} from '@bloomlab/design-system';
 import {
   ASSERTION_TIERS,
   SCORING_DIMENSIONS,
@@ -98,10 +106,20 @@ function NextStep({ skillId, snapshot }: { skillId: string; snapshot: LearnerSna
       {step && described ? (
         <p className={styles.nextStep}>
           <Link to={stepDestination(step, skillId)} className={styles.inlineLink}>
-            {described.verb} · {described.title}
+            <Meta
+              items={[
+                { kind: 'text', label: described.verb },
+                { kind: 'text', label: <ContentTitle title={described.title} /> },
+              ]}
+            />
           </Link>
           <span className={styles.help}>
-            {step.minutes} min · {step.reason}
+            <Meta
+              items={[
+                { kind: 'text', label: `${step.minutes} min` },
+                { kind: 'text', label: step.reason },
+              ]}
+            />
           </span>
         </p>
       ) : (
@@ -175,7 +193,12 @@ export function ResultView({
             <p className={styles.resultMeta}>
               {report.score !== null && (
                 <span className={styles.score}>
-                  {report.score}% · pass mark {report.pass_threshold}%
+                  <Meta
+                    items={[
+                      { kind: 'text', label: `${report.score}%` },
+                      { kind: 'text', label: `pass mark ${report.pass_threshold}%` },
+                    ]}
+                  />
                 </span>
               )}
               <span>
@@ -235,9 +258,18 @@ export function ResultView({
                 <li key={dimension} className={styles.dimension}>
                   <span>{DIMENSION_WORDS[dimension]}</span>
                   <span className={styles.help}>
-                    {row.total === 0
-                      ? `weight ${row.weight}% · no checks, not counted`
-                      : `weight ${row.weight}% · ${row.passed} of ${row.total} passed`}
+                    <Meta
+                      items={[
+                        { kind: 'text', label: `weight ${row.weight}%` },
+                        {
+                          kind: 'text',
+                          label:
+                            row.total === 0
+                              ? 'no checks, not counted'
+                              : `${row.passed} of ${row.total} passed`,
+                        },
+                      ]}
+                    />
                   </span>
                 </li>
               );
@@ -288,8 +320,15 @@ export function ResultView({
           </p>
         )}
         <p className={styles.help}>
-          Graded by rules {report?.grader_version ?? attempt.versions.rules} · content{' '}
-          {attempt.versions.content}
+          <Meta
+            items={[
+              {
+                kind: 'text',
+                label: `Graded by rules ${report?.grader_version ?? attempt.versions.rules}`,
+              },
+              { kind: 'text', label: `content ${attempt.versions.content}` },
+            ]}
+          />
         </p>
       </section>
 

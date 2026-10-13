@@ -28,12 +28,13 @@ async function hasPending(
   database: BloomlabDatabase,
   entity: string,
   id: string,
+  learnerId: string,
 ): Promise<boolean> {
   return (
     (await database.sync_queue
       .where('[entity+entity_id]')
       .equals([entity, id])
-      .filter((row) => row.status === 'pending')
+      .filter((row) => row.status === 'pending' && row.learner_id === learnerId)
       .count()) > 0
   );
 }
@@ -44,6 +45,7 @@ async function rememberServerState(
   record: SyncRecord,
 ): Promise<void> {
   await database.sync_shadow.put({
+    learner_id: record.learner_id,
     entity,
     entity_id: record.id,
     revision: record.revision,
@@ -87,6 +89,7 @@ async function applyOutcome(
             await database[entity].put({ ...current, revision: outcome.revision } as never);
           }
           await database.sync_shadow.put({
+            learner_id: pushed.learner_id,
             entity,
             entity_id: op.entity_id,
             revision: outcome.revision,
@@ -100,7 +103,7 @@ async function applyOutcome(
     }
     case 'superseded': {
       // The server holds the valid latest state; take it unless a newer local edit is waiting.
-      if (!(await hasPending(database, entity, op.entity_id))) {
+      if (!(await hasPending(database, entity, op.entity_id, pushed.learner_id))) {
         await adoptServerRecord(database, entity, outcome.server);
       } else {
         await rememberServerState(database, entity, outcome.server);
@@ -112,6 +115,7 @@ async function applyOutcome(
     case 'conflict': {
       await database.transaction('rw', database.sync_conflicts, database.sync_queue, async () => {
         await database.sync_conflicts.put({
+          learner_id: pushed.learner_id,
           entity,
           entity_id: op.entity_id,
           local: pushed,
@@ -133,10 +137,11 @@ async function pushPending(
   database: BloomlabDatabase,
   api: SyncApi,
   token: string,
+  learnerId: string,
   counters: SyncRunResult,
 ): Promise<void> {
   for (;;) {
-    const batch = await takeOperations(PUSH_BATCH, database);
+    const batch = await takeOperations(PUSH_BATCH, database, learnerId);
     if (batch.length === 0) return;
     const operations: PushOperation[] = [];
     for (const op of batch) {
@@ -179,7 +184,10 @@ async function applyChange(database: BloomlabDatabase, change: PullChange): Prom
   // A local edit is waiting (the push will reconcile it) or the learner still has to choose a
   // version: never paper over either with server state.
   const undecided = await database.sync_conflicts.get([change.entity, change.record.id]);
-  if (undecided || (await hasPending(database, change.entity, change.record.id))) {
+  if (
+    undecided ||
+    (await hasPending(database, change.entity, change.record.id, change.record.learner_id))
+  ) {
     await rememberServerState(database, change.entity, change.record);
     return false;
   }
@@ -191,6 +199,7 @@ async function pullChanges(
   database: BloomlabDatabase,
   api: SyncApi,
   token: string,
+  learnerId: string,
   counters: SyncRunResult,
 ): Promise<void> {
   let cursor = (await database.sync_state.get(SYNC_STATE_KEY))?.server_cursor ?? 0;
@@ -202,6 +211,7 @@ async function pullChanges(
     cursor = page.cursor;
     await database.sync_state.put({
       entity: SYNC_STATE_KEY,
+      learner_id: learnerId,
       last_synced_at: nowIso(),
       server_cursor: cursor,
       last_error: null,
@@ -210,22 +220,51 @@ async function pullChanges(
   }
 }
 
-let running: Promise<SyncRunResult> | null = null;
+interface RunningSync {
+  current: Promise<SyncRunResult>;
+  next?: Promise<SyncRunResult>;
+}
+const running = new WeakMap<BloomlabDatabase, RunningSync>();
 
 /**
  * One sync round trip (spec §86, SYNC-010): push what this device changed, then pull what
  * other devices changed. Never throws; the result and `sync_state` say what happened. Calls
- * overlap-safe: a second call while one runs returns the running one.
+ * overlap-safe per database. Calls during a round trip share one following round trip,
+ * so work written after the running push (or remote work after its pull) is not missed.
  */
 export function syncNow(
   database: BloomlabDatabase = db,
   api: SyncApi = syncApi,
 ): Promise<SyncRunResult> {
-  if (running) return running;
-  running = run(database, api).finally(() => {
-    running = null;
+  const active = running.get(database);
+  if (active) {
+    active.next ??= active.current.then(() => syncNow(database, api));
+    return active.next;
+  }
+  const current = runWithLock(database, api).finally(() => {
+    running.delete(database);
   });
-  return running;
+  running.set(database, { current });
+  return current;
+}
+
+async function runWithLock(database: BloomlabDatabase, api: SyncApi): Promise<SyncRunResult> {
+  const locks = globalThis.navigator?.locks;
+  if (!locks) return run(database, api);
+  // Web Locks serialize same-origin tabs and are released when their document goes away.
+  // Once acquired, an in-flight row cannot belong to another active sync in this database.
+  return locks.request(`bloomlab-sync:${database.name}`, async () => {
+    const device = await ensureDevice(database);
+    if (isLinked(device)) {
+      await database.sync_queue
+        .where('status')
+        .equals('syncing')
+        .filter((row) => row.learner_id === device.learner_id)
+        .modify({ status: 'pending' });
+    }
+    // Rejected operations remain failed until the learner explicitly retries them.
+    return run(database, api);
+  });
 }
 
 async function run(database: BloomlabDatabase, api: SyncApi): Promise<SyncRunResult> {
@@ -240,8 +279,8 @@ async function run(database: BloomlabDatabase, api: SyncApi): Promise<SyncRunRes
   if (!isLinked(device)) return { ...counters, status: 'not-linked' };
   const token = device.session_token as string;
   try {
-    await pushPending(database, api, token, counters);
-    await pullChanges(database, api, token, counters);
+    await pushPending(database, api, token, device.learner_id, counters);
+    await pullChanges(database, api, token, device.learner_id, counters);
     return counters;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Sync failed';
@@ -249,6 +288,7 @@ async function run(database: BloomlabDatabase, api: SyncApi): Promise<SyncRunRes
     const state = await database.sync_state.get(SYNC_STATE_KEY);
     await database.sync_state.put({
       entity: SYNC_STATE_KEY,
+      learner_id: device.learner_id,
       last_synced_at: state?.last_synced_at ?? null,
       server_cursor: state?.server_cursor ?? null,
       last_error: message,

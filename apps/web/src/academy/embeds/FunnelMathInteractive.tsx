@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 
-import { Button } from '@bloomlab/design-system';
+import { Button, Meta } from '@bloomlab/design-system';
 
 import {
   FUNNEL_LEVERS,
@@ -100,10 +100,15 @@ export function FunnelMathInteractive(attributes: Record<string, unknown>) {
         <div className={styles.results} aria-live="polite" data-testid="funnel-results">
           <p className={styles.resultLine}>
             <span className={styles.resultBig}>{whole(outcome.sales)} sales</span>
-            <span className={styles.resultMeta}>
-              {whole(outcome.stages[1]?.count ?? 0)} book · {whole(outcome.stages[2]?.count ?? 0)}{' '}
-              show · {whole(outcome.sales)} buy
-            </span>
+            <Meta
+              variant="flow"
+              className={styles.resultMeta}
+              items={[
+                { kind: 'text', label: `${whole(outcome.stages[1]?.count ?? 0)} booked` },
+                { kind: 'text', label: `${whole(outcome.stages[2]?.count ?? 0)} showed` },
+                { kind: 'text', label: `${whole(outcome.sales)} bought` },
+              ]}
+            />
           </p>
           <p className={styles.resultLine}>
             <span className={styles.resultBig}>{money(outcome.revenue)} a month</span>

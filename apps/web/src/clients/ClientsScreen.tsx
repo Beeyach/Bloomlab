@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link, useParams } from 'react-router';
-import { Button } from '@bloomlab/design-system';
+import { ContentTitle, Meta, Button } from '@bloomlab/design-system';
 import { RELATIONSHIP_STAGES, type ClientProgressRecord } from '@bloomlab/content-schema';
 import { content } from '../content/bundle';
 import { db } from '../data/db';
@@ -257,7 +257,9 @@ export default function ClientsScreen() {
                   const selected = chosen[id] ?? candidates[0]?.id ?? '';
                   return (
                     <li key={id}>
-                      <h3>{exercise.title}</h3>
+                      <h3>
+                        <ContentTitle title={exercise.title} />
+                      </h3>
                       {stage.unlocked ? (
                         <Link
                           to={`/exercise/${id}${project.capstone ? `?project=${project.id}` : ''}`}
@@ -275,7 +277,7 @@ export default function ClientsScreen() {
                       {stage.unlocked && candidates.length > 0 ? (
                         <div className={styles.selection}>
                           <label>
-                            Saved result for {exercise.title}
+                            Saved result for <ContentTitle title={exercise.title} />
                             <select
                               value={selected}
                               onChange={(event) =>
@@ -284,8 +286,8 @@ export default function ClientsScreen() {
                             >
                               {candidates.map((attempt) => (
                                 <option key={attempt.id} value={attempt.id}>
-                                  {new Date(attempt.completed_at).toLocaleString()} ·{' '}
-                                  {attempt.assistance}
+                                  {new Date(attempt.completed_at).toLocaleString()} (
+                                  {attempt.assistance})
                                 </option>
                               ))}
                             </select>
@@ -341,8 +343,18 @@ export default function ClientsScreen() {
         <SignatureMoment key={client.id} kind="client-case">
           <h1>{client.business_name}</h1>
           <p>
-            Fictional {client.industry.replaceAll('_', ' ')} client ·{' '}
-            {client.locations.map((location) => location.city).join(', ')}
+            <Meta
+              items={[
+                {
+                  kind: 'text',
+                  label: `Fictional ${client.industry.replaceAll('_', ' ')} client`,
+                },
+                {
+                  kind: 'text',
+                  label: client.locations.map((location) => location.city).join(', '),
+                },
+              ]}
+            />
           </p>
         </SignatureMoment>
         <section className={styles.section}>
@@ -350,8 +362,16 @@ export default function ClientsScreen() {
           <ul>
             {client.offers.map((offer) => (
               <li key={offer.name}>
-                {offer.name} · {offer.billing.replaceAll('_', ' ')}
-                {offer.notes ? ` · ${offer.notes}` : ''}
+                <Meta
+                  items={[
+                    { kind: 'text', label: offer.name },
+                    {
+                      kind: 'text',
+                      label: offer.billing.replaceAll('_', ' '),
+                    },
+                    ...(offer.notes ? [{ kind: 'text' as const, label: offer.notes }] : []),
+                  ]}
+                />
               </li>
             ))}
           </ul>
@@ -386,7 +406,14 @@ export default function ClientsScreen() {
                   <li key={row.id}>
                     <Link to={`/projects/${row.id}`}>{row.title}</Link>
                     <p>
-                      {row.stages.length} practical stages{row.boss_client ? ' · Boss Client' : ''}
+                      <Meta
+                        items={[
+                          { kind: 'text', label: `${row.stages.length} practical stages` },
+                          ...(row.boss_client
+                            ? [{ kind: 'badge' as const, label: 'Boss Client' }]
+                            : []),
+                        ]}
+                      />
                     </p>
                   </li>
                 ))}
@@ -403,7 +430,15 @@ export default function ClientsScreen() {
           <ol>
             {client.history.map((entry, index) => (
               <li key={index}>
-                <time>{entry.date}</time> · {entry.event}
+                <Meta
+                  items={[
+                    {
+                      kind: 'text',
+                      label: <time>{entry.date}</time>,
+                    },
+                    { kind: 'text', label: entry.event },
+                  ]}
+                />
               </li>
             ))}
           </ol>
@@ -436,7 +471,14 @@ export default function ClientsScreen() {
               <li key={row.id}>
                 <Link to={`/projects/${row.id}`}>{row.title}</Link>
                 <p>
-                  {row.stages.length} stages{row.boss_client ? ' · Boss Client engagement' : ''}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: `${row.stages.length} stages` },
+                      ...(row.boss_client
+                        ? [{ kind: 'badge' as const, label: 'Boss Client engagement' }]
+                        : []),
+                    ]}
+                  />
                 </p>
               </li>
             ))}
@@ -452,7 +494,12 @@ export default function ClientsScreen() {
             <li key={row.id}>
               <Link to={`/clients/${row.id}`}>{row.business_name}</Link>
               <p>
-                {row.industry.replaceAll('_', ' ')} · {row.problems[0]}
+                <Meta
+                  items={[
+                    { kind: 'text', label: row.industry.replaceAll('_', ' ') },
+                    { kind: 'text', label: row.problems[0] },
+                  ]}
+                />
               </p>
             </li>
           ))}

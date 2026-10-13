@@ -1,3 +1,4 @@
+import { ContentTitle, Meta } from '@bloomlab/design-system';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -88,13 +89,17 @@ export default function SearchScreen() {
         </p>
       )}
       <h1 ref={heading} tabIndex={-1} className={styles.title}>
-        {feature?.official_name ??
-          term?.term ??
-          (attemptId
-            ? (exercise?.title ?? 'Saved attempt')
-            : entry
-              ? 'Entry unavailable'
-              : 'Search Bloomlab')}
+        <ContentTitle
+          title={
+            feature?.official_name ??
+            term?.term ??
+            (attemptId
+              ? (exercise?.title ?? 'Saved attempt')
+              : entry
+                ? 'Entry unavailable'
+                : 'Search Bloomlab')
+          }
+        />
       </h1>
       {!detail && (
         <>
@@ -152,7 +157,19 @@ export default function SearchScreen() {
           )}
           {!query.trim() && kind === 'all' && (
             <p>
-              <Link to="/search#kind=glossary">Browse the glossary</Link> · Ctrl/⌘ K opens search.
+              <Meta
+                items={[
+                  {
+                    kind: 'text',
+                    label: (
+                      <>
+                        <Link to="/search#kind=glossary">Browse the glossary</Link>
+                      </>
+                    ),
+                  },
+                  { kind: 'text', label: 'Ctrl/⌘ K opens search.' },
+                ]}
+              />
             </p>
           )}
           {(query.trim() || kind !== 'all') && matches.length === 0 && (
@@ -168,18 +185,32 @@ export default function SearchScreen() {
                 key={`${match.kind}:${match.id}`}
                 data-search-kind={match.kind}
               >
-                <Link to={open(match.destination)}>{match.title}</Link>
+                <Link to={open(match.destination)}>
+                  <ContentTitle title={match.title} />
+                </Link>
                 <p>
-                  {SEARCH_LABELS[match.kind]} ·{' '}
-                  {match.kind === 'attempts'
-                    ? 'View this saved attempt'
-                    : match.kind === 'ghl-features'
-                      ? 'Read registry guidance'
-                      : match.kind === 'glossary'
-                        ? 'Read definition'
-                        : match.kind === 'exercises'
-                          ? 'Open exercise'
-                          : 'Open'}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: SEARCH_LABELS[match.kind] },
+                      {
+                        kind: 'text',
+                        label: (
+                          <>
+                            {' '}
+                            {match.kind === 'attempts'
+                              ? 'View this saved attempt'
+                              : match.kind === 'ghl-features'
+                                ? 'Read registry guidance'
+                                : match.kind === 'glossary'
+                                  ? 'Read definition'
+                                  : match.kind === 'exercises'
+                                    ? 'Open exercise'
+                                    : 'Open'}
+                          </>
+                        ),
+                      },
+                    ]}
+                  />
                 </p>
                 {match.description && <p>{match.description}</p>}
               </li>
@@ -259,8 +290,16 @@ export default function SearchScreen() {
       {attempt && (
         <div className={styles.detail}>
           <p>
-            Saved attempt · {new Date(attempt.completed_at).toLocaleString()} · {attempt.result}.
-            This is historical work, not a new result.
+            <Meta
+              items={[
+                { kind: 'text', label: 'Saved attempt' },
+                { kind: 'text', label: new Date(attempt.completed_at).toLocaleString() },
+                {
+                  kind: 'text',
+                  label: <>{attempt.result}. This is historical work, not a new result.</>,
+                },
+              ]}
+            />
           </p>
           <ResultView attempt={attempt} skillId={null} snapshot={undefined} />
           {attempt.response && (

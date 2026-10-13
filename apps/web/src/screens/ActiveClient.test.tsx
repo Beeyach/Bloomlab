@@ -34,7 +34,8 @@ describe('Home active client (DES-010)', () => {
       'href',
       `/clients/${client}`,
     );
-    expect(screen.getByText(/Most recently worked with/)).toHaveTextContent('discovery');
+    expect(screen.getByRole('region', { name: 'Active client' })).toHaveTextContent('discovery');
+    expect(screen.getByRole('region', { name: 'Active client' }).textContent).not.toContain('·');
     view.unmount();
     open();
     expect(await screen.findByRole('link', { name: /Glowhaus/i })).toBeInTheDocument();

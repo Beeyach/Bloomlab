@@ -8,7 +8,14 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { openPage, screenshot, session, setViewport, sleep } from './cdp.mjs';
+import {
+  openPage,
+  resetIndexedDbFixture,
+  screenshot,
+  session,
+  setViewport,
+  sleep,
+} from './cdp.mjs';
 
 const OUT = resolve(process.env.REVIEW_OUT ?? '.review');
 const BASE = process.env.BASE ?? 'http://localhost:4173';
@@ -89,13 +96,10 @@ async function open(page, id, readyTestId) {
 
 /**
  * Starts from nothing, so a second branch of the same thread is a second attempt rather than a
- * continuation of the first. Cleared through the protocol, because the page holds the connection.
+ * continuation of the first. Unload the old document before clearing its storage through the protocol.
  */
 async function reset(page) {
-  await page.send('Storage.clearDataForOrigin', {
-    origin: new URL(BASE).origin,
-    storageTypes: 'indexeddb',
-  });
+  await resetIndexedDbFixture(page, BASE);
   await sleep(250);
 }
 

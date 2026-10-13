@@ -89,7 +89,6 @@
 }
 
 .meta {
-  display: block;
   color: var(--bl-color-text-soft);
-  font-size: var(--bl-font-size-xs);
+  font-size: 13px;
 }

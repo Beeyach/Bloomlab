@@ -210,6 +210,37 @@ describe('ExerciseSchema (EXR-001 … EXR-003)', () => {
     );
   });
 
+  it('accepts only the reserved nonblank response projection without a marker', () => {
+    const completion = {
+      ...exercise,
+      expected_outcomes: [
+        {
+          id: 'a1',
+          type: 'state',
+          path: 'answer.has_written_response',
+          operator: 'equals',
+          value: true,
+          description: 'A nonblank response is ready for semantic review.',
+        },
+      ],
+    };
+    expect(ExerciseSchema.safeParse(completion).success).toBe(true);
+    expect(
+      ExerciseSchema.safeParse({
+        ...completion,
+        expected_outcomes: [
+          { ...completion.expected_outcomes[0], path: 'answer.made_up_answer_flag' },
+        ],
+      }).success,
+    ).toBe(false);
+    expect(
+      ExerciseSchema.safeParse({
+        ...completion,
+        response_markers: { has_written_response: ['collision'] },
+      }).success,
+    ).toBe(false);
+  });
+
   it('refuses hints on pressure tests and worked examples on REBUILD BLIND', () => {
     expect(
       ExerciseSchema.safeParse({

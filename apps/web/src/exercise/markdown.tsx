@@ -1,16 +1,17 @@
 import { Fragment, type ReactNode } from 'react';
+import { Link } from 'react-router';
 
 import styles from './markdown.module.css';
 import { blocksOf } from './markdownBlocks';
 
 /**
  * Renders the small Markdown subset the authored exercise prose uses: paragraphs, ordered and
- * unordered lists, **bold**, *italic* and `code`. The prose itself stays in `content/` (spec
+ * unordered lists, internal links, **bold**, *italic* and `code`. The prose stays in `content/` (spec
  * §98); this only turns it into elements, and it never interprets HTML — nothing is inserted as
  * raw markup, so authored text can never become markup (D-071).
  */
 
-const INLINE = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g;
+const INLINE = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^[\]\n]+\]\(\/(?![\\/])[^\\\s)]*\))/g;
 
 function inline(text: string, keyPrefix: string): ReactNode[] {
   return text.split(INLINE).map((part, index) => {
@@ -27,6 +28,14 @@ function inline(text: string, keyPrefix: string): ReactNode[] {
     }
     if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
       return <em key={key}>{part.slice(1, -1)}</em>;
+    }
+    const link = /^\[([^[\]\n]+)\]\((\/(?![\\/])[^\\\s)]*)\)$/.exec(part);
+    if (link) {
+      return (
+        <Link key={key} to={link[2]!}>
+          {link[1]}
+        </Link>
+      );
     }
     return <Fragment key={key}>{part}</Fragment>;
   });

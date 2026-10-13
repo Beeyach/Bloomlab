@@ -41,7 +41,11 @@ it('shows the active recording operation, prevents duplicate requests and restor
   );
   vi.stubGlobal('fetch', network);
   render(<Recordings attemptId="attempt" revision="1" />);
-  fireEvent.click(await screen.findByRole('button', { name: 'Replay recording' }));
+  const replay = await screen.findByRole('button', { name: 'Replay recording' });
+  expect(screen.getByText('Turn 1')).toBeInTheDocument();
+  expect(screen.getByText('No local audio')).toBeInTheDocument();
+  expect(replay.closest('li')).not.toHaveTextContent('·');
+  fireEvent.click(replay);
   const loading = screen.getByRole('button', { name: 'Loading recording…' });
   expect(loading).toBeDisabled();
   expect(loading).toHaveAttribute('aria-busy', 'true');

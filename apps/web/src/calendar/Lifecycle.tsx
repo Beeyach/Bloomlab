@@ -1,4 +1,4 @@
-import { Button, Field, Select, StatusPill } from '@bloomlab/design-system';
+import { Button, Field, IconClock, Meta, Select, StatusPill } from '@bloomlab/design-system';
 import type { AccountState, Appointment, Calendar, Slot } from '@bloomlab/simulator-core';
 
 import { APPOINTMENT_STATUS_LABELS, HOST_REASONS, LOCATION_LABELS, STATUS_TONE } from './words';
@@ -95,7 +95,7 @@ export function BookingPanel({
             {calendar.services.map((row) => (
               <option key={row.id} value={row.id}>
                 {row.name}
-                {row.duration_minutes ? ` · ${row.duration_minutes} min` : ''}
+                {row.duration_minutes ? ` (${row.duration_minutes} min)` : ''}
               </option>
             ))}
           </Select>
@@ -133,15 +133,35 @@ export function BookingPanel({
         </Select>
       </Field>
 
-      <p className={styles.bookingWhat} data-testid="booking-what">
-        {slot
-          ? `${dayName(weekdayOf(dayOf(slot.starts_at, zone)))} ${dayLabel(dayOf(slot.starts_at, zone))}, ${clockTime(slot.starts_at, zone)} · ${duration(slot.duration_minutes)}${
-              slot.host_id
-                ? ` · ${account.users[slot.host_id]?.name ?? slot.host_id} (${HOST_REASONS[slot.host_reason]})`
-                : ' · no host'
-            }${location ? ` · ${LOCATION_LABELS[location.kind]}${location.value ? ` ${location.value}` : ''}` : ''}`
-          : 'Choose a time from the schedule first.'}
-      </p>
+      <div className={styles.bookingWhat} data-testid="booking-what">
+        {slot ? (
+          <Meta
+            items={[
+              {
+                kind: 'text',
+                label: `${dayName(weekdayOf(dayOf(slot.starts_at, zone)))} ${dayLabel(dayOf(slot.starts_at, zone))}, ${clockTime(slot.starts_at, zone)}`,
+              },
+              { kind: 'chip', icon: <IconClock />, label: duration(slot.duration_minutes) },
+              {
+                kind: 'text',
+                label: slot.host_id
+                  ? `${account.users[slot.host_id]?.name ?? slot.host_id} (${HOST_REASONS[slot.host_reason]})`
+                  : 'No host',
+              },
+              ...(location
+                ? [
+                    {
+                      kind: 'text' as const,
+                      label: `${LOCATION_LABELS[location.kind]}${location.value ? ` ${location.value}` : ''}`,
+                    },
+                  ]
+                : []),
+            ]}
+          />
+        ) : (
+          'Choose a time from the schedule first.'
+        )}
+      </div>
 
       <Button onClick={onBook} disabled={busy || !slot} data-testid="booking-book">
         Book it
@@ -217,19 +237,38 @@ export function Appointments({
                 tone={tone(appointment.status)}
               />
             </button>
-            <p className={styles.appointmentFacts}>
-              {duration(appointment.duration_minutes)}
-              {appointment.host_id
-                ? ` · ${account.users[appointment.host_id]?.name ?? appointment.host_id}`
-                : ' · no host'}
-              {service ? ` · ${service.name}` : ''}
-              {location
-                ? ` · ${LOCATION_LABELS[location.kind]}${location.value ? ` ${location.value}` : ''}`
-                : ''}
-              {appointment.booked_by === 'staff'
-                ? ' · booked by the team'
-                : ' · booked by the customer'}
-            </p>
+            <Meta
+              className={styles.appointmentFacts}
+              items={[
+                {
+                  kind: 'chip',
+                  icon: <IconClock />,
+                  label: duration(appointment.duration_minutes),
+                },
+                {
+                  kind: 'text',
+                  label: appointment.host_id
+                    ? (account.users[appointment.host_id]?.name ?? appointment.host_id)
+                    : 'No host',
+                },
+                ...(service ? [{ kind: 'text' as const, label: service.name }] : []),
+                ...(location
+                  ? [
+                      {
+                        kind: 'text' as const,
+                        label: `${LOCATION_LABELS[location.kind]}${location.value ? ` ${location.value}` : ''}`,
+                      },
+                    ]
+                  : []),
+                {
+                  kind: 'text',
+                  label:
+                    appointment.booked_by === 'staff'
+                      ? 'Booked by the team'
+                      : 'Booked by the customer',
+                },
+              ]}
+            />
             {isSelected && (
               <div className={styles.appointmentActions}>
                 <Button

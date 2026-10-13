@@ -26,7 +26,7 @@ written_fields:
       supplied assets.
     rows: 6
   - key: update
-    label: Handle a deleted wait step
+    label: Handle removal of a Wait action
     help: A new release deletes a wait with active contacts. Return
       automatic_snapshot_refresh=false, review_enrolled_contacts=true,
       operation_order=[refresh,test,push_selected], and
@@ -51,7 +51,7 @@ expected_outcomes:
     path: fixture.update
     operator: equals
     value: true
-    description: Handle a deleted wait step satisfies the supplied contract.
+    description: Handle removal of a Wait action satisfies the supplied contract.
 grading:
   mode: deterministic
   pass_threshold: 100

@@ -1,3 +1,4 @@
+import { Meta } from '@bloomlab/design-system';
 import { useEffect, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import type { CallRecording } from '@bloomlab/shared';
@@ -5,14 +6,12 @@ import { db } from '../data/db';
 import { callFetch, callRequest } from './client';
 import { CallAction } from './CallAction';
 import { updates } from '../pwa/updates';
+import { localRecordingsForAttempt } from './local';
+import styles from './call.module.css';
 
 /** Deletion lives outside immutable attempt history. Metadata is fetched from the media store. */
 export function Recordings({ attemptId, revision }: { attemptId: string; revision: string }) {
-  const local =
-    useLiveQuery(
-      () => db.call_recordings.where('attempt_id').equals(attemptId).toArray(),
-      [attemptId],
-    ) ?? [];
+  const local = useLiveQuery(() => localRecordingsForAttempt(attemptId, db), [attemptId]) ?? [];
   const [remote, setRemote] = useState<CallRecording[]>([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState<{ id: string; action: 'play' | 'delete' } | null>(null);
@@ -24,6 +23,7 @@ export function Recordings({ attemptId, revision }: { attemptId: string; revisio
     void callRequest<CallRecording[]>(`attempts/${attemptId}/recordings`)
       .then((rows) => {
         if (alive) {
+          if (!Array.isArray(rows)) throw new Error('Invalid recording list');
           setRemote(rows);
           setError('');
         }
@@ -112,17 +112,25 @@ export function Recordings({ attemptId, revision }: { attemptId: string; revisio
           return (
             <li key={id}>
               <span>
-                Turn {(device?.turn ?? server?.turn ?? 0) + 1} ·{' '}
-                {device ? 'On this device' : 'No local audio'} ·{' '}
-                {server
-                  ? server.deleted_at
-                    ? 'Server audio deleted'
-                    : server.status === 'deleting'
-                      ? 'Server deletion pending'
-                      : server.retain
-                        ? 'Retained on server'
-                        : 'On server for recovery'
-                  : 'Server status not confirmed'}
+                <Meta
+                  className={styles.contextMeta}
+                  items={[
+                    { kind: 'text', label: `Turn ${(device?.turn ?? server?.turn ?? 0) + 1}` },
+                    { kind: 'text', label: device ? 'On this device' : 'No local audio' },
+                    {
+                      kind: 'text',
+                      label: server
+                        ? server.deleted_at
+                          ? 'Server audio deleted'
+                          : server.status === 'deleting'
+                            ? 'Server deletion pending'
+                            : server.retain
+                              ? 'Retained on server'
+                              : 'On server for recovery'
+                        : 'Server status not confirmed',
+                    },
+                  ]}
+                />
               </span>
               <div>
                 {available && (

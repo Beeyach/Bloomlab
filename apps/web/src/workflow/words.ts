@@ -12,7 +12,7 @@ import type {
 } from '@bloomlab/design-system';
 
 import { simulatorTime } from '../crm/words';
-import { featureName } from './palette';
+import { featureName, savedNodeEntry } from './palette';
 
 /**
  * Words for the Workflow Lab (D-095 applied to workflows).
@@ -28,7 +28,7 @@ export const nodeKind = (node: WorkflowNode): WorkflowNodeKind =>
 
 /** The node's real feature name, or what the type is called when no feature is chosen yet. */
 export const nodeName = (node: WorkflowNode): string =>
-  node.type === 'end' ? 'End' : featureName(node.ghl_feature_id);
+  node.type === 'end' ? 'End' : (savedNodeEntry(node)?.name ?? featureName(node.ghl_feature_id));
 
 const text = (value: unknown): string => (typeof value === 'string' ? value : '');
 const num = (value: unknown): number => (typeof value === 'number' ? value : Number(value) || 0);
@@ -72,8 +72,9 @@ export function configSummary(node: WorkflowNode, account: AccountState): string
     }
     case 'GHL-WF-SEND-INTERNAL-NOTIFICATION':
       return text(c.recipient)
-        ? `${account.users[text(c.recipient)]?.name ?? text(c.recipient)} · ${text(c.channel) || 'in-app'}`
+        ? `${account.users[text(c.recipient)]?.name ?? text(c.recipient)} via ${text(c.channel) || 'in-app'}`
         : 'No recipient yet';
+    case 'GHL-WF-CUSTOM-WEBHOOK':
     case 'GHL-WF-WEBHOOK':
       return text(c.url) || 'No URL yet';
     case 'GHL-WF-WAIT':
@@ -264,12 +265,12 @@ export function timelineRow(
           data.reentry === true ? 'Re-entry' : null,
         ]
           .filter(Boolean)
-          .join(' · ');
+          .join('\n');
         detail = detail || undefined;
       } else {
         name = data.test === true ? 'Started at the first step (test)' : 'Enrolled directly';
         detail = `${feature} was not fired; the trigger and its filters were skipped${
-          data.reentry === true ? ' · Re-entry' : ''
+          data.reentry === true ? '\nRe-entry' : ''
         }`;
       }
       break;
@@ -360,7 +361,7 @@ function branchDetail(data: Record<string, unknown>): string | undefined {
     lines.push(`${text(branch.name)}: ${parts.join(' or ')}`);
   }
   if (lines.length === 0) return data.fallback === true ? 'No branch matched' : undefined;
-  return `${data.fallback === true ? 'No branch matched. ' : ''}${lines.join(' · ')}`;
+  return `${data.fallback === true ? 'No branch matched. ' : ''}${lines.join('\n')}`;
 }
 
 function describeEffect(record: ExecutionRecord, account: AccountState): string | undefined {
@@ -388,7 +389,7 @@ function inputDetail(record: ExecutionRecord, timezone: string): string | undefi
         ? `appointment ${text(d.appointment_status).replace('_', '-')}`
         : null,
     ].filter(Boolean);
-    return parts.length ? parts.join(' · ') : undefined;
+    return parts.length ? parts.join('\n') : undefined;
   }
   if (Array.isArray(d.unresolved) && d.unresolved.length > 0) {
     return `Blank merge fields: ${(d.unresolved as string[]).join(', ')}`;
@@ -407,7 +408,7 @@ function triggerValuesWords(raw: unknown): string | null {
       ([key, value]) =>
         `${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : String(value)}`,
     );
-  return pairs.length ? pairs.join(' · ') : null;
+  return pairs.length ? pairs.join('\n') : null;
 }
 
 /** A comparison operator in plain words, for filters and conditions alike. */

@@ -25,6 +25,16 @@ const section = (name, checks, extra = {}) => {
 
 /* ---- page helpers ------------------------------------------------------------------------ */
 
+// Match the two saved-state facts inside this funnel's save panel, never a body substring.
+const SAVED_VERSION_ONE = `(() => {
+  const panel = document.querySelector('[data-testid="funnel-save"]')?.parentElement;
+  const metadata = panel?.querySelector(':scope > span');
+  if (!metadata) return false;
+  const leaves = [...metadata.querySelectorAll('span')]
+    .filter((el) => el.childElementCount === 0)
+    .map((el) => el.textContent.trim());
+  return leaves.length === 2 && leaves[0] === 'Saved' && leaves[1] === 'v1';
+})()`;
 const q = (selector) => `document.querySelector(${JSON.stringify(selector)})`;
 const exists = (page, selector) => page.evaluate(`Boolean(${q(selector)})`);
 const count = (page, selector) =>
@@ -259,7 +269,7 @@ try {
 
   /* ---- 5. saving is an account event, and it survives a reload (FUN-001, DATA-001) ------- */
   await click(page, '[data-testid="funnel-save"]');
-  const saved = await waitFor(page, `document.body.textContent.includes('Saved · version 1')`, {
+  const saved = await waitFor(page, SAVED_VERSION_ONE, {
     timeout: 10000,
   });
   await screenshot(page, resolve(OUT, 'funnel-build-1440.png'), null, false);
@@ -273,7 +283,7 @@ try {
     saved,
     twoStepsBack: reloadedSteps === 2,
     sameNames: reloadedName.includes('Consultation offer') && reloadedName.includes('Pick a time'),
-    versionKept: (await text(page, 'body')).includes('Saved · version 1'),
+    versionKept: await page.evaluate(SAVED_VERSION_ONE),
   });
 
   /* ---- 6. PREVIEW switches three real widths (FUN-001, FUN-002) -------------------------- */

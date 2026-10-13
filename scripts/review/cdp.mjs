@@ -106,12 +106,28 @@ export function connect(url) {
       };
       listeners.add(l);
     });
+  const on = (method, listener) => {
+    const receive = (message) => {
+      if (message.method === method) listener(message.params);
+    };
+    listeners.add(receive);
+    return () => listeners.delete(receive);
+  };
   const evaluate = async (expression) => {
-    const r = await send('Runtime.evaluate', {
-      expression,
-      returnByValue: true,
-      awaitPromise: true,
-    });
+    let r;
+    try {
+      r = await send('Runtime.evaluate', {
+        expression,
+        returnByValue: true,
+        awaitPromise: true,
+      });
+    } catch (error) {
+      const preview = expression.replace(/\s+/g, ' ').trim().slice(0, 180);
+      throw new Error(
+        `${error instanceof Error ? error.message : String(error)} [evaluate: ${preview}]`,
+        { cause: error },
+      );
+    }
     if (r.exceptionDetails) {
       throw new Error(
         `${r.exceptionDetails.text} ${r.exceptionDetails.exception?.description ?? ''}`,
@@ -119,29 +135,47 @@ export function connect(url) {
     }
     return r.result.value;
   };
-  return { ready, send, once, evaluate, close: () => ws.close() };
+  return { ready, send, once, on, evaluate, close: () => ws.close() };
+}
+
+/** Wait for the document returned by this navigation, not a previous page's queued load.
+ * Lifecycle events may arrive before Page.navigate replies, so retain them until its loader
+ * is known. Same-document navigation has no loader and needs no document-load event. */
+export async function navigateDocument(page, url) {
+  await page.send('Page.setLifecycleEventsEnabled', { enabled: true });
+  const loads = new Map();
+  let navigation;
+  let resolveLoaded;
+  const loaded = new Promise((resolve) => {
+    resolveLoaded = resolve;
+  });
+  const matches = () => navigation && loads.get(navigation.loaderId)?.has(navigation.frameId);
+  const stop = page.on('Page.lifecycleEvent', ({ name, loaderId, frameId }) => {
+    if (name !== 'load') return;
+    if (!loads.has(loaderId)) loads.set(loaderId, new Set());
+    loads.get(loaderId).add(frameId);
+    if (matches()) resolveLoaded();
+  });
+  let timer;
+  try {
+    navigation = await page.send('Page.navigate', { url });
+    if (navigation.errorText) throw new Error('Navigation failed: ' + navigation.errorText);
+    if (!navigation.loaderId || matches()) return;
+    await Promise.race([
+      loaded,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error('Page load timed out')), 30_000);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+    stop();
+  }
 }
 
 /** Navigates and waits for the lazy route chunk and the fonts. */
 export async function openPage(page, url) {
-  const loaded = page.once('Page.loadEventFired');
-  const navigation = await page.send('Page.navigate', { url });
-  if (navigation.errorText) throw new Error('Navigation failed: ' + navigation.errorText);
-  // Fragment navigation stays in the current document and deliberately has no load event.
-  // The search probe exercises this path; route-specific content still has its own ready check.
-  if (navigation.loaderId) {
-    let timer;
-    try {
-      await Promise.race([
-        loaded,
-        new Promise((_, reject) => {
-          timer = setTimeout(() => reject(new Error('Page load timed out')), 30_000);
-        }),
-      ]);
-    } finally {
-      clearTimeout(timer);
-    }
-  }
+  await navigateDocument(page, url);
   for (let i = 0; i < 60; i++) {
     if (await page.evaluate("!!document.querySelector('main h1, main h2, h1')")) break;
     await sleep(100);
@@ -149,6 +183,15 @@ export async function openPage(page, url) {
   await page.evaluate(
     'document.fonts.ready.then(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))))',
   );
+}
+
+/** Clear only a synthetic probe fixture after its old document has stopped writing to it. */
+export async function resetIndexedDbFixture(page, base) {
+  await navigateDocument(page, 'about:blank');
+  await page.send('Storage.clearDataForOrigin', {
+    origin: new URL(base).origin,
+    storageTypes: 'indexeddb',
+  });
 }
 
 /** Below 768 px the page is emulated as a touch device (coarse pointer, 5 touch points). */
@@ -171,12 +214,26 @@ export async function setViewport(page, width, height, { mobile = width < 768 } 
  * `false` to capture the viewport exactly as a user sees it.
  */
 export async function screenshot(page, file, clip, beyondViewport = true) {
-  const { data } = await page.send('Page.captureScreenshot', {
-    format: 'png',
-    captureBeyondViewport: beyondViewport,
-    ...(clip ? { clip: { ...clip, scale: 1 } } : {}),
-  });
-  writeFileSync(file, Buffer.from(data, 'base64'));
+  const maskId = `review-private-${crypto.randomUUID()}`;
+  try {
+    const masked = await page.evaluate(`(() => {
+      const style = document.createElement('style');
+      style.id = ${JSON.stringify(maskId)};
+      style.textContent = '[data-review-private], [data-review-private] *, [data-testid="sync-key"], input[type="password"], img[alt="QR code of your Bloomlab Sync Key"] { visibility: hidden !important; }';
+      document.head.append(style);
+      return !!style.sheet && [...document.querySelectorAll('[data-review-private], [data-review-private] *, [data-testid="sync-key"], input[type="password"], img[alt="QR code of your Bloomlab Sync Key"]')]
+        .every(element => getComputedStyle(element).visibility === 'hidden');
+    })()`);
+    if (!masked) throw new Error('Screenshot privacy masking failed');
+    const { data } = await page.send('Page.captureScreenshot', {
+      format: 'png',
+      captureBeyondViewport: beyondViewport,
+      ...(clip ? { clip: { ...clip, scale: 1 } } : {}),
+    });
+    writeFileSync(file, Buffer.from(data, 'base64'));
+  } finally {
+    await page.evaluate(`document.getElementById(${JSON.stringify(maskId)})?.remove()`);
+  }
 }
 
 export async function session() {
@@ -186,7 +243,82 @@ export async function session() {
   await Promise.all([page.ready, browser.ready]);
   await page.send('Page.enable');
   await page.send('Runtime.enable');
+  if (process.env.REVIEW_AI_OFF === '1') {
+    // Field-Ready C1 runs the real product with both sides of the AI boundary unavailable:
+    // `ai.mode` is held at Off in the product's own IndexedDB workspace and browser requests to
+    // Worker AI routes are refused before transport. The interval matters because several real
+    // probes deliberately clear IndexedDB while testing reset/recovery behavior.
+    await page.send('Page.addScriptToEvaluateOnNewDocument', {
+      source: `(() => {
+        if (!/^https?:$/.test(location.protocol)) return;
+        const key = '__bloomlab_ai_off_attempts';
+        const originalFetch = globalThis.fetch.bind(globalThis);
+        globalThis.fetch = (input, init) => {
+          const url = String(input instanceof Request ? input.url : input);
+          if (/\\/api\\/ai\\//.test(url)) {
+            const attempts = JSON.parse(sessionStorage.getItem(key) || '[]');
+            attempts.push({ url: new URL(url, location.href).pathname, method: init?.method || (input instanceof Request ? input.method : 'GET') });
+            sessionStorage.setItem(key, JSON.stringify(attempts));
+            return Promise.reject(new TypeError('AI Worker routes are disabled for Field-Ready acceptance'));
+          }
+          return originalFetch(input, init);
+        };
+        const holdOff = () => {
+          const request = indexedDB.open('bloomlab');
+          request.onsuccess = () => {
+            const database = request.result;
+            if (
+              !database.objectStoreNames.contains('workspace') ||
+              !database.objectStoreNames.contains('device')
+            ) {
+              database.close();
+              return;
+            }
+            const transaction = database.transaction(['workspace', 'device'], 'readwrite');
+            const devices = transaction.objectStore('device').getAll();
+            devices.onsuccess = () => {
+              const owner = devices.result[0];
+              if (!owner) return;
+              transaction.objectStore('workspace').put({
+                key: 'ai.mode',
+                learner_id: owner.learner_id,
+                device_id: owner.device_id,
+                value: 'Off',
+                updated_at: new Date().toISOString(),
+              });
+            };
+            transaction.oncomplete = () => database.close();
+            transaction.onerror = () => database.close();
+          };
+        };
+        setTimeout(holdOff, 250);
+        setInterval(holdOff, 1000);
+      })();`,
+    });
+  }
   const close = async () => {
+    if (process.env.REVIEW_AI_OFF === '1') {
+      const evidence = await page
+        .evaluate(
+          `new Promise((resolve) => {
+          const attempts = JSON.parse(sessionStorage.getItem('__bloomlab_ai_off_attempts') || '[]');
+          const request = indexedDB.open('bloomlab');
+          request.onerror = () => resolve({ mode: null, attempted_ai_routes: attempts, error: 'database unavailable' });
+          request.onsuccess = () => {
+            const database = request.result;
+            if (!database.objectStoreNames.contains('workspace')) {
+              database.close(); resolve({ mode: null, attempted_ai_routes: attempts }); return;
+            }
+            const tx = database.transaction('workspace', 'readonly');
+            const read = tx.objectStore('workspace').get('ai.mode');
+            read.onsuccess = () => { database.close(); resolve({ mode: read.result?.value ?? null, attempted_ai_routes: attempts }); };
+            read.onerror = () => { database.close(); resolve({ mode: null, attempted_ai_routes: attempts, error: 'workspace read failed' }); };
+          };
+        })`,
+        )
+        .catch((error) => ({ mode: null, attempted_ai_routes: [], error: error.message }));
+      console.log(`AI_OFF_BOUNDARY ${JSON.stringify(evidence)}`);
+    }
     try {
       await browser.send('Browser.close');
     } catch {

@@ -1,4 +1,5 @@
 import { db, type BloomlabDatabase } from './db';
+import { ensureDevice } from './device';
 import { nowIso } from './envelope';
 import type { SyncEntity, SyncOperation, SyncOperationKind } from './types';
 
@@ -24,10 +25,13 @@ export async function enqueueOperation(
   database: BloomlabDatabase = db,
 ): Promise<SyncOperation> {
   const at = nowIso();
+  const payloadOwner = input.payload?.learner_id;
+  const learnerId =
+    typeof payloadOwner === 'string' ? payloadOwner : (await ensureDevice(database)).learner_id;
   const pending = await database.sync_queue
     .where('[entity+entity_id]')
     .equals([input.entity, input.entity_id])
-    .filter((row) => row.status === 'pending')
+    .filter((row) => row.status === 'pending' && row.learner_id === learnerId)
     .first();
   if (pending) {
     const merged: SyncOperation = {
@@ -42,6 +46,7 @@ export async function enqueueOperation(
   }
   const created: SyncOperation = {
     ...input,
+    learner_id: learnerId,
     created_at: at,
     updated_at: at,
     status: 'pending',
@@ -65,11 +70,12 @@ export function countOperations(database: BloomlabDatabase = db): Promise<number
 export async function takeOperations(
   limit: number,
   database: BloomlabDatabase = db,
+  learnerId?: string,
 ): Promise<SyncOperation[]> {
   return database.transaction('rw', database.sync_queue, async () => {
     const batch = await database.sync_queue
       .orderBy('seq')
-      .filter((row) => row.status === 'pending')
+      .filter((row) => row.status === 'pending' && (!learnerId || row.learner_id === learnerId))
       .limit(limit)
       .toArray();
     const claimed = batch.map((row) => ({

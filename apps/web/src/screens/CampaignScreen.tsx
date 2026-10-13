@@ -3,7 +3,14 @@ import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 
 import {
+  ContentTitle,
   MasteryBadge,
+  Meta,
+  ProgressMeter,
+  IconCalendar,
+  IconClock,
+  IconFlag,
+  IconUnlock,
   Button,
   Stack,
   StatusPill,
@@ -58,10 +65,9 @@ function Gate({
         className={cx(styles.gate, current && styles.current)}
       >
         <header className={styles.gateHeader}>
-          <div>
-            <h2 className={styles.gateName}>
-              Gate {gate.number} · {gate.name}
-            </h2>
+          <div className={styles.gateTitle}>
+            <Meta items={[{ kind: 'chip', label: `Gate ${gate.number}` }]} />
+            <h2 className={styles.gateName}>{gate.name}</h2>
           </div>
           <StatusPill label={pill.label} tone={pill.tone} glyph={pill.glyph} />
         </header>
@@ -78,16 +84,20 @@ function Gate({
             The capabilities for this gate are authored in a later content phase.
           </p>
         ) : (
-          <p className={styles.criteria}>
-            {gate.total > 0
-              ? `${gate.passed_count} of ${gate.total} capabilities demonstrated · pass with `
-              : 'Complete the required project evidence. '}
-            {gate.total > 0
-              ? definition
-                ? criteriaWords(definition.pass_criteria)
-                : 'independent demonstrations'
-              : ''}
-          </p>
+          <div className={styles.gateProgress}>
+            {gate.total > 0 && (
+              <ProgressMeter
+                label={`Gate ${gate.number}`}
+                value={gate.passed_count}
+                total={gate.total}
+              />
+            )}
+            <p className={styles.criteria}>
+              {gate.total > 0
+                ? `Pass with ${definition ? criteriaWords(definition.pass_criteria) : 'independent demonstrations'}.`
+                : 'Complete the required project evidence.'}
+            </p>
+          </div>
         )}
         {definition?.placement && (
           <ul className={styles.skills}>
@@ -96,7 +106,7 @@ function Gate({
               .map((exercise) => (
                 <li key={exercise.id} className={styles.skill}>
                   <Link className={styles.skillLink} to={`/exercise/${exercise.id}`}>
-                    {exercise.title}
+                    <ContentTitle title={exercise.title} />
                   </Link>
                   <span className={styles.skillNote}>{exercise.estimated_minutes} min</span>
                 </li>
@@ -178,6 +188,7 @@ export default function CampaignScreen() {
     );
   }
 
+  const pace = definition.pace_hint.match(/~(\d+) days at (\d+)[–-](\d+) hours\/day/);
   const passed = evaluation?.passed_gates.length ?? 0;
   const gatesWithSkills = evaluation?.gates.filter((g) => g.status !== 'optional');
 
@@ -201,7 +212,7 @@ export default function CampaignScreen() {
               .map((path) => (
                 <option key={path.id} value={path.id}>
                   {path.title}
-                  {path.recommended ? ' · Recommended' : ''}
+                  {path.recommended ? ' (Recommended)' : ''}
                 </option>
               ))}
           </optgroup>
@@ -216,14 +227,32 @@ export default function CampaignScreen() {
         <h1 id="campaign-title" className={styles.title}>
           {definition.title}
         </h1>
-        <p className={styles.pace}>Campaign · {definition.pace_hint}</p>
+        <Meta
+          className={styles.pace}
+          items={
+            pace
+              ? [
+                  { kind: 'text', icon: <IconCalendar />, label: `About ${pace[1]} days` },
+                  {
+                    kind: 'text',
+                    icon: <IconClock />,
+                    label: `${pace[2]} to ${pace[3]} hours a day`,
+                  },
+                ]
+              : definition.pace_hint.split(/\s*[·|•]\s*/).map((label) => ({
+                  kind: 'text',
+                  icon: <IconClock />,
+                  label: label.replace(/^Suggested pace: ~/, 'About '),
+                }))
+          }
+        />
         <p className={styles.lead}>{definition.summary}</p>
         {definition.post_field_ready && (
           <>
             <p className={styles.summary} data-testid="path-boundary">
               {snapshot && fieldReadyCompletion(snapshot, content).complete
                 ? 'Post-Field-Ready path. Your required Field Ready training evidence is recorded; real-GHL proof remains learner-supplied, not automatically verified.'
-                : 'Post-Field-Ready path · preview and work ahead. Choosing or passing this path does not mark Field Ready complete.'}{' '}
+                : 'Post-Field-Ready path for preview and work ahead. Choosing or passing this path does not mark Field Ready complete.'}{' '}
               Shared capabilities keep the same evidence in every path. Path gates do not replace
               skill mastery or personal acceptance.
             </p>
@@ -240,11 +269,27 @@ export default function CampaignScreen() {
           View Field Ready evidence and completion
         </Link>
         {evaluation && gatesWithSkills && (
-          <p className={styles.standing}>
-            {evaluation.complete
-              ? 'Every gate passed.'
-              : `${passed} of ${gatesWithSkills.length} gates passed · ${plural(evaluation.work_ahead.length, 'capability', 'capabilities')} open to work ahead`}
-          </p>
+          <Meta
+            className={styles.standing}
+            items={[
+              {
+                kind: 'text',
+                icon: <IconFlag />,
+                label: evaluation.complete
+                  ? 'Every gate passed.'
+                  : `${passed} of ${gatesWithSkills.length} gates passed`,
+              },
+              ...(!evaluation.complete
+                ? [
+                    {
+                      kind: 'text' as const,
+                      icon: <IconUnlock />,
+                      label: `${evaluation.work_ahead.length} open to work ahead`,
+                    },
+                  ]
+                : []),
+            ]}
+          />
         )}
       </header>
 
@@ -289,8 +334,14 @@ export default function CampaignScreen() {
                   to={`/campaign?path=${path.id}`}
                   aria-current={path.id === campaignId ? 'page' : undefined}
                 >
-                  {path.title}
-                  {path.recommended ? ' · Recommended' : ''}
+                  <Meta
+                    items={[
+                      { kind: 'text', label: path.title },
+                      ...(path.recommended
+                        ? [{ kind: 'badge' as const, label: 'Recommended' }]
+                        : []),
+                    ]}
+                  />
                 </Link>
                 <p className={styles.summary}>{path.summary}</p>
               </li>

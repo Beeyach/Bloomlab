@@ -118,7 +118,20 @@
 
 .criteria {
   margin: 0;
-  font-size: var(--bl-font-size-sm);
+  font-size: 13px;
+  color: var(--bl-color-text-soft);
+}
+
+.gateTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.gateProgress {
+  display: grid;
+  gap: var(--bl-space-2);
 }
 
 .skills {

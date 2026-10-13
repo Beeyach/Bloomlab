@@ -64,6 +64,12 @@ export async function adoptLearner(
   const tables = [
     database.device,
     database.sync_queue,
+    database.sync_state,
+    database.sync_shadow,
+    database.sync_conflicts,
+    database.workspace,
+    database.call_recordings,
+    database.evidence_assets,
     ...LOCAL_SYNC_ENTITIES.map((e) => database[e]),
   ];
   return database.transaction('rw', tables, async () => {
@@ -85,10 +91,21 @@ export async function adoptLearner(
           .modify({ learner_id: identity.learner_id });
       }
       await database.sync_queue.toCollection().modify((op) => {
+        if (op.learner_id === previous) op.learner_id = identity.learner_id;
         if (op.payload && op.payload.learner_id === previous) {
           op.payload = { ...op.payload, learner_id: identity.learner_id };
         }
       });
+      for (const table of ['sync_state', 'sync_shadow', 'sync_conflicts'] as const)
+        await database
+          .table(table)
+          .filter((row) => row.learner_id === previous)
+          .modify({ learner_id: identity.learner_id });
+      for (const table of ['workspace', 'call_recordings', 'evidence_assets'] as const)
+        await database
+          .table(table)
+          .filter((row) => row.learner_id === previous)
+          .modify({ learner_id: identity.learner_id });
       // Unit completions are the one evidence row with a deterministic, learner-scoped id
       // (D-062). Evidence is never dropped, so each one moves to the id the real learner's
       // other devices will mint, and its queued write follows it. Nothing was pushed before

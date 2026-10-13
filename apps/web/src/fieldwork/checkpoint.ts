@@ -3,7 +3,7 @@ import type { FieldworkResponse } from '@bloomlab/shared';
 import { db, type BloomlabDatabase } from '../data/db';
 import { editFieldwork, type AttemptContext } from '../exercise/attempt';
 import { completionMissing, proofMissing, validAsset } from './proof';
-import { readEvidence } from './assets';
+import { localEvidence, readEvidence } from './assets';
 
 export async function verifyAssets(
   exercise: Exercise,
@@ -14,7 +14,7 @@ export async function verifyAssets(
   for (const item of exercise.fieldwork?.proof?.screenshots ?? []) {
     const id = proof.screenshots[item.key];
     if (!id) continue;
-    const local = await database.evidence_assets.get(id);
+    const local = await localEvidence(id, database);
     if (local && local.status !== 'uploaded')
       throw new Error('Upload or remove the selected screenshot before continuing.');
     const asset = await readEvidence(id, database);

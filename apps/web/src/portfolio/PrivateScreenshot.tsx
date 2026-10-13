@@ -2,12 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Button } from '@bloomlab/design-system';
 import { db } from '../data/db';
-import { evidenceFetch, EvidenceRequestError, readEvidence } from '../fieldwork/assets';
+import {
+  evidenceFetch,
+  EvidenceRequestError,
+  localEvidence,
+  readEvidence,
+} from '../fieldwork/assets';
 import type { PortfolioView } from './view';
 import styles from './portfolio.module.css';
 
 export function PrivateScreenshot({ asset }: { asset: PortfolioView['screenshots'][number] }) {
-  const local = useLiveQuery(() => db.evidence_assets.get(asset.asset_id), [asset.asset_id]);
+  const local = useLiveQuery(() => localEvidence(asset.asset_id, db), [asset.asset_id]);
   const [url, setUrl] = useState<string | null>(null);
   const [status, setStatus] = useState(
     'Private screenshot referenced. Availability is checked when opened.',
