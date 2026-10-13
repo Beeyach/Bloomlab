@@ -1,9 +1,9 @@
 # KNOWN LIMITATIONS
 
-Current publication rechecked on 2026-10-12: source
-`18f112f8710766462a18256d72bba5034410973b` passed exact-head run
-`38096748142`, attempt 1: Checks PASSED, all seven Preview stages PASSED,
-Production SKIPPED. Worker: `c09f3a84-436a-46e6-8abd-84c58cabe4b7`.
+Verified publication baseline for this follow-up: source
+`e4b7b606912a3ec21da688d36c8c881a8a680291` passed exact-head run
+`38334967218`, attempt 1: Checks PASSED, all seven Preview stages PASSED,
+Production SKIPPED. Worker: `99327c33-4cda-42ad-a246-6ecd0761403e`.
 Full artifact and physical exact-state screenshot digests were verified.
 The automated joined matrix now has zero unverified state cells; its former
 216-cell gap is historical. The 43 subjective visual-review rows and twelve
@@ -16,9 +16,15 @@ Recovery confirmation expires after 24 hours, but the source has no scheduled
 abandoned-stage deletion sweep. Confirmation/cancellation delete the staged R2
 object; neither operation establishes abandoned-stage cleanup. Actual cloud
 lifecycle configuration and deletion remain unverified. No learner bytes were
-read or deleted during this continuation. Ten dependency warnings remain in a
-fresh read-only npm audit; no dependency was installed or upgraded and no
-deployed exploit is claimed. See `docs/reviews/field-ready-v1-preview-publication.md`.
+read or deleted during this continuation. The subsequently approved six-package
+patch update reports zero npm advisories in the installed local tree; toolchain
+parent versions are retained. Recovery cancellation/confirmation ordering and
+known terminology false negatives are also corrected in this follow-up.
+These changes require their own exact-head publication evidence. No abandoned
+storage sweep or deployed-exploit claim is supplied. See
+`docs/reviews/field-ready-v1-recovery-terminology-dependencies.md`; the prior
+dependency warning snapshot remains historical in
+`docs/reviews/field-ready-v1-preview-publication.md`.
 
 ## Historical closeout verification records
 
@@ -262,10 +268,11 @@ and training-only event injectors are teaching tools, not invented native HighLe
   not live quality acceptance. Provider spend **$0**; no new D1/IndexedDB migration, public media,
   production data use or backend service. Current versions/content counts are unchanged from the
   audited Phase 25 base; historical phase descriptions below describe their original checkpoint.
-- A fresh lockfile install reports five high-severity development-tool dependency advisories.
-  `npm audit --omit=dev` reports zero production dependency vulnerabilities. No forced/breaking
-  toolchain upgrade was performed as an unrelated closeout change; the development advisories
-  remain visible for a separately scoped dependency review.
+- The historical Phase 26 installation reported five high-severity development-tool
+  dependency advisories; its omit-dev audit reported zero. The approved follow-up
+  patch update now reports zero advisories in the complete installed local tree.
+  Parent toolchain versions are retained; the earlier warning snapshot remains
+  historical evidence rather than the current dependency disposition.
 
 ## Phase 25 — advanced curriculum checkpoints
 

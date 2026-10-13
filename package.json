@@ -42,7 +42,7 @@
     "content:check": "node scripts/content.mjs check",
     "content:lock": "node scripts/content.mjs lock",
     "content:freshness": "node scripts/registry-freshness.mjs",
-    "content:terminology": "node scripts/ghl-terminology.mjs",
+    "content:terminology": "node --test scripts/ghl-terminology.test.mjs && node scripts/ghl-terminology.mjs",
     "review:learning": "node scripts/review/learning-probe.mjs",
     "review:keyboard": "node scripts/review/keyboard-probe.mjs",
     "review:touch": "node scripts/review/touch-probe.mjs",
@@ -88,5 +88,15 @@
     "typescript-eslint": "^8.69.0",
     "vitest": "^4.1.11",
     "wrangler": "^4.128.0"
+  },
+  "overrides": {
+    "brace-expansion@^2.0.0": "2.1.7",
+    "brace-expansion@^5.0.0": "5.0.12",
+    "fast-uri@^3.0.0": "3.1.8",
+    "serialize-javascript@^7.0.0": "7.1.2",
+    "source-map-js@^1.0.0": "1.2.2",
+    "sharp@^0.35.0": "0.35.5",
+    "undici@^7.0.0": "7.29.1",
+    "undici@^8.0.0": "8.10.2"
   }
 }

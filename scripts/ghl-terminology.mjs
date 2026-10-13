@@ -14,6 +14,7 @@ import {
 } from './ghl-terminology-policy.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
+const negativeControl = process.argv.includes('--negative-control');
 const relativePath = (path) => relative(ROOT, path).replaceAll('\\', '/');
 const read = (path) => readFileSync(resolve(ROOT, path), 'utf8');
 const walk = (root) =>
@@ -22,10 +23,20 @@ const walk = (root) =>
     return statSync(path).isDirectory() ? walk(path) : [path];
   });
 const escape = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const containsTerm = (text, term, insensitive = false) =>
-  new RegExp(`(?<![\\p{L}\\p{N}])${escape(term)}(?![\\p{L}\\p{N}])`, insensitive ? 'iu' : 'u').test(
-    text,
-  );
+const sensitivePatterns = new Map();
+const insensitivePatterns = new Map();
+const containsTerm = (text, term, insensitive = false) => {
+  const patterns = insensitive ? insensitivePatterns : sensitivePatterns;
+  let pattern = patterns.get(term);
+  if (!pattern) {
+    pattern = new RegExp(
+      `(?<![\\p{L}\\p{N}])${escape(term)}(?![\\p{L}\\p{N}])`,
+      insensitive ? 'iu' : 'u',
+    );
+    patterns.set(term, pattern);
+  }
+  return pattern.test(text);
+};
 
 const registry = walk(resolve(ROOT, 'content/ghl-features'))
   .filter((path) => extname(path) === '.yaml')
@@ -62,6 +73,17 @@ const flattenYaml = (file, value, pointer = '$') => {
   else if (value && typeof value === 'object')
     Object.entries(value).forEach(([key, item]) => flattenYaml(file, item, `${pointer}.${key}`));
 };
+const staticJsxText = (node) => {
+  if (ts.isJsxText(node) || ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node))
+    return node.text;
+  if (ts.isJsxExpression(node)) return node.expression ? staticJsxText(node.expression) : '';
+  if (ts.isJsxElement(node) || ts.isJsxFragment(node)) {
+    if (ts.isJsxElement(node) && !/^[a-z]/.test(node.openingElement.tagName.getText())) return null;
+    const parts = node.children.map(staticJsxText);
+    return parts.includes(null) ? null : parts.join('');
+  }
+  return null;
+};
 const extractTypeScript = (path, sourceText = readFileSync(path, 'utf8')) => {
   const file = relativePath(path);
   const source = ts.createSourceFile(
@@ -73,6 +95,18 @@ const extractTypeScript = (path, sourceText = readFileSync(path, 'utf8')) => {
   );
   const visit = (node) => {
     if (
+      ts.isJsxElement(node) &&
+      /^(h[1-6]|label|legend|button|option|summary)$/.test(
+        node.openingElement.tagName.getText(source),
+      )
+    ) {
+      const label = staticJsxText(node);
+      if (label !== null) {
+        const { line } = source.getLineAndCharacterOfPosition(node.getStart(source));
+        push(file, `line ${line + 1}`, label, true);
+      }
+    }
+    if (
       ts.isStringLiteral(node) ||
       ts.isNoSubstitutionTemplateLiteral(node) ||
       ts.isJsxText(node) ||
@@ -81,15 +115,7 @@ const extractTypeScript = (path, sourceText = readFileSync(path, 'utf8')) => {
       ts.isTemplateTail(node)
     ) {
       const { line } = source.getLineAndCharacterOfPosition(node.getStart(source));
-      const parent = node.parent;
-      const visibleLabel =
-        ts.isJsxText(node) &&
-        ts.isJsxElement(parent) &&
-        parent.children.every(ts.isJsxText) &&
-        /^(h[1-6]|label|legend|button|option|summary)$/.test(
-          parent.openingElement.tagName.getText(source),
-        );
-      push(file, `line ${line + 1}`, node.text ?? node.getText(source), visibleLabel);
+      push(file, `line ${line + 1}`, node.text ?? node.getText(source));
     }
     ts.forEachChild(node, visit);
   };
@@ -97,7 +123,7 @@ const extractTypeScript = (path, sourceText = readFileSync(path, 'utf8')) => {
 };
 
 const scopedFiles = new Set();
-for (const surface of SURFACES) {
+for (const surface of negativeControl ? [] : SURFACES) {
   for (const root of surface.roots) {
     const absolute = resolve(ROOT, root);
     if (!statSync(absolute).isDirectory())
@@ -131,8 +157,26 @@ for (const file of [...scopedFiles].sort()) {
   else extractTypeScript(path);
 }
 
-if (process.argv.includes('--negative-control'))
-  extractTypeScript(resolve(ROOT, 'negative-control.tsx'), '<h2>Custom fields</h2>');
+if (negativeControl)
+  extractTypeScript(
+    resolve(ROOT, 'negative-control.tsx'),
+    [
+      '<h2>Custom fields</h2>',
+      '<h2>{"Custom fields"}</h2>',
+      '<h2><span>Custom fields</span></h2>',
+      '<button>wait step</button>',
+      '<p>ghl-wf-wait</p>',
+      '<p>ghl-wf-not-real</p>',
+      '<h2>HighLevel custom fields</h2>',
+      "<h2>HighLevel's Custom fields</h2>",
+      '<h2>{feature.official_name}</h2>',
+      '<p>GHL-WF-WAIT</p>',
+      '<p>HighLevel Custom Fields</p>',
+      '<p>HighLevel products can be used in stores.</p>',
+    ]
+      .map((source, index) => `const fixture${index + 1} = (${source});`)
+      .join('\n'),
+  );
 
 const hits = {
   registry_ids: [],
@@ -156,10 +200,18 @@ for (const feature of registry) {
   if (singular) singularVariants.set([...words.slice(0, -1), singular].join(' '), feature);
 }
 
+const brandedNativeNames = [...officialByName.keys()].sort((a, b) => b.length - a.length);
+const brandedNativePattern = new RegExp(
+  `\\b(?:HighLevel|GoHighLevel|GHL)(?:'s|’s)?\\s+(${brandedNativeNames.map(escape).join('|')})(?![\\p{L}\\p{N}])`,
+  'giu',
+);
+
 for (const segment of segments) {
-  for (const id of segment.text.match(/GHL-[A-Z0-9]+(?:-[A-Z0-9]+)+/g) ?? []) {
+  for (const id of segment.text.match(/\bGHL-[A-Z0-9]+(?:-[A-Z0-9]+)+\b/gi) ?? []) {
     if (!registryById.has(id))
-      problems.push(`${segment.file} ${segment.location}: unknown registry id ${id}`);
+      problems.push(
+        `${segment.file} ${segment.location}: ${registryById.has(id.toUpperCase()) ? 'incorrect casing for' : 'unknown'} registry id ${id}`,
+      );
     else record('registry_ids', segment, id, [id]);
   }
   for (const [name, feature] of officialByName) {
@@ -171,7 +223,7 @@ for (const segment of segments) {
       );
   }
   for (const [alias, target] of aliasByName) {
-    if (!containsTerm(segment.text, alias)) continue;
+    if (!containsTerm(segment.text, alias, true)) continue;
     const historical = HISTORICAL_TERMS.find(
       (entry) =>
         entry.term === alias && entry.path === segment.file && segment.text.includes(entry.marker),
@@ -209,6 +261,15 @@ for (const segment of segments) {
       );
   }
 
+  for (const match of segment.visibleLabel ? segment.text.matchAll(brandedNativePattern) : []) {
+    const official = brandedNativeNames.find(
+      (name) => name.toLowerCase() === match[1].toLowerCase(),
+    );
+    if (match[1] !== official)
+      problems.push(
+        `${segment.file} ${segment.location}: branded native name ${JSON.stringify(match[1])} must use ${JSON.stringify(official)}`,
+      );
+  }
   const brandPattern =
     /\b(?:HighLevel|GoHighLevel|GHL)(?:'s|’s)?\s+([A-Z][A-Za-z0-9&/-]*(?:\s+(?:[A-Z][A-Za-z0-9&/-]*|AI|API)){0,3})/gu;
   for (const match of segment.text.matchAll(brandPattern)) {
@@ -231,7 +292,7 @@ for (const segment of segments) {
   }
 }
 
-for (const historical of HISTORICAL_TERMS) {
+for (const historical of negativeControl ? [] : HISTORICAL_TERMS) {
   const source = segments.filter((segment) => segment.file === historical.path);
   if (!source.some((segment) => segment.text.includes(historical.marker)))
     problems.push(`historical policy marker disappeared: ${historical.path}: ${historical.marker}`);
@@ -261,7 +322,7 @@ const surfaceReport = SURFACES.map((surface) => {
 const report = {
   schema_version: 2,
   coverage_boundary:
-    'Known registry IDs, names, aliases, native heading casing and branded phrases are checked. Arbitrary unprefixed feature names and contextual generic-name exceptions are not exhaustively classified; GHL-005/GHL-010 remain PARTIAL.',
+    'Known registry IDs, names, aliases, static JSX native label casing (including known branded names) and title-case branded phrases are checked. Arbitrary unprefixed feature names and contextual generic-name exceptions are not exhaustively classified; GHL-005/GHL-010 remain PARTIAL.',
   registry_records: registry.length,
   scoped_files: scopedFiles.size,
   text_segments: segments.length,
@@ -271,7 +332,6 @@ const report = {
   inventory: hits,
 };
 const outputDirectory = resolve(ROOT, '.content');
-const negativeControl = process.argv.includes('--negative-control');
 mkdirSync(outputDirectory, { recursive: true });
 if (!negativeControl)
   writeFileSync(
